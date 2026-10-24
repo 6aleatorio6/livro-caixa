@@ -8,3 +8,8 @@ packages:
 ignoredBuiltDependencies:
   - '@swc/core'
   - core-js
+
+# O unrs-resolver, que o resolvedor de imports do ESLint do app usa, confere no install se o binário
+# nativo da plataforma veio.
+onlyBuiltDependencies:
+  - unrs-resolver
