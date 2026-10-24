@@ -32,6 +32,10 @@ Documentação do new-project
 
 - [Visão geral do que fica de fora](04-escopo-excluido/index.md)
 
+### 5. Arquitetura
+
+- [Plataforma e Stack](05-arquitetura/01-plataforma-e-stack.md)
+
 > **Seções de trabalho interno**, numeradas no fim para ficarem após o conteúdo principal:
 > `97-reviews` (revisões da documentação), `98-rascunhos` (material em elaboração) e
 > `99-duvidas` (pontos em aberto a validar). As três aparecem **apenas em desenvolvimento**

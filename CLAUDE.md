@@ -3,9 +3,11 @@
 Documentation for new-project; the brainstorm is still defining the product.
 
 A pnpm monorepo. For now only the documentation exists: the Markdown in `docs/` and the Docusaurus
-portal that publishes it, in `apps/docusaurus`. The back-end and the front-end come later, as
-`apps/back` and `apps/web`, once the project's context settles the stack. Until then, no stack
-decision is made without being written in `docs/`.
+portal that publishes it, in `apps/docusaurus`. The phase is documentation only: no code and no
+design file yet. The app will be a mobile app in Expo + React Native on Firebase, with no web
+app, created from scratch with the latest version of each tool —
+[docs/05-arquitetura/01-plataforma-e-stack.md](docs/05-arquitetura/01-plataforma-e-stack.md). No
+other stack decision is made without being written there.
 
 - `pnpm install` at the root installs the workspace.
 - `pnpm dev:docs` serves the portal at `http://localhost:4000`.
