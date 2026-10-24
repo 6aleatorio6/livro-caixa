@@ -187,7 +187,14 @@ when it is unclear whether it is a regression, ask.
   lasts until the next boot and reaches only app processes started after it. When the emulator was
   opened after the MCP or after `pnpm android`: `adb shell setprop debug.hwui.drawing_enabled 1`,
   then relaunch the app; no root and no framework restart needed. A black screenshot over a full
-  hierarchy is this.
+  hierarchy is this, or the next trap.
+- **A session left from an earlier stack holds the splash forever.** The Auth emulator starts
+  empty, so a session the app kept has an invalid refresh token (`INVALID_REFRESH_TOKEN` in the
+  logcat). Firestore retries `UNAUTHENTICATED` without ever failing, `useAccess` stays `loading`,
+  and `SplashScreen.hide()` never runs: black on ATD, the splash elsewhere. The sign-in page sits
+  in the hierarchy all the while, since its guard also takes `loading`. `adb shell dumpsys activity
+  top` names the culprit: `mLastPerformTraversalsFailedReason=predraw_expo.modules.splashscreen…`.
+  The flows don't hit it (`clearState`); by hand, `adb shell pm clear dev.leonardolf.livrocaixa`.
 - **A round takes the device from the MCP.** `pnpm journeys:test` starts Maestro's driver on the
   emulator over the MCP's, and the MCP keeps the dead connection: every call fails with "Device
   server died" until the person reconnects it (`/mcp`). Explore first, run the round last, or ask
