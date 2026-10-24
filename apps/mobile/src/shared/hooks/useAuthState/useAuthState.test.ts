@@ -1,4 +1,5 @@
-import { renderHook } from '@testing-library/react-native';
+import { onAuthStateChanged } from '@react-native-firebase/auth';
+import { act, renderHook } from '@testing-library/react-native';
 
 import { firebaseAuth } from '@/shared/services/firebase/firebaseAuth';
 import { useAuthState } from './useAuthState';
@@ -26,5 +27,15 @@ describe('useAuthState', () => {
     const { result } = await renderHook(() => useAuthState());
 
     expect(result.current).toEqual({ status: 'loading' });
+  });
+
+  it('Should go to signed-out when the session listener delivers no user', async () => {
+    restoreSession({ email: 'bruno.souza@exemplo.com' });
+    const { result } = await renderHook(() => useAuthState());
+    const deliverSession = jest.mocked(onAuthStateChanged).mock.lastCall![1] as (user: object | null) => void;
+
+    await act(async () => deliverSession(null));
+
+    expect(result.current).toEqual({ status: 'signedOut' });
   });
 });

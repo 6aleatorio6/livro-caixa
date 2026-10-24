@@ -5,6 +5,8 @@ import { useToastStore } from '@/core/store/toast.store';
 
 import { SignInPage } from './SignInPage';
 
+// Sem cenário: o Google Sign-In é nativo e não roda no emulador, então este serviço não tem teste de
+// contrato (`serviceContracts.test.ts`), e os valores do mock são escritos aqui.
 jest.mock('@/shared/services/auth/signInWithGoogleService', () => ({ signInWithGoogleService: jest.fn() }));
 
 const signInWithGoogle = signInWithGoogleService as jest.Mock;

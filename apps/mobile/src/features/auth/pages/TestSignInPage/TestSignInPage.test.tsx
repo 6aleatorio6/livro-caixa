@@ -2,6 +2,8 @@ import { render } from '@testing-library/react-native';
 import { Redirect, useLocalSearchParams } from 'expo-router';
 
 import { signInWithFakeGoogleService } from '@/shared/services/auth/signInWithFakeGoogleService';
+import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
+import { mockServiceScenario } from '@/shared/testing/mockServiceScenario';
 
 import { TestSignInPage } from './TestSignInPage';
 
@@ -13,13 +15,15 @@ jest.mock('@/shared/services/firebase/emulatorHost', () => ({
     return mockEmulatorHost;
   },
 }));
-jest.mock('@/shared/services/auth/signInWithFakeGoogleService', () => ({
-  signInWithFakeGoogleService: jest.fn(async () => null),
-}));
+jest.mock('@/shared/services/auth/signInWithFakeGoogleService', () => ({ signInWithFakeGoogleService: jest.fn() }));
+
+const scenario = signInWithFakeGoogleScenarios.memberSignsIn;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  (useLocalSearchParams as jest.Mock).mockReturnValue({ email: 'bruno.souza@exemplo.com', name: 'Bruno Souza' });
+  mockServiceScenario(signInWithFakeGoogleService, scenario);
+  // O link traz a conta do cenário: o e-mail e o nome.
+  (useLocalSearchParams as jest.Mock).mockReturnValue(scenario.input[0]);
 });
 
 describe('TestSignInPage', () => {
@@ -28,7 +32,7 @@ describe('TestSignInPage', () => {
 
     await render(<TestSignInPage />);
 
-    expect(signInWithFakeGoogleService).toHaveBeenCalledWith({ email: 'bruno.souza@exemplo.com', name: 'Bruno Souza' });
+    expect(signInWithFakeGoogleService).toHaveBeenCalledWith(...scenario.input);
     expect(Redirect).not.toHaveBeenCalled();
   });
 
