@@ -7,10 +7,23 @@ partir de outro app do Android. Por enquanto, o app guarda o comprovante, mas n�
 
 ## Formatos e tamanho
 
-| Arquivo | Até 5 MB | Acima de 5 MB |
-| --- | --- | --- |
-| Imagem | Vai como está | O app a comprime até ficar abaixo de 5 MB, antes de salvar |
-| PDF | Vai como está | Recusado: o membro precisa escolher outro arquivo |
+Cada comprovante tem até 5 MB. Antes de salvar, o app reduz as imagens grandes: a foto que passaria
+do limite cabe nele, e a comum sobe numa fração do tamanho.
+
+- **Imagem acima de 2 MB é reduzida no celular.** O lado maior cai para 2560 pixels, e a imagem é
+  salva de novo com qualidade de 82%. Ex.: a foto de um boleto feita com uma câmera de 12 MP tem
+  4032 pixels de largura e de 2 a 4 MB; com uma de 48 MP, passa dos 10 MB e seria recusada.
+- **O corte é pelo tamanho do arquivo, não pelas dimensões.** Saber quantos pixels a imagem tem
+  exige abri-la, que é justamente a parte cara; os bytes são o indício barato de que há o que
+  reduzir.
+- **A imagem reduzida sai em WebP**, qualquer que seja o formato de entrada: na mesma qualidade, o
+  WebP fica menor que o JPEG, e o Android abre o formato sem nada a mais.
+- **Só foto e print passam pela redução:** JPEG, PNG e WebP. Um GIF perderia os quadros depois do
+  primeiro e vai como está.
+- **Na dúvida, vale o original.** Se a redução falhar ou não deixar o arquivo menor, o app salva a
+  imagem que o membro escolheu. Se ela tiver mais de 5 MB, é recusada, como o PDF.
+- **O PDF nunca é tocado.** Até 5 MB, vai como está; acima disso, é recusado, e o membro escolhe
+  outro arquivo.
 
 ## Anexar de dentro do app
 
@@ -45,7 +58,10 @@ Qualquer membro vê o comprovante de qualquer lançamento, pelo Ver dos
       destinos.
 - [ ] O app abre a lista das contas a pagar do mês, com o comprovante anexado e "Conta avulsa" como
       última opção.
-- [ ] Uma imagem acima de 5 MB é comprimida até ficar abaixo de 5 MB.
+- [ ] Uma imagem acima de 2 MB é salva em WebP, com o lado maior em até 2560 pixels.
+- [ ] Uma imagem de até 2 MB e um GIF são salvos como estão.
+- [ ] Quando a redução falha ou não deixa a imagem menor, o app salva a original.
+- [ ] Uma imagem que continua acima de 5 MB depois da redução é recusada.
 - [ ] Um PDF acima de 5 MB é recusado.
 - [ ] Dentro do app, o comprovante só vem dos arquivos do celular.
 - [ ] Qualquer membro abre o comprovante de um lançamento de outro membro.

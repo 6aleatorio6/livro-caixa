@@ -25,7 +25,7 @@ Enum EntryKind {
 }
 
 Enum FileType {
-  image [note: 'Imagem; acima de 5 MB, comprimida no app até ficar abaixo de 5 MB']
+  image [note: 'Imagem de até 5 MB; acima de 2 MB, reduzida no app e salva em WebP']
   pdf [note: 'PDF de até 5 MB; acima disso, recusado']
 }
 

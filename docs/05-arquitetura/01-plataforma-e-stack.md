@@ -23,6 +23,9 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
 - **Os comprovantes ficam no Cloud Storage**, o serviço de arquivos do Firebase, e os dados no
   Firestore. Cada arquivo tem um registro numa coleção própria, que reúne todos os arquivos do app.
   As regras do Cloud Storage conferem o tipo e o tamanho de cada arquivo: imagem ou PDF, de até 5 MB.
+- **Imagens reduzidas com o `expo-image-manipulator`**, do próprio Expo, no celular e antes do
+  envio ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#formatos-e-tamanho)).
+  As regras do Cloud Storage aplicam o limite de 5 MB do mesmo jeito, sem saber se houve redução.
 - **Jornadas de teste com o Maestro**, no emulador Android do PC de quem desenvolve, contra os
   emuladores do Firebase ([Jornadas de Teste](02-jornadas-de-teste.md)).
 - **Um projeto novo**, criado com o template do SDK 58. A estrutura, as fábricas e os componentes
@@ -63,10 +66,9 @@ Ficaram de fora:
 
 ## O que ainda falta decidir
 
-O app precisa de três coisas cuja forma de fazer fica para a fase de código:
+O app precisa de duas coisas cuja forma de fazer fica para a fase de código:
 
 - **receber arquivos compartilhados** por outros apps do Android;
-- **comprimir imagens** acima de 5 MB;
 - **desenhar o gráfico** do [Início](../03-funcionalidades/01-principal/01-inicio.md).
 
 ## Ponto de atenção: o plano Blaze

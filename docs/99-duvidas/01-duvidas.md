@@ -12,7 +12,7 @@ tema aparece na documentação.
 | D-04 | Quem cadastra, altera e exclui contas recorrentes, e o que acontece com os meses já pagos? | 🟢 Respondido — qualquer membro; os meses pagos não mudam |
 | D-05 | Em que mês um lançamento conta? | 🟢 Respondido — o pagamento no mês da conta; a conta avulsa no mês da data dela |
 | D-06 | Uma conta recorrente pode ter mais de um pagamento no mesmo mês? | 🟢 Respondido — não: o mês fica com o primeiro que pagar |
-| D-07 | O que é o processamento de imagens acima de 5 MB, e o que acontece com um PDF grande? | 🟢 Respondido — a imagem é comprimida até ficar abaixo de 5 MB; o PDF é recusado |
+| D-07 | O que é o processamento de imagens acima de 5 MB, e o que acontece com um PDF grande? | 🟢 Respondido — a imagem acima de 2 MB é reduzida antes de salvar; o PDF acima de 5 MB é recusado |
 | D-08 | O que o app mostra depois de receber um arquivo compartilhado pelo Android? | 🟢 Respondido — a lista das contas a pagar do mês, com "Conta avulsa" por último |
 | D-09 | De onde o membro anexa o comprovante dentro do app? | 🟢 Respondido — só dos arquivos do celular |
 | D-10 | O que o Início mostra, além do gráfico do mês? | 🟢 Respondido — lista do mês, separação por tag e por membro, meses anteriores |
@@ -85,8 +85,10 @@ recusado (modelo do projeto-c).
 
 ## D-07 — Imagens e PDFs grandes
 
-**Resposta:** uma imagem acima de 5 MB é comprimida no app até ficar abaixo de 5 MB. Um PDF acima
-de 5 MB é recusado.
+**Resposta:** uma imagem acima de 2 MB é reduzida no app antes de salvar: o lado maior cai para
+2560 pixels, e ela é salva em WebP. Um PDF acima de 5 MB é recusado. Antes, só a imagem acima de
+5 MB era comprimida, até ficar abaixo do limite; o corte caiu para 2 MB para que a foto comum
+também suba numa fração do tamanho.
 
 **Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).
 
