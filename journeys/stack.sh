@@ -19,7 +19,9 @@ done
 trap 'kill 0' EXIT
 firebase emulators:start --project "$FIREBASE_PROJECT" &
 emulators=$!
-EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true CI=1 pnpm mobile start --clear &
+# Sem `CI=1`: no modo CI, o Expo CLI desliga o watch do Metro, e o app no emulador seguiria com o
+# código de quando a pilha subiu. Em segundo plano, sem terminal, ele já roda sem perguntas.
+EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true pnpm mobile start --clear &
 metro=$!
 
 for port in 8080 8081 9099 9199; do
