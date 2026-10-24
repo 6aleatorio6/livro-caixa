@@ -70,9 +70,9 @@ const styles = StyleSheet.create((theme) => ({
   container: (variant: IButtonVariant, isPressed: boolean, isInactive: boolean) => {
     const containerColor = CONTAINER_COLOR_BY_VARIANT[variant];
     return {
-      minHeight: 40,
+      minHeight: 48,
       justifyContent: 'center',
-      paddingHorizontal: theme.spacing.extraLarge,
+      paddingHorizontal: variant === 'text' ? theme.spacing.medium : theme.spacing.largeIncreased,
       borderRadius: theme.radii.full,
       borderWidth: variant === 'outlined' ? 1 : 0,
       borderColor: theme.colors.outline,
