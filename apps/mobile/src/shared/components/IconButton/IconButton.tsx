@@ -20,7 +20,6 @@ export function IconButton({ icon: Icon, label, onPress, disabled = false }: IIc
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      hitSlop={4}
       style={({ pressed }) => styles.container(pressed, disabled)}
     >
       <Icon size={24} color={theme.colors.onSurfaceVariant} />
@@ -30,8 +29,8 @@ export function IconButton({ icon: Icon, label, onPress, disabled = false }: IIc
 
 const styles = StyleSheet.create((theme) => ({
   container: (isPressed: boolean, isDisabled: boolean) => ({
-    width: 40,
-    height: 40,
+    width: 48,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: theme.radii.full,
