@@ -1,6 +1,6 @@
 # Plataforma e Stack
 
-Esta página registra só o que já foi decidido. O código ainda não começou.
+Esta página registra só o que já foi decidido. O código do app fica em `apps/mobile`.
 
 ## Decidido
 
@@ -9,7 +9,8 @@ Esta página registra só o que já foi decidido. O código ainda não começou.
 - **Só em português do Brasil**, com os valores em reais.
 - **Instalado por APK**, direto nos celulares da família, fora da Play Store
   ([Publicação na Play Store](../04-escopo-excluido/06-publicacao-na-play-store.md)).
-- **Expo + React Native + TypeScript** no app.
+- **Expo SDK 58 + React Native 0.88 + TypeScript** no app, com o expo-router e o React Compiler do
+  template padrão do SDK.
 - **Firebase** como back-end, com o login pelo Google
   ([Acesso](../03-funcionalidades/02-suporte/01-acesso.md)).
 - **Os comprovantes ficam no Cloud Storage**, o serviço de arquivos do Firebase, e os dados no
@@ -17,8 +18,8 @@ Esta página registra só o que já foi decidido. O código ainda não começou.
   As regras do Cloud Storage conferem o tipo e o tamanho de cada arquivo: imagem ou PDF, de até 5 MB.
 - **Jornadas de teste com o Maestro**, no emulador Android do PC de quem desenvolve, contra os
   emuladores do Firebase ([Jornadas de Teste](02-jornadas-de-teste.md)).
-- **Um projeto novo**, criado do zero com os comandos de criação mais recentes de cada ferramenta,
-  sem copiar código de outro projeto.
+- **Um projeto novo**, criado com o template do SDK 58. A estrutura, as fábricas e os componentes
+  base partem de um app anterior da casa, reescritos no padrão atual de cada biblioteca.
 
 ## O que ainda falta decidir
 
