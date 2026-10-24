@@ -2,16 +2,20 @@
 
 A mobile app to manage one family's finances. The brainstorm is still writing its documentation.
 
-A pnpm monorepo. For now it holds the documentation (the Markdown in `docs/` and the Docusaurus
-portal that publishes it, in `apps/docusaurus`) and the design, in `design/livro-caixa.pen`. No
-code yet. The app will be a mobile app in Expo + React Native on Firebase, with no web
-app, created from scratch with the latest version of each tool —
+A pnpm monorepo with the documentation (the Markdown in `docs/` and the Docusaurus portal that
+publishes it, in `apps/docusaurus`), the design, in `design/livro-caixa.pen`, and the Android app,
+in `apps/mobile`: Expo SDK 58 + React Native on Firebase, with no web app —
 [docs/05-arquitetura/01-plataforma-e-stack.md](docs/05-arquitetura/01-plataforma-e-stack.md). No
 other stack decision is made without being written there.
 
 - `pnpm install` at the root installs the workspace.
 - `pnpm dev:docs` serves the portal at `http://localhost:4000`.
 - `pnpm verify` runs the portal's tests and the build, which fails on a broken link.
+- `pnpm typecheck:mobile` type-checks the app; `pnpm mobile <script>` runs any script of
+  `apps/mobile`.
+- `pnpm android` builds the app and opens it on the Android emulator. It needs the Android SDK and
+  Java, which only the developer's PC has: this container runs the type check, the lint and the
+  tests, never the native build.
 
 ## Language
 
