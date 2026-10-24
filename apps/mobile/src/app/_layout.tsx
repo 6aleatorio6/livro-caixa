@@ -1,5 +1,11 @@
 import { Stack } from 'expo-router';
 
+import { AppContainer } from '@/core/AppContainer';
+
 export default function RootLayout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <AppContainer>
+      <Stack screenOptions={{ headerShown: false }} />
+    </AppContainer>
+  );
 }
