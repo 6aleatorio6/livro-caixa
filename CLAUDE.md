@@ -20,6 +20,9 @@ other stack decision is made without being written there.
   port 4001, since the portal holds 4000), and `pnpm test:rules` tests `firebase/firestore.rules`
   against them. Both need Java: PC only. The app talks to the emulators when started with
   `EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true`.
+- `pnpm journeys:stack` starts the journeys' stack (the Firebase emulators and Metro with the app
+  pointed at them) and `pnpm journeys:test` runs the Maestro flows, both in this container, against
+  the Android 15 emulator of the PC (`Livro_Caixa_API_35`): skill `app-journeys`.
 - `apps/mobile/google-services.json` comes from the Firebase console and stays out of Git: the
   native build needs it.
 

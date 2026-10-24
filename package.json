@@ -15,6 +15,8 @@
     "typecheck:mobile": "pnpm mobile typecheck",
     "test:mobile": "pnpm mobile test",
     "firebase:emulators": "firebase emulators:start",
+    "journeys:stack": "bash journeys/stack.sh",
+    "journeys:test": "bash journeys/maestro.sh test",
     "test:rules": "firebase emulators:exec --only firestore --project demo-livro-caixa \"node --test firebase/firestore.rules.test.mjs\"",
     "build": "pnpm --recursive build",
     "verify": "pnpm docusaurus test && pnpm docusaurus build",

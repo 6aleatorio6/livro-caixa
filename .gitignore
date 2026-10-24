@@ -14,3 +14,6 @@ docs/local/
 # Posições das tabelas que o editor do dbdiagram grava ao lado de cada .dbml: é estado do editor,
 # não documentação.
 *.dbdiagram
+
+# Capturas e artefatos das rodadas das jornadas: cada rodada gera uma pasta nova.
+journeys/.local/

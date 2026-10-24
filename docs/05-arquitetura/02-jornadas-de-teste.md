@@ -6,13 +6,23 @@ repetir, vira um fluxo que roda de novo quando precisar. Elas começam com o có
 
 ## Onde rodam
 
-- **No emulador Android do PC de quem desenvolve.** O container em que a IA trabalha não roda um
-  emulador, porque não tem aceleração de hardware.
-- **Contra os emuladores do Firebase** (Auth, Firestore e Storage), com dados de teste, e não contra
-  o projeto real. O APK de teste aponta para eles.
-
-> 🔴 **A validar:** como o Maestro alcança o emulador do PC: por um túnel para o adb do PC, ou com o
-> MCP do Maestro rodando no próprio PC, por SSH.
+- **O emulador Android roda no PC de quem desenvolve.** O container em que a IA trabalha não roda
+  um emulador, porque não tem aceleração de hardware.
+- **O emulador é um Android 15**, com a imagem de testes do Google (`google_atd`), a mais leve que
+  traz os serviços do Google que o app usa. No Android 16, a splash do app deixa a janela presa
+  numa animação que nunca termina, e cada toque das jornadas passa a levar 10 s em vez de 2; no
+  Android 15 isso não acontece. Quem usa o app não percebe, porque um toque de verdade não espera a
+  animação.
+- **Todo o resto roda no container:** o Maestro, os emuladores do Firebase (Auth, Firestore e
+  Storage) e o Metro. O container divide a rede com o PC, então o Maestro fala com o emulador pelo
+  adb do próprio PC, e o app chega aos emuladores do Firebase e ao Metro pelo endereço do PC. O
+  Java, o Maestro e o adb são os do PC, emprestados ao container.
+- **Contra os emuladores do Firebase**, com dados de teste, e não contra o projeto real. O app de
+  teste é o build de debug, com o Metro servindo o código apontado para os emuladores.
+- **Cada fluxo começa do mesmo ponto:** apaga os dados do Firestore do emulador e grava a lista de
+  e-mails permitidos das contas de teste.
+- **Os fluxos rodam um depois do outro.** Cada um apaga o Firestore inteiro, e o app é uma família
+  por banco: dois ao mesmo tempo apagariam os dados um do outro.
 
 ## Como a IA entra numa conta
 

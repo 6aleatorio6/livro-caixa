@@ -23,7 +23,7 @@ tema aparece na documentação.
 | D-15 | O app é só em português e só em reais? | 🟢 Respondido — sim |
 | D-16 | Um mês que passou sem pagamento continua a pagar? | 🟢 Respondido — sim, só no próprio mês |
 | D-17 | Onde o easter egg do "Paia" aparece no app? | 🟢 Respondido — na arte da splash screen |
-| D-18 | Como o Maestro alcança o emulador do PC? | 🔴 Em aberto |
+| D-18 | Como o Maestro alcança o emulador do PC? | 🟢 Respondido — pela rede do PC, que o container divide |
 | D-19 | O JSON do Google falso leva o nome da pessoa? | 🟢 Respondido — sim, no campo `name` |
 | D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🔴 Em aberto |
 | D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🔴 Em aberto |
@@ -174,19 +174,12 @@ ele se esconde na arte fica para o design.
 
 ## D-18 — O Maestro e o emulador do PC
 
-**Dúvida:** por onde o Maestro chega ao emulador, que roda no PC, enquanto a IA trabalha num
-container.
-
-**O que se sabe:** o container alcança o PC em `host.containers.internal`, mas não tem Java nem adb.
-O Maestro só procura aparelhos no adb de `localhost:5037`, fixo no código (issue #3461 do Maestro,
-aberta). As saídas:
-
-- **túnel:** o adb do PC aceita conexões de fora (`adb -a nodaemon server`) e um `socat` no
-  container liga o `localhost:5037` ao PC. Pede Java 17, Maestro e `socat` no container, e não está
-  confirmado que o Maestro funciona inteiro por ele;
-- **SSH:** `claude mcp add maestro -- ssh leonardo@host.containers.internal maestro mcp`, com o
-  Maestro rodando ao lado do emulador. Pede um servidor SSH no PC e uma chave no container. É a
-  preferida da sessão que pesquisou.
+**Resposta:** pela rede do próprio PC. O container roda com `--network host`, então o `localhost`
+dele é o do PC: o Maestro roda no container e fala com o adb do PC em `localhost:5037`, o único lugar
+onde ele procura aparelhos (issue #3461 do Maestro, aberta). O Java, o Maestro e o adb são os do PC,
+montados no container. Antes disso, a sessão montou um SSH com uma chave que só rodava o Maestro no
+PC, desfeito ao se ver que o container já alcançava o adb: o SSH só somava o risco de rodar
+processos no PC.
 
 **Onde aparece:** [Jornadas de Teste](../05-arquitetura/02-jornadas-de-teste.md).
 

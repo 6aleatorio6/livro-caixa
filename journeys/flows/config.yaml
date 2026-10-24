@@ -1,0 +1,3 @@
+# A rodada roda os fluxos das pastas de cada funcionalidade: um caminho conferido por arquivo.
+flows:
+  - "*/*"
