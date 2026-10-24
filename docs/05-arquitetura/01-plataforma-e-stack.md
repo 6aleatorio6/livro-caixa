@@ -23,7 +23,7 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   ([Acesso](../03-funcionalidades/02-suporte/01-acesso.md)). O app usa o React Native Firebase 27,
   só pela API modular (`getAuth`, `getFirestore`, `getStorage`), e as regras de segurança ficam em
   `firebase/`, na raiz. Para testar sem tocar no projeto real, os emuladores do Firebase rodam no
-  PC de quem desenvolve.
+  container da IA, com o Java emprestado do PC de quem desenvolve.
 - **Os comprovantes ficam no Cloud Storage**, o serviço de arquivos do Firebase, e os dados no
   Firestore. Cada arquivo tem um registro numa coleção própria, que reúne todos os arquivos do app.
   As regras do Cloud Storage conferem o tipo e o tamanho de cada arquivo: imagem ou PDF, de até 5 MB.
@@ -32,6 +32,9 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   As regras do Cloud Storage aplicam o limite de 5 MB do mesmo jeito, sem saber se houve redução.
 - **Jornadas de teste com o Maestro**, no emulador Android do PC de quem desenvolve, contra os
   emuladores do Firebase ([Jornadas de Teste](02-jornadas-de-teste.md)).
+- **Testes de página com mocks conferidos por testes de contrato:** o teste de página mocka a
+  leitura em tempo real e os serviços só com cenários que o teste de contrato roda contra os
+  emuladores do Firebase ([Testes](03-testes.md)).
 - **Um projeto novo**, criado com o template do SDK 58. A estrutura, as fábricas e os componentes
   base partem de um app anterior da casa, reescritos no padrão atual de cada biblioteca.
 - **Componentes próprios**, escritos sobre os do React Native, sem biblioteca de componentes. Cada

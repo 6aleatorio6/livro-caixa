@@ -18,10 +18,14 @@ other stack decision is made without being written there.
   never the native build. `pnpm android --no-bundler` skips the Metro it would leave on 8081, which
   the journeys' stack needs.
 - `pnpm firebase:emulators` starts the Firebase emulators (Auth, Firestore, Storage; their UI on
-  port 4001, since the portal holds 4000), and `pnpm test:rules` tests `firebase/firestore.rules`
-  against an emulator of its own. Both need Java, which the claude-box lends this container from
-  the PC, so they run here too; both take port 8080, so neither runs while the journeys' stack is
-  up. The app talks to the emulators when started with `EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true`.
+  port 4001, since the portal holds 4000), and `pnpm test:rules` tests `firebase/firestore.rules`.
+  Both need Java, which the claude-box lends this container from the PC, so they run here too.
+  `pnpm firebase:emulators` takes the journeys' ports, so it doesn't run while their stack is up.
+  The app talks to the emulators when started with `EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true`.
+- `pnpm test:contract` runs every service against the Firebase emulators, scenario by scenario
+  (skill `firestore-services`); the page tests mock the services only with those scenarios (skill
+  `testing`). It and `pnpm test:rules` start emulators of their own on other ports
+  (`firebase/firebase.test.json`), so they run with the journeys' stack up, one at a time.
 - `pnpm journeys:stack` starts the journeys' stack (the Firebase emulators and Metro with the app
   pointed at them) and `pnpm journeys:test` runs the Maestro flows, both in this container, against
   the Android 15 emulator of the PC (`Livro_Caixa_API_35`): skill `app-journeys`.

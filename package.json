@@ -17,7 +17,8 @@
     "firebase:emulators": "firebase emulators:start",
     "journeys:stack": "bash journeys/stack.sh",
     "journeys:test": "bash journeys/maestro.sh test",
-    "test:rules": "firebase emulators:exec --only firestore --project demo-livro-caixa \"node --test firebase/firestore.rules.test.mjs\"",
+    "test:rules": "firebase -c firebase/firebase.test.json emulators:exec --only firestore --project demo-livro-caixa \"node --test firebase/firestore.rules.test.mjs\"",
+    "test:contract": "firebase -c firebase/firebase.test.json emulators:exec --only auth,firestore --project demo-livro-caixa \"pnpm mobile test:contract\"",
     "build": "pnpm --recursive build",
     "verify": "pnpm docusaurus test && pnpm docusaurus build",
     "local:trash": "dest=docs/local/__trash/$(date +%Y-%m-%d-%H%M%S) && mkdir -p \"$dest\" && find docs/local -mindepth 1 -maxdepth 1 ! -name __trash -exec mv -t \"$dest\" {} +"

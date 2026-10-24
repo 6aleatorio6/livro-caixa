@@ -166,6 +166,9 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.13.0(jiti@1.21.7))
+      '@firebase/rules-unit-testing':
+        specifier: ^6.0.0
+        version: 6.0.0(firebase@13.1.0)
       '@react-native/jest-preset':
         specifier: ~0.88.0
         version: 0.88.0(@babel/core@7.29.7)(react@19.3.0)
@@ -199,6 +202,9 @@ importers:
       eslint-plugin-react-hooks:
         specifier: ^7.1.1
         version: 7.1.1(eslint@10.13.0(jiti@1.21.7))
+      firebase:
+        specifier: 13.1.0
+        version: 13.1.0
       globals:
         specifier: ^17.13.0
         version: 17.13.0
@@ -16524,9 +16530,7 @@ snapshots:
       metro-runtime: 0.87.1
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.88.0': {}
 
