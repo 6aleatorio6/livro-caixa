@@ -1,0 +1,39 @@
+# A admin tira a Clara, que está na lista sem lançamentos; ela some da lista e, ao entrar, espera permissão.
+# Coberto por:
+# - O Remover, o aviso "Clara Souza saiu da lista" e a Clara saindo da lista: AllowedEmailsPage.test.tsx
+#   e o contrato do removeAllowedEmailService.
+# - A recusa de remover admin ou quem tem lançamentos: firestore.rules.test.mjs (allowedEmails).
+# - A Clara em sem acesso: _layout.test.tsx e o contrato do allowedEmailQueryService (emailOutsideList).
+appId: dev.leonardolf.livrocaixa
+tags:
+  - allowedEmails
+env:
+  CLARA_EMAIL: clara.souza@exemplo.com
+  CLARA_NAME: Clara Souza
+---
+- runScript: ../../scripts/resetData.js
+- runScript:
+    file: ../../scripts/addAllowedEmail.js
+    env:
+      EMAIL: ${CLARA_EMAIL}
+      NAME: ${CLARA_NAME}
+- runFlow: ../../subflows/openAllowedEmails.yaml
+- assertVisible: ${CLARA_EMAIL}
+- assertVisible: Sem lançamentos
+- takeScreenshot: allowedEmails--before-remove
+- tapOn: Remover ${CLARA_NAME}
+- extendedWaitUntil:
+    visible: ${CLARA_NAME} saiu da lista
+    timeout: 30000
+- extendedWaitUntil:
+    notVisible: ${CLARA_EMAIL}
+    timeout: 10000
+- assertVisible: Bruno Souza
+- takeScreenshot: allowedEmails--person-removed
+# A Clara tenta entrar: já não está na lista.
+- runFlow:
+    file: ../../subflows/signInAs.yaml
+    env:
+      LINK: livrocaixa://test-sign-in?email=clara.souza%40exemplo.com&name=Clara%20Souza
+- assertVisible: Aguardando permissão
+- takeScreenshot: no-access--person-removed

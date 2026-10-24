@@ -1,0 +1,36 @@
+# A admin adiciona a Carla à lista; ela aparece em "Na família" sem lançamentos e, ao entrar, cai no Início.
+# Coberto por:
+# - Adicionar e a Carla na lista, sem lançamentos: AllowedEmailsPage.test.tsx e o contrato do
+#   addAllowedEmailService.
+# - A recusa de quem não é admin: firestore.rules.test.mjs (allowedEmails).
+# - A Carla entrar depois: _layout.test.tsx e o contrato do allowedEmailQueryService (emailInList).
+appId: dev.leonardolf.livrocaixa
+tags:
+  - allowedEmails
+---
+- runScript: ../../scripts/resetData.js
+- runFlow: ../../subflows/openAllowedEmails.yaml
+- assertNotVisible: ${output.accounts.outsider.email}
+- tapOn: Nome
+- inputText: ${output.accounts.outsider.name}
+- tapOn: E-mail do Google
+- inputText: ${output.accounts.outsider.email}
+- hideKeyboard
+- tapOn: Adicionar à família
+- extendedWaitUntil:
+    visible: ${output.accounts.outsider.email}
+    timeout: 10000
+- assertVisible: ${output.accounts.outsider.name}
+- assertVisible: Na família
+- assertVisible: Sem lançamentos
+- takeScreenshot: allowedEmails--person-added
+# A Carla entra com a conta dela: a lista já a libera.
+- runFlow:
+    file: ../../subflows/signInAs.yaml
+    env:
+      LINK: ${output.accounts.outsider.signInLink}
+- assertNotVisible: Aguardando permissão
+- assertVisible:
+    text: Início
+    selected: true
+- takeScreenshot: home--outsider-added-by-admin

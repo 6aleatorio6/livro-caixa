@@ -1,0 +1,11 @@
+# Entra como a Ana (admin) e abre a tela de e-mails permitidos. Roda depois do `resetData.js`, que
+# monta o `output.accounts`.
+appId: dev.leonardolf.livrocaixa
+---
+- runFlow:
+    file: signInAs.yaml
+    env:
+      LINK: ${output.accounts.admin.signInLink}
+- tapOn: Configurações
+- tapOn: E-mails permitidos
+- assertVisible: Adicionar pessoa
