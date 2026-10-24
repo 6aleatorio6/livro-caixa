@@ -14,6 +14,8 @@ export interface IButtonProps {
   icon?: LucideIcon;
   isLoading?: boolean;
   disabled?: boolean;
+  /** O que o leitor de tela lê, quando precisa ser mais que o rótulo ("Remover Clara Souza"). */
+  accessibilityLabel?: string;
 }
 
 const CONTAINER_COLOR_BY_VARIANT: Record<IButtonVariant, IColorRole | null> = {
@@ -21,6 +23,7 @@ const CONTAINER_COLOR_BY_VARIANT: Record<IButtonVariant, IColorRole | null> = {
   tonal: 'secondaryContainer',
   outlined: null,
   text: null,
+  textDestructive: null,
 };
 
 const CONTENT_COLOR_BY_VARIANT: Record<IButtonVariant, IColorRole> = {
@@ -28,6 +31,7 @@ const CONTENT_COLOR_BY_VARIANT: Record<IButtonVariant, IColorRole> = {
   tonal: 'onSecondaryContainer',
   outlined: 'primary',
   text: 'primary',
+  textDestructive: 'error',
 };
 
 /** Botão com texto. Carregando, ele não aceita toque e avisa o leitor de tela que está ocupado. */
@@ -38,6 +42,7 @@ export function Button({
   icon: Icon,
   isLoading = false,
   disabled = false,
+  accessibilityLabel,
 }: IButtonProps) {
   const { theme } = useUnistyles();
   const contentColor = CONTENT_COLOR_BY_VARIANT[variant];
@@ -46,7 +51,7 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={accessibilityLabel ?? label}
       accessibilityState={{ disabled: isInactive, busy: isLoading }}
       disabled={isInactive}
       onPress={onPress}
@@ -72,7 +77,7 @@ const styles = StyleSheet.create((theme) => ({
     return {
       minHeight: 48,
       justifyContent: 'center',
-      paddingHorizontal: variant === 'text' ? theme.spacing.medium : theme.spacing.largeIncreased,
+      paddingHorizontal: variant === 'text' || variant === 'textDestructive' ? theme.spacing.medium : theme.spacing.largeIncreased,
       borderRadius: theme.radii.full,
       borderWidth: variant === 'outlined' ? 1 : 0,
       borderColor: theme.colors.outline,
