@@ -13,5 +13,5 @@ tags:
     env:
       LINK: ${output.accounts.member.signInLink}
 - assertVisible: Livro-Caixa
-- assertNotVisible: Você não tem acesso
+- assertNotVisible: Aguardando permissão
 - takeScreenshot: home--member

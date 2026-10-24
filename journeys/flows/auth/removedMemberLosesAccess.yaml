@@ -17,5 +17,5 @@ tags:
     file: ../../scripts/removeAllowedEmail.js
     env:
       EMAIL: ${output.accounts.member.email}
-- assertVisible: Você não tem acesso
+- assertVisible: Aguardando permissão
 - takeScreenshot: no-access--removed-while-open

@@ -12,7 +12,8 @@ admin mantém essa lista, com o nome de cada pessoa.
 
 - O login é só pelo Google. Não há login com e-mail e senha nem com outro provedor
   ([Outras formas de login](../../04-escopo-excluido/03-outras-formas-de-login.md)).
-- A tela de entrada tem só a marca, o nome do app e o botão Entrar com Google.
+- A tela de entrada mostra a marca, o nome do app, uma frase sobre o app, o botão Entrar com
+  Google, uma nota de que só entra quem a família liberou e a versão do app.
 - Quem entra com um e-mail do Google fora da lista fica na tela de aguardando permissão: ela mostra
   o e-mail com que a pessoa entrou e pede que quem administra o app o libere. Nenhuma outra tela do
   app fica disponível para ela.

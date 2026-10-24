@@ -14,7 +14,7 @@ tags:
     file: ../../subflows/signInAs.yaml
     env:
       LINK: ${output.accounts.outsider.signInLink}
-- assertVisible: Você não tem acesso
+- assertVisible: Aguardando permissão
 - assertVisible: .*${output.accounts.outsider.email}.*
 - takeScreenshot: no-access--outside-list
 - tapOn: Sair
