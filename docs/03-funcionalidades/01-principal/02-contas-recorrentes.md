@@ -39,7 +39,7 @@ A conta vale até ser excluída: não há data de fim.
 - Alterar a conta muda todos os meses que ainda não têm pagamento, passados ou futuros. Os meses
   já pagos não mudam.
 - Excluir a conta tira os meses que ainda não têm pagamento. Os pagamentos já registrados
-  continuam, com a referência à conta.
+  continuam, com a referência à conta. Excluir pede confirmação.
 
 ## Critérios de aceite
 

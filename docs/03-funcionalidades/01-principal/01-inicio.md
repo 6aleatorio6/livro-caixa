@@ -22,6 +22,9 @@ Todo membro, ao abrir o app.
   abre os [detalhes](07-detalhes-do-lancamento.md) dele, para qualquer membro.
 - **A troca de mês**, para ver os meses anteriores.
 
+Sem nenhuma conta recorrente cadastrada, o Início mostra o gráfico vazio e o botão para cadastrar as
+[contas recorrentes](02-contas-recorrentes.md).
+
 O formato do gráfico fica para o design.
 
 ## Regras
