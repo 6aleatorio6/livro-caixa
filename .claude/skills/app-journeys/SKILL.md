@@ -4,8 +4,9 @@ description: >-
   How this session uses the Livro-Caixa app for real, on the Android emulator of the developer's
   PC, through the Maestro MCP running in this container, against the Firebase emulators: starting
   the stack, resetting the test data, signing in as a test account, reading the screen, taking
-  screenshots, checking a screen against the .pen design, when an explored path becomes a journey,
-  how to write the Maestro flow, and the counted round. Use whenever the task is to open the app,
+  screenshots, checking a screen against the .pen design, what a journey is for (the developer
+  testing by hand, redundant by definition) and what a bug it finds becomes, how to write the
+  Maestro flow, and the counted round. Use whenever the task is to open the app,
   navigate it, check something on screen, take a screenshot of the app, or write or run the
   journeys. Triggers: "abre o app", "navega no app", "confere no emulador", "tira print do app",
   "roda as jornadas", "guarda esse caminho", "vira jornada", "Maestro", "jornada".
@@ -89,33 +90,42 @@ Put the screenshot next to the frame of the `.pen`, read with the `pencil` MCP (
 Maestro has no computed style: colors, fonts and spacing are compared by eye on the screenshot and
 against the values of the frame's nodes. Name each divergence with the node it differs from.
 
-## When a path becomes a journey
+## What a journey is for
 
-A path becomes a journey when it is only proven with the screen, Firebase and the rules together,
-and is worth checking again later.
+A journey is the developer testing by hand: open the app, explore, find and analyze bugs, and see
+the app's state. It is redundant by definition: every check a journey makes also has a cheaper test,
+in a page test, a contract test, a unit test or the rules test (skill `testing`, and the
+documentation's "Testes" page). A journey is never the only test of a behavior.
 
-It becomes a journey:
-
-- checking a behavior change just made;
-- reproducing a reported bug;
-- a difference between profiles (admin, member, outsider);
-- a path that crosses screens;
-- an acceptance criterion of a feature page that needs everything together;
-- the person asks to keep the path ("guarda esse caminho").
-
-It does not:
-
-- exploring: answer with the linked screenshot;
-- a visual-only tweak;
-- a path that already has a journey: update it, don't duplicate;
-- a rule provable lower down: a Jest test, or `pnpm test:rules` for the security rules;
-- how it feels to use (scroll, gestures, delays): it goes to a "só uma pessoa julga" list;
-- what the emulators can't reproduce: the real Google sign-in.
+- **A bug a journey finds** becomes, first, a failing test in the cheapest layer that reproduces it;
+  then the fix; then the journey again, to see it on screen. Ex.: the no-access screen showing
+  another person's e-mail is a page test with the session from a sign-in scenario.
+- **A path worth replaying** is kept as a flow: a behavior change just made, a reported bug, a
+  difference between profiles (admin, member, outsider), a path across screens, or the person asks
+  for it ("guarda esse caminho"). Each check in it already has its cheaper test, or gets one in the
+  same commit.
+- **A check with no cheaper test is a missing test**: write it in the layer that proves it, instead
+  of leaning on the journey.
+- **A path that already has a flow** gets that flow updated, not a second one.
+- **Only a person judges** how it feels to use (scroll, gestures, delays) and the screen against the
+  design: it goes to a "só uma pessoa julga" list, not into a flow.
+- **The emulators can't reproduce** the real Google sign-in: a person checks it.
+- **Exploring** answers with the linked screenshot and needs no flow.
 
 ## Writing the journey
 
 - One flow per file: `journeys/flows/<feature>/<goal>.yaml`, the goal in camelCase English
   (`outsiderSeesNoAccess.yaml`). `journeys/flows/config.yaml` picks up every subfolder.
+- The flow's header comment, after the goal, has a `# Coberto por:` list: one line per check in the
+  flow, with the tests that cover it. A review reads it to see the flow is redundant, and a change
+  that moves or renames one of those tests updates the list in the same commit.
+
+  ```yaml
+  # Quem entra com um e-mail fora da lista vê o aviso com o próprio e-mail, e Sair volta ao login.
+  # Coberto por:
+  # - Carla em sem acesso: _layout.test.tsx e o contrato do allowedEmailQueryService (emailOutsideList).
+  # - O e-mail dela no aviso: NoAccessPage.test.tsx, com a sessão do outsiderSignsIn.
+  ```
 - The first steps are always `runScript: ../../scripts/resetData.js` and the `signInAs` subflow:
   each flow starts from the same data, and `launchApp` with `clearState` drops the previous
   session.
@@ -125,7 +135,8 @@ It does not:
 - A step that changes data mid-flow goes through a script in `journeys/scripts/`, reading
   `output.firestoreDocumentsUrl` (set by `resetData.js`) and writing as `Bearer owner`.
 - Comments in pt-BR, identifiers and file names in English (`.claude/rules/code-language.md`).
-- A journey goes in the same commit as the behavior it checks (skill `commit-convention`).
+- A journey goes in the same commit as the behavior it checks and the cheaper tests that cover it
+  (skill `commit-convention`).
 
 ## The counted round
 

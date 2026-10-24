@@ -1,9 +1,11 @@
 # Jornadas de Teste
 
-**As jornadas são o jeito de a IA usar o app de verdade, num emulador, e guardar o caminho conferido
-como teste.** A ferramenta é o Maestro: a IA explora a tela pelo MCP dele e, o que confere e vale
-repetir, vira um fluxo que roda de novo quando precisar. Os fluxos ficam em `journeys/`, na raiz do
-repositório.
+**As jornadas são quem desenvolve testando o app à mão, num emulador, para achar e analisar bugs e
+ver o estado do app.** O que elas acham vira um teste mais barato, e por isso são redundantes por
+definição: cada verificação de uma jornada também tem um teste de página, de contrato, de unidade
+ou de regras ([Testes](03-testes.md)). A ferramenta é o Maestro: a IA explora a tela pelo MCP dele
+e, quando um caminho vale repetir, guarda-o como um fluxo. Os fluxos ficam em `journeys/`, na raiz
+do repositório.
 
 ## As peças e onde rodam
 

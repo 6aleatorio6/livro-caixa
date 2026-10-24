@@ -1,4 +1,8 @@
 # Um e-mail da lista entra direto no app, sem passar pela tela de sem acesso.
+# Coberto por:
+# - O link entra com o Bruno: TestSignInPage.test.tsx e o contrato do signInWithFakeGoogleService
+#   (memberSignsIn).
+# - Bruno vê o Início: _layout.test.tsx e o contrato do allowedEmailQueryService (emailInList).
 appId: dev.leonardolf.livrocaixa
 tags:
   - auth

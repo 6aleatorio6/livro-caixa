@@ -1,4 +1,10 @@
 # Quem entra com um e-mail fora da lista vê o aviso com o próprio e-mail, e Sair volta ao login.
+# Coberto por:
+# - Carla em sem acesso: _layout.test.tsx e o contrato do allowedEmailQueryService (emailOutsideList).
+# - O e-mail dela no aviso: NoAccessPage.test.tsx, com a sessão do outsiderSignsIn.
+# - Sair volta ao login: NoAccessPage.test.tsx (chama o signOutService), o contrato do
+#   signOutService (a sessão acaba), useAuthState.test.ts (sem sessão vira signedOut) e
+#   _layout.test.tsx (signedOut mostra o login).
 appId: dev.leonardolf.livrocaixa
 tags:
   - auth
