@@ -1,7 +1,13 @@
 import { ScrollView, View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
+import { showToast } from '@/core/utils/storeActions/showToast';
+
+import { AddPersonCard } from './components/AddPersonCard/AddPersonCard';
+import { doRemoveAllowedEmail } from './utils/actions/doRemoveAllowedEmail';
+
 import { AppText } from '@/shared/components/AppText/AppText';
+import { Button } from '@/shared/components/Button/Button';
 import { PersonItem } from '@/shared/components/PersonItem/PersonItem';
 import { Screen } from '@/shared/components/Screen/Screen';
 import { TopBar } from '@/shared/components/TopBar/TopBar';
@@ -16,13 +22,25 @@ import { peopleCount } from '@/shared/utils/format/peopleCount';
 /** A lista de e-mails permitidos, só para o admin: quem está na família e o que impede cada um de sair. */
 export function AllowedEmailsPage() {
   const email = signedInEmail(useAuthState());
-  const { data: people } = useRealtime(allowedEmailListQueryService, {});
+  const { status, data: people } = useRealtime(allowedEmailListQueryService, {});
 
   function situationOf(person: IAllowedEmailListItem) {
     if (person.isAdmin) {
       return email !== null && allowedEmailId(email) === person.email ? 'Admin · você' : 'Admin';
     }
     return person.hasEntries ? 'Tem lançamentos: não sai da lista' : 'Sem lançamentos';
+  }
+
+  // A regra do Firestore só deixa tirar quem não é admin e não tem lançamentos. Um documento feito à
+  // mão no console pode não ter os campos: sem o `false` explícito, a pessoa não sai.
+  function canRemove(person: IAllowedEmailListItem) {
+    return person.isAdmin === false && person.hasEntries === false;
+  }
+
+  // O aviso é da tela, e não da ação: a ação só sabe o e-mail, que é o que o serviço pede.
+  async function removePerson(person: IAllowedEmailListItem) {
+    const { error } = await doRemoveAllowedEmail({ email: person.email });
+    if (!error) showToast(`${person.name} saiu da lista`, 'success');
   }
 
   return (
@@ -32,6 +50,14 @@ export function AllowedEmailsPage() {
         <AppText variant="bodyMedium" color="onSurfaceVariant">
           Só entra no app quem está nesta lista, com a conta Google deste e-mail.
         </AppText>
+
+        <AddPersonCard people={people ?? []} isListLoaded={status === 'success'} />
+
+        {status === 'error' ? (
+          <AppText variant="bodyMedium" color="onSurfaceVariant">
+            Não deu para carregar a lista.
+          </AppText>
+        ) : null}
 
         {people ? (
           <View>
@@ -48,6 +74,16 @@ export function AllowedEmailsPage() {
                 email={person.email}
                 situation={situationOf(person)}
                 situationColor={person.isAdmin ? 'primary' : 'onSurfaceVariant'}
+                trailing={
+                  canRemove(person) ? (
+                    <Button
+                      label="Remover"
+                      accessibilityLabel={`Remover ${person.name}`}
+                      variant="textDestructive"
+                      onPress={() => removePerson(person)}
+                    />
+                  ) : undefined
+                }
               />
             ))}
           </View>

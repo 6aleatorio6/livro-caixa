@@ -10,11 +10,14 @@ import { RequiredMark } from '@/shared/components/inputs/RequiredMark/RequiredMa
 export interface ITextFieldProps
   extends IInputMinimalProps<string>, Pick<TextInputProps, 'keyboardType' | 'autoCapitalize' | 'placeholder'> {
   label: string;
+  /** O texto de apoio sob o campo; some quando há erro, que ocupa o lugar dele. */
+  supportText?: string;
 }
 
 /** Campo de texto com rótulo, marca de obrigatório e mensagem de erro embaixo. */
 export function TextField({
   label,
+  supportText,
   value,
   onValueChange,
   onBlur,
@@ -49,10 +52,16 @@ export function TextField({
         placeholderTextColor={theme.colors.onSurfaceVariant}
         style={styles.input(isFocused, hasError, disabled)}
       />
-      {hasError && (
+      {hasError ? (
         <AppText variant="bodySmall" color="error" accessibilityLiveRegion="polite">
           {errorMessage}
         </AppText>
+      ) : (
+        supportText && (
+          <AppText variant="bodySmall" color="onSurfaceVariant">
+            {supportText}
+          </AppText>
+        )
       )}
     </View>
   );
