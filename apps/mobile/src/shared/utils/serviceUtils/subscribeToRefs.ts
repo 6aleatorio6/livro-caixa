@@ -30,9 +30,14 @@ export function subscribeToRefs<TRefs extends readonly IRealtimeRef[]>(
           onData([...dataByIndex] as IRefsData<TRefs>, isFromCacheByIndex.some(Boolean));
         }
       },
-      onError,
+      (error) => {
+        // Sem uma das refs, o conjunto não se completa mais: as outras param, e o erro sobe uma vez só.
+        stop();
+        onError(error);
+      },
     ),
   );
+  const stop = () => unsubscribes.forEach((unsubscribe) => unsubscribe());
 
-  return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
+  return stop;
 }

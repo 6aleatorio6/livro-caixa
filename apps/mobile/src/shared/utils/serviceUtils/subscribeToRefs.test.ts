@@ -8,6 +8,7 @@ jest.mock('@react-native-firebase/firestore', () => ({ onSnapshot: jest.fn() }))
 type ISnapshotListener = (snapshot: unknown) => void;
 
 const listenersByPath = new Map<string, ISnapshotListener>();
+const errorListenersByPath = new Map<string, (error: Error) => void>();
 const unsubscribe = jest.fn();
 
 function documentSnapshot(id: string, data: object | null, isFromCache = false) {
@@ -17,10 +18,14 @@ function documentSnapshot(id: string, data: object | null, isFromCache = false) 
 beforeEach(() => {
   jest.clearAllMocks();
   listenersByPath.clear();
-  (onSnapshot as jest.Mock).mockImplementation((ref: { path: string }, _options, onNext: ISnapshotListener) => {
-    listenersByPath.set(ref.path, onNext);
-    return unsubscribe;
-  });
+  errorListenersByPath.clear();
+  (onSnapshot as jest.Mock).mockImplementation(
+    (ref: { path: string }, _options, onNext: ISnapshotListener, onError: (error: Error) => void) => {
+      listenersByPath.set(ref.path, onNext);
+      errorListenersByPath.set(ref.path, onError);
+      return unsubscribe;
+    },
+  );
 });
 
 const billRef = { path: 'recurringBills/aluguel' } as unknown as IRealtimeRef;
@@ -76,5 +81,17 @@ describe('subscribeToRefs', () => {
     stop();
 
     expect(unsubscribe).toHaveBeenCalledTimes(2);
+  });
+
+  it('Should stop every ref and report the error once when one of them fails', () => {
+    const onError = jest.fn();
+    subscribeToRefs([billRef, tagRef], jest.fn(), onError);
+    const error = new Error('acesso negado às tags');
+
+    errorListenersByPath.get('settings/tags')!(error);
+
+    expect(unsubscribe).toHaveBeenCalledTimes(2);
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledWith(error);
   });
 });
