@@ -6,7 +6,7 @@ Qualquer membro abre os detalhes de qualquer lançamento; só quem registrou alt
 ## Quem usa e quando
 
 Todo membro, ao tocar num lançamento da lista do [Início](01-inicio.md) ou de
-[Meus Lançamentos](06-meus-lancamentos.md).
+[Meus Pagamentos](06-meus-pagamentos.md).
 
 ## O que aparece na tela
 

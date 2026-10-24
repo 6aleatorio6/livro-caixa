@@ -26,7 +26,7 @@ tema aparece na documentação.
 | D-18 | Como o Maestro alcança o emulador do PC? | 🟢 Respondido — pela rede do PC, que o container divide |
 | D-19 | O JSON do Google falso leva o nome da pessoa? | 🟢 Respondido — sim, no campo `name` |
 | D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🔴 Em aberto |
-| D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🔴 Em aberto |
+| D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🟢 Respondido — Meus pagamentos, um mês por vez, com a troca de mês |
 | D-22 | O app lê o valor no comprovante? | 🟢 Respondido — fica para depois, com a leitura no celular |
 | D-23 | O comprovante em PDF abre dentro do app ou no leitor do celular? | 🟢 Respondido — dentro do app, como a imagem |
 
@@ -204,16 +204,12 @@ um endereço de arquivo que o app consiga ler. Nenhuma das duas foi testada.
 
 ## D-21 — A aba do meio
 
-**Dúvida:** como se chama a aba com os lançamentos de quem está logado, e se a lista é do mês, com a
-troca de mês do Início, ou de todos os meses juntos.
+**Resposta:** a aba se chama Meus pagamentos e mostra um mês por vez, com a troca de mês, como o
+Início. A sessão de design tinha usado "Meus lançamentos", pelo glossário (a conta é da família, e o
+que é de cada um são os lançamentos); Leonardo escolheu "Meus pagamentos", mesmo com as contas
+avulsas na lista.
 
-**O que se sabe:** no design, Leonardo pôs Contas e Tags juntas numa aba de configurações, porque
-são de uso raro, e no meio "minhas contas ou algo assim". O nome "Meus lançamentos" foi escolha da
-sessão de design: o glossário diz que a conta é da família, não de um membro, e o que é de cada um
-são os lançamentos. A lista do mês, com a troca de mês, também foi escolha dela, para seguir o
-Início.
-
-**Onde aparece:** [Meus Lançamentos](../03-funcionalidades/01-principal/06-meus-lancamentos.md).
+**Onde aparece:** [Meus Pagamentos](../03-funcionalidades/01-principal/06-meus-pagamentos.md).
 
 ## D-22 — Ler o valor no comprovante
 

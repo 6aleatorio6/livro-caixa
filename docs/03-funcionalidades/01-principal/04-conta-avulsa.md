@@ -20,7 +20,7 @@ Qualquer membro, depois de pagar uma conta da família que não é uma
 
 ## Fluxo
 
-1. Em [Meus Lançamentos](06-meus-lancamentos.md), o membro toca em Nova conta avulsa, informa o
+1. Em [Meus Pagamentos](06-meus-pagamentos.md), o membro toca em Nova conta avulsa, informa o
    nome e o valor, e confere a data.
 2. Escolhe uma tag, se quiser.
 3. Anexa o comprovante. Quando o membro chega pelo compartilhamento do Android, escolhendo

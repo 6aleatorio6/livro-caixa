@@ -4680,7 +4680,7 @@
                     {
                       "type": "frame",
                       "id": "CzriY",
-                      "name": "Meus lançamentos",
+                      "name": "Meus pagamentos",
                       "width": 124,
                       "layout": "vertical",
                       "gap": 4,
@@ -4713,7 +4713,7 @@
                           "id": "OQE7G",
                           "name": "Rótulo",
                           "fill": "#5A6B62",
-                          "content": "Meus lançamentos",
+                          "content": "Meus pagamentos",
                           "fontFamily": "Figtree",
                           "fontSize": 12,
                           "fontWeight": "500"
@@ -10757,7 +10757,7 @@
                         {
                           "type": "frame",
                           "id": "sovbf",
-                          "name": "Meus lançamentos",
+                          "name": "Meus pagamentos",
                           "width": 110,
                           "layout": "vertical",
                           "gap": 4,
@@ -10790,7 +10790,7 @@
                               "id": "m7ARvD",
                               "name": "Rótulo",
                               "fill": "$on-surface-variant",
-                              "content": "Meus lançamentos",
+                              "content": "Meus pagamentos",
                               "fontFamily": "Figtree",
                               "fontSize": 11,
                               "fontWeight": "500"
@@ -13297,7 +13297,7 @@
                         {
                           "type": "frame",
                           "id": "W5TBU",
-                          "name": "Meus lançamentos",
+                          "name": "Meus pagamentos",
                           "width": 110,
                           "layout": "vertical",
                           "gap": 4,
@@ -13330,7 +13330,7 @@
                               "id": "WWqI0",
                               "name": "Rótulo",
                               "fill": "$on-surface-variant",
-                              "content": "Meus lançamentos",
+                              "content": "Meus pagamentos",
                               "fontFamily": "Figtree",
                               "fontSize": 11,
                               "fontWeight": "500"
@@ -22044,7 +22044,7 @@
                   "fill": "#1C1C1A",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "As três abas do app: Início, Meus lançamentos e Configurações. A aba ativa ganha o indicador e o rótulo em on-surface.",
+                  "content": "As três abas do app: Início, Meus pagamentos e Configurações. A aba ativa ganha o indicador e o rótulo em on-surface.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -22156,7 +22156,7 @@
                             {
                               "type": "frame",
                               "id": "pmSi3",
-                              "name": "Meus lançamentos",
+                              "name": "Meus pagamentos",
                               "width": 124,
                               "layout": "vertical",
                               "gap": 4,
@@ -22189,7 +22189,7 @@
                                   "id": "LGDf2",
                                   "name": "Rótulo",
                                   "fill": "$on-surface-variant",
-                                  "content": "Meus lançamentos",
+                                  "content": "Meus pagamentos",
                                   "lineHeight": "$label-medium-line-height",
                                   "fontFamily": "$font-family",
                                   "fontSize": "$label-medium-size",
@@ -22262,7 +22262,7 @@
                     {
                       "type": "frame",
                       "id": "F0Upr",
-                      "name": "Meus lançamentos",
+                      "name": "Meus pagamentos",
                       "layout": "vertical",
                       "gap": 8,
                       "children": [
@@ -22270,7 +22270,7 @@
                           "id": "BrgjI",
                           "type": "ref",
                           "ref": "cryGB",
-                          "name": "Meus lançamentos ativo",
+                          "name": "Meus pagamentos ativo",
                           "descendants": {
                             "vNPLA": {
                               "fill": "#00000000"
@@ -22299,7 +22299,7 @@
                           "id": "VFnZa",
                           "name": "Estado",
                           "fill": "$on-surface-variant",
-                          "content": "Meus lançamentos ativo",
+                          "content": "Meus pagamentos ativo",
                           "lineHeight": "$label-small-line-height",
                           "fontFamily": "$font-family",
                           "fontSize": "$label-small-size",
@@ -23277,7 +23277,7 @@
                   "fill": "#1C1C1A",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Sobe de baixo ao tocar num lançamento, no Início ou em Meus lançamentos: qualquer membro vê tudo, comprovante incluído. Alterar e Excluir só aparecem para quem registrou; os outros veem quem pode mudar. Fecha arrastando para baixo ou tocando fora.",
+                  "content": "Sobe de baixo ao tocar num lançamento, no Início ou em Meus pagamentos: qualquer membro vê tudo, comprovante incluído. Alterar e Excluir só aparecem para quem registrou; os outros veem quem pode mudar. Fecha arrastando para baixo ou tocando fora.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -23595,7 +23595,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "A primeira tela de quem não está logado: a marca, o nome e um botão só. O login é só pelo Google.",
+                  "content": "A primeira tela de quem não está logado: a marca, o nome e um botão só. O login é só pelo Google. No rodapé, a versão do app.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -23861,7 +23861,7 @@
             {
               "type": "frame",
               "id": "Q8tyz",
-              "name": "Tela · Meus lançamentos",
+              "name": "Tela · Meus pagamentos",
               "width": "fill_container",
               "stroke": "#E4E2DA",
               "strokeWidth": {
@@ -23880,7 +23880,7 @@
                   "fill": "#1C1C1A",
                   "textGrowth": "fixed-width",
                   "width": 380,
-                  "content": "Tela · Meus lançamentos",
+                  "content": "Tela · Meus pagamentos",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -23936,7 +23936,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Aberta pelo botão Nova conta avulsa, em Meus lançamentos. A conta já está paga: nome, valor, data (hoje, por padrão), tag opcional e o comprovante, obrigatório. Fica no nome de quem registra.",
+                  "content": "Aberta pelo botão Nova conta avulsa, em Meus pagamentos. A conta já está paga: nome, valor, data (hoje, por padrão), tag opcional e o comprovante, obrigatório. Fica no nome de quem registra.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -23979,7 +23979,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Ana toca na Luz em Meus lançamentos. A folha mostra tudo do pagamento e o comprovante; como foi ela que registrou, vê Alterar e Excluir. A conta avulsa usa a mesma folha, com a data no lugar do vencimento.",
+                  "content": "Ana toca na Luz em Meus pagamentos. A folha mostra tudo do pagamento e o comprovante; como foi ela que registrou, vê Alterar e Excluir. A conta avulsa usa a mesma folha, com a data no lugar do vencimento.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -24171,7 +24171,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "A terceira aba reúne o que se usa pouco: contas recorrentes e tags, para todos, e os e-mails permitidos, só para o admin. No topo, quem está logado e o ícone de sair.",
+                  "content": "A terceira aba reúne o que se usa pouco: contas recorrentes e tags, para todos, e os e-mails permitidos, só para o admin. No topo, quem está logado e o ícone de sair; no fim, a versão do app.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -27964,6 +27964,33 @@
               "letterSpacing": "$body-small-tracking"
             }
           ]
+        },
+        {
+          "type": "frame",
+          "id": "FvEo3",
+          "name": "Versão",
+          "width": "fill_container",
+          "padding": [
+            0,
+            0,
+            24,
+            0
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "r0mQNb",
+              "name": "Texto",
+              "fill": "$on-surface-variant",
+              "content": "Versão 0.0.0",
+              "lineHeight": "$label-small-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$label-small-size",
+              "fontWeight": "$label-small-weight",
+              "letterSpacing": "$label-small-tracking"
+            }
+          ]
         }
       ]
     },
@@ -29725,7 +29752,7 @@
       "id": "AiryY",
       "x": 4120,
       "y": 19228,
-      "name": "Tela · Meus lançamentos",
+      "name": "Tela · Meus pagamentos",
       "theme": {
         "mode": "light"
       },
@@ -29846,7 +29873,7 @@
                       "id": "GKkRd",
                       "name": "Aba",
                       "fill": "$on-surface-variant",
-                      "content": "Meus lançamentos",
+                      "content": "Meus pagamentos",
                       "lineHeight": "$label-medium-line-height",
                       "fontFamily": "$font-family",
                       "fontSize": "$label-medium-size",
@@ -32405,8 +32432,29 @@
               "id": "F0mLB",
               "name": "Espaço",
               "width": "fill_container",
-              "height": 300,
+              "height": 260,
               "layout": "vertical"
+            },
+            {
+              "type": "frame",
+              "id": "goHDU",
+              "name": "Versão",
+              "width": "fill_container",
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Zn8Kk",
+                  "name": "Texto",
+                  "fill": "$on-surface-variant",
+                  "content": "Livro-Caixa · versão 0.0.0",
+                  "lineHeight": "$label-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$label-small-size",
+                  "fontWeight": "$label-small-weight",
+                  "letterSpacing": "$label-small-tracking"
+                }
+              ]
             }
           ]
         },

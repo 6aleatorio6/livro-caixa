@@ -2,7 +2,7 @@
 
 A primeira tela do app mostra o mês da família: o que já foi pago e o que ainda vai ser pago. Todos os membros veem a mesma tela, com os mesmos números.
 
-É a primeira das três abas do app, ao lado de [Meus Lançamentos](06-meus-lancamentos.md) e de
+É a primeira das três abas do app, ao lado de [Meus Pagamentos](06-meus-pagamentos.md) e de
 [Configurações](../02-suporte/03-configuracoes.md).
 
 ## Quem usa e quando

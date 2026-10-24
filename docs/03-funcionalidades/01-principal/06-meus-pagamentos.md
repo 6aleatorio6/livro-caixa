@@ -1,8 +1,9 @@
-# Meus Lançamentos
+# Meus Pagamentos
 
 Os lançamentos do membro logado: os [pagamentos de contas recorrentes](03-pagamento-de-conta-recorrente.md)
 e as [contas avulsas](04-conta-avulsa.md) que ele registrou. É a aba do meio do app, e é daqui que
-o membro altera ou exclui o que registrou.
+o membro altera ou exclui o que registrou. A aba se chama Meus pagamentos, mas também lista as
+contas avulsas, que já entram pagas.
 
 ## Quem usa e quando
 
@@ -18,9 +19,6 @@ Todo membro, para conferir o que ele mesmo pagou ou para corrigir um lançamento
 
 Ao tocar num lançamento, abrem os [detalhes](07-detalhes-do-lancamento.md) dele, com o comprovante,
 Alterar e Excluir.
-
-> 🔴 **A validar:** o nome da aba, e se a lista é do mês, com a troca de mês do Início, ou de todos
-> os meses juntos.
 
 ## Regras
 
