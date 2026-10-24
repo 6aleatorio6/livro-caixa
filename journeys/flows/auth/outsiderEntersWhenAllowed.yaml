@@ -1,0 +1,28 @@
+# Quem espera em Aguardando permissão entra sozinha quando o e-mail é liberado, sem sair do app.
+# Coberto por:
+# - Carla em sem acesso: _layout.test.tsx e o contrato do allowedEmailQueryService (emailOutsideList).
+# - A liberação com a espera aberta: _layout.test.tsx (Should open the app when the e-mail enters
+#   the list while the no-access screen is open) e o contrato do allowedEmailQueryService
+#   (emailAddedWhileOpen).
+appId: dev.leonardolf.livrocaixa
+tags:
+  - auth
+---
+- runScript: ../../scripts/resetData.js
+- runFlow:
+    file: ../../subflows/signInAs.yaml
+    env:
+      LINK: ${output.accounts.outsider.signInLink}
+- assertVisible: Aguardando permissão
+- runScript:
+    file: ../../scripts/addAllowedEmail.js
+    env:
+      EMAIL: ${output.accounts.outsider.email}
+      NAME: ${output.accounts.outsider.name}
+- extendedWaitUntil:
+    notVisible: Aguardando permissão
+    timeout: 10000
+- assertVisible:
+    text: Início
+    selected: true
+- takeScreenshot: home--outsider-allowed

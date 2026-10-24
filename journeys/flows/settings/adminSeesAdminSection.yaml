@@ -1,0 +1,24 @@
+# A admin vê a marca de admin e E-mails permitidos em Configurações.
+# Coberto por:
+# - A aba Configurações selecionada: tabs-layout.test.tsx.
+# - A marca de admin e E-mails permitidos: SettingsPage.test.tsx (as the admin › Should show the
+#   allowed e-mails entry and the admin mark) e o contrato do allowedEmailQueryService (adminInList).
+appId: dev.leonardolf.livrocaixa
+tags:
+  - settings
+---
+- runScript: ../../scripts/resetData.js
+- runFlow:
+    file: ../../subflows/signInAs.yaml
+    env:
+      LINK: ${output.accounts.admin.signInLink}
+- tapOn: Configurações
+- assertVisible:
+    text: Configurações
+    selected: true
+- assertVisible: ${output.accounts.admin.name}
+- assertVisible: ${output.accounts.admin.email}
+- assertVisible: Admin · você
+- assertVisible: Só para o admin
+- assertVisible: E-mails permitidos
+- takeScreenshot: settings--admin

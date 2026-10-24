@@ -1,0 +1,31 @@
+# A admin que perde a marca com Configurações aberta deixa de ver E-mails permitidos na hora.
+# Coberto por:
+# - A entrada e a seção sumindo: SettingsPage.test.tsx (Should hide the allowed e-mails entry when
+#   the admin loses the admin flag with the screen open) e o contrato do allowedEmailQueryService
+#   (adminLosesAdminWhileOpen).
+# - A aba continuar em Configurações: tabs-layout.test.tsx.
+appId: dev.leonardolf.livrocaixa
+tags:
+  - settings
+---
+- runScript: ../../scripts/resetData.js
+- runFlow:
+    file: ../../subflows/signInAs.yaml
+    env:
+      LINK: ${output.accounts.admin.signInLink}
+- tapOn: Configurações
+- assertVisible: E-mails permitidos
+- runScript:
+    file: ../../scripts/removeAdminFlag.js
+    env:
+      EMAIL: ${output.accounts.admin.email}
+- extendedWaitUntil:
+    notVisible: E-mails permitidos
+    timeout: 10000
+- assertNotVisible: Só para o admin
+- assertNotVisible: Admin · você
+- assertVisible: ${output.accounts.admin.name}
+- assertVisible:
+    text: Configurações
+    selected: true
+- takeScreenshot: settings--admin-flag-removed
