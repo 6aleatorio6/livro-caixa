@@ -14,6 +14,7 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Protected guard={accessStatus === 'signedOut' || accessStatus === 'loading'}>
           <Stack.Screen name="sign-in" />
+          <Stack.Screen name="test-sign-in" />
         </Stack.Protected>
         <Stack.Protected guard={accessStatus === 'denied'}>
           <Stack.Screen name="no-access" />

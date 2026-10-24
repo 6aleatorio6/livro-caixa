@@ -24,7 +24,7 @@ tema aparece na documentação.
 | D-16 | Um mês que passou sem pagamento continua a pagar? | 🟢 Respondido — sim, só no próprio mês |
 | D-17 | Onde o easter egg do "Paia" aparece no app? | 🟢 Respondido — na arte da splash screen |
 | D-18 | Como o Maestro alcança o emulador do PC? | 🔴 Em aberto |
-| D-19 | O JSON do Google falso leva o nome da pessoa? | 🔴 Em aberto |
+| D-19 | O JSON do Google falso leva o nome da pessoa? | 🟢 Respondido — sim, no campo `name` |
 | D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🔴 Em aberto |
 | D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🔴 Em aberto |
 | D-22 | O app lê o valor no comprovante? | 🟢 Respondido — fica para depois, com a leitura no celular |
@@ -192,11 +192,9 @@ aberta). As saídas:
 
 ## D-19 — O nome no Google falso
 
-**Dúvida:** se a credencial montada com JSON aceita um campo com o nome da pessoa.
-
-**O que se sabe:** o exemplo da documentação do Firebase usa só `sub`, `email` e `email_verified`,
-e é da web, não do SDK nativo do React Native. As regras do lançamento conferem o nome de quem pagou
-contra o login: sem o nome, essa conferência muda.
+**Resposta:** sim. O emulador do Auth lê o campo `name` do JSON como o nome da conta (no código do
+emulador, `const displayName = claims.name`), e a entrada de teste manda o nome junto com o e-mail.
+A documentação do Firebase só mostra `sub`, `email` e `email_verified`, num exemplo da web.
 
 **Onde aparece:** [Jornadas de Teste](../05-arquitetura/02-jornadas-de-teste.md).
 

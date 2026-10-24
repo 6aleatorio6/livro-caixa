@@ -16,17 +16,21 @@ repetir, vira um fluxo que roda de novo quando precisar. Elas começam com o có
 
 ## Como a IA entra numa conta
 
-O APK de teste tem uma entrada que só existe nele: a credencial do Google é montada com um JSON
-(`sub`, `email`, `email_verified`), que o emulador do Auth aceita sem uma conta Google de verdade.
-O provedor continua sendo o Google, como no APK da família, então as regras de acesso valem do mesmo
-jeito.
+**A jornada entra por um link, `livrocaixa://test-sign-in?email=…&name=…`, com uma conta Google
+inventada.** No lugar do token do Google, o app manda ao emulador do Auth um JSON com a identidade
+(`sub`, `email`, `email_verified` e `name`), que ele aceita sem uma conta de verdade. O provedor
+continua sendo o Google, como no login real, então as regras de acesso valem do mesmo jeito.
 
-- **Uma conta por perfil:** o admin, um membro e um e-mail fora da lista de e-mails permitidos.
-- **Essa entrada nunca vai para o APK da família.**
+- **O link só funciona com o app nos emuladores.** No APK da família, ele volta para o login sem
+  entrar.
+- **Uma conta por perfil**, com dados de exemplo:
+  - Ana Souza, `ana.souza@exemplo.com`: admin;
+  - Bruno Souza, `bruno.souza@exemplo.com`: membro;
+  - Carla Lima, `carla.lima@exemplo.com`: fora da lista de e-mails permitidos.
+- **O nome que o app mostra vem da lista de e-mails permitidos**, e o começo de cada fluxo grava as
+  contas com o nome, como o admin faria. O JSON também leva o nome, que o emulador grava na conta,
+  como o Google faz.
 - **O login real pelo Google fica para uma pessoa conferir**, porque o emulador não o reproduz.
-
-> 🔴 **A validar:** se o JSON leva também o nome da pessoa. O lançamento guarda o nome de quem pagou,
-> conferido contra o login, e sem nome no JSON essa conferência muda.
 
 ## O compartilhamento de comprovantes
 
