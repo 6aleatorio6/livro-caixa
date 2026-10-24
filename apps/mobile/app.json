@@ -20,6 +20,44 @@
     "plugins": [
       "expo-router",
       [
+        "expo-sharing",
+        {
+          "android": {
+            "enabled": true,
+            "singleShareMimeTypes": [
+              "image/*",
+              "application/pdf"
+            ],
+            "multipleShareMimeTypes": []
+          }
+        }
+      ],
+      [
+        "@react-native-community/datetimepicker",
+        {
+          "android": {
+            "datePicker": {
+              "colorAccent": {
+                "light": "#45664C",
+                "dark": "#ABD0B0"
+              },
+              "windowBackground": {
+                "light": "#E6E9E3",
+                "dark": "#272B27"
+              },
+              "textColorPrimary": {
+                "light": "#191D19",
+                "dark": "#E0E3DD"
+              },
+              "textColorSecondary": {
+                "light": "#3F4940",
+                "dark": "#BECABD"
+              }
+            }
+          }
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#208AEF",
@@ -34,7 +72,12 @@
         "expo-build-properties",
         {
           "android": {
-            "kotlinVersion": "2.4.0"
+            "kotlinVersion": "2.4.0",
+            "packagingOptions": {
+              "pickFirst": [
+                "**/libc++_shared.so"
+              ]
+            }
           }
         }
       ]

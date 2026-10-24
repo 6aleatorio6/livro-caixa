@@ -228,8 +228,8 @@ ML Kit funciona na nova arquitetura do React Native 0.88.
 **Resposta:** o PDF abre dentro do app, na primeira versão, como a imagem: em tela cheia, sobre
 fundo escuro, com zoom e, embaixo, de que lançamento ele é. Antes, a página dizia que o app mostrava
 o nome e o tamanho do arquivo e o abria no leitor de PDF do celular. A rolagem entre as páginas foi
-escolha da sessão. O PDF é desenhado pela `react-native-better-pdf`, com a `react-native-pdf` como
-plano B.
+escolha da sessão. O PDF é desenhado pela `react-native-pdf`, que era o plano B: a
+`react-native-better-pdf`, a primeira escolha, não compila no Kotlin 2.4.
 
 **Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md),
 [Plataforma e Stack](../05-arquitetura/01-plataforma-e-stack.md).

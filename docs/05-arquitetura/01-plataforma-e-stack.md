@@ -47,18 +47,23 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   traço, sem versão preenchida: o item ativo da navegação se destaca pela cor e pelo fundo, não por
   um ícone cheio. O ícone do app e as ilustrações não são ícones de pacote: são desenhados para a
   marca.
-- **PDFs mostrados com a `react-native-better-pdf`**, dentro do app, com zoom e rolagem entre as
-  páginas ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md)). Ela desenha o PDF
-  com o `PdfRenderer` do próprio Android, sem um motor de PDF embutido, e roda sobre o Nitro, que o
-  app já tem por causa do Unistyles. Também gera a imagem de cada página, que a
-  [leitura do valor pelo comprovante](../04-escopo-excluido/07-leitura-do-valor-pelo-comprovante.md)
-  vai precisar. O risco é a idade: a versão 1.0.0 saiu em 12 de outubro de 2026, testada com o
-  SDK 57, não com o 58.
+- **PDFs mostrados com a `react-native-pdf`**, dentro do app, com zoom e rolagem entre as páginas
+  ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md)). É a biblioteca de PDF
+  mais usada no React Native. Ela embute o PDFium, um motor de PDF, que pesa cerca de 5 MB no APK, e
+  pede o `react-native-blob-util`, que baixa o arquivo quando ele vem de um endereço. Os config
+  plugins que a documentação dela indica ficam de fora: o do `blob-util` só prepara o gerenciador de
+  downloads do Android, que o app não usa, e o dela só põe no APK uma cópia da `libc++_shared.so`,
+  o que o `expo-build-properties` já faz.
 - **Arquivos compartilhados recebidos com o `expo-sharing`**, do próprio Expo, que sai junto com
   o SDK ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#compartilhar-pelo-android)).
   O plugin dele põe no manifesto o filtro que faz o app aparecer entre os destinos de uma imagem ou
   de um PDF, e o `+native-intent` do expo-router leva o arquivo recebido à lista das contas a pagar.
   O risco: no SDK 58, o recebimento ainda é experimental.
+- **Seletor de arquivos com o `expo-document-picker`**, do próprio Expo, que sai junto com o SDK.
+  Abre o seletor de documentos do Android para escolher o comprovante e não pede plugin.
+- **Calendário do Android, com a `@react-native-community/datetimepicker`.** A família já conhece o
+  calendário do Android, que vem em português do Brasil e acessível. O plugin dela pinta o calendário
+  com as cores do tema claro e escuro do design.
 - **Gráfico do Início com a `react-native-gifted-charts`**
   ([Início](../03-funcionalidades/01-principal/01-inicio.md)). Ela desenha com o `react-native-svg`,
   que o app já tem, sem pacote nativo novo: o gradiente nativo, que ela aceita, fica de fora. O anel
@@ -76,9 +81,11 @@ Ficaram de fora:
   marca é passada componente a componente, sem um tema próprio global, e o layout dentro dele segue
   as regras do Compose, não as do React Native.
 - **Material Symbols:** no React Native, o pacote oficial só desenha os ícones dentro do Expo UI.
-- **`react-native-pdf`:** a biblioteca de PDF mais usada, mas embute o PDFium, o que dá cerca de
-  5 MB contra 2 MB da `react-native-better-pdf`, e pede o `react-native-blob-util` e um config
-  plugin. É o plano B se a `react-native-better-pdf` falhar: trocar custa só a tela do comprovante.
+- **`react-native-better-pdf`:** desenha o PDF com o `PdfRenderer` do próprio Android, sem motor
+  embutido (cerca de 2 MB contra 5 MB), e gera a imagem de cada página. Mas o código que o
+  `nitrogen` 0.37.1 gera para ela não compila no Kotlin 2.4, que o React Native Firebase 27 pede: o
+  Kotlin 2.4 transformou em erro um teste de tipo que sempre dá falso, e o código gerado faz um. Ela
+  volta a ser opção quando sair uma versão gerada por um `nitrogen` que corrija isso.
 - **`@kishannareshpal/expo-pdf` e `react-native-pdf-renderer`:** a primeira ainda está na versão
   0.x e também embute o PDFium; a segunda não tem versão nova desde agosto de 2025.
 - **`expo-share-intent`:** recebe compartilhamentos com um hook, mas é da comunidade e não tem
@@ -87,6 +94,10 @@ Ficaram de fora:
   para um anel e algumas barras. Só compensaria num gráfico interativo ou com muitos pontos.
 - **`react-native-chart-kit`:** também desenha com o `react-native-svg` e tem um gráfico em anel,
   mas é a que menos deixa ajustar o estilo ao design.
+- **`@react-native-documents/picker`:** faz o mesmo que o `expo-document-picker`, mas é uma
+  biblioteca à parte, sem a garantia de sair junto com o SDK.
+- **Calendário próprio:** teria de refazer em JavaScript o que o Android já entrega em português do
+  Brasil e com acessibilidade.
 
 ## Ponto de atenção: o plano Blaze
 
