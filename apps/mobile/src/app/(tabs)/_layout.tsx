@@ -3,11 +3,14 @@ import { House, Receipt, Settings } from 'lucide-react-native';
 
 import { NavigationBar } from '@/shared/components/NavigationBar/NavigationBar';
 import { NavigationBarItem } from '@/shared/components/NavigationBarItem/NavigationBarItem';
+import { AboveNavigationBarContext } from '@/shared/components/Screen/AboveNavigationBarContext';
 
 export default function TabsLayout() {
   return (
     <Tabs>
-      <TabSlot />
+      <AboveNavigationBarContext value>
+        <TabSlot />
+      </AboveNavigationBarContext>
       <TabList asChild>
         <NavigationBar>
           <TabTrigger name="index" href="/" asChild>

@@ -7,7 +7,7 @@ import { Screen } from '@/shared/components/Screen/Screen';
 /** Provisória: some quando a tela entrar. */
 export function SettingsPage() {
   return (
-    <Screen>
+    <Screen isAboveNavigationBar>
       <View style={styles.center}>
         <AppText variant="headlineMedium">Configurações</AppText>
       </View>
