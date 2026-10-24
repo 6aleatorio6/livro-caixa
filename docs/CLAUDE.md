@@ -15,7 +15,7 @@ first page. No empty folders.
 | `02-negocio/` | Business rules and processes, glossary |
 | `03-funcionalidades/` | One page per feature, in `01-principal/` and `02-suporte/` |
 | `04-escopo-excluido/` | What is left out, one page per item and an `index.md` with the overview |
-| `05-arquitetura/` | Stack, back-end, front-end, data, integrations and ADRs. Only once the stack is decided |
+| `05-arquitetura/` | Stack, back-end, front-end, data, integrations and ADRs. Only once the stack is decided, except the data model, `modelo-de-dados.dbml`, which the brainstorm starts before the section's first page |
 | `06-anexos/` | Files received: spreadsheets, PDFs, transcripts |
 | `97-reviews/`, `98-rascunhos/`, `99-duvidas/` | Internal work: they show up only in `pnpm dev:docs` |
 

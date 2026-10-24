@@ -36,3 +36,9 @@ The rules for writing the documentation are in [docs/CLAUDE.md](docs/CLAUDE.md).
 
 The design is made in Pencil, in `design/`. A `.pen` file can only be read and edited through the
 `pencil` MCP.
+
+The data model is drawn in dbdiagram.io, in
+[docs/05-arquitetura/modelo-de-dados.dbml](docs/05-arquitetura/modelo-de-dados.dbml), and serves
+only the documentation: no SQL or migration is generated from it. The file is the source: the model
+is edited in it, pasted into dbdiagram.io to see the diagram, and what changes there comes back to
+the file. Tables, columns and enums are named in English, `Note`s and `//` comments are in pt-BR.
