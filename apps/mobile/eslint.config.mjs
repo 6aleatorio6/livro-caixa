@@ -192,6 +192,16 @@ export default defineConfig([
     files: ['src/app/**/*.{ts,tsx}'],
     rules: { 'no-restricted-syntax': ['error', ...NO_LITERAL_COLOR] },
   },
+  // O tema é onde as cores literais moram, e o aumento de tipo do Unistyles (`interface
+  // UnistylesThemes`) precisa repetir o nome dele, sem o prefixo I.
+  {
+    files: ['src/shared/theme/**/*.ts'],
+    rules: {
+      'no-restricted-syntax': ['error', ...NO_DEFAULT_EXPORT],
+      '@typescript-eslint/naming-convention': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
+    },
+  },
 
   // Um arquivo, uma declaração exportada. Teste fica de fora.
   {

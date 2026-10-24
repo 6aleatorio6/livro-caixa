@@ -11,6 +11,10 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   ([Publicação na Play Store](../04-escopo-excluido/06-publicacao-na-play-store.md)).
 - **Expo SDK 58 + React Native 0.88 + TypeScript** no app, com o expo-router e o React Compiler do
   template padrão do SDK.
+- **Estilo no Unistyles 3.** O tema do app (papéis de cor do Material 3, claro e escuro, papéis de
+  tipografia, espaçamento e raios) troca conforme o celular sem renderizar as telas de novo. O
+  Restyle ficou de fora: não tem versão desde março de 2025, e o repositório tem uma issue aberta
+  perguntando se ele ainda é mantido.
 - **Firebase** como back-end, com o login pelo Google
   ([Acesso](../03-funcionalidades/02-suporte/01-acesso.md)).
 - **Os comprovantes ficam no Cloud Storage**, o serviço de arquivos do Firebase, e os dados no
