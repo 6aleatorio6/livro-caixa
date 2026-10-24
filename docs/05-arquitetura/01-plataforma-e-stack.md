@@ -7,6 +7,10 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
 - **Só app para Android.** Não há versão web nem para iOS
   ([Versão web](../04-escopo-excluido/02-versao-web.md), [iOS](../04-escopo-excluido/05-ios.md)).
 - **Só em português do Brasil**, com os valores em reais.
+- **Valores em dinheiro guardados em centavos, como números inteiros:** R$ 12,34 é guardado como
+  `1234`, e só a tela mostra o valor em reais. Somar números com casas decimais acumula erro de
+  arredondamento (no JavaScript, 0,1 + 0,2 dá 0,30000000000000004); com inteiros, as somas do mês
+  fecham no centavo.
 - **Instalado por APK**, direto nos celulares da família, fora da Play Store
   ([Publicação na Play Store](../04-escopo-excluido/06-publicacao-na-play-store.md)).
 - **Expo SDK 58 + React Native 0.88 + TypeScript** no app, com o expo-router e o React Compiler do
