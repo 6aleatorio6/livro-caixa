@@ -43,10 +43,11 @@ Ficaram de fora:
 
 ## O que ainda falta decidir
 
-O app precisa de três coisas cuja forma de fazer fica para a fase de código:
+O app precisa de quatro coisas cuja forma de fazer fica para a fase de código:
 
 - **receber arquivos compartilhados** por outros apps do Android;
 - **comprimir imagens** acima de 5 MB;
+- **mostrar PDFs** dentro do app, com zoom;
 - **desenhar o gráfico** do [Início](../03-funcionalidades/01-principal/01-inicio.md).
 
 ## Ponto de atenção: o plano Blaze

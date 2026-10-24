@@ -16,8 +16,8 @@ Todo membro, para conferir o que ele mesmo pagou ou para corrigir um lançamento
 - **A troca de mês**, como no [Início](01-inicio.md).
 - **O botão Nova conta avulsa**, que abre o registro de uma [conta avulsa](04-conta-avulsa.md).
 
-Ao tocar num lançamento, o membro vê o [comprovante](05-comprovantes.md) e pode alterar ou excluir
-o lançamento.
+Ao tocar num lançamento, abrem os [detalhes](07-detalhes-do-lancamento.md) dele, com o comprovante,
+Alterar e Excluir.
 
 > 🔴 **A validar:** o nome da aba, e se a lista é do mês, com a troca de mês do Início, ou de todos
 > os meses juntos.
@@ -34,6 +34,6 @@ o lançamento.
 
 - [ ] A lista mostra os pagamentos e as contas avulsas do membro logado, e nenhum de outro membro.
 - [ ] O total do mês é a soma dos lançamentos do membro naquele mês.
-- [ ] Ao tocar num lançamento, o membro vê o comprovante e pode alterar ou excluir o lançamento.
+- [ ] Ao tocar num lançamento, abrem os detalhes dele, com o comprovante, Alterar e Excluir.
 - [ ] O botão Nova conta avulsa fica nesta aba, e não no Início.
 - [ ] Excluído um pagamento, a conta volta a aparecer como a pagar no Início, naquele mês.

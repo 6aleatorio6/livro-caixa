@@ -28,6 +28,7 @@ tema aparece na documentação.
 | D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🔴 Em aberto |
 | D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🔴 Em aberto |
 | D-22 | O app lê o valor no comprovante? | 🟢 Respondido — fica para depois, com a leitura no celular |
+| D-23 | O comprovante em PDF abre dentro do app ou no leitor do celular? | 🟢 Respondido — dentro do app, como a imagem |
 
 <!-- Status: 🔴 Em aberto · 🟡 Parcial — o que falta · 🟢 Respondido — a resposta -->
 
@@ -232,3 +233,13 @@ ML Kit funciona na nova arquitetura do React Native 0.88.
 
 **Onde aparece:** [Leitura do Valor pelo Comprovante](../04-escopo-excluido/07-leitura-do-valor-pelo-comprovante.md),
 [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).
+
+## D-23 — O PDF dentro do app
+
+**Resposta:** o PDF abre dentro do app, na primeira versão, como a imagem: em tela cheia, sobre
+fundo escuro, com zoom e, embaixo, de que lançamento ele é. Antes, a página dizia que o app mostrava
+o nome e o tamanho do arquivo e o abria no leitor de PDF do celular. A rolagem entre as páginas foi
+escolha da sessão. A biblioteca que desenha o PDF fica para a fase de código.
+
+**Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md),
+[Plataforma e Stack](../05-arquitetura/01-plataforma-e-stack.md).

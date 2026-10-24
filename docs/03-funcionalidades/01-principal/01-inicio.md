@@ -18,7 +18,8 @@ Todo membro, ao abrir o app.
     pagamento no mês, pelo valor previsto.
 - **A separação por tag e por membro:** quanto foi em cada [tag](../02-suporte/02-tags.md) e quanto
   cada membro pagou.
-- **A lista do mês**, abaixo do gráfico: os lançamentos e as contas a pagar.
+- **A lista do mês**, abaixo do gráfico: os lançamentos e as contas a pagar. Tocar num lançamento
+  abre os [detalhes](07-detalhes-do-lancamento.md) dele, para qualquer membro.
 - **A troca de mês**, para ver os meses anteriores.
 
 O formato do gráfico fica para o design.

@@ -23,6 +23,7 @@ App de celular para controlar o financeiro de uma família.
 - [Conta Avulsa](03-funcionalidades/01-principal/04-conta-avulsa.md)
 - [Comprovantes](03-funcionalidades/01-principal/05-comprovantes.md)
 - [Meus Lançamentos](03-funcionalidades/01-principal/06-meus-lancamentos.md)
+- [Detalhes do Lançamento](03-funcionalidades/01-principal/07-detalhes-do-lancamento.md)
 
 **Suporte**
 

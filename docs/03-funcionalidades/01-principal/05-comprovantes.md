@@ -29,6 +29,16 @@ câmera nem a galeria.
 Quem compartilha sem estar logado faz o login pelo Google e perde o arquivo: precisa
 compartilhá-lo de novo depois de entrar.
 
+## Ver o comprovante
+
+Qualquer membro vê o comprovante de qualquer lançamento, pelo Ver dos
+[detalhes do lançamento](07-detalhes-do-lancamento.md).
+
+- **Imagem:** abre em tela cheia dentro do app, sobre fundo escuro, com zoom. Embaixo, de que
+  lançamento ela é.
+- **PDF:** abre do mesmo jeito, dentro do app, rolando entre as páginas. O membro não sai para o
+  leitor de PDF do celular.
+
 ## Critérios de aceite
 
 - [ ] Ao compartilhar uma imagem ou um PDF em outro app do Android, este app aparece entre os
@@ -38,3 +48,6 @@ compartilhá-lo de novo depois de entrar.
 - [ ] Uma imagem acima de 5 MB é comprimida até ficar abaixo de 5 MB.
 - [ ] Um PDF acima de 5 MB é recusado.
 - [ ] Dentro do app, o comprovante só vem dos arquivos do celular.
+- [ ] Qualquer membro abre o comprovante de um lançamento de outro membro.
+- [ ] Uma imagem ou um PDF abre em tela cheia dentro do app, com zoom.
+- [ ] Um PDF de várias páginas mostra todas elas, sem abrir outro app.
