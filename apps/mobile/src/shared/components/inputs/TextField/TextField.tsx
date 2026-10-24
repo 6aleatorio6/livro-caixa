@@ -5,6 +5,7 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import type { IInputMinimalProps } from '@/shared/types/form/InputMinimalProps';
 
 import { AppText } from '@/shared/components/AppText/AppText';
+import { RequiredMark } from '@/shared/components/inputs/RequiredMark/RequiredMark';
 
 export interface ITextFieldProps
   extends IInputMinimalProps<string>, Pick<TextInputProps, 'keyboardType' | 'autoCapitalize' | 'placeholder'> {
@@ -30,12 +31,7 @@ export function TextField({
     <View style={styles.container}>
       <AppText variant="bodySmall" color={hasError ? 'error' : 'onSurfaceVariant'}>
         {label}
-        {isRequired && (
-          // O leitor de tela não lê o `*`: o campo anuncia o obrigatório na dica de acessibilidade.
-          <AppText color="error" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            {' *'}
-          </AppText>
-        )}
+        {isRequired && <RequiredMark />}
       </AppText>
       <TextInput
         {...inputProps}

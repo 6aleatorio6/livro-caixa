@@ -2,5 +2,5 @@ import { createInputSmartWrapper } from '@/shared/utils/form/createInputSmartWra
 
 import { TextField } from '@/shared/components/inputs/TextField/TextField';
 
-/** O `TextField` ligado a um formulário pelo `form` e pelo `name`. */
+/** O `TextField` ligado a um formulário pelo `control` e pelo `name`. */
 export const TextFieldSmart = createInputSmartWrapper(TextField);
