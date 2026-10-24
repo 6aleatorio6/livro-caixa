@@ -6,6 +6,12 @@ import type { signInWithFakeGoogleService } from './signInWithFakeGoogleService'
 
 // As contas de teste das jornadas. O resultado é a parte do usuário que as telas leem.
 export const signInWithFakeGoogleScenarios = {
+  adminSignsIn: {
+    signedInAs: null,
+    given: {},
+    input: [{ email: 'ana.souza@exemplo.com', name: 'Ana Souza' }],
+    result: { email: 'ana.souza@exemplo.com', displayName: 'Ana Souza', emailVerified: true },
+  },
   memberSignsIn: {
     signedInAs: null,
     given: {},

@@ -8,6 +8,7 @@ import { allowedEmailQueryScenarios } from '@/shared/services/allowedEmail/query
 import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
 import { mockRealtime } from '@/shared/testing/mockRealtime';
 import { signedInAuthState } from '@/shared/testing/signedInAuthState';
+import type { IAllowedEmail } from '@/shared/types/allowedEmail/AllowedEmail';
 import type { IAuthState } from '@/shared/types/auth/AuthState';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 
@@ -24,7 +25,7 @@ const SIGNED_OUT: IAuthState = { status: 'signedOut' };
 /** A sessão e, com ela, a leitura do e-mail na lista; sem sessão, a leitura fica parada. */
 async function renderAppAs(
   authState: IAuthState,
-  allowedEmail: IServiceScenario<{ email: string | null }, boolean> | null,
+  allowedEmail: IServiceScenario<{ email: string | null }, IAllowedEmail | null> | null,
   initialUrl = '/',
 ) {
   jest.mocked(useAuthState).mockReturnValue(authState);

@@ -3,7 +3,7 @@ import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { allowedEmailQueryService } from '@/shared/services/allowedEmail/query/allowedEmailQueryService';
 import type { IAccessStatus } from '@/shared/types/auth/AccessStatus';
 import { accessStatusFor } from '@/features/auth/utils/accessStatusFor';
-import { signedInEmail } from '@/features/auth/utils/signedInEmail';
+import { signedInEmail } from '@/shared/utils/auth/signedInEmail';
 
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 

@@ -13,10 +13,10 @@ describe('allowedEmailQueryService', () => {
       await arrangeScenario(scenario);
       const reading = listenTo(allowedEmailQueryService, scenario.input);
 
-      expect(await reading.next()).toBe(scenario.result);
+      expect(await reading.next()).toEqual(scenario.result);
       if (scenario.afterChange) {
         await writeWithoutRules(scenario.afterChange.write);
-        expect(await reading.next()).toBe(scenario.afterChange.result);
+        expect(await reading.next()).toEqual(scenario.afterChange.result);
       }
     },
   );

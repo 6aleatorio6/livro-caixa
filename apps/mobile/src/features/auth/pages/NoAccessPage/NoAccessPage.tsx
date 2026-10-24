@@ -10,8 +10,8 @@ import { Screen } from '@/shared/components/Screen/Screen';
 
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 
-import { doSignOut } from '@/features/auth/pages/NoAccessPage/utils/actions/doSignOut';
-import { signedInEmail } from '@/features/auth/utils/signedInEmail';
+import { doSignOut } from '@/shared/utils/actions/doSignOut';
+import { signedInEmail } from '@/shared/utils/auth/signedInEmail';
 
 /** Para quem entrou com um e-mail do Google fora da lista: só o aviso e a saída. */
 export function NoAccessPage() {
