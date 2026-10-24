@@ -26,9 +26,10 @@ on the `PATH`, outside this repository. A missing one is the box's to fix: tell 
 - `mcp`: the Maestro MCP server, registered in this project as `maestro`;
 - `test [flow | tag:<name>]`: the counted round (`pnpm journeys:test`).
 
-Both turn the emulator's animations off first and export `MAESTRO_FIREBASE_PROJECT` for the
-flows. The MCP runs inside `journeys/.local/captures/session/`, so a `takeScreenshot` from `run`
-lands there: give `run` absolute paths.
+Both prepare the emulator first (app drawing on, animations off: see the ATD trap below) and
+export `MAESTRO_FIREBASE_PROJECT` for the flows. The MCP runs inside
+`journeys/.local/captures/session/`, so a `takeScreenshot` from `run` lands there: give `run`
+absolute paths.
 
 ## The stack
 
@@ -178,6 +179,15 @@ when it is unclear whether it is a regression, ask.
   for it (`Timed out waiting for animations to complete` and `transferring splash screen timeout`
   in the logcat). People don't notice, since a real touch doesn't wait. Android 15 doesn't have
   this path: keep the journeys on the `Livro_Caixa_API_35` AVD.
+- **The ATD image boots with app drawing off** (`debug.hwui.drawing_enabled=0`), and has no
+  SystemUI: no status or navigation bar, no system splash, an empty black home. Apps run, the view
+  hierarchy is full and the assertions pass, but every window stays black, screenshots and the
+  person's emulator window included (the window freezes on the boot animation's last frame).
+  `journeys/maestro.sh` and `pnpm android` (`scripts/android.sh`) set the property back to 1, which
+  lasts until the next boot and reaches only app processes started after it. When the emulator was
+  opened after the MCP or after `pnpm android`: `adb shell setprop debug.hwui.drawing_enabled 1`,
+  then relaunch the app; no root and no framework restart needed. A black screenshot over a full
+  hierarchy is this.
 - **A round takes the device from the MCP.** `pnpm journeys:test` starts Maestro's driver on the
   emulator over the MCP's, and the MCP keeps the dead connection: every call fails with "Device
   server died" until the person reconnects it (`/mcp`). Explore first, run the round last, or ask

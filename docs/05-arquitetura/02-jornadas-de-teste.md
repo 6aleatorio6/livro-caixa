@@ -46,6 +46,10 @@ flowchart TD
   numa animação que nunca termina, e cada toque das jornadas passa a levar 10 s em vez de 2; no
   Android 15 isso não acontece. Quem usa o app não percebe, porque um toque de verdade não espera a
   animação.
+- **A imagem de testes liga com o desenho dos apps desligado**, para os testes rodarem mais rápido:
+  o app roda e as conferências do Maestro passam, mas a tela fica preta, e as capturas também. O
+  `pnpm android` e o `journeys/maestro.sh` ligam o desenho de volta, e ele vale até o emulador
+  reiniciar.
 
 ## O fluxo de uma jornada
 
@@ -55,8 +59,9 @@ Uma rodada são dois comandos, no container:
   Metro, com `EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true`. É essa variável que aponta o app para os
   emuladores, então o Metro tem de ser o da pilha, e não o de um `pnpm mobile start`. A pilha não
   sobe se uma das portas dela já estiver ocupada, e, se um dos dois cair, o outro cai junto.
-- **`pnpm journeys:test`** (`journeys/maestro.sh test`) desliga as animações do emulador Android,
-  que pesam em cada troca de tela, e passa ao Maestro os fluxos de `journeys/flows/`. Também roda
+- **`pnpm journeys:test`** (`journeys/maestro.sh test`) liga o desenho dos apps no emulador Android
+  e desliga as animações dele, que pesam em cada troca de tela, e passa ao Maestro os fluxos de
+  `journeys/flows/`. Também roda
   um fluxo só (`pnpm journeys:test <caminho do fluxo>`) ou os de uma funcionalidade
   (`pnpm journeys:test tag:auth`). Quando a IA explora o app, usa o mesmo Maestro pelo MCP
   (`journeys/maestro.sh mcp`).
