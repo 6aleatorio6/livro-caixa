@@ -13,13 +13,15 @@ other stack decision is made without being written there.
 - `pnpm verify` runs the portal's tests and the build, which fails on a broken link.
 - `pnpm typecheck:mobile` type-checks the app; `pnpm mobile <script>` runs any script of
   `apps/mobile`.
-- `pnpm android` builds the app and opens it on the Android emulator. It needs the Android SDK and
-  Java, which only the developer's PC has: this container runs the type check, the lint and the
-  tests, never the native build.
+- `pnpm android` builds the app and opens it on the Android emulator. It needs the Android SDK,
+  which only the developer's PC has: this container runs the type check, the lint and the tests,
+  never the native build. `pnpm android --no-bundler` skips the Metro it would leave on 8081, which
+  the journeys' stack needs.
 - `pnpm firebase:emulators` starts the Firebase emulators (Auth, Firestore, Storage; their UI on
   port 4001, since the portal holds 4000), and `pnpm test:rules` tests `firebase/firestore.rules`
-  against them. Both need Java: PC only. The app talks to the emulators when started with
-  `EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true`.
+  against an emulator of its own. Both need Java, which the claude-box lends this container from
+  the PC, so they run here too; both take port 8080, so neither runs while the journeys' stack is
+  up. The app talks to the emulators when started with `EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true`.
 - `pnpm journeys:stack` starts the journeys' stack (the Firebase emulators and Metro with the app
   pointed at them) and `pnpm journeys:test` runs the Maestro flows, both in this container, against
   the Android 15 emulator of the PC (`Livro_Caixa_API_35`): skill `app-journeys`.
