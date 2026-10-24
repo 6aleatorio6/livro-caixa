@@ -1,0 +1,13 @@
+# Um e-mail da lista entra direto no app, sem passar pela tela de sem acesso.
+appId: dev.leonardolf.livrocaixa
+tags:
+  - auth
+---
+- runScript: ../../scripts/resetData.js
+- runFlow:
+    file: ../../subflows/signInAs.yaml
+    env:
+      LINK: ${output.accounts.member.signInLink}
+- assertVisible: Livro-Caixa
+- assertNotVisible: Você não tem acesso
+- takeScreenshot: home--member

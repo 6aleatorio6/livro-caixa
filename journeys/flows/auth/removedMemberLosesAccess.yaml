@@ -1,0 +1,17 @@
+# Tirar o e-mail da lista com o app aberto leva a pessoa para sem acesso, sem ela fechar o app.
+appId: dev.leonardolf.livrocaixa
+tags:
+  - auth
+---
+- runScript: ../../scripts/resetData.js
+- runFlow:
+    file: ../../subflows/signInAs.yaml
+    env:
+      LINK: ${output.accounts.member.signInLink}
+- assertVisible: Livro-Caixa
+- runScript:
+    file: ../../scripts/removeAllowedEmail.js
+    env:
+      EMAIL: ${output.accounts.member.email}
+- assertVisible: Você não tem acesso
+- takeScreenshot: no-access--removed-while-open

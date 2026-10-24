@@ -1,0 +1,16 @@
+# Quem entra com um e-mail fora da lista vê o aviso com o próprio e-mail, e Sair volta ao login.
+appId: dev.leonardolf.livrocaixa
+tags:
+  - auth
+---
+- runScript: ../../scripts/resetData.js
+- runFlow:
+    file: ../../subflows/signInAs.yaml
+    env:
+      LINK: ${output.accounts.outsider.signInLink}
+- assertVisible: Você não tem acesso
+- assertVisible: .*${output.accounts.outsider.email}.*
+- takeScreenshot: no-access--outside-list
+- tapOn: Sair
+- assertVisible: Entrar com Google
+- takeScreenshot: sign-in--after-sign-out
