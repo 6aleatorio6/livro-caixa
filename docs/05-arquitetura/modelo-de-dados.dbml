@@ -31,6 +31,7 @@ Enum FileType {
 
 Table allowedEmails {
   email varchar [pk, note: 'Id do documento: o e-mail em minúsculas. As regras conferem o acesso com exists() neste caminho, a partir do e-mail do login']
+  name varchar [not null, note: 'O nome da pessoa na família, cadastrado pelo admin junto com o e-mail. É o nome que o app mostra']
   isAdmin boolean [not null, default: false, note: 'Marcado à mão no console do Firebase. As regras não deixam o app gravar true. O esperado é um admin só, sem verificação']
   hasEntries boolean [not null, default: false, note: 'Vira true no mesmo lote do primeiro lançamento da pessoa, e as regras do lançamento exigem isso (getAfter). Com true, as regras recusam excluir o e-mail']
 
@@ -67,7 +68,7 @@ Table entries {
   date varchar [note: 'Só na conta avulsa: AAAA-MM-DD, preenchida com hoje. Trocar a data para outro mês muda o month junto']
   tagId varchar [ref: > tags.id, note: 'Opcional. No pagamento, cópia da tag da conta no momento do pagamento']
   paidBy varchar [not null, note: 'O uid do login de quem registrou. As regras exigem o uid de quem grava e só deixam o autor alterar ou excluir']
-  paidByName varchar [not null, note: 'O nome da conta Google de quem registrou, conferido pelas regras contra o login. Serve à separação por membro sem ler outra coleção']
+  paidByName varchar [not null, note: 'Cópia do name de allowedEmails de quem registrou, conferida pelas regras contra o documento do e-mail do login (get). Serve à separação por membro sem ler outra coleção']
   receiptFileId varchar [not null, ref: - files.id, note: 'O comprovante. As regras exigem que o registro exista ao fim do lote (getAfter) e tenha sido enviado por quem grava o lançamento']
 
   indexes {

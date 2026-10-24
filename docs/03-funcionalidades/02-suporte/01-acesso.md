@@ -1,12 +1,12 @@
 # Acesso
 
 O app só tem login pelo Google, e só entra quem tem o e-mail na lista de e-mails permitidos. O
-admin mantém essa lista.
+admin mantém essa lista, com o nome de cada pessoa.
 
 ## Quem usa e quando
 
 - Todo membro, ao entrar no app.
-- O admin, ao liberar o e-mail de uma pessoa da família.
+- O admin, ao cadastrar uma pessoa da família: o nome e o e-mail do Google.
 
 ## Login
 
@@ -20,8 +20,12 @@ admin mantém essa lista.
 - É marcado à mão, direto no banco de dados. O app não tem tela para dar ou tirar esse papel.
 - O esperado é um admin só, mas o app não confere isso: se mais de uma conta for marcada no banco,
   todas funcionam como admin.
-- Tem uma tela para adicionar e remover e-mails da lista de e-mails permitidos, na aba
+- Tem uma tela para adicionar e remover pessoas da lista de e-mails permitidos, na aba
   [Configurações](03-configuracoes.md). Só ele vê essa tela.
+- Cada pessoa entra na lista com o nome e o e-mail do Google, os dois obrigatórios. O nome é o que
+  o app mostra: nos lançamentos da pessoa e na separação por membro do
+  [Início](../01-principal/01-inicio.md).
+- O e-mail não se repete na lista: um e-mail que já está nela é recusado.
 - Um e-mail só pode ser removido enquanto a pessoa não tem nenhum lançamento. A partir do primeiro
   pagamento ou conta avulsa, ela não sai mais da lista.
 
@@ -29,6 +33,9 @@ admin mantém essa lista.
 
 - [ ] Um e-mail do Google fora da lista vê a tela de sem acesso e não chega a nenhuma outra tela.
 - [ ] Um e-mail adicionado pelo admin consegue entrar.
+- [ ] Sem o nome ou sem o e-mail, a pessoa não é adicionada.
+- [ ] O nome cadastrado aparece nos lançamentos da pessoa e na separação por membro do Início.
+- [ ] O app recusa um e-mail que já está na lista.
 - [ ] Só o admin vê a tela de e-mails permitidos.
 - [ ] O admin remove o e-mail de uma pessoa que ainda não tem lançamentos, e ela deixa de entrar.
 - [ ] O app não deixa remover o e-mail de quem já tem um pagamento ou uma conta avulsa.

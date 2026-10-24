@@ -5,7 +5,7 @@
 | **Família** | O grupo de pessoas que usa o app. Cada instalação atende uma família só. |
 | **Membro** | Pessoa da família com acesso ao app ([Público e Perfis](../01-visao-geral/03-publico-e-perfis.md)). |
 | **Admin** | Membro que mantém a lista de e-mails permitidos. É marcado direto no banco de dados. |
-| **E-mail permitido** | E-mail do Google que o admin liberou. Só quem tem um entra no app. |
+| **E-mail permitido** | E-mail do Google que o admin liberou, com o nome da pessoa. Só quem tem um entra no app, e o nome é o que o app mostra. |
 | **Conta** | O que o app guarda: um gasto da família, recorrente ou avulso. |
 | **Conta recorrente** | Conta da família que se repete todo mês. Pertence à família, não a um membro, e pode ter uma tag. |
 | **Valor previsto** | O valor cadastrado na conta recorrente. Quem paga confirma ou corrige esse valor no pagamento. |
