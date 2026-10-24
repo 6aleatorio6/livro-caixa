@@ -1,7 +1,7 @@
 # Portal da documentação
 
 Site [Docusaurus](https://docusaurus.io/) que publica os arquivos Markdown de `../../docs`
-(ver `docusaurus.config.js`). É o pacote `new-project-docs` do *workspace* pnpm do repositório.
+(ver `docusaurus.config.js`). É o pacote `livro-caixa-docs` do *workspace* pnpm do repositório.
 
 ## Instalação e desenvolvimento
 
@@ -52,7 +52,7 @@ no ar.
 ## Build
 
 ```bash
-pnpm --filter new-project-docs build   # da raiz; ou `pnpm build` dentro de apps/docusaurus
+pnpm --filter livro-caixa-docs build   # da raiz; ou `pnpm build` dentro de apps/docusaurus
 ```
 
 Gera o site estático em `build/`. Links quebrados **derrubam o build**.

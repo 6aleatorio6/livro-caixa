@@ -1,6 +1,6 @@
-# new-project
+# Livro-Caixa
 
-Documentação do new-project
+App de celular para controlar o financeiro de uma família.
 
 ## Sumário
 

@@ -1,6 +1,6 @@
-# new-project
+# Livro-Caixa
 
-Documentation for new-project; the brainstorm is still defining the product.
+A mobile app to manage one family's finances. The brainstorm is still writing its documentation.
 
 A pnpm monorepo. For now only the documentation exists: the Markdown in `docs/` and the Docusaurus
 portal that publishes it, in `apps/docusaurus`. The phase is documentation only: no code and no

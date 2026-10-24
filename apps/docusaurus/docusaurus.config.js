@@ -25,15 +25,15 @@ const UNPUBLISHED_FOLDERS_PATTERN = new RegExp(
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'new-project',
-  tagline: 'Documentação do new-project',
+  title: 'Livro-Caixa',
+  tagline: 'App de celular para controlar o financeiro de uma família',
   favicon: 'img/favicon.ico',
 
   url: 'https://example.com',
   baseUrl: '/',
 
-  organizationName: 'new-project',
-  projectName: 'new-project-docs',
+  organizationName: 'livro-caixa',
+  projectName: 'livro-caixa-docs',
 
   onBrokenLinks: 'throw',
 
@@ -133,9 +133,9 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: 'new-project',
+        title: 'Livro-Caixa',
         logo: {
-          alt: 'new-project',
+          alt: 'Livro-Caixa',
           src: 'img/logo.svg',
         },
         items: [
