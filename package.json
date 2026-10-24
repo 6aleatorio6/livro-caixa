@@ -14,8 +14,15 @@
     "android": "pnpm mobile android",
     "typecheck:mobile": "pnpm mobile typecheck",
     "test:mobile": "pnpm mobile test",
+    "firebase:emulators": "firebase emulators:start",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-livro-caixa \"node --test firebase/firestore.rules.test.mjs\"",
     "build": "pnpm --recursive build",
     "verify": "pnpm docusaurus test && pnpm docusaurus build",
     "local:trash": "dest=docs/local/__trash/$(date +%Y-%m-%d-%H%M%S) && mkdir -p \"$dest\" && find docs/local -mindepth 1 -maxdepth 1 ! -name __trash -exec mv -t \"$dest\" {} +"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^6.0.0",
+    "firebase": "^13.1.0",
+    "firebase-tools": "^15.34.1"
   }
 }

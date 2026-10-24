@@ -16,6 +16,12 @@ other stack decision is made without being written there.
 - `pnpm android` builds the app and opens it on the Android emulator. It needs the Android SDK and
   Java, which only the developer's PC has: this container runs the type check, the lint and the
   tests, never the native build.
+- `pnpm firebase:emulators` starts the Firebase emulators (Auth, Firestore, Storage; their UI on
+  port 4001, since the portal holds 4000), and `pnpm test:rules` tests `firebase/firestore.rules`
+  against them. Both need Java: PC only. The app talks to the emulators when started with
+  `EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true`.
+- `apps/mobile/google-services.json` comes from the Firebase console and stays out of Git: the
+  native build needs it.
 
 ## Language
 
