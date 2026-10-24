@@ -2,7 +2,6 @@
   "expo": {
     "name": "Livro-Caixa",
     "slug": "livro-caixa",
-    "version": "0.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "livrocaixa",
