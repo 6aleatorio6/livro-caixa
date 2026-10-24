@@ -7,9 +7,10 @@ import { signedInEmail } from '@/shared/utils/auth/signedInEmail';
 
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 
-/** Em que tela a pessoa cai: login, sem acesso ou o app. */
-export function useAccess(): IAccessStatus {
+/** Em que tela a pessoa cai (login, sem acesso ou o app) e se, dentro do app, ela é a admin. */
+export function useAccess(): { status: IAccessStatus; isAdmin: boolean } {
   const authState = useAuthState();
   const allowedEmail = useRealtime(allowedEmailQueryService, { email: signedInEmail(authState) });
-  return accessStatusFor(authState, allowedEmail);
+  const status = accessStatusFor(authState, allowedEmail);
+  return { status, isAdmin: status === 'allowed' && allowedEmail.data?.isAdmin === true };
 }

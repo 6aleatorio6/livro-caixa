@@ -5,7 +5,7 @@ import { SplashScreenController } from '@/core/components/SplashScreenController
 import { useAccess } from '@/features/auth/hooks/useAccess/useAccess';
 
 export default function RootLayout() {
-  const accessStatus = useAccess();
+  const { status: accessStatus, isAdmin } = useAccess();
 
   // Enquanto a sessão carrega, a splash cobre a tela de login, que é a única liberada.
   return (
@@ -21,6 +21,9 @@ export default function RootLayout() {
         </Stack.Protected>
         <Stack.Protected guard={accessStatus === 'allowed'}>
           <Stack.Screen name="(tabs)" />
+          <Stack.Protected guard={isAdmin}>
+            <Stack.Screen name="allowed-emails" />
+          </Stack.Protected>
         </Stack.Protected>
       </Stack>
     </AppContainer>

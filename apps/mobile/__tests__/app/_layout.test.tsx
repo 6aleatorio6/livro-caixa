@@ -44,6 +44,7 @@ async function renderAppAs(
       'sign-in': () => <Text>Entrar</Text>,
       'no-access': () => <Text>Sem acesso</Text>,
       'test-sign-in': () => <Text>Entrada de teste</Text>,
+      'allowed-emails': () => <Text>Página dos e-mails permitidos</Text>,
     },
     { initialUrl },
   );
@@ -101,5 +102,42 @@ describe('RootLayout', () => {
     expect(await screen.findByText('Página do início')).toBeOnTheScreen();
     expect(screen.queryByText('Sem acesso')).not.toBeOnTheScreen();
     expect(screen.queryByText('Entrar')).not.toBeOnTheScreen();
+  });
+
+  describe('The allowed-emails screen', () => {
+    it('Should keep a member out of /allowed-emails', async () => {
+      await renderAppAs(
+        signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn),
+        allowedEmailQueryScenarios.emailInList,
+        '/allowed-emails',
+      );
+
+      expect(screen.queryByText('Página dos e-mails permitidos')).not.toBeOnTheScreen();
+      expect(screen.getByText('Página do início')).toBeOnTheScreen();
+    });
+
+    it('Should let the admin reach /allowed-emails', async () => {
+      await renderAppAs(
+        signedInAuthState(signInWithFakeGoogleScenarios.adminSignsIn),
+        allowedEmailQueryScenarios.adminInList,
+        '/allowed-emails',
+      );
+
+      expect(screen.getByText('Página dos e-mails permitidos')).toBeOnTheScreen();
+    });
+
+    it('Should take the admin off /allowed-emails when the admin flag is lost while it is open', async () => {
+      const realtime = await renderAppAs(
+        signedInAuthState(signInWithFakeGoogleScenarios.adminSignsIn),
+        allowedEmailQueryScenarios.adminLosesAdminWhileOpen,
+        '/allowed-emails',
+      );
+      expect(screen.getByText('Página dos e-mails permitidos')).toBeOnTheScreen();
+
+      await act(async () => realtime.applyChange(allowedEmailQueryService));
+
+      expect(await screen.findByText('Página do início')).toBeOnTheScreen();
+      expect(screen.queryByText('Página dos e-mails permitidos')).not.toBeOnTheScreen();
+    });
   });
 });

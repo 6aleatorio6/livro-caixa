@@ -1,6 +1,9 @@
 import { act, render, screen, userEvent } from '@testing-library/react-native';
+import { router } from 'expo-router';
 
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
+import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
+import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService.scenarios';
 import { allowedEmailQueryService } from '@/shared/services/allowedEmail/query/allowedEmailQueryService';
 import { allowedEmailQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailQueryService.scenarios';
 import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
@@ -17,11 +20,24 @@ import { SettingsPage } from './SettingsPage';
 jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jest.fn() }));
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailQueryService', () => ({ allowedEmailQueryService: {} }));
+jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({ allowedEmailListQueryService: {} }));
+jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 jest.mock('@/shared/services/auth/signOutService', () => ({ signOutService: jest.fn() }));
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
+
+function adminInList() {
+  return [
+    { service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.adminInList },
+    familyList(),
+  ] as const;
+}
+
+function familyList() {
+  return { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyList };
+}
 
 describe('SettingsPage', () => {
   describe('as the admin', () => {
@@ -30,7 +46,7 @@ describe('SettingsPage', () => {
     });
 
     it('Should show the allowed e-mails entry and the admin mark', async () => {
-      mockRealtime({ service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.adminInList });
+      mockRealtime(...adminInList());
       await render(<SettingsPage />);
 
       expect(screen.getByText('Só para o admin')).toBeOnTheScreen();
@@ -38,11 +54,27 @@ describe('SettingsPage', () => {
       expect(screen.getByText('Admin · você')).toBeOnTheScreen();
     });
 
+    it('Should show how many people are in the family on the allowed e-mails entry', async () => {
+      mockRealtime(...adminInList());
+      await render(<SettingsPage />);
+
+      expect(screen.getByText('3 pessoas na família')).toBeOnTheScreen();
+    });
+
+    it('Should open the allowed e-mails screen when its entry is pressed', async () => {
+      mockRealtime(...adminInList());
+      await render(<SettingsPage />);
+
+      await userEvent.setup().press(screen.getByRole('button', { name: /E-mails permitidos/ }));
+
+      expect(router.push).toHaveBeenCalledWith('/allowed-emails');
+    });
+
     it('Should hide the allowed e-mails entry when the admin loses the admin flag with the screen open', async () => {
-      const realtime = mockRealtime({
-        service: allowedEmailQueryService,
-        scenario: allowedEmailQueryScenarios.adminLosesAdminWhileOpen,
-      });
+      const realtime = mockRealtime(
+        { service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.adminLosesAdminWhileOpen },
+        familyList(),
+      );
       await render(<SettingsPage />);
       expect(screen.getByText('E-mails permitidos')).toBeOnTheScreen();
 

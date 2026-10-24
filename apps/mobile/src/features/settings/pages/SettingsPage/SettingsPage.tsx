@@ -1,10 +1,10 @@
-import { Mail, Repeat, Tag, LogOut } from 'lucide-react-native';
+import { Repeat, Tag, LogOut } from 'lucide-react-native';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
-import { CircleMark } from '@/shared/components/CircleMark/CircleMark';
 import { IconButton } from '@/shared/components/IconButton/IconButton';
+import { PersonItem } from '@/shared/components/PersonItem/PersonItem';
 import { Screen } from '@/shared/components/Screen/Screen';
 
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
@@ -15,6 +15,7 @@ import { APP_VERSION } from '@/shared/constants/appVersion';
 import { doSignOut } from '@/shared/utils/actions/doSignOut';
 import { signedInEmail } from '@/shared/utils/auth/signedInEmail';
 
+import { AdminSection } from './components/AdminSection/AdminSection';
 import { SettingsRow } from './components/SettingsRow/SettingsRow';
 
 /** A terceira aba: quem está logado com a saída, o que se usa pouco e a versão do app. */
@@ -30,22 +31,12 @@ export function SettingsPage() {
 
         <View style={styles.signedIn}>
           <View style={styles.person}>
-            <CircleMark size={40} color="secondaryContainer">
-              <AppText variant="labelLargeEmphasized" color="onSecondaryContainer">
-                {name.charAt(0).toUpperCase()}
-              </AppText>
-            </CircleMark>
-            <View style={styles.texts}>
-              <AppText variant="bodyLarge">{name}</AppText>
-              <AppText variant="bodySmall" color="onSurfaceVariant">
-                {email}
-              </AppText>
-              {person?.isAdmin ? (
-                <AppText variant="labelMedium" color="primary">
-                  Admin · você
-                </AppText>
-              ) : null}
-            </View>
+            <PersonItem
+              name={name}
+              email={email}
+              situation={person?.isAdmin ? 'Admin · você' : undefined}
+              situationColor="primary"
+            />
           </View>
           <IconButton icon={LogOut} label="Sair" onPress={() => doSignOut()} />
         </View>
@@ -58,14 +49,7 @@ export function SettingsPage() {
           <SettingsRow icon={Tag} label="Tags" />
         </View>
 
-        {person?.isAdmin ? (
-          <View style={styles.section}>
-            <AppText variant="labelMedium" color="onSurfaceVariant">
-              Só para o admin
-            </AppText>
-            <SettingsRow icon={Mail} label="E-mails permitidos" />
-          </View>
-        ) : null}
+        {person?.isAdmin ? <AdminSection /> : null}
 
         <AppText variant="labelSmall" color="onSurfaceVariant" style={styles.version}>
           {`Livro-Caixa · versão ${APP_VERSION}`}
@@ -93,14 +77,7 @@ const styles = StyleSheet.create((theme) => ({
     borderRadius: theme.radii.largeIncreased,
     backgroundColor: theme.colors.surfaceContainerLow,
   },
-  person: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.mediumIncreased,
-    paddingVertical: theme.spacing.medium,
-  },
-  texts: { flex: 1, gap: theme.spacing.extraExtraSmall },
+  person: { flex: 1 },
   section: { gap: theme.spacing.extraExtraSmall },
   version: { marginTop: 'auto', textAlign: 'center' },
 }));

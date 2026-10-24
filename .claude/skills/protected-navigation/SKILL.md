@@ -19,7 +19,7 @@ No screen navigates by hand after a sign-in or a sign-out.
 
 ## The access status
 
-`useAccess` (`src/features/auth/hooks/useAccess/useAccess.ts`) joins the Firebase session
+`useAccess` (`src/features/auth/hooks/useAccess/useAccess.ts`) returns `{ status, isAdmin }`; the status joins the Firebase session
 (`useAuthState`) with the person's entry in the allowed list (`allowedEmailQueryService`) into one
 `IAccessStatus`, decided by the pure function `accessStatusFor`
 (`src/features/auth/utils/accessStatusFor.ts`):
@@ -48,7 +48,10 @@ are.
     <Stack.Screen name="no-access" />
   </Stack.Protected>
   <Stack.Protected guard={accessStatus === 'allowed'}>
-    <Stack.Screen name="index" />
+    <Stack.Screen name="(tabs)" />
+    <Stack.Protected guard={isAdmin}>
+      <Stack.Screen name="allowed-emails" />
+    </Stack.Protected>
   </Stack.Protected>
 </Stack>
 ```
@@ -59,8 +62,10 @@ are.
   screen flash.
 - **A new screen of the app** goes under the `allowed` guard. A screen outside every guard is open
   to anyone: never leave one there.
-- A screen for the admin only gets its own guard when the admin screens arrive (`isAdmin` on the
-  person's `allowedEmails` entry); until then, nothing in the app is admin-only.
+- **A screen for the admin only** goes in a `Stack.Protected guard={isAdmin}` nested inside the
+  `allowed` guard. `useAccess` returns `{ status, isAdmin }`, with `isAdmin` read from the person's
+  `allowedEmails` entry and true only while the status is `allowed`: losing the flag with the
+  screen open takes the person off it, as a removal from the list does.
 
 ## Testing
 
