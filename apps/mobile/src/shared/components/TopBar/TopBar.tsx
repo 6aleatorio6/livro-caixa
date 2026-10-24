@@ -14,7 +14,7 @@ export interface ITopBarProps {
 export function TopBar({ title }: ITopBarProps) {
   return (
     <View style={styles.bar}>
-      <IconButton icon={ArrowLeft} label="Voltar" onPress={() => router.back()} />
+      <IconButton icon={ArrowLeft} label="Voltar" color="onSurface" onPress={() => router.back()} />
       <AppText variant="titleLarge" accessibilityRole="header">
         {title}
       </AppText>

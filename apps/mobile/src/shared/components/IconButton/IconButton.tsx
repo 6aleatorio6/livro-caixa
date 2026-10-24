@@ -2,15 +2,19 @@ import type { LucideIcon } from 'lucide-react-native';
 import { Pressable } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
+import type { IColorRole } from '@/core/types/ColorRole';
+
 export interface IIconButtonProps {
   icon: LucideIcon;
   /** O que o botão faz, para o leitor de tela: um ícone sozinho não diz. */
   label: string;
   onPress: () => void;
   disabled?: boolean;
+  /** A cor do ícone; o padrão é a dos ícones de ação, e a barra superior usa a do título. */
+  color?: IColorRole;
 }
 
-export function IconButton({ icon: Icon, label, onPress, disabled = false }: IIconButtonProps) {
+export function IconButton({ icon: Icon, label, onPress, disabled = false, color = 'onSurfaceVariant' }: IIconButtonProps) {
   const { theme } = useUnistyles();
 
   return (
@@ -22,7 +26,7 @@ export function IconButton({ icon: Icon, label, onPress, disabled = false }: IIc
       onPress={onPress}
       style={({ pressed }) => styles.container(pressed, disabled)}
     >
-      <Icon size={24} color={theme.colors.onSurfaceVariant} />
+      <Icon size={24} color={theme.colors[color]} />
     </Pressable>
   );
 }
