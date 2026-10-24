@@ -12,7 +12,8 @@ Qualquer membro, quando precisa de uma tag que ainda não existe ou quer mudar u
 
 - A tag tem um nome e uma cor.
 - A cor sai de uma lista fixa, definida no código. O membro escolhe uma das cores da lista e não
-  cria cores novas.
+  cria cores novas. A lista tem oito cores, que vêm do design: Madeira, Musgo, Petróleo, Ardósia,
+  Azul, Anil, Lavanda e Ameixa.
 - Qualquer membro altera o nome e a cor de uma tag.
 - Uma tag só pode ser excluída enquanto nenhuma conta recorrente e nenhuma conta avulsa a usa.
 - O nome da tag é único, sem diferença entre maiúsculas e minúsculas nem entre letras com e sem

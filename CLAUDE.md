@@ -2,9 +2,9 @@
 
 A mobile app to manage one family's finances. The brainstorm is still writing its documentation.
 
-A pnpm monorepo. For now only the documentation exists: the Markdown in `docs/` and the Docusaurus
-portal that publishes it, in `apps/docusaurus`. The phase is documentation only: no code and no
-design file yet. The app will be a mobile app in Expo + React Native on Firebase, with no web
+A pnpm monorepo. For now it holds the documentation (the Markdown in `docs/` and the Docusaurus
+portal that publishes it, in `apps/docusaurus`) and the design, in `design/livro-caixa.pen`. No
+code yet. The app will be a mobile app in Expo + React Native on Firebase, with no web
 app, created from scratch with the latest version of each tool —
 [docs/05-arquitetura/01-plataforma-e-stack.md](docs/05-arquitetura/01-plataforma-e-stack.md). No
 other stack decision is made without being written there.
@@ -36,8 +36,9 @@ In the shell, quote the name: a `#` at the start of a word begins a comment —
 The rules for writing the documentation are in [docs/CLAUDE.md](docs/CLAUDE.md). Working drafts
 (plans, notes, PR descriptions) live in `docs/local/`, outside Git.
 
-The design is made in Pencil, in `design/`. A `.pen` file can only be read and edited through the
-`pencil` MCP.
+The design is made in Pencil, in `design/livro-caixa.pen`, following the `design-from-scratch`
+skill. A `.pen` file can only be read and edited through the `pencil` MCP, which acts on the file
+active in the editor: check it with `get_app_state` before writing.
 
 The data model is drawn in dbdiagram.io, in
 [docs/05-arquitetura/modelo-de-dados.dbml](docs/05-arquitetura/modelo-de-dados.dbml), and serves
