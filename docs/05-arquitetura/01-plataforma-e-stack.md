@@ -54,6 +54,17 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   [leitura do valor pelo comprovante](../04-escopo-excluido/07-leitura-do-valor-pelo-comprovante.md)
   vai precisar. O risco é a idade: a versão 1.0.0 saiu em 12 de outubro de 2026, testada com o
   SDK 57, não com o 58.
+- **Arquivos compartilhados recebidos com o `expo-sharing`**, do próprio Expo, que sai junto com
+  o SDK ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#compartilhar-pelo-android)).
+  O plugin dele põe no manifesto o filtro que faz o app aparecer entre os destinos de uma imagem ou
+  de um PDF, e o `+native-intent` do expo-router leva o arquivo recebido à lista das contas a pagar.
+  O risco: no SDK 58, o recebimento ainda é experimental.
+- **Gráfico do Início com a `react-native-gifted-charts`**
+  ([Início](../03-funcionalidades/01-principal/01-inicio.md)). Ela desenha com o `react-native-svg`,
+  que o app já tem, sem pacote nativo novo: o gradiente nativo, que ela aceita, fica de fora. O anel
+  do que falta pagar é o gráfico de pizza dela em forma de rosca, com o valor no centro. As barras
+  por tag e por membro são componentes simples, porque o gráfico de barras dela traz eixos que o
+  design não tem.
 
 Ficaram de fora:
 
@@ -70,13 +81,12 @@ Ficaram de fora:
   plugin. É o plano B se a `react-native-better-pdf` falhar: trocar custa só a tela do comprovante.
 - **`@kishannareshpal/expo-pdf` e `react-native-pdf-renderer`:** a primeira ainda está na versão
   0.x e também embute o PDFium; a segunda não tem versão nova desde agosto de 2025.
-
-## O que ainda falta decidir
-
-O app precisa de duas coisas cuja forma de fazer fica para a fase de código:
-
-- **receber arquivos compartilhados** por outros apps do Android;
-- **desenhar o gráfico** do [Início](../03-funcionalidades/01-principal/01-inicio.md).
+- **`expo-share-intent`:** recebe compartilhamentos com um hook, mas é da comunidade e não tem
+  versão confirmada para o SDK 58; o `expo-sharing` faz o mesmo e é atualizado junto com o SDK.
+- **`victory-native`:** mantida e completa, mas desenha com o Skia, um pacote nativo de vários MB,
+  para um anel e algumas barras. Só compensaria num gráfico interativo ou com muitos pontos.
+- **`react-native-chart-kit`:** também desenha com o `react-native-svg` e tem um gráfico em anel,
+  mas é a que menos deixa ajustar o estilo ao design.
 
 ## Ponto de atenção: o plano Blaze
 
