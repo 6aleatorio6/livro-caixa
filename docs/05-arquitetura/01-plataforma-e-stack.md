@@ -37,6 +37,13 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   traço, sem versão preenchida: o item ativo da navegação se destaca pela cor e pelo fundo, não por
   um ícone cheio. O ícone do app e as ilustrações não são ícones de pacote: são desenhados para a
   marca.
+- **PDFs mostrados com a `react-native-better-pdf`**, dentro do app, com zoom e rolagem entre as
+  páginas ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md)). Ela desenha o PDF
+  com o `PdfRenderer` do próprio Android, sem um motor de PDF embutido, e roda sobre o Nitro, que o
+  app já tem por causa do Unistyles. Também gera a imagem de cada página, que a
+  [leitura do valor pelo comprovante](../04-escopo-excluido/07-leitura-do-valor-pelo-comprovante.md)
+  vai precisar. O risco é a idade: a versão 1.0.0 saiu em 12 de outubro de 2026, testada com o
+  SDK 57, não com o 58.
 
 Ficaram de fora:
 
@@ -48,14 +55,18 @@ Ficaram de fora:
   marca é passada componente a componente, sem um tema próprio global, e o layout dentro dele segue
   as regras do Compose, não as do React Native.
 - **Material Symbols:** no React Native, o pacote oficial só desenha os ícones dentro do Expo UI.
+- **`react-native-pdf`:** a biblioteca de PDF mais usada, mas embute o PDFium, o que dá cerca de
+  5 MB contra 2 MB da `react-native-better-pdf`, e pede o `react-native-blob-util` e um config
+  plugin. É o plano B se a `react-native-better-pdf` falhar: trocar custa só a tela do comprovante.
+- **`@kishannareshpal/expo-pdf` e `react-native-pdf-renderer`:** a primeira ainda está na versão
+  0.x e também embute o PDFium; a segunda não tem versão nova desde agosto de 2025.
 
 ## O que ainda falta decidir
 
-O app precisa de quatro coisas cuja forma de fazer fica para a fase de código:
+O app precisa de três coisas cuja forma de fazer fica para a fase de código:
 
 - **receber arquivos compartilhados** por outros apps do Android;
 - **comprimir imagens** acima de 5 MB;
-- **mostrar PDFs** dentro do app, com zoom;
 - **desenhar o gráfico** do [Início](../03-funcionalidades/01-principal/01-inicio.md).
 
 ## Ponto de atenção: o plano Blaze
