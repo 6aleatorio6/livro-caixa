@@ -7,7 +7,10 @@ import type { IAuthState } from '@/shared/types/auth/AuthState';
 
 /** A sessão do Firebase Auth, em tempo real. */
 export function useAuthState(): IAuthState {
-  const [authState, setAuthState] = useState<IAuthState>({ status: 'loading' });
+  // Com a sessão já restaurada, quem monta depois começa nela: a tela não mostra um instante sem o usuário.
+  const [authState, setAuthState] = useState<IAuthState>(() =>
+    firebaseAuth.currentUser ? { status: 'signedIn', user: firebaseAuth.currentUser } : { status: 'loading' },
+  );
 
   useEffect(
     () =>
