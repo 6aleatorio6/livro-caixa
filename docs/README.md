@@ -13,6 +13,21 @@ Documentação do new-project
 
 - [Glossário](02-negocio/01-glossario.md)
 
+### 3. Funcionalidades
+
+**Principal**
+
+- [Início](03-funcionalidades/01-principal/01-inicio.md)
+- [Contas Recorrentes](03-funcionalidades/01-principal/02-contas-recorrentes.md)
+- [Pagamento de Conta Recorrente](03-funcionalidades/01-principal/03-pagamento-de-conta-recorrente.md)
+- [Conta Avulsa](03-funcionalidades/01-principal/04-conta-avulsa.md)
+- [Comprovantes](03-funcionalidades/01-principal/05-comprovantes.md)
+
+**Suporte**
+
+- [Acesso](03-funcionalidades/02-suporte/01-acesso.md)
+- [Tags](03-funcionalidades/02-suporte/02-tags.md)
+
 ### 4. Escopo Excluído
 
 - [Visão geral do que fica de fora](04-escopo-excluido/index.md)
