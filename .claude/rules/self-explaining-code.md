@@ -1,7 +1,6 @@
 ---
 paths:
-  - "apps/back/src/**"
-  - "apps/web/src/**"
+  - "apps/mobile/src/**"
 ---
 
 # Code explains itself through structure and names; comments keep the why
@@ -79,10 +78,10 @@ makes reading slower. There the decision is ADR-0054.
 
 **How to apply:**
 
-- No lint checks the boolean prefix yet. In projeto-a it is `@typescript-eslint/naming-convention`, in
-  each app's ESLint, with the exception list of props that pass HTML or library attributes through;
-  it can come along when the apps are created. The rest of this rule (structure, misleading names,
-  comments) no lint sees: it is on whoever writes and whoever reviews.
+- `@typescript-eslint/naming-convention` in `apps/mobile/eslint.config.mjs` checks the boolean
+  prefix, with `LIBRARY_BOOLEAN_PROPS` as the list of props passed straight to React Native. The
+  rest of this rule (structure, misleading names, comments) no lint sees: it is on whoever writes
+  and whoever reviews.
 - Fix what you are already touching; don't sweep the repository for names or comments.
 - Before deleting a comment, check that its fact moved into a name: losing a real constraint is
   worse than keeping the comment.

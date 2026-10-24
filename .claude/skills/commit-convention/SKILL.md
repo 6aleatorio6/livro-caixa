@@ -44,7 +44,7 @@ of listing its parts, or split the commit (§3).
 | `build` | the pnpm workspace, the lockfile, `scripts/` that build or copy the code |
 | `chore` | tooling: `package.json` scripts, `.gitignore`, `.claude/skills/**`, an app's config |
 
-**Scope** — the app whose code changes: `docusaurus` today, `back` and `web` once they exist. No
+**Scope** — the app whose code changes: `mobile` or `docusaurus` (`back` and `web` are projeto-a's). No
 scope when the code changes in more than one app (`feat: entrada pelo Microsoft Entra ID` touched
 back and web in projeto-a) or in none (`docs:`, `chore:` on root tooling). What follows the code doesn't
 count for the scope: a `refactor(back)` that also updates an ADR and a `.claude/rules` file is
