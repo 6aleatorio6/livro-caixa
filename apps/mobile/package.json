@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "main": "index.ts",
   "dependencies": {
+    "@hookform/resolvers": "^6.0.0",
     "@react-native/normalize-colors": "~0.88.0",
     "expo": "~58.0.19",
     "expo-constants": "~58.0.13",
@@ -15,6 +16,7 @@
     "lucide-react-native": "^1.61.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-hook-form": "^7.91.0",
     "react-native": "0.88.0",
     "react-native-gesture-handler": "~3.3.0",
     "react-native-nitro-modules": "0.37.1",
@@ -24,6 +26,7 @@
     "react-native-svg": "15.16.0",
     "react-native-unistyles": "^3.6.0",
     "react-native-worklets": "0.13.0",
+    "yup": "^1.7.1",
     "zustand": "^5.0.16"
   },
   "devDependencies": {
@@ -64,7 +67,8 @@
     },
     "setupFiles": [
       "react-native-unistyles/mocks",
-      "<rootDir>/src/core/theme/unistyles.ts"
+      "<rootDir>/src/core/theme/unistyles.ts",
+      "<rootDir>/src/core/yupLocale.ts"
     ]
   }
 }
