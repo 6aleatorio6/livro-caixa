@@ -3,3 +3,4 @@ import 'expo-router/entry';
 // qualquer tela.
 import './src/core/theme/unistyles';
 import './src/core/yupLocale';
+import './src/core/configureGoogleSignIn';
