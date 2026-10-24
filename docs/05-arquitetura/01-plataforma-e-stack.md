@@ -19,6 +19,27 @@ Esta página registra só o que já foi decidido. O código ainda não começou.
   emuladores do Firebase ([Jornadas de Teste](02-jornadas-de-teste.md)).
 - **Um projeto novo**, criado do zero com os comandos de criação mais recentes de cada ferramenta,
   sem copiar código de outro projeto.
+- **Componentes próprios**, escritos sobre os do React Native, sem biblioteca de componentes. Cada
+  componente desenhado no arquivo de design é a especificação do componente no app, com todos os
+  estados. O tema do app usa as variáveis do design: os papéis de cor do Material 3, nos temas claro
+  e escuro, e uma fonte por papel de tipografia. A acessibilidade de cada controle (papel, rótulo e
+  estado) fica por conta do código.
+- **Só ícones do Lucide**, no protótipo e no app: nenhum outro pacote de ícones entra. O arquivo de
+  design usa os ícones do Lucide, e o app usa o `lucide-react-native`. O Lucide só tem ícones de
+  traço, sem versão preenchida: o item ativo da navegação se destaca pela cor e pelo fundo, não por
+  um ícone cheio. O ícone do app e as ilustrações não são ícones de pacote: são desenhados para a
+  marca.
+
+Ficaram de fora:
+
+- **React Native Paper:** segue o Material 3 padrão, e a direção visual do app se afasta dele em
+  vários componentes, como a alternância e o botão flutuante. Usá-la obrigaria a sobrescrever o
+  estilo de cada um. Em outubro de 2026, a versão 6 estava em alpha e refazia o campo de texto e o
+  botão flutuante, os mais usados no app.
+- **Expo UI**, os componentes nativos do Jetpack Compose: estável desde o SDK 56, mas a cor da
+  marca é passada componente a componente, sem um tema próprio global, e o layout dentro dele segue
+  as regras do Compose, não as do React Native.
+- **Material Symbols:** no React Native, o pacote oficial só desenha os ícones dentro do Expo UI.
 
 ## O que ainda falta decidir
 
