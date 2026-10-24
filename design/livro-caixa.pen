@@ -23548,6 +23548,499 @@
           "children": [
             {
               "type": "frame",
+              "id": "C9FNGy",
+              "name": "Entrar",
+              "width": 412,
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "oWikw",
+                  "name": "Nome",
+                  "fill": "#1C1C1A",
+                  "content": "Entrar",
+                  "lineHeight": 1.3,
+                  "fontFamily": "Inter",
+                  "fontSize": 22,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "jKofK",
+                  "name": "Legenda",
+                  "fill": "#5C5C57",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "A primeira tela de quem não está logado: a marca, o nome e um botão só. O login é só pelo Google.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "SSI2p",
+                  "name": "Entrar",
+                  "theme": {
+                    "mode": "light"
+                  },
+                  "reusable": true,
+                  "clip": true,
+                  "width": 412,
+                  "height": 915,
+                  "fill": "$surface",
+                  "cornerRadius": 28,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#0000001A",
+                    "offset": {
+                      "x": 0,
+                      "y": 8
+                    },
+                    "blur": 32
+                  },
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "E9c2L",
+                      "name": "Barra de status",
+                      "width": "fill_container",
+                      "height": 36,
+                      "padding": [
+                        0,
+                        20
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "T3SVqk",
+                          "name": "Hora",
+                          "fill": "$on-surface",
+                          "content": "10:24",
+                          "lineHeight": "$label-large-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$label-large-size",
+                          "fontWeight": "$label-large-weight",
+                          "letterSpacing": "$label-large-tracking"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Atoow",
+                          "name": "Ícones",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "vwR5o",
+                              "name": "signal",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "signal",
+                              "library": "lucide",
+                              "fill": "$on-surface"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "s1mbmE",
+                              "name": "wifi",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "wifi",
+                              "library": "lucide",
+                              "fill": "$on-surface"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "I7FzjV",
+                              "name": "battery-full",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "battery-full",
+                              "library": "lucide",
+                              "fill": "$on-surface"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "r33nvE",
+                      "name": "Conteúdo",
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "layout": "vertical",
+                      "gap": 16,
+                      "padding": [
+                        0,
+                        32,
+                        40,
+                        32
+                      ],
+                      "justifyContent": "center",
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "id": "nPwQO",
+                          "name": "Marca",
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "icon/mark-color.png",
+                            "mode": "contain",
+                            "transform": [
+                              1.786,
+                              0,
+                              0,
+                              1.786,
+                              -0.393,
+                              -0.436
+                            ]
+                          },
+                          "width": 96,
+                          "height": 96
+                        },
+                        {
+                          "type": "text",
+                          "id": "zLv96",
+                          "name": "Nome do app",
+                          "fill": "$on-surface",
+                          "content": "Livro-Caixa",
+                          "lineHeight": "$display-small-emphasized-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$display-small-emphasized-size",
+                          "fontWeight": "$display-small-emphasized-weight",
+                          "letterSpacing": "$display-small-emphasized-tracking"
+                        },
+                        {
+                          "type": "text",
+                          "id": "WadL6",
+                          "name": "Frase",
+                          "fill": "$on-surface-variant",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "As contas da família, cada uma com o comprovante.",
+                          "lineHeight": "$body-large-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-large-size",
+                          "fontWeight": "$body-large-weight",
+                          "letterSpacing": "$body-large-tracking"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "YkbDu",
+                          "name": "Espaço",
+                          "width": "fill_container",
+                          "height": 24,
+                          "layout": "vertical"
+                        },
+                        {
+                          "id": "MQfuX",
+                          "type": "ref",
+                          "ref": "k9xma",
+                          "name": "Entrar com Google",
+                          "width": "fill_container",
+                          "descendants": {
+                            "u3Umir": {
+                              "width": 348
+                            },
+                            "mzjDP": {
+                              "enabled": true,
+                              "icon": "log-in"
+                            },
+                            "E0Y5Tt": {
+                              "content": "Entrar com Google"
+                            }
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "id": "f5XVA",
+                          "name": "Nota",
+                          "fill": "$on-surface-variant",
+                          "content": "Entra só quem a família liberou.",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "p55NcW",
+              "name": "Aguardando permissão",
+              "width": 412,
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "P95ZDN",
+                  "name": "Nome",
+                  "fill": "#1C1C1A",
+                  "content": "Aguardando permissão",
+                  "lineHeight": 1.3,
+                  "fontFamily": "Inter",
+                  "fontSize": 22,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "Eh3jY",
+                  "name": "Legenda",
+                  "fill": "#5C5C57",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Quem entra com um e-mail fora da lista fica aqui: vê com que e-mail entrou e o que fazer. Liberado o e-mail, o app abre sozinho. Sair volta para Entrar, para usar outra conta.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "zTLPa",
+                  "name": "Aguardando permissão",
+                  "theme": {
+                    "mode": "light"
+                  },
+                  "reusable": true,
+                  "clip": true,
+                  "width": 412,
+                  "height": 915,
+                  "fill": "$surface",
+                  "cornerRadius": 28,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#0000001A",
+                    "offset": {
+                      "x": 0,
+                      "y": 8
+                    },
+                    "blur": 32
+                  },
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "k4YS1",
+                      "name": "Barra de status",
+                      "width": "fill_container",
+                      "height": 36,
+                      "padding": [
+                        0,
+                        20
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "STkvp",
+                          "name": "Hora",
+                          "fill": "$on-surface",
+                          "content": "10:24",
+                          "lineHeight": "$label-large-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$label-large-size",
+                          "fontWeight": "$label-large-weight",
+                          "letterSpacing": "$label-large-tracking"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "A76zm",
+                          "name": "Ícones",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "y71ggj",
+                              "name": "signal",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "signal",
+                              "library": "lucide",
+                              "fill": "$on-surface"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "Nu6VY",
+                              "name": "wifi",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "wifi",
+                              "library": "lucide",
+                              "fill": "$on-surface"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "bZdme",
+                              "name": "battery-full",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "battery-full",
+                              "library": "lucide",
+                              "fill": "$on-surface"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "jHAPY",
+                      "name": "Conteúdo",
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "layout": "vertical",
+                      "gap": 20,
+                      "padding": [
+                        0,
+                        32,
+                        40,
+                        32
+                      ],
+                      "justifyContent": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "krshX",
+                          "name": "Marca",
+                          "width": 72,
+                          "height": 72,
+                          "fill": "$tertiary-container",
+                          "cornerRadius": 36,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "A29kg",
+                              "name": "Ícone",
+                              "width": 32,
+                              "height": 32,
+                              "icon": "hourglass",
+                              "library": "lucide",
+                              "fill": "$on-tertiary-container"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "uaJjI",
+                          "name": "Título",
+                          "fill": "$on-surface",
+                          "content": "Aguardando permissão",
+                          "lineHeight": "$headline-small-emphasized-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$headline-small-emphasized-size",
+                          "fontWeight": "$headline-small-emphasized-weight",
+                          "letterSpacing": "$headline-small-emphasized-tracking"
+                        },
+                        {
+                          "type": "text",
+                          "id": "r68IFP",
+                          "name": "Explicação",
+                          "fill": "$on-surface-variant",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "O e-mail daniel.lima@gmail.com ainda não está na lista da família. Peça a quem administra o Livro-Caixa para liberá-lo.",
+                          "lineHeight": "$body-large-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-large-size",
+                          "fontWeight": "$body-large-weight",
+                          "letterSpacing": "$body-large-tracking"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "aXEeG",
+                          "name": "Abre sozinho",
+                          "width": "fill_container",
+                          "fill": "$surface-container",
+                          "cornerRadius": 12,
+                          "gap": 10,
+                          "padding": [
+                            12,
+                            14
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "BpCI6",
+                              "name": "Ícone",
+                              "width": 20,
+                              "height": 20,
+                              "icon": "refresh-cw",
+                              "library": "lucide",
+                              "fill": "$on-surface-variant"
+                            },
+                            {
+                              "type": "text",
+                              "id": "ubXHl",
+                              "name": "Texto",
+                              "fill": "$on-surface-variant",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Assim que o e-mail for liberado, o app abre sozinho.",
+                              "lineHeight": "$body-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-small-size",
+                              "fontWeight": "$body-small-weight",
+                              "letterSpacing": "$body-small-tracking"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Qk9Bd",
+                          "name": "Espaço",
+                          "width": "fill_container",
+                          "height": 8,
+                          "layout": "vertical"
+                        },
+                        {
+                          "id": "fwcfB",
+                          "type": "ref",
+                          "ref": "fEWDy",
+                          "name": "Sair",
+                          "width": "fill_container",
+                          "descendants": {
+                            "J7eIk": {
+                              "width": 348
+                            },
+                            "vsCPA": {
+                              "enabled": true,
+                              "icon": "log-out",
+                              "fill": "$primary"
+                            },
+                            "ClfdK": {
+                              "content": "Sair"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
               "id": "DNxrN",
               "name": "Início",
               "width": 412,
@@ -26686,7 +27179,7 @@
                   "fill": "#5C5C57",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "A terceira aba reúne o que se usa pouco: contas recorrentes e tags, para todos, e os e-mails permitidos, só para o admin. No topo, quem está logado.",
+                  "content": "A terceira aba reúne o que se usa pouco: contas recorrentes e tags, para todos, e os e-mails permitidos, só para o admin. No topo, quem está logado e o ícone de sair.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 14,
@@ -26815,11 +27308,14 @@
                           "width": "fill_container",
                           "fill": "$surface-container-low",
                           "cornerRadius": 20,
-                          "layout": "vertical",
+                          "gap": 4,
                           "padding": [
+                            4,
+                            4,
                             4,
                             16
                           ],
+                          "alignItems": "center",
                           "children": [
                             {
                               "id": "igHmz",
@@ -26843,6 +27339,17 @@
                                 },
                                 "u2rML": {
                                   "enabled": false
+                                }
+                              }
+                            },
+                            {
+                              "id": "nzu2V",
+                              "type": "ref",
+                              "ref": "m2ArK2",
+                              "name": "Sair da conta",
+                              "descendants": {
+                                "uRzVL": {
+                                  "icon": "log-out"
                                 }
                               }
                             }
@@ -31916,6 +32423,75 @@
                       "fontWeight": "normal"
                     }
                   ]
+                },
+                {
+                  "type": "frame",
+                  "id": "L9HhY1",
+                  "name": "Entrar e sair",
+                  "width": "fill_container",
+                  "stroke": "#E4E2DA",
+                  "strokeWidth": {
+                    "top": 1
+                  },
+                  "gap": 16,
+                  "padding": [
+                    12,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "h7xsW",
+                      "name": "Onde",
+                      "fill": "#1C1C1A",
+                      "textGrowth": "fixed-width",
+                      "width": 260,
+                      "content": "Entrar e sair",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "hucfD",
+                      "name": "O quê",
+                      "fill": "#1C1C1A",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Faltavam a tela de login e a de aguardando permissão, com saída, e o símbolo de sair em Configurações.",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "u5z2pt",
+                      "name": "Classe",
+                      "fill": "#1C1C1A",
+                      "textGrowth": "fixed-width",
+                      "width": 160,
+                      "content": "ajuste",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "tKXOO",
+                      "name": "O que fazer",
+                      "fill": "#1C1C1A",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Feito: Entrar (marca, nome e Entrar com Google), Aguardando permissão (o e-mail usado, o pedido ao admin, o aviso de que o app abre sozinho e Sair) e o ícone de sair no cartão de quem está logado.",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
                 }
               ]
             }
@@ -32003,7 +32579,7 @@
                   "fill": "#1C1C1A",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Briefing, vision board, paleta (claro e escuro, com as cores das tags), tipografia, escala, variáveis, componentes e as telas Início, Registrar pagamento, Nova conta avulsa, Meus lançamentos, Detalhes do lançamento, Compartilhar comprovante, Configurações e E-mails permitidos. O nome já existia: Livro-Caixa.",
+                  "content": "Briefing, vision board, paleta (claro e escuro, com as cores das tags), tipografia, escala, variáveis, componentes e as telas Entrar, Aguardando permissão, Início, Registrar pagamento, Nova conta avulsa, Meus lançamentos, Detalhes do lançamento, Comprovante, Compartilhar comprovante, Configurações e E-mails permitidos. O nome já existia: Livro-Caixa.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 16,

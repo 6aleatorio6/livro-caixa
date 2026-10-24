@@ -12,8 +12,18 @@ admin mantém essa lista, com o nome de cada pessoa.
 
 - O login é só pelo Google. Não há login com e-mail e senha nem com outro provedor
   ([Outras formas de login](../../04-escopo-excluido/03-outras-formas-de-login.md)).
-- Quem entra com um e-mail do Google fora da lista fica numa tela simples, que só avisa que a
-  pessoa não tem acesso. Nenhuma outra tela do app fica disponível para ela.
+- A tela de entrada tem só a marca, o nome do app e o botão Entrar com Google.
+- Quem entra com um e-mail do Google fora da lista fica na tela de aguardando permissão: ela mostra
+  o e-mail com que a pessoa entrou e pede que quem administra o app o libere. Nenhuma outra tela do
+  app fica disponível para ela.
+- Liberado o e-mail, o app abre sozinho, sem a pessoa sair e entrar de novo.
+
+## Sair
+
+- Todo membro sai da conta pelo ícone de sair, ao lado do nome, na aba
+  [Configurações](03-configuracoes.md).
+- Na tela de aguardando permissão, o botão Sair volta para a entrada, para a pessoa entrar com outra
+  conta do Google.
 
 ## O admin
 
@@ -31,7 +41,11 @@ admin mantém essa lista, com o nome de cada pessoa.
 
 ## Critérios de aceite
 
-- [ ] Um e-mail do Google fora da lista vê a tela de sem acesso e não chega a nenhuma outra tela.
+- [ ] Um e-mail do Google fora da lista vê a tela de aguardando permissão, com o e-mail usado, e não
+      chega a nenhuma outra tela.
+- [ ] Liberado o e-mail, a tela de aguardando permissão dá lugar ao app sem a pessoa sair.
+- [ ] Na tela de aguardando permissão, Sair volta para a entrada.
+- [ ] Em Configurações, o ícone de sair tira o membro da conta e volta para a entrada.
 - [ ] Um e-mail adicionado pelo admin consegue entrar.
 - [ ] Sem o nome ou sem o e-mail, a pessoa não é adicionada.
 - [ ] O nome cadastrado aparece nos lançamentos da pessoa e na separação por membro do Início.

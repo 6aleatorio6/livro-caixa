@@ -10,7 +10,8 @@ ou remove o e-mail de uma pessoa da família.
 
 ## O que aparece na tela
 
-- Quem está logado: o nome cadastrado, o e-mail e, para o admin, a marca de admin.
+- Quem está logado: o nome cadastrado, o e-mail, para o admin a marca de admin, e o ícone de sair
+  ([Acesso](01-acesso.md#sair)).
 - [Contas Recorrentes](../01-principal/02-contas-recorrentes.md)
 - [Tags](02-tags.md)
 - E-mails permitidos, só para o admin ([Acesso](01-acesso.md))
