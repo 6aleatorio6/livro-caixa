@@ -13,9 +13,9 @@ decision is made without being written in `docs/`.
 
 ## Language
 
-Code, skills, rules and every `CLAUDE.md` are written in English, file names included. In pt-BR:
-comments, the documentation (`docs/`, READMEs, the folders and pages of `docs/` included), the text
-people read, commit messages and branch names.
+Code, skills, rules and every `CLAUDE.md` are written in English. In pt-BR: comments, the
+documentation, the text people read, commit messages and branch names —
+[.claude/rules/code-language.md](.claude/rules/code-language.md).
 
 ## Documentation
 
