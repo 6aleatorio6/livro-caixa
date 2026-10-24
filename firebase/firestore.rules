@@ -1,0 +1,15 @@
+rules_version = '2';
+
+// Tudo o que não está liberado aqui é negado.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // A pessoa lê só a entrada do próprio e-mail na lista de e-mails permitidos: é assim que o app
+    // sabe, depois do login pelo Google, se ela tem acesso. O id do documento é o e-mail em
+    // minúsculas, e o do login pode vir com maiúsculas.
+    match /allowedEmails/{email} {
+      allow get: if request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.lower() == email;
+    }
+  }
+}

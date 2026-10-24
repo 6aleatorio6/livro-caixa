@@ -16,7 +16,10 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   Restyle ficou de fora: não tem versão desde março de 2025, e o repositório tem uma issue aberta
   perguntando se ele ainda é mantido.
 - **Firebase** como back-end, com o login pelo Google
-  ([Acesso](../03-funcionalidades/02-suporte/01-acesso.md)).
+  ([Acesso](../03-funcionalidades/02-suporte/01-acesso.md)). O app usa o React Native Firebase 27,
+  só pela API modular (`getAuth`, `getFirestore`, `getStorage`), e as regras de segurança ficam em
+  `firebase/`, na raiz. Para testar sem tocar no projeto real, os emuladores do Firebase rodam no
+  PC de quem desenvolve.
 - **Os comprovantes ficam no Cloud Storage**, o serviço de arquivos do Firebase, e os dados no
   Firestore. Cada arquivo tem um registro numa coleção própria, que reúne todos os arquivos do app.
   As regras do Cloud Storage conferem o tipo e o tamanho de cada arquivo: imagem ou PDF, de até 5 MB.

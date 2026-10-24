@@ -40,3 +40,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Configuração do projeto Firebase, baixada do console: cada máquina põe a sua.
+google-services.json
