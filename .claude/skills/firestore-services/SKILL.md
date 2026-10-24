@@ -56,13 +56,14 @@ declares the refs and how to join them with `createRealtimeService`
 ```ts
 // src/shared/services/allowedEmail/query/allowedEmailQueryService.ts
 export const allowedEmailQueryService = createRealtimeService({
-  refs: ({ emailId }: { emailId: string | null }) => (emailId ? [doc(firestoreDb, 'allowedEmails', emailId)] : []),
+  refs: ({ email }: { email: string | null }) =>
+    email ? [doc(firestoreDb, 'allowedEmails', allowedEmailId(email))] : [],
   resolve: ([allowedEmail]) => allowedEmail !== null,
 });
 ```
 
 ```ts
-const { status, data: isAllowed } = useRealtime(allowedEmailQueryService, { emailId });
+const { status, data: isAllowed } = useRealtime(allowedEmailQueryService, { email });
 ```
 
 `useRealtime` is in `src/shared/hooks/useRealtime/`, and the types (`IRealtimeState`, `IRefsData`…)

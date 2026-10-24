@@ -8,11 +8,11 @@ import { Screen } from '@/shared/components/Screen/Screen';
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 
 import { doSignOut } from '@/features/auth/pages/NoAccessPage/utils/actions/doSignOut';
+import { signedInEmail } from '@/features/auth/utils/signedInEmail';
 
 /** Para quem entrou com um e-mail do Google fora da lista: só o aviso e a saída. */
 export function NoAccessPage() {
-  const authState = useAuthState();
-  const email = authState.status === 'signedIn' ? authState.user.email : null;
+  const email = signedInEmail(useAuthState());
   const whichEmail = email ? `O e-mail ${email}` : 'Este e-mail';
 
   return (

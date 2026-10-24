@@ -32,8 +32,9 @@ No screen navigates by hand after a sign-in or a sign-out.
 | `allowed` | the app |
 
 A denial only comes from the server: offline, with the e-mail missing from the device cache, the
-status stays `loading` instead of sending someone with access to `no-access`. The e-mail is
-compared lowercased (`allowedEmailId`), because the list's document ids are.
+status stays `loading` instead of sending someone with access to `no-access`. The service
+compares the e-mail lowercased (`allowedEmailId`, next to it), because the list's document ids
+are.
 
 ## The root layout
 
