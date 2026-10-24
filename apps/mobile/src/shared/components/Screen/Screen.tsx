@@ -17,7 +17,7 @@ export function Screen({ children }: IScreenProps) {
 const styles = StyleSheet.create((theme, rt) => ({
   screen: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: theme.colors.surface,
     paddingTop: rt.insets.top,
     paddingBottom: rt.insets.bottom,
     paddingLeft: rt.insets.left,
