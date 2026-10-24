@@ -1,3 +1,4 @@
+import { opacity } from './opacity';
 import { radii } from './radii';
 import { spacing } from './spacing';
 import { typography } from './typography';
@@ -66,4 +67,5 @@ export const lightTheme = {
   typography,
   spacing,
   radii,
+  opacity,
 } as const;

@@ -20,5 +20,5 @@ export function FullscreenLoaderModal() {
 
 const styles = StyleSheet.create((theme) => ({
   overlay: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: theme.colors.scrim, opacity: 0.32 },
+  scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: theme.colors.scrim, opacity: theme.opacity.scrim },
 }));

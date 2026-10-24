@@ -50,7 +50,7 @@ const styles = StyleSheet.create((theme) => ({
     flex: 1,
     alignItems: 'center',
     gap: theme.spacing.extraSmall,
-    opacity: isPressed ? 0.88 : 1,
+    opacity: isPressed ? theme.opacity.pressed : 1,
   }),
   indicator: (isFocused: boolean) => ({
     width: 64,

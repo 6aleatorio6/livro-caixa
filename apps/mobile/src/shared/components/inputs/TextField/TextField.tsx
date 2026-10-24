@@ -68,6 +68,6 @@ const styles = StyleSheet.create((theme) => ({
     borderRadius: theme.radii.extraSmall,
     borderWidth: isFocused || hasError ? 2 : 1,
     borderColor: hasError ? theme.colors.error : isFocused ? theme.colors.primary : theme.colors.outline,
-    opacity: isDisabled ? 0.38 : 1,
+    opacity: isDisabled ? theme.opacity.disabled : 1,
   }),
 }));

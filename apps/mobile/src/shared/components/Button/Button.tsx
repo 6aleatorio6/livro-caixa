@@ -77,7 +77,7 @@ const styles = StyleSheet.create((theme) => ({
       borderWidth: variant === 'outlined' ? 1 : 0,
       borderColor: theme.colors.outline,
       backgroundColor: containerColor ? theme.colors[containerColor] : 'transparent',
-      opacity: isInactive ? 0.38 : isPressed ? 0.88 : 1,
+      opacity: isInactive ? theme.opacity.disabled : isPressed ? theme.opacity.pressed : 1,
     };
   },
   content: {

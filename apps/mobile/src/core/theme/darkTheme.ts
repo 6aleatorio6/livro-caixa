@@ -1,3 +1,4 @@
+import { opacity } from './opacity';
 import { radii } from './radii';
 import { spacing } from './spacing';
 import { typography } from './typography';
@@ -64,4 +65,4 @@ const colors: IThemeColors = {
   onTagPlumContainer: '#F6D9FF',
 };
 
-export const darkTheme = { colors, typography, spacing, radii } as const;
+export const darkTheme = { colors, typography, spacing, radii, opacity } as const;

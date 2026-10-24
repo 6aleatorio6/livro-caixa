@@ -36,6 +36,6 @@ const styles = StyleSheet.create((theme) => ({
     justifyContent: 'center',
     borderRadius: theme.radii.full,
     backgroundColor: isPressed ? theme.colors.surfaceContainerHighest : 'transparent',
-    opacity: isDisabled ? 0.38 : 1,
+    opacity: isDisabled ? theme.opacity.disabled : 1,
   }),
 }));
