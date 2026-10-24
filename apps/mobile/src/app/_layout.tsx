@@ -20,7 +20,7 @@ export default function RootLayout() {
           <Stack.Screen name="no-access" />
         </Stack.Protected>
         <Stack.Protected guard={accessStatus === 'allowed'}>
-          <Stack.Screen name="index" />
+          <Stack.Screen name="(tabs)" />
         </Stack.Protected>
       </Stack>
     </AppContainer>

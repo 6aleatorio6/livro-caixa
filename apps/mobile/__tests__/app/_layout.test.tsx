@@ -11,6 +11,7 @@ import { signedInAuthState } from '@/shared/testing/signedInAuthState';
 import type { IAuthState } from '@/shared/types/auth/AuthState';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 
+import TabsLayout from '@/app/(tabs)/_layout';
 import RootLayout from '@/app/_layout';
 
 // Mocks com fábrica: o módulo real carregaria o React Native Firebase, que não roda no Jest.
@@ -35,7 +36,10 @@ async function renderAppAs(
   await renderRouter(
     {
       _layout: RootLayout,
-      index: () => <Text>Início</Text>,
+      '(tabs)/_layout': TabsLayout,
+      '(tabs)/index': () => <Text>Página do início</Text>,
+      '(tabs)/my-payments': () => <Text>Página dos pagamentos</Text>,
+      '(tabs)/settings': () => <Text>Página das configurações</Text>,
       'sign-in': () => <Text>Entrar</Text>,
       'no-access': () => <Text>Sem acesso</Text>,
       'test-sign-in': () => <Text>Entrada de teste</Text>,
@@ -69,7 +73,7 @@ describe('RootLayout', () => {
       signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn),
       allowedEmailQueryScenarios.emailInList,
     );
-    expect(screen.getByText('Início')).toBeOnTheScreen();
+    expect(screen.getByText('Página do início')).toBeOnTheScreen();
   });
 
   it('Should move an allowed person to no-access when the e-mail leaves the list while the app is open', async () => {
@@ -77,7 +81,7 @@ describe('RootLayout', () => {
       signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn),
       allowedEmailQueryScenarios.emailRemovedWhileOpen,
     );
-    expect(screen.getByText('Início')).toBeOnTheScreen();
+    expect(screen.getByText('Página do início')).toBeOnTheScreen();
 
     await act(async () => realtime.applyChange(allowedEmailQueryService));
 
