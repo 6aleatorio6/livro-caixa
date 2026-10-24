@@ -14,6 +14,11 @@ description: >-
 Tests live next to the code: `Button.tsx` → `Button.test.tsx`. They come with the code they cover,
 in the same commit (skill `commit-convention`). Run them with `pnpm test:mobile`.
 
+**Except under `src/app`:** Metro bundles every file there as a route, so a test there breaks the
+app (`expo-router/testing-library` imports Node's `path`). A route's or layout's test goes to
+`apps/mobile/__tests__/app/`, mirroring the path: `src/app/_layout.tsx` →
+`__tests__/app/_layout.test.tsx`.
+
 **Before writing a test, answer: what bug would it catch?** No answer, no test.
 
 ## What not to test

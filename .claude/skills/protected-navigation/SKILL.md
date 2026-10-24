@@ -66,5 +66,5 @@ are.
 
 Test the guards with expo-router's `renderRouter` and `useAccess` mocked: the routes are plain
 components, so the test checks which one each status shows, without Firebase — see
-`src/app/_layout.test.tsx`. Test the status itself through `accessStatusFor`, one case per row of
+`apps/mobile/__tests__/app/_layout.test.tsx`. Test the status itself through `accessStatusFor`, one case per row of
 the table above.

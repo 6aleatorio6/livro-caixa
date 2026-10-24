@@ -3,7 +3,7 @@ import { renderRouter, screen } from 'expo-router/testing-library';
 
 import { useAccess } from '@/features/auth/hooks/useAccess/useAccess';
 
-import RootLayout from './_layout';
+import RootLayout from '@/app/_layout';
 
 jest.mock('@/features/auth/hooks/useAccess/useAccess', () => ({ useAccess: jest.fn() }));
 
