@@ -1,0 +1,30 @@
+# Configuração do deploy na Netlify.
+#
+# O site é o portal Docusaurus desta pasta; o conteúdo em Markdown vem de `../../docs`
+# (ver `docusaurus.config.js`), por isso o build precisa do repositório inteiro.
+#
+# O acesso é protegido pela edge function `netlify/edge-functions/password-gate.ts`,
+# que exige a senha guardada na variável de ambiente DOCS_PASSWORD.
+
+# O repositório é um workspace pnpm com o lockfile na raiz. No painel, deixe o
+# "Base directory" vazio (a raiz) e ponha "Package directory: apps/docusaurus" —
+# a Netlify só instala com pnpm quando o `pnpm-lock.yaml` está no base directory.
+# Por isso os caminhos abaixo são relativos à raiz do repositório.
+[build]
+  command = "pnpm --filter new-project-docs build"
+  publish = "apps/docusaurus/build"
+  edge_functions = "apps/docusaurus/netlify/edge-functions"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Cabeçalhos de segurança. A proteção de acesso em si é feita pela edge function —
+# estes headers só endurecem o que já passou pelo portão.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "no-referrer"
+    # Buscadores não passam do 401, mas o header deixa a intenção explícita.
+    X-Robots-Tag = "noindex, nofollow"

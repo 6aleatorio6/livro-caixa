@@ -1,0 +1,17 @@
+{
+  "name": "new-project",
+  "version": "0.0.0",
+  "description": "Documentação do new-project",
+  "private": true,
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=20.0"
+  },
+  "scripts": {
+    "docusaurus": "pnpm --filter new-project-docs",
+    "dev:docs": "pnpm docusaurus start",
+    "build": "pnpm --recursive build",
+    "verify": "pnpm docusaurus test && pnpm docusaurus build",
+    "local:trash": "dest=docs/local/__trash/$(date +%Y-%m-%d-%H%M%S) && mkdir -p \"$dest\" && find docs/local -mindepth 1 -maxdepth 1 ! -name __trash -exec mv -t \"$dest\" {} +"
+  }
+}

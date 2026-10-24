@@ -1,0 +1,12 @@
+# Local Netlify folder
+.netlify
+
+# macOS
+.DS_Store
+
+# Dependências do workspace pnpm (cada app também ignora a própria)
+node_modules
+
+# Pasta de trabalho local: planos do Claude Code, notas, descrições de PR. Nunca vai
+# para o repositório.
+docs/local/

@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+
+# Scripts de instalação que o portal dispensa: o do @swc/core só confere o binário nativo, que já
+# chega pelas dependências opcionais, e o do core-js só imprime um pedido de doação. Listá-los aqui
+# tira o aviso "Ignored build scripts" de cada install. O back e o web, quando entrarem, aprovam os
+# deles em `onlyBuiltDependencies`.
+ignoredBuiltDependencies:
+  - '@swc/core'
+  - core-js
