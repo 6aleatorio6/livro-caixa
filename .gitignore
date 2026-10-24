@@ -17,3 +17,6 @@ docs/local/
 
 # Capturas e artefatos das rodadas das jornadas: cada rodada gera uma pasta nova.
 journeys/.local/
+
+# Logs que os emuladores do Firebase gravam na pasta de onde sobem.
+*-debug.log
