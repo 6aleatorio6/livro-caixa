@@ -6,12 +6,12 @@ import type { IToastKind } from '@/core/types/ToastKind';
 
 /** O aviso do `useToastStore`, no pé da tela. Montado uma vez, pelo `AppContainer`. */
 export function AppToast() {
-  const { message, kind, isVisible } = useToastStore();
-  if (!isVisible) return null;
+  const toast = useToastStore((state) => state.toast);
+  if (!toast) return null;
 
   return (
-    <View accessible accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.toast(kind)}>
-      <Text style={styles.message(kind)}>{message}</Text>
+    <View accessible accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.toast(toast.kind)}>
+      <Text style={styles.message(toast.kind)}>{toast.message}</Text>
     </View>
   );
 }

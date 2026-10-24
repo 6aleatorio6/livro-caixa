@@ -9,6 +9,6 @@ let hideTimer: ReturnType<typeof setTimeout> | undefined;
 /** Mostra o aviso e o esconde sozinho. Um aviso novo substitui o anterior e conta o tempo de novo. */
 export function showToast(message: string, kind: IToastKind = 'success') {
   clearTimeout(hideTimer);
-  useToastStore.setState({ message, kind, isVisible: true });
+  useToastStore.setState({ toast: { message, kind } });
   hideTimer = setTimeout(hideToast, TOAST_DURATION_MS);
 }

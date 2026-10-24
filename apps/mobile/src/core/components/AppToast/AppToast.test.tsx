@@ -6,7 +6,7 @@ import { AppToast } from './AppToast';
 
 describe('AppToast', () => {
   it('Should show the message while the toast is visible', async () => {
-    useToastStore.setState({ message: 'Conta salva', kind: 'success', isVisible: true });
+    useToastStore.setState({ toast: { message: 'Conta salva', kind: 'success' } });
 
     await render(<AppToast />);
 
@@ -14,7 +14,7 @@ describe('AppToast', () => {
   });
 
   it('Should show nothing once the toast is hidden', async () => {
-    useToastStore.setState({ message: 'Conta salva', kind: 'success', isVisible: false });
+    useToastStore.setState({ toast: null });
 
     await render(<AppToast />);
 

@@ -7,7 +7,7 @@ import { createAsyncAction } from './createAsyncAction';
 beforeEach(() => {
   // O aviso se esconde sozinho num timer: com o relógio falso, nenhum fica pendente depois do teste.
   jest.useFakeTimers();
-  useToastStore.setState({ message: '', kind: 'success', isVisible: false });
+  useToastStore.setState({ toast: null });
   useLoaderStore.setState({ isVisible: false });
 });
 
@@ -22,7 +22,7 @@ describe('createAsyncAction', () => {
     const result = await save();
 
     expect(result).toEqual({ data: 'conta-1', error: null });
-    expect(useToastStore.getState()).toMatchObject({ message: 'Conta salva', kind: 'success', isVisible: true });
+    expect(useToastStore.getState().toast).toEqual({ message: 'Conta salva', kind: 'success' });
   });
 
   it('Should show the user message of an AppError', async () => {
@@ -36,7 +36,7 @@ describe('createAsyncAction', () => {
     const result = await pay();
 
     expect(result).toEqual({ data: null, error });
-    expect(useToastStore.getState()).toMatchObject({ message: 'Essa conta já foi paga neste mês.', kind: 'error' });
+    expect(useToastStore.getState().toast).toEqual({ message: 'Essa conta já foi paga neste mês.', kind: 'error' });
   });
 
   it('Should show a generic message for an unexpected error', async () => {
@@ -48,7 +48,7 @@ describe('createAsyncAction', () => {
 
     await pay();
 
-    expect(useToastStore.getState()).toMatchObject({ message: 'Algo deu errado. Tente de novo.', kind: 'error' });
+    expect(useToastStore.getState().toast).toEqual({ message: 'Algo deu errado. Tente de novo.', kind: 'error' });
   });
 
   it('Should cover the screen while running and uncover it when it fails', async () => {

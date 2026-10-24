@@ -3,7 +3,7 @@ import { useToastStore } from '@/core/store/toast.store';
 
 beforeEach(() => {
   jest.useFakeTimers();
-  useToastStore.setState({ message: '', kind: 'success', isVisible: false });
+  useToastStore.setState({ toast: null });
 });
 
 afterEach(() => {
@@ -15,9 +15,9 @@ describe('showToast', () => {
     showToast('Conta salva');
 
     jest.advanceTimersByTime(3999);
-    expect(useToastStore.getState().isVisible).toBe(true);
+    expect(useToastStore.getState().toast).not.toBeNull();
     jest.advanceTimersByTime(1);
-    expect(useToastStore.getState().isVisible).toBe(false);
+    expect(useToastStore.getState().toast).toBeNull();
   });
 
   it('Should restart the duration when another toast replaces the first', () => {
@@ -27,6 +27,6 @@ describe('showToast', () => {
     showToast('Tag criada');
     jest.advanceTimersByTime(3000);
 
-    expect(useToastStore.getState()).toMatchObject({ message: 'Tag criada', isVisible: true });
+    expect(useToastStore.getState().toast).toEqual({ message: 'Tag criada', kind: 'success' });
   });
 });

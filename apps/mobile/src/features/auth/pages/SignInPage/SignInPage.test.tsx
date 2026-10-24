@@ -11,7 +11,7 @@ const signInWithGoogle = signInWithGoogleService as jest.Mock;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  useToastStore.setState({ message: '', kind: 'success', isVisible: false });
+  useToastStore.setState({ toast: null });
 });
 
 describe('SignInPage', () => {
@@ -41,7 +41,7 @@ describe('SignInPage', () => {
 
     await user.press(screen.getByRole('button', { name: 'Entrar com Google' }));
 
-    expect(useToastStore.getState().isVisible).toBe(false);
+    expect(useToastStore.getState().toast).toBeNull();
     expect(screen.getByRole('button', { name: 'Entrar com Google' })).not.toBeBusy();
   });
 });

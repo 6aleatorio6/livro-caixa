@@ -1,7 +1,6 @@
-import type { IToastKind } from './ToastKind';
+import type { IToast } from './Toast';
 
 export interface IToastState {
-  message: string;
-  kind: IToastKind;
-  isVisible: boolean;
+  /** `null` enquanto nenhum aviso está na tela. */
+  toast: IToast | null;
 }
