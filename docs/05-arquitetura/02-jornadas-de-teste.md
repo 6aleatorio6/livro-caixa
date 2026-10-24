@@ -2,27 +2,105 @@
 
 **As jornadas são o jeito de a IA usar o app de verdade, num emulador, e guardar o caminho conferido
 como teste.** A ferramenta é o Maestro: a IA explora a tela pelo MCP dele e, o que confere e vale
-repetir, vira um fluxo que roda de novo quando precisar. Elas começam com o código do app.
+repetir, vira um fluxo que roda de novo quando precisar. Os fluxos ficam em `journeys/`, na raiz do
+repositório.
 
-## Onde rodam
+## As peças e onde rodam
 
-- **O emulador Android roda no PC de quem desenvolve.** O container em que a IA trabalha não roda
-  um emulador, porque não tem aceleração de hardware.
+O diagrama a seguir mostra o que roda no PC de quem desenvolve, o que roda no container em que a IA
+trabalha e por qual endereço cada peça chega à outra.
+
+```mermaid
+flowchart TD
+  accTitle: Onde rodam as peças das jornadas
+  subgraph container["Container da IA"]
+    maestro["Maestro"]
+    metro["Metro"]
+    firebase[("Emuladores do Firebase")]
+  end
+  subgraph pc["PC de quem desenvolve"]
+    adb["Servidor do adb"]
+    app["App no emulador Android"]
+  end
+  maestro -->|"comanda por localhost:5037"| adb
+  adb -->|"toca, digita e lê a tela"| app
+  maestro -->|"zera os dados por localhost:8080"| firebase
+  app -->|"baixa o JavaScript por 10.0.2.2:8081"| metro
+  app -->|"entra, lê e grava por 10.0.2.2"| firebase
+```
+
+- **No PC, só o emulador Android, com o app.** O container não roda um emulador, porque não tem
+  aceleração de hardware.
+- **No container, o Maestro, o Metro e os emuladores do Firebase** (Auth na porta 9099, Firestore
+  na 8080 e Storage na 9199). O Java, o Maestro e o adb são os do PC, emprestados ao container.
+- **O container divide a rede com o PC**, então o `localhost` de um é o do outro. O Maestro chega
+  ao emulador Android pelo servidor do adb do PC, e o app, de dentro do emulador, chega ao PC, e
+  por ele ao Metro e aos emuladores do Firebase, pelo endereço `10.0.2.2`.
+- **O app é o build de debug**, que não traz o JavaScript dentro dele: a cada abertura, baixa o
+  código do Metro. Mudar o código do app não pede um build novo; mudar o código nativo pede.
+- **Contra os emuladores do Firebase**, com dados de teste, e não contra o projeto real.
 - **O emulador é um Android 15**, com a imagem de testes do Google (`google_atd`), a mais leve que
   traz os serviços do Google que o app usa. No Android 16, a splash do app deixa a janela presa
   numa animação que nunca termina, e cada toque das jornadas passa a levar 10 s em vez de 2; no
   Android 15 isso não acontece. Quem usa o app não percebe, porque um toque de verdade não espera a
   animação.
-- **Todo o resto roda no container:** o Maestro, os emuladores do Firebase (Auth, Firestore e
-  Storage) e o Metro. O container divide a rede com o PC, então o Maestro fala com o emulador pelo
-  adb do próprio PC, e o app chega aos emuladores do Firebase e ao Metro pelo endereço do PC. O
-  Java, o Maestro e o adb são os do PC, emprestados ao container.
-- **Contra os emuladores do Firebase**, com dados de teste, e não contra o projeto real. O app de
-  teste é o build de debug, com o Metro servindo o código apontado para os emuladores.
-- **Cada fluxo começa do mesmo ponto:** apaga os dados do Firestore do emulador e grava a lista de
-  e-mails permitidos das contas de teste.
-- **Os fluxos rodam um depois do outro.** Cada um apaga o Firestore inteiro, e o app é uma família
-  por banco: dois ao mesmo tempo apagariam os dados um do outro.
+
+## O fluxo de uma jornada
+
+Uma rodada são dois comandos, no container:
+
+- **`pnpm journeys:stack`** (`journeys/stack.sh`) sobe a pilha: os emuladores do Firebase e o
+  Metro, com `EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true`. É essa variável que aponta o app para os
+  emuladores, então o Metro tem de ser o da pilha, e não o de um `pnpm mobile start`. A pilha não
+  sobe se uma das portas dela já estiver ocupada, e, se um dos dois cair, o outro cai junto.
+- **`pnpm journeys:test`** (`journeys/maestro.sh test`) desliga as animações do emulador Android,
+  que pesam em cada troca de tela, e passa ao Maestro os fluxos de `journeys/flows/`. Também roda
+  um fluxo só (`pnpm journeys:test <caminho do fluxo>`) ou os de uma funcionalidade
+  (`pnpm journeys:test tag:auth`). Quando a IA explora o app, usa o mesmo Maestro pelo MCP
+  (`journeys/maestro.sh mcp`).
+
+Cada fluxo passa pelos mesmos passos, que o diagrama a seguir mostra: o Maestro zera os dados, abre
+o app, entra numa conta e confere a tela.
+
+```mermaid
+sequenceDiagram
+  accTitle: Um fluxo das jornadas, do começo ao fim
+  box Container da IA
+    participant maestro as Maestro
+    participant firebase as Emuladores do Firebase
+    participant metro as Metro
+  end
+  box PC de quem desenvolve
+    participant app as App no emulador
+  end
+  maestro->>firebase: wrap: apaga o Firestore e grava a lista de e-mails permitidos
+  maestro->>app: abre o app limpo, sem sessão
+  app->>metro: pede o JavaScript
+  metro-->>app: devolve o código apontado para os emuladores
+  maestro->>app: abre o link de teste da conta
+  app->>firebase: entra com a conta Google inventada
+  app->>firebase: acompanha o e-mail na lista de permitidos
+  maestro->>app: toca, digita e confere a tela
+  Note over maestro: guarda uma captura de cada estado conferido
+```
+
+1. **Zera os dados.** O script `journeys/scripts/resetData.js` apaga o Firestore do emulador e grava
+   a lista de e-mails permitidos com as contas de teste. Ele fala com o emulador por HTTP, como
+   administrador (`Bearer owner`), o que passa por cima das regras de segurança.
+2. **Entra numa conta.** O subfluxo `journeys/subflows/signInAs.yaml` abre o app limpo, sem sessão,
+   espera a tela de login, abre o link de teste da conta
+   ([Como a IA entra numa conta](#como-a-ia-entra-numa-conta)) e só termina quando a entrada
+   termina: daí em diante, a tela é a do perfil da conta.
+3. **Confere a tela.** O fluxo toca, digita, confirma o que tem de aparecer e o que não pode
+   aparecer, e tira uma captura de cada estado conferido. Um passo que muda os dados no meio do
+   fluxo, como tirar um e-mail da lista com o app aberto, é outro script de `journeys/scripts/`.
+
+**O resultado da rodada fica em `journeys/.local/captures/<data e hora>/`**, fora do Git: o
+relatório JUnit (`report.xml`), com o tempo de cada fluxo, e uma pasta por fluxo, com as capturas e
+o log do aparelho.
+
+**Os fluxos rodam um depois do outro.** Cada um apaga o Firestore inteiro, e o app é uma família
+por banco: dois ao mesmo tempo apagariam os dados um do outro.
 
 ## Como a IA entra numa conta
 
