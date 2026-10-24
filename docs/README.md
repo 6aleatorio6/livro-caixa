@@ -35,6 +35,7 @@ App de celular para controlar o financeiro de uma família.
 ### 5. Arquitetura
 
 - [Plataforma e Stack](05-arquitetura/01-plataforma-e-stack.md)
+- [Jornadas de Teste](05-arquitetura/02-jornadas-de-teste.md)
 
 > **Seções de trabalho interno**, numeradas no fim para ficarem após o conteúdo principal:
 > `97-reviews` (revisões da documentação), `98-rascunhos` (material em elaboração) e

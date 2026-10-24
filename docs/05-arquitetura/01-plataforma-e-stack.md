@@ -15,6 +15,8 @@ Esta página registra só o que já foi decidido. O código ainda não começou.
 - **Os comprovantes ficam no Cloud Storage**, o serviço de arquivos do Firebase, e os dados no
   Firestore. Cada arquivo tem um registro numa coleção própria, que reúne todos os arquivos do app.
   As regras do Cloud Storage conferem o tipo e o tamanho de cada arquivo: imagem ou PDF, de até 5 MB.
+- **Jornadas de teste com o Maestro**, no emulador Android do PC de quem desenvolve, contra os
+  emuladores do Firebase ([Jornadas de Teste](02-jornadas-de-teste.md)).
 - **Um projeto novo**, criado do zero com os comandos de criação mais recentes de cada ferramenta,
   sem copiar código de outro projeto.
 

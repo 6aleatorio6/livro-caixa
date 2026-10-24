@@ -23,6 +23,9 @@ tema aparece na documentação.
 | D-15 | O app é só em português e só em reais? | 🟢 Respondido — sim |
 | D-16 | Um mês que passou sem pagamento continua a pagar? | 🟢 Respondido — sim, só no próprio mês |
 | D-17 | Onde o easter egg do "Paia" aparece no app? | 🟢 Respondido — na arte da splash screen |
+| D-18 | Como o Maestro alcança o emulador do PC? | 🔴 Em aberto |
+| D-19 | O JSON do Google falso leva o nome da pessoa? | 🔴 Em aberto |
+| D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🔴 Em aberto |
 
 <!-- Status: 🔴 Em aberto · 🟡 Parcial — o que falta · 🟢 Respondido — a resposta -->
 
@@ -163,3 +166,42 @@ mês mostra só as próprias contas.
 ele se esconde na arte fica para o design.
 
 **Onde aparece:** [Contexto](../01-visao-geral/01-contexto.md).
+
+## D-18 — O Maestro e o emulador do PC
+
+**Dúvida:** por onde o Maestro chega ao emulador, que roda no PC, enquanto a IA trabalha num
+container.
+
+**O que se sabe:** o container alcança o PC em `host.containers.internal`, mas não tem Java nem adb.
+O Maestro só procura aparelhos no adb de `localhost:5037`, fixo no código (issue #3461 do Maestro,
+aberta). As saídas:
+
+- **túnel:** o adb do PC aceita conexões de fora (`adb -a nodaemon server`) e um `socat` no
+  container liga o `localhost:5037` ao PC. Pede Java 17, Maestro e `socat` no container, e não está
+  confirmado que o Maestro funciona inteiro por ele;
+- **SSH:** `claude mcp add maestro -- ssh leonardo@host.containers.internal maestro mcp`, com o
+  Maestro rodando ao lado do emulador. Pede um servidor SSH no PC e uma chave no container. É a
+  preferida da sessão que pesquisou.
+
+**Onde aparece:** [Jornadas de Teste](../05-arquitetura/02-jornadas-de-teste.md).
+
+## D-19 — O nome no Google falso
+
+**Dúvida:** se a credencial montada com JSON aceita um campo com o nome da pessoa.
+
+**O que se sabe:** o exemplo da documentação do Firebase usa só `sub`, `email` e `email_verified`,
+e é da web, não do SDK nativo do React Native. As regras do lançamento conferem o nome de quem pagou
+contra o login: sem o nome, essa conferência muda.
+
+**Onde aparece:** [Jornadas de Teste](../05-arquitetura/02-jornadas-de-teste.md).
+
+## D-20 — A jornada do compartilhamento
+
+**Dúvida:** como a jornada chega à tela de compartilhar do Android.
+
+**O que se sabe:** o Maestro comanda o aparelho inteiro, então pode abrir o app de arquivos,
+compartilhar e escolher o Livro-Caixa, como a família faz. A alternativa é um
+`adb shell am start -a android.intent.action.SEND …` antes do fluxo, mais frágil, porque precisa de
+um endereço de arquivo que o app consiga ler. Nenhuma das duas foi testada.
+
+**Onde aparece:** [Jornadas de Teste](../05-arquitetura/02-jornadas-de-teste.md).
