@@ -69,4 +69,5 @@ reads that file (the `apps/docusaurus` README, "Erros de compilação").
 - Don't run `pnpm docusaurus build` or start another server in place of the missing one: both
   compile the whole site and hide from the developer that the server went down.
 - The file reports neither broken links nor Mermaid diagrams: a link, only the `build` reports; a
-  diagram, only the page open in the browser shows.
+  diagram, `check-mermaid.mjs` and the PNGs of `render-mermaid.mjs` from the `mermaid-diagrams`
+  skill.
