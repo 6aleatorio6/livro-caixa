@@ -2,7 +2,8 @@
 
 Todo [pagamento](03-pagamento-de-conta-recorrente.md) e toda [conta avulsa](04-conta-avulsa.md) tem
 um comprovante: uma imagem ou um PDF. O membro escolhe o arquivo dentro do app ou o compartilha a
-partir de outro app do Android.
+partir de outro app do Android. Por enquanto, o app guarda o comprovante, mas não lê o valor nele
+([Leitura do valor pelo comprovante](../../04-escopo-excluido/07-leitura-do-valor-pelo-comprovante.md)).
 
 ## Formatos e tamanho
 

@@ -27,6 +27,7 @@ tema aparece na documentação.
 | D-19 | O JSON do Google falso leva o nome da pessoa? | 🔴 Em aberto |
 | D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🔴 Em aberto |
 | D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🔴 Em aberto |
+| D-22 | O app lê o valor no comprovante? | 🟢 Respondido — fica para depois, com a leitura no celular |
 
 <!-- Status: 🔴 Em aberto · 🟡 Parcial — o que falta · 🟢 Respondido — a resposta -->
 
@@ -219,3 +220,15 @@ são os lançamentos. A lista do mês, com a troca de mês, também foi escolha 
 Início.
 
 **Onde aparece:** [Meus Lançamentos](../03-funcionalidades/01-principal/06-meus-lancamentos.md).
+
+## D-22 — Ler o valor no comprovante
+
+**Resposta:** fica como evolução futura, no Escopo Excluído. Quando entrar, a leitura é feita no
+próprio celular, com o reconhecimento de texto do ML Kit
+(`@infinitered/react-native-mlkit-text-recognition`). A sessão que pesquisou recomendou o Gemini,
+pelo Firebase AI Logic (`@react-native-firebase/ai`), que lê o PDF direto e devolve só o valor, mas
+envia o comprovante ao Google. A escolha foi a leitura no celular. Falta confirmar se o pacote do
+ML Kit funciona na nova arquitetura do React Native 0.88.
+
+**Onde aparece:** [Leitura do Valor pelo Comprovante](../04-escopo-excluido/07-leitura-do-valor-pelo-comprovante.md),
+[Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).
