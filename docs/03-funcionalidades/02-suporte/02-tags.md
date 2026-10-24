@@ -2,7 +2,7 @@
 
 Etiquetas com nome e cor que classificam as [contas recorrentes](../01-principal/02-contas-recorrentes.md)
 e as [contas avulsas](../01-principal/04-conta-avulsa.md). Qualquer membro cria e altera tags, numa
-tela própria.
+tela própria, na aba [Configurações](03-configuracoes.md).
 
 ## Quem usa e quando
 

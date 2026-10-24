@@ -22,11 +22,13 @@ App de celular para controlar o financeiro de uma família.
 - [Pagamento de Conta Recorrente](03-funcionalidades/01-principal/03-pagamento-de-conta-recorrente.md)
 - [Conta Avulsa](03-funcionalidades/01-principal/04-conta-avulsa.md)
 - [Comprovantes](03-funcionalidades/01-principal/05-comprovantes.md)
+- [Meus Lançamentos](03-funcionalidades/01-principal/06-meus-lancamentos.md)
 
 **Suporte**
 
 - [Acesso](03-funcionalidades/02-suporte/01-acesso.md)
 - [Tags](03-funcionalidades/02-suporte/02-tags.md)
+- [Configurações](03-funcionalidades/02-suporte/03-configuracoes.md)
 
 ### 4. Escopo Excluído
 

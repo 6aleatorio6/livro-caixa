@@ -26,6 +26,7 @@ tema aparece na documentação.
 | D-18 | Como o Maestro alcança o emulador do PC? | 🔴 Em aberto |
 | D-19 | O JSON do Google falso leva o nome da pessoa? | 🔴 Em aberto |
 | D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🔴 Em aberto |
+| D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🔴 Em aberto |
 
 <!-- Status: 🔴 Em aberto · 🟡 Parcial — o que falta · 🟢 Respondido — a resposta -->
 
@@ -205,3 +206,16 @@ compartilhar e escolher o Livro-Caixa, como a família faz. A alternativa é um
 um endereço de arquivo que o app consiga ler. Nenhuma das duas foi testada.
 
 **Onde aparece:** [Jornadas de Teste](../05-arquitetura/02-jornadas-de-teste.md).
+
+## D-21 — A aba do meio
+
+**Dúvida:** como se chama a aba com os lançamentos de quem está logado, e se a lista é do mês, com a
+troca de mês do Início, ou de todos os meses juntos.
+
+**O que se sabe:** no design, Leonardo pôs Contas e Tags juntas numa aba de configurações, porque
+são de uso raro, e no meio "minhas contas ou algo assim". O nome "Meus lançamentos" foi escolha da
+sessão de design: o glossário diz que a conta é da família, não de um membro, e o que é de cada um
+são os lançamentos. A lista do mês, com a troca de mês, também foi escolha dela, para seguir o
+Início.
+
+**Onde aparece:** [Meus Lançamentos](../03-funcionalidades/01-principal/06-meus-lancamentos.md).

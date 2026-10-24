@@ -20,8 +20,8 @@ admin mantém essa lista.
 - É marcado à mão, direto no banco de dados. O app não tem tela para dar ou tirar esse papel.
 - O esperado é um admin só, mas o app não confere isso: se mais de uma conta for marcada no banco,
   todas funcionam como admin.
-- Tem uma tela para adicionar e remover e-mails da lista de e-mails permitidos. Só ele vê essa
-  tela.
+- Tem uma tela para adicionar e remover e-mails da lista de e-mails permitidos, na aba
+  [Configurações](03-configuracoes.md). Só ele vê essa tela.
 - Um e-mail só pode ser removido enquanto a pessoa não tem nenhum lançamento. A partir do primeiro
   pagamento ou conta avulsa, ela não sai mais da lista.
 

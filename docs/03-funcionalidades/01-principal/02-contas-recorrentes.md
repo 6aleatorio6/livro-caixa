@@ -6,8 +6,9 @@ o pagamento. Por enquanto a única recorrência é a mensal.
 
 ## Quem usa e quando
 
-Qualquer membro cadastra, altera e exclui as contas recorrentes, e qualquer membro paga qualquer
-uma delas ([Pagamento de Conta Recorrente](03-pagamento-de-conta-recorrente.md)).
+Qualquer membro cadastra, altera e exclui as contas recorrentes, na aba
+[Configurações](../02-suporte/03-configuracoes.md), e qualquer membro paga qualquer uma delas
+([Pagamento de Conta Recorrente](03-pagamento-de-conta-recorrente.md)).
 
 ## O que se cadastra
 
