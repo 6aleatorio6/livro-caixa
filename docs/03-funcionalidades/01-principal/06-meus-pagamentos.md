@@ -2,8 +2,8 @@
 
 Os lançamentos do membro logado: os [pagamentos de contas recorrentes](03-pagamento-de-conta-recorrente.md)
 e as [contas avulsas](04-conta-avulsa.md) que ele registrou. É a aba do meio do app, e é daqui que
-o membro altera ou exclui o que registrou. A aba se chama Meus pagamentos, mas também lista as
-contas avulsas, que já entram pagas.
+o membro altera ou exclui o que registrou. Tudo na lista é um pagamento: a conta avulsa não tem
+valor previsto e só é registrada já paga, junto com o comprovante.
 
 ## Quem usa e quando
 

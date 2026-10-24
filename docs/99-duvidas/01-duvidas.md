@@ -206,8 +206,8 @@ um endereço de arquivo que o app consiga ler. Nenhuma das duas foi testada.
 
 **Resposta:** a aba se chama Meus pagamentos e mostra um mês por vez, com a troca de mês, como o
 Início. A sessão de design tinha usado "Meus lançamentos", pelo glossário (a conta é da família, e o
-que é de cada um são os lançamentos); Leonardo escolheu "Meus pagamentos", mesmo com as contas
-avulsas na lista.
+que é de cada um são os lançamentos); Leonardo escolheu "Meus pagamentos", porque a conta avulsa
+também é um pagamento: não tem valor previsto e só é registrada junto com o comprovante.
 
 **Onde aparece:** [Meus Pagamentos](../03-funcionalidades/01-principal/06-meus-pagamentos.md).
 
