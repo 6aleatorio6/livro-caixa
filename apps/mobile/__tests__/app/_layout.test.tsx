@@ -88,4 +88,18 @@ describe('RootLayout', () => {
 
     expect(await screen.findByText('Sem acesso')).toBeOnTheScreen();
   });
+
+  it('Should open the app when the e-mail enters the list while the no-access screen is open', async () => {
+    const realtime = await renderAppAs(
+      signedInAuthState(signInWithFakeGoogleScenarios.outsiderSignsIn),
+      allowedEmailQueryScenarios.emailAddedWhileOpen,
+    );
+    expect(screen.getByText('Sem acesso')).toBeOnTheScreen();
+
+    await act(async () => realtime.applyChange(allowedEmailQueryService));
+
+    expect(await screen.findByText('Página do início')).toBeOnTheScreen();
+    expect(screen.queryByText('Sem acesso')).not.toBeOnTheScreen();
+    expect(screen.queryByText('Entrar')).not.toBeOnTheScreen();
+  });
 });

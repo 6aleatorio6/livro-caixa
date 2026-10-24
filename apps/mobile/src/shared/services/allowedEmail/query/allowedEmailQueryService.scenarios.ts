@@ -8,6 +8,7 @@ const CARLA = 'carla.lima@exemplo.com';
 const ANA_PERSON = { name: 'Ana Souza', isAdmin: true };
 const ANA_AS_MEMBER = { ...ANA_PERSON, isAdmin: false };
 const BRUNO_PERSON = { name: 'Bruno Souza', isAdmin: false };
+const CARLA_PERSON = { name: 'Carla Lima', isAdmin: false };
 const ANA_IN_THE_LIST = { [`allowedEmails/${ANA}`]: { ...ANA_PERSON, hasEntries: false } };
 const BRUNO_IN_THE_LIST = { [`allowedEmails/${BRUNO}`]: { ...BRUNO_PERSON, hasEntries: false } };
 
@@ -29,6 +30,17 @@ export const allowedEmailQueryScenarios = {
     input: { email: BRUNO },
     result: BRUNO_PERSON,
     afterChange: { write: { [`allowedEmails/${BRUNO}`]: null }, result: null },
+  },
+  // Quem espera em "Aguardando permissão" é liberada quando o e-mail entra na lista.
+  emailAddedWhileOpen: {
+    signedInAs: CARLA,
+    given: BRUNO_IN_THE_LIST,
+    input: { email: CARLA },
+    result: null,
+    afterChange: {
+      write: { [`allowedEmails/${CARLA}`]: { ...CARLA_PERSON, hasEntries: false } },
+      result: CARLA_PERSON,
+    },
   },
   adminLosesAdminWhileOpen: {
     signedInAs: ANA,
