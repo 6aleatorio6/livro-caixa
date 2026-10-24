@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { TextInput, type TextInputProps, View } from 'react-native';
+import { CircleAlert } from 'lucide-react-native';
+import { type ComponentRef, useRef, useState } from 'react';
+import { Pressable, TextInput, type TextInputProps, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import type { IInputMinimalProps } from '@/shared/types/form/InputMinimalProps';
@@ -14,7 +15,7 @@ export interface ITextFieldProps
   supportText?: string;
 }
 
-/** Campo de texto com rótulo, marca de obrigatório e mensagem de erro embaixo. */
+/** Campo de texto: o rótulo (com a marca de obrigatório) fica dentro da caixa, acima do valor; a mensagem de erro vem embaixo. */
 export function TextField({
   label,
   supportText,
@@ -27,31 +28,43 @@ export function TextField({
   ...inputProps
 }: ITextFieldProps) {
   const { theme } = useUnistyles();
+  const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
   const [isFocused, setIsFocused] = useState(false);
   const hasError = Boolean(errorMessage);
 
   return (
     <View style={styles.container}>
-      <AppText variant="bodySmall" color={hasError ? 'error' : 'onSurfaceVariant'}>
-        {label}
-        {isRequired && <RequiredMark />}
-      </AppText>
-      <TextInput
-        {...inputProps}
-        accessibilityLabel={label}
-        accessibilityHint={isRequired ? 'Campo obrigatório' : undefined}
-        accessibilityState={{ disabled }}
-        editable={!disabled}
-        value={value}
-        onChangeText={onValueChange}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => {
-          setIsFocused(false);
-          onBlur();
-        }}
-        placeholderTextColor={theme.colors.onSurfaceVariant}
-        style={styles.input(isFocused, hasError, disabled)}
-      />
+      <Pressable
+        accessible={false}
+        disabled={disabled}
+        onPress={() => inputRef.current?.focus()}
+        style={styles.box(isFocused, hasError, disabled)}
+      >
+        <View style={styles.content}>
+          <AppText variant="bodySmall" color={hasError ? 'error' : 'onSurfaceVariant'}>
+            {label}
+            {isRequired && <RequiredMark />}
+          </AppText>
+          <TextInput
+            {...inputProps}
+            ref={inputRef}
+            accessibilityLabel={label}
+            accessibilityHint={isRequired ? 'Campo obrigatório' : undefined}
+            accessibilityState={{ disabled }}
+            editable={!disabled}
+            value={value}
+            onChangeText={onValueChange}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => {
+              setIsFocused(false);
+              onBlur();
+            }}
+            placeholderTextColor={theme.colors.onSurfaceVariant}
+            style={styles.input}
+          />
+        </View>
+        {hasError && <CircleAlert size={20} color={theme.colors.error} accessible={false} />}
+      </Pressable>
       {hasError ? (
         <AppText variant="bodySmall" color="error" accessibilityLiveRegion="polite">
           {errorMessage}
@@ -69,14 +82,21 @@ export function TextField({
 
 const styles = StyleSheet.create((theme) => ({
   container: { gap: theme.spacing.extraSmall },
-  input: (isFocused: boolean, hasError: boolean, isDisabled: boolean) => ({
-    ...theme.typography.bodyLarge,
-    color: theme.colors.onSurface,
+  box: (isFocused: boolean, hasError: boolean, isDisabled: boolean) => ({
     minHeight: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.medium,
     paddingHorizontal: theme.spacing.large,
-    borderRadius: theme.radii.extraSmall,
+    borderRadius: theme.radii.small,
     borderWidth: isFocused || hasError ? 2 : 1,
     borderColor: hasError ? theme.colors.error : isFocused ? theme.colors.primary : theme.colors.outline,
     opacity: isDisabled ? theme.opacity.disabled : 1,
   }),
+  content: { flex: 1 },
+  input: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.onSurface,
+    padding: 0,
+  },
 }));
