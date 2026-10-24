@@ -3,6 +3,14 @@ rules_version = '2';
 // Tudo o que não está liberado aqui é negado.
 service cloud.firestore {
   match /databases/{database}/documents {
+    // O admin é quem tem `isAdmin` na própria entrada da lista. O e-mail do login é comparado em
+    // minúsculas, como o id do documento, e só vale com o e-mail verificado.
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && get(/databases/$(database)/documents/allowedEmails/$(request.auth.token.email.lower())).data.isAdmin == true;
+    }
+
     // A pessoa lê só a entrada do próprio e-mail na lista de e-mails permitidos: é assim que o app
     // sabe, depois do login pelo Google, se ela tem acesso. O id do documento é o e-mail em
     // minúsculas, e o do login pode vir com maiúsculas.
@@ -10,6 +18,28 @@ service cloud.firestore {
       allow get: if request.auth != null
         && request.auth.token.email_verified == true
         && request.auth.token.email.lower() == email;
+
+      // O admin vê a lista inteira, que alimenta a tela de e-mails permitidos.
+      allow list, get: if isAdmin();
+
+      // Só chaves exatas, um nome com texto e um id que é um e-mail em minúsculas; a pessoa nova
+      // nunca nasce admin nem com lançamentos, e o admin só se torna admin pelo console. Sem
+      // `update`, um e-mail já na lista não é sobrescrito, o que recusa o repetido.
+      allow create: if isAdmin()
+        && email == email.lower()
+        && email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+        && request.resource.data.keys().hasOnly(['name', 'isAdmin', 'hasEntries'])
+        && request.resource.data.keys().hasAll(['name', 'isAdmin', 'hasEntries'])
+        && request.resource.data.name is string
+        && request.resource.data.name.trim().size() > 0
+        && request.resource.data.isAdmin == false
+        && request.resource.data.hasEntries == false;
+
+      // Quem tem lançamento fica na lista, porque os lançamentos citam a pessoa, e um admin não
+      // se remove (a família não pode ficar sem quem a administra).
+      allow delete: if isAdmin()
+        && resource.data.hasEntries == false
+        && resource.data.isAdmin == false;
     }
   }
 }
