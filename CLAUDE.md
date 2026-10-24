@@ -17,6 +17,17 @@ Code, skills, rules and every `CLAUDE.md` are written in English. In pt-BR: comm
 documentation, the text people read, commit messages and branch names —
 [.claude/rules/code-language.md](.claude/rules/code-language.md).
 
+## Branches
+
+`main` triggers the CI (not configured yet). Work happens on `#NN-subject` branches: a two-digit
+sequential number and a kebab-case subject in pt-BR, as in projeto-a (`#01-inicio`,
+`#02-banco-real-nos-endpoints`). Each one merges into `main` when it is done. Nothing is committed
+straight to `main`, and `main` is the `<base>` of the "Revisão da branch". Commit messages follow
+the `commit-convention` skill.
+
+In the shell, quote the name: a `#` at the start of a word begins a comment —
+`git switch -c "#04-assunto"`.
+
 ## Documentation
 
 The rules for writing the documentation are in [docs/CLAUDE.md](docs/CLAUDE.md). Working drafts
