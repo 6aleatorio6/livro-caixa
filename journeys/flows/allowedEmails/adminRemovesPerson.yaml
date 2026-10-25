@@ -11,13 +11,19 @@ env:
   CLARA_EMAIL: clara.souza@exemplo.com
   CLARA_NAME: Clara Souza
 ---
-- runScript: ../../scripts/resetData.js
-- runScript:
-    file: ../../scripts/addAllowedEmail.js
+- runFlow:
+    file: ../../steps/startAs.yaml
     env:
+      PROFILE: admin
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: allowEmail
       EMAIL: ${CLARA_EMAIL}
       NAME: ${CLARA_NAME}
-- runFlow: ../../subflows/openAllowedEmails.yaml
+- tapOn: Configurações
+- tapOn: E-mails permitidos
+- assertVisible: Adicionar pessoa
 - assertVisible: ${CLARA_EMAIL}
 - assertVisible: Sem lançamentos
 - takeScreenshot: allowedEmails--before-remove
@@ -32,7 +38,7 @@ env:
 - takeScreenshot: allowedEmails--person-removed
 # A Clara tenta entrar: já não está na lista.
 - runFlow:
-    file: ../../subflows/signInAs.yaml
+    file: ../../steps/signInAs.yaml
     env:
       LINK: livrocaixa://test-sign-in?email=clara.souza%40exemplo.com&name=Clara%20Souza
 - assertVisible: Aguardando permissão

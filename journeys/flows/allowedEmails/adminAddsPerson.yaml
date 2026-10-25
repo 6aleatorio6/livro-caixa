@@ -8,8 +8,13 @@ appId: dev.leonardolf.livrocaixa
 tags:
   - allowedEmails
 ---
-- runScript: ../../scripts/resetData.js
-- runFlow: ../../subflows/openAllowedEmails.yaml
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: admin
+- tapOn: Configurações
+- tapOn: E-mails permitidos
+- assertVisible: Adicionar pessoa
 - assertNotVisible: ${output.accounts.outsider.email}
 - tapOn: Nome
 - inputText: ${output.accounts.outsider.name}
@@ -26,7 +31,7 @@ tags:
 - takeScreenshot: allowedEmails--person-added
 # A Carla entra com a conta dela: a lista já a libera.
 - runFlow:
-    file: ../../subflows/signInAs.yaml
+    file: ../../steps/signInAs.yaml
     env:
       LINK: ${output.accounts.outsider.signInLink}
 - assertNotVisible: Aguardando permissão

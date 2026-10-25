@@ -9,11 +9,10 @@ appId: dev.leonardolf.livrocaixa
 tags:
   - auth
 ---
-- runScript: ../../scripts/resetData.js
 - runFlow:
-    file: ../../subflows/signInAs.yaml
+    file: ../../steps/startAs.yaml
     env:
-      LINK: ${output.accounts.outsider.signInLink}
+      PROFILE: outsider
 - assertVisible: Aguardando permissão
 - assertVisible: .*${output.accounts.outsider.email}.*
 - takeScreenshot: no-access--outside-list

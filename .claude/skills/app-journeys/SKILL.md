@@ -2,41 +2,42 @@
 name: app-journeys
 description: >-
   How this session uses the Livro-Caixa app for real, on the Android emulator of the developer's
-  PC, through the Maestro MCP running in this container, against the Firebase emulators: starting
-  the stack, resetting the test data, signing in as a test account, reading the screen, taking
+  PC, through Maestro's CLI and adb from this container, against the Firebase emulators: starting
+  the stack, the test data, signing in as a test account, reading the screen in dp, taking
   screenshots, checking a screen against the .pen design, what a journey is for (the developer
   testing by hand, redundant by definition) and what a bug it finds becomes, how to write the
-  Maestro flow, and the counted round. Use whenever the task is to open the app,
-  navigate it, check something on screen, take a screenshot of the app, or write or run the
-  journeys. Triggers: "abre o app", "navega no app", "confere no emulador", "tira print do app",
-  "roda as jornadas", "guarda esse caminho", "vira jornada", "Maestro", "jornada".
+  Maestro flow, and the counted round. Use whenever the task is to open the app, navigate it, check
+  something on screen, take a screenshot of the app, or write or run the journeys. Triggers: "abre
+  o app", "navega no app", "confere no emulador", "tira print do app", "roda as jornadas", "guarda
+  esse caminho", "vira jornada", "Maestro", "jornada".
+allowed-tools: Bash(pnpm journeys:test *) Bash(pnpm journeys:inspect *) Bash(adb devices) Bash(adb exec-out screencap *)
 ---
 
 # App journeys
 
 The Android emulator runs on the developer's PC: this container has no hardware acceleration.
 Everything else runs here. The container shares the PC's network (`--network host` in the
-claude-box launcher), so `localhost` here is the PC's: Maestro talks to the PC's adb server on
-`localhost:5037`, and the app on the emulator reaches the stack on `10.0.2.2`, the PC's loopback.
+claude-box launcher), so `localhost` here is the PC's: Maestro and adb talk to the PC's adb server
+on `localhost:5037`, and the app on the emulator reaches the stack on `10.0.2.2`, the PC's loopback.
 Java, Maestro and the Android SDK's adb come from the PC: the claude-box mounts them and puts them
 on the `PATH`, outside this repository. A missing one is the box's to fix: tell the person.
 
-`journeys/maestro.sh` is the only way in:
+Three commands, all from the repository root:
 
-- `mcp`: the Maestro MCP server, registered in this project as `maestro`;
-- `test [flow | tag:<name>]`: the counted round (`pnpm journeys:test`).
+- `pnpm journeys:stack` (`journeys/stack.sh`): the stack.
+- `pnpm journeys:test [<flow> | tag:<name>]` (`journeys/test.ts`): prepares the emulator (app
+  drawing on, animations off: see the ATD trap), deletes old rounds, serves the test data and runs
+  Maestro.
+- `pnpm journeys:inspect [<selector>…]` (`journeys/inspect.ts`): the screen's nodes, in dp.
 
-Both prepare the emulator first (app drawing on, animations off: see the ATD trap below) and
-export `MAESTRO_FIREBASE_PROJECT` for the flows. The MCP runs inside
-`journeys/.local/captures/session/`, so a `takeScreenshot` from `run` lands there: give `run`
-absolute paths.
+Where each file goes, and when something becomes a step or a scenario: `journeys/CLAUDE.md`.
 
 ## The stack
 
-`pnpm journeys:stack` (`journeys/stack.sh`) starts the Firebase emulators and Metro, with
+`pnpm journeys:stack` starts the Firebase emulators and Metro, with
 `EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true`. This session starts it in the background and waits for
 "Pilha das jornadas de pé"; it refuses to start when one of its ports is taken, which means another
-stack or another Metro is up. It needs:
+stack or another Metro is up: never take it down. It needs:
 
 - the Android emulator open on the PC: the `Livro_Caixa_API_35` AVD (Android 15, the
   `google_atd` image, Pixel 7 profile; Android 16 is a trap below). The person opens it;
@@ -50,46 +51,59 @@ stack or another Metro is up. It needs:
 - `apps/mobile/google-services.json`: the emulators start with its project id, the one the app
   uses.
 
-## Opening the session
+## Using the app
 
-1. `list_devices` must list the emulator. Only a failing call proves the MCP is down (the user's global rule):
-   say what failed and ask, never guess what the screen shows.
-2. Every exploration starts like a journey: reset the data, then sign in. With `run` and inline
-   YAML:
+1. `adb devices` lists `emulator-5554`. No device: ask the person to open the AVD.
+2. Check that no other round is running: one device and one Firestore serve every session, and
+   each flow wipes the data. `adb shell ps -A | grep dev.mobile.maestro` prints the Maestro driver
+   only while a round runs.
+3. Every exploration starts like a journey, from a throwaway flow in `journeys/.local/explore/`
+   (outside Git), which reaches `journeys/` by the same `../../` as a flow in `flows/`:
 
    ```yaml
    appId: dev.leonardolf.livrocaixa
    ---
-   - runScript: /home/leonardo/projects/pessoal/livro-caixa/journeys/scripts/resetData.js
    - runFlow:
-       file: /home/leonardo/projects/pessoal/livro-caixa/journeys/subflows/signInAs.yaml
+       file: ../../steps/startAs.yaml
        env:
-         LINK: ${output.accounts.member.signInLink}
+         PROFILE: member
+   - tapOn: Configurações
    ```
 
-   The accounts live only in `journeys/scripts/resetData.js`: `admin` (Ana Souza), `member` (Bruno
-   Souza), `outsider` (Carla Lima, outside the allowed list). Signing in goes through the test link
-   `livrocaixa://test-sign-in?email=…&name=…`, which only works with the app on the emulators
-   (`TestSignInPage`).
+   `pnpm journeys:test journeys/.local/explore/<name>.yaml` runs it (about 26 s). A flow outside
+   `flows/` is not a counted round: it goes to `captures/explore/`. The app stays on the screen where the flow stopped, so the next step is
+   another throwaway flow without `startAs` or `launchApp`, which goes on from there (about 12 s).
+   `startAs` takes `admin` (Ana Souza), `member` (Bruno Souza) or `outsider` (Carla Lima, outside
+   the allowed list); the accounts live only in `journeys/data/accounts.ts`.
+4. Read the screen with `pnpm journeys:inspect <selector>…`: one line per matching node, with its
+   text, accessibility label, id, size and position in dp, center and states (clickable, selected,
+   disabled). The selector works like a flow's: text (a full regex, or literal when it isn't one)
+   matches the text or the accessibility label; `id:<regex>` matches the resource id. With no
+   selector, every node with a text, label or id.
+5. Only when color or composition matter:
+   `adb exec-out screencap -p > journeys/.local/captures/screen/<name>.png`. Every image read goes
+   linked in the answer.
 
-## The tools
+Selectors in a flow, in this order: the visible text or the accessibility label (`text` also
+matches the Android content description, so a `Button`'s `label` works), then a `testID` (`id:`)
+only where the text changes from run to run. Never a position (`point`, `index`). Before running an
+unfamiliar step, `maestro check-syntax <flow>` checks it, and the `context7` skill has Maestro's
+commands.
 
-| Tool | For |
-|---|---|
-| `inspect_screen` | the view hierarchy: texts, accessibility labels, ids and bounds |
-| `take_screenshot` | what the person sees; every image read goes linked in the answer |
-| `run` | inline YAML or flow files: taps, typing, assertions, scripts |
-| `cheat_sheet` | Maestro's commands and syntax, before writing an unfamiliar step |
+## No Maestro MCP
 
-Selectors, in this order: the visible text or the accessibility label (`text` also matches the
-Android content description, so a `Button`'s `label` works), then a `testID` (`id:`) only where the
-text changes from run to run. Never a position (`point`, `index`).
+This project has no Maestro MCP, on purpose; don't register one. Every round starts Maestro's
+driver over the MCP's, which then answers "Device server died" until someone reconnects it, and a
+build that runs unattended has nobody to do that. Its `inspect_screen` brings the whole hierarchy
+into the conversation (30 KB on Configurações) and `take_screenshot` an image per call. And an MCP
+is only ever called by the AI: there is no person to keep it for.
 
 ## Checking against the design
 
 Put the screenshot next to the frame of the `.pen`, read with the `pencil` MCP (skill `design`).
-Maestro has no computed style: colors, fonts and spacing are compared by eye on the screenshot and
-against the values of the frame's nodes. Name each divergence with the node it differs from.
+React Native has no computed style: sizes and positions come from `pnpm journeys:inspect`, in dp,
+next to the frame's values; colors are compared on the screenshot. Name each divergence with the
+node it differs from.
 
 ## What a journey is for
 
@@ -111,7 +125,7 @@ documentation's "Testes" page). A journey is never the only test of a behavior.
 - **Only a person judges** how it feels to use (scroll, gestures, delays) and the screen against the
   design: it goes to a "só uma pessoa julga" list, not into a flow.
 - **The emulators can't reproduce** the real Google sign-in: a person checks it.
-- **Exploring** answers with the linked screenshot and needs no flow.
+- **Exploring** answers with the linked screenshot or the `inspect` lines and needs no flow.
 
 ## Writing the journey
 
@@ -127,21 +141,35 @@ documentation's "Testes" page). A journey is never the only test of a behavior.
   # - Carla em sem acesso: _layout.test.tsx e o contrato do allowedEmailQueryService (emailOutsideList).
   # - O e-mail dela no aviso: NoAccessPage.test.tsx, com a sessão do outsiderSignsIn.
   ```
-- The first steps are always `runScript: ../../scripts/resetData.js` and the `signInAs` subflow:
-  each flow starts from the same data, and `launchApp` with `clearState` drops the previous
-  session.
+- The first step is always `steps/startAs.yaml` with the `PROFILE`: each flow starts from the same
+  data, and its `launchApp` with `clearState` drops the previous session. Switching accounts mid-flow
+  is `steps/signInAs.yaml` with the `LINK` (`${output.accounts.<profile>.signInLink}`), which keeps
+  the data.
+- Data that changes mid-flow, as someone outside the app would change it, is a scenario of
+  `journeys/data/scenarios.ts`, asked for by `data/request.js`:
+
+  ```yaml
+  - runScript:
+      file: ../../data/request.js
+      env:
+        SCENARIO: removeAdmin
+        EMAIL: ${output.accounts.admin.email}
+  ```
+
+  A new kind of data (a screen's seed with the design's names and values) is a new scenario in
+  TypeScript, never a loose `.js`: Maestro's `runScript` has no Node and no `import`. A new
+  parameter goes into `ScenarioParams` and into `data/request.js`. `pnpm typecheck:journeys`
+  checks the TypeScript.
 - One assertion per state checked (`assertVisible`, `assertNotVisible`), then
   `takeScreenshot: <screen>--<state>`: Maestro saves it in the flow's own artifact folder and
   rejects a path outside it. Absence is proven with `assertNotVisible`, never by a missing step.
-- A step that changes data mid-flow goes through a script in `journeys/scripts/`, reading
-  `output.firestoreDocumentsUrl` (set by `resetData.js`) and writing as `Bearer owner`.
 - Comments in pt-BR, identifiers and file names in English (`.claude/rules/code-language.md`).
 - A journey goes in the same commit as the behavior it checks and the cheaper tests that cover it
   (skill `commit-convention`).
 
 ## The counted round
 
-1. Try the flow with `run` in the session.
+1. Build the path in throwaway flows; then write the flow in `flows/<feature>/`.
 2. Run the round: `pnpm journeys:test [<flow path> | tag:<name>]`. A flow path runs that flow;
    `tag:<name>` runs the flows with that tag (`tags:` in the flow, one per feature: `auth`);
    nothing runs every flow. Day to day, run the flow or the tag that changed; every flow
@@ -149,15 +177,16 @@ documentation's "Testes" page). A journey is never the only test of a behavior.
 3. Each round gets `journeys/.local/captures/<YYYY-MM-DD-HHMMSS>/`, outside Git: `report.xml`, the
    JUnit report with each flow's time, and Maestro's session folder, with one folder per flow
    holding its `takeScreenshot/` captures, its `commands.json` (each step's duration) and its
-   `logs/` (the device's logcat included). Delete old rounds when they pile up.
+   `logs/` (the device's logcat included). Each round deletes the old ones (what it keeps:
+   `journeys/CLAUDE.md`); copy what a report must keep into a folder of its own.
 4. The flows run one after the other, never in shards: each one wipes the emulator's Firestore,
    and the app is one family per database, so two at once would erase each other's data. When the
    measured time of every flow passes about 30 minutes, bring it to the person: parallel runs need
    one stack per Android emulator.
 
 Only a passing round lets the journey be committed. A failure that isn't clearly a defect of the
-new code (a selector, a timing) is investigated with `inspect_screen` before changing the flow;
-when it is unclear whether it is a regression, ask.
+new code (a selector, a timing) is investigated with `pnpm journeys:inspect` and the round's
+`commands.json` before changing the flow; when it is unclear whether it is a regression, ask.
 
 ## Traps
 
@@ -166,13 +195,14 @@ when it is unclear whether it is a regression, ask.
   `pnpm mobile start`.
 - **The Firebase emulators down:** sign-in shows the error toast and the flow fails. Restart the
   stack.
+- **Port 4020 taken:** `pnpm journeys:test` serves the test data there and refuses to start; another
+  round is running.
 - **`clearState`** erases the session and the cached data: every flow signs in again.
 - **A native change** needs `pnpm android` on the PC again; Metro alone won't bring it.
-- **The first bundle** after `clearState` takes a while: the `signInAs` subflow waits up to 60 s
-  for the sign-in screen.
+- **The first bundle** after `clearState` takes a while: `signInAs` waits up to 60 s for the
+  sign-in screen.
 - **The adb version:** use only the PC's adb, the one the claude-box puts on the `PATH`. A client
   of another version kills the PC's adb server and starts its own.
-- **No device in `list_devices`:** the emulator is closed. Ask the person to open it.
 - **Android 16 makes every tap take about 10 s.** `expo-splash-screen` holds the app's drawing
   until `SplashScreen.hide()`; Android 16 waits only 2 s for a drawn frame to hand the splash over,
   gives up, and leaves the app's window in an animation that never ends. Every injected tap waits
@@ -183,10 +213,10 @@ when it is unclear whether it is a regression, ask.
   SystemUI: no status or navigation bar, no system splash, an empty black home. Apps run, the view
   hierarchy is full and the assertions pass, but every window stays black, screenshots and the
   person's emulator window included (the window freezes on the boot animation's last frame).
-  `journeys/maestro.sh` and `pnpm android` (`scripts/android.sh`) set the property back to 1, which
+  `pnpm journeys:test` and `pnpm android` (`scripts/android.sh`) set the property back to 1, which
   lasts until the next boot and reaches only app processes started after it. When the emulator was
-  opened after the MCP or after `pnpm android`: `adb shell setprop debug.hwui.drawing_enabled 1`,
-  then relaunch the app; no root and no framework restart needed. A black screenshot over a full
+  opened after the last round or after `pnpm android`: `adb shell setprop debug.hwui.drawing_enabled
+  1`, then relaunch the app; no root and no framework restart needed. A black screenshot over a full
   hierarchy is this, or the next trap.
 - **A session left from an earlier stack holds the splash forever.** The Auth emulator starts
   empty, so a session the app kept has an invalid refresh token (`INVALID_REFRESH_TOKEN` in the
@@ -195,7 +225,3 @@ when it is unclear whether it is a regression, ask.
   in the hierarchy all the while, since its guard also takes `loading`. `adb shell dumpsys activity
   top` names the culprit: `mLastPerformTraversalsFailedReason=predraw_expo.modules.splashscreen…`.
   The flows don't hit it (`clearState`); by hand, `adb shell pm clear dev.leonardolf.livrocaixa`.
-- **A round takes the device from the MCP.** `pnpm journeys:test` starts Maestro's driver on the
-  emulator over the MCP's, and the MCP keeps the dead connection: every call fails with "Device
-  server died" until the person reconnects it (`/mcp`). Explore first, run the round last, or ask
-  for the reconnect.

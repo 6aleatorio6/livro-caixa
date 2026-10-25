@@ -1,0 +1,13 @@
+# O começo de cada fluxo: zera os dados e entra como o `PROFILE` (`admin`, `member` ou `outsider`, as
+# contas de `data/accounts.ts`). Deixa as contas em `output.accounts`, para o fluxo ler os nomes e os
+# e-mails.
+appId: dev.leonardolf.livrocaixa
+---
+- runScript:
+    file: ../data/request.js
+    env:
+      SCENARIO: reset
+- runFlow:
+    file: signInAs.yaml
+    env:
+      LINK: ${output.accounts[PROFILE].signInLink}

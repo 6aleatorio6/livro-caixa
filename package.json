@@ -5,7 +5,7 @@
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "engines": {
-    "node": ">=20.0"
+    "node": ">=22.18"
   },
   "scripts": {
     "docusaurus": "pnpm --filter livro-caixa-docs",
@@ -16,7 +16,9 @@
     "test:mobile": "pnpm mobile test",
     "firebase:emulators": "firebase emulators:start",
     "journeys:stack": "bash journeys/stack.sh",
-    "journeys:test": "bash journeys/maestro.sh test",
+    "journeys:test": "node journeys/test.ts",
+    "journeys:inspect": "node journeys/inspect.ts",
+    "typecheck:journeys": "tsc -p journeys",
     "test:rules": "firebase -c firebase/firebase.test.json emulators:exec --only firestore --project demo-livro-caixa \"node --test firebase/firestore.rules.test.mjs\"",
     "test:contract": "firebase -c firebase/firebase.test.json emulators:exec --only auth,firestore --project demo-livro-caixa \"pnpm mobile test:contract\"",
     "build": "pnpm --recursive build",
@@ -25,7 +27,9 @@
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^6.0.0",
+    "@types/node": "^22.20.5",
     "firebase": "^13.1.0",
-    "firebase-tools": "^15.34.1"
+    "firebase-tools": "^15.34.1",
+    "typescript": "~6.0.3"
   }
 }

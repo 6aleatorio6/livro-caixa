@@ -7,11 +7,10 @@ appId: dev.leonardolf.livrocaixa
 tags:
   - auth
 ---
-- runScript: ../../scripts/resetData.js
 - runFlow:
-    file: ../../subflows/signInAs.yaml
+    file: ../../steps/startAs.yaml
     env:
-      LINK: ${output.accounts.member.signInLink}
+      PROFILE: member
 - assertVisible: Livro-Caixa
 - assertNotVisible: Aguardando permissão
 - takeScreenshot: home--member

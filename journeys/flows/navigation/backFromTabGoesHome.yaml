@@ -7,11 +7,10 @@ appId: dev.leonardolf.livrocaixa
 tags:
   - navigation
 ---
-- runScript: ../../scripts/resetData.js
 - runFlow:
-    file: ../../subflows/signInAs.yaml
+    file: ../../steps/startAs.yaml
     env:
-      LINK: ${output.accounts.member.signInLink}
+      PROFILE: member
 - tapOn: Meus pagamentos
 - assertVisible:
     text: Meus pagamentos

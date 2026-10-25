@@ -8,16 +8,16 @@ appId: dev.leonardolf.livrocaixa
 tags:
   - settings
 ---
-- runScript: ../../scripts/resetData.js
 - runFlow:
-    file: ../../subflows/signInAs.yaml
+    file: ../../steps/startAs.yaml
     env:
-      LINK: ${output.accounts.admin.signInLink}
+      PROFILE: admin
 - tapOn: Configurações
 - assertVisible: E-mails permitidos
 - runScript:
-    file: ../../scripts/removeAdminFlag.js
+    file: ../../data/request.js
     env:
+      SCENARIO: removeAdmin
       EMAIL: ${output.accounts.admin.email}
 - extendedWaitUntil:
     notVisible: E-mails permitidos

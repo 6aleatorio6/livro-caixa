@@ -8,15 +8,15 @@ appId: dev.leonardolf.livrocaixa
 tags:
   - auth
 ---
-- runScript: ../../scripts/resetData.js
 - runFlow:
-    file: ../../subflows/signInAs.yaml
+    file: ../../steps/startAs.yaml
     env:
-      LINK: ${output.accounts.outsider.signInLink}
+      PROFILE: outsider
 - assertVisible: Aguardando permissão
 - runScript:
-    file: ../../scripts/addAllowedEmail.js
+    file: ../../data/request.js
     env:
+      SCENARIO: allowEmail
       EMAIL: ${output.accounts.outsider.email}
       NAME: ${output.accounts.outsider.name}
 - extendedWaitUntil:

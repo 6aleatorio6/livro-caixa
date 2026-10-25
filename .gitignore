@@ -15,7 +15,8 @@ docs/local/
 # não documentação.
 *.dbdiagram
 
-# Capturas e artefatos das rodadas das jornadas: cada rodada gera uma pasta nova.
+# Tudo o que as jornadas geram ou exploram: as rodadas, as capturas e os fluxos descartáveis
+# (journeys/CLAUDE.md).
 journeys/.local/
 
 # Logs que os emuladores do Firebase gravam na pasta de onde sobem.

@@ -7,11 +7,10 @@ appId: dev.leonardolf.livrocaixa
 tags:
   - settings
 ---
-- runScript: ../../scripts/resetData.js
 - runFlow:
-    file: ../../subflows/signInAs.yaml
+    file: ../../steps/startAs.yaml
     env:
-      LINK: ${output.accounts.admin.signInLink}
+      PROFILE: admin
 - tapOn: Configurações
 - assertVisible:
     text: Configurações
