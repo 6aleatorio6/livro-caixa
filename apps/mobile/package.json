@@ -89,6 +89,7 @@
     },
     "setupFiles": [
       "react-native-unistyles/mocks",
+      "<rootDir>/jest.setup.ts",
       "<rootDir>/src/core/theme/unistyles.ts",
       "<rootDir>/src/core/yupLocale.ts"
     ]
