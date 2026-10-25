@@ -19,25 +19,29 @@ function allowedEmail(db: Firestore, email: string) {
   return doc(db, 'allowedEmails', email);
 }
 
-/** Libera o e-mail como o admin faria pela tela: com o nome e, para quem chega, sem lançamentos. */
-function writeAllowedEmail(db: Firestore, email: string, name: string, isAdmin: boolean) {
-  return setDoc(allowedEmail(db, email), { name, isAdmin, hasEntries: false });
+/**
+ * Põe a pessoa na lista como o `addAllowedEmailService` do app: sem lançamentos. O nome só entra para
+ * quem já entrou no app; o `uid` o app grava na primeira entrada, então os cenários não o dão.
+ */
+function addPerson(db: Firestore, email: string, { name, isAdmin = false }: { name?: string; isAdmin?: boolean } = {}) {
+  const nameField = name === undefined ? {} : { name };
+  return setDoc(allowedEmail(db, email), { ...nameField, isAdmin, hasEntries: false });
 }
 
 export const scenariosByName: Record<string, Scenario> = {
   /** O começo de cada fluxo: o Firestore apagado e a lista de e-mails com as contas liberadas. */
   async reset({ db, deleteAll }) {
     await deleteAll();
-    for (const account of Object.values(ACCOUNTS)) {
-      if (account.isAllowed) await writeAllowedEmail(db, account.email, account.name, account.isAdmin);
+    for (const { email, name, isAllowed, isAdmin } of Object.values(ACCOUNTS)) {
+      if (isAllowed) await addPerson(db, email, { name, isAdmin });
     }
     const accounts = Object.fromEntries(
       Object.entries(ACCOUNTS).map(([profile, account]) => [profile, { ...account, signInLink: toSignInLink(account) }]),
     );
     return { accounts };
   },
-  /** Põe o `EMAIL` na lista com o `NAME`, sem a marca de admin. */
-  allowEmail: ({ db }, params) => writeAllowedEmail(db, getParam(params, 'EMAIL'), getParam(params, 'NAME'), false),
+  /** Põe o `EMAIL` na lista como o admin faria: sem nome (ele vem da conta Google), sem a marca de admin. */
+  allowEmail: ({ db }, params) => addPerson(db, getParam(params, 'EMAIL')),
   removeEmail: ({ db }, params) => deleteDoc(allowedEmail(db, getParam(params, 'EMAIL'))),
   /** Tira só a marca de admin: o nome e o resto do documento ficam. */
   removeAdmin: ({ db }, params) => updateDoc(allowedEmail(db, getParam(params, 'EMAIL')), { isAdmin: false }),

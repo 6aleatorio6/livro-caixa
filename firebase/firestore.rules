@@ -11,29 +11,59 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/allowedEmails/$(request.auth.token.email.lower())).data.isAdmin == true;
     }
 
-    // A pessoa lê só a entrada do próprio e-mail na lista de e-mails permitidos: é assim que o app
+    // Só vale o login com sessão e com o e-mail verificado pelo Google.
+    function isVerified() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    // O e-mail do login é o do documento: a pessoa só mexe na própria entrada. Mesma comparação do
+    // `isAdmin`: minúsculas e só com o e-mail verificado.
+    function isOwnEmail(email) {
+      return isVerified() && request.auth.token.email.lower() == email;
+    }
+
+    // Está na lista quem tem entrada com o próprio e-mail; é o que deixa o membro ver a família.
+    function isInList() {
+      return isVerified()
+        && exists(/databases/$(database)/documents/allowedEmails/$(request.auth.token.email.lower()));
+    }
+
+    // A pessoa lê a entrada do próprio e-mail na lista de e-mails permitidos: é assim que o app
     // sabe, depois do login pelo Google, se ela tem acesso. O id do documento é o e-mail em
     // minúsculas, e o do login pode vir com maiúsculas.
     match /allowedEmails/{email} {
-      allow get: if request.auth != null
-        && request.auth.token.email_verified == true
-        && request.auth.token.email.lower() == email;
+      allow get: if isOwnEmail(email);
 
-      // O admin vê a lista inteira, que alimenta a tela de e-mails permitidos.
+      // O admin lê qualquer entrada da lista, que alimenta a tela de e-mails permitidos.
       allow list, get: if isAdmin();
 
-      // Só chaves exatas, um nome com texto e um id que é um e-mail em minúsculas; a pessoa nova
-      // nunca nasce admin nem com lançamentos, e o admin só se torna admin pelo console. Sem
-      // `update`, um e-mail já na lista não é sobrescrito, o que recusa o repetido.
+      // Todo membro vê a família inteira (o nome de cada pessoa aparece nos lançamentos e na divisão
+      // por membro), mas só o admin lê a entrada de uma pessoa avulsa.
+      allow list: if isInList();
+
+      // Só chaves exatas e um id que é um e-mail em minúsculas. A pessoa nova nasce sem nome nem
+      // `uid`: ela os grava na primeira entrada. Nunca nasce admin nem com lançamentos: o admin só se
+      // torna admin pelo console. Create sobre um e-mail que já está na lista é update, e o admin só
+      // altera a própria entrada.
       allow create: if isAdmin()
         && email == email.lower()
         && email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
-        && request.resource.data.keys().hasOnly(['name', 'isAdmin', 'hasEntries'])
-        && request.resource.data.keys().hasAll(['name', 'isAdmin', 'hasEntries'])
-        && request.resource.data.name is string
-        && request.resource.data.name.trim().size() > 0
+        && request.resource.data.keys().hasOnly(['isAdmin', 'hasEntries'])
+        && request.resource.data.keys().hasAll(['isAdmin', 'hasEntries'])
         && request.resource.data.isAdmin == false
         && request.resource.data.hasEntries == false;
+
+      // Cada pessoa muda só o próprio nome, nunca o de outra (o admin também não). O nome precisa de
+      // texto, até 60 caracteres. Na primeira entrada ela grava também o `uid` do login, que é o
+      // dela e nunca é trocado por aqui: trocar a conta Google de uma pessoa é um script do Admin
+      // SDK. `isAdmin` e `hasEntries` não mudam por aqui.
+      allow update: if isOwnEmail(email)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'uid'])
+        && request.resource.data.name is string
+        && request.resource.data.name.trim().size() > 0
+        && request.resource.data.name.size() <= 60
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid'])
+          || (!('uid' in resource.data) && request.resource.data.uid == request.auth.uid));
 
       // Quem tem lançamento fica na lista, porque os lançamentos citam a pessoa, e um admin não
       // se remove (a família não pode ficar sem quem a administra).

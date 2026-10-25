@@ -111,8 +111,8 @@ describe('AllowedEmailsPage', () => {
       mockServiceScenario(addAllowedEmailService, scenario);
       const user = await renderFamilyList();
 
-      // O nome digitado com espaços nas pontas chega ao serviço aparado, como o cenário diz.
-      await fillAndSubmit(user, ` ${scenario.input[0].name} `, scenario.input[0].email);
+      // O formulário ainda pede o nome (sai na seção da tela), mas só o e-mail chega ao serviço.
+      await fillAndSubmit(user, 'Carla Lima', scenario.input[0].email);
 
       expect(addAllowedEmailService).toHaveBeenCalledWith(...scenario.input);
       expect(screen.getByLabelText('Nome')).toHaveDisplayValue('');

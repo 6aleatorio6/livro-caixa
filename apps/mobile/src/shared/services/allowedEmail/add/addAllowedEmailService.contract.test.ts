@@ -11,9 +11,9 @@ describe('addAllowedEmailService', () => {
 
     expect(await addAllowedEmailService(...scenario.input)).toBe(scenario.result);
 
-    const [{ name, email }] = scenario.input;
+    // A pessoa nasce sem nome nem uid, no id em minúsculas.
+    const [{ email }] = scenario.input;
     expect(await readWithoutRules(`allowedEmails/${email.trim().toLowerCase()}`)).toEqual({
-      name: name.trim(),
       isAdmin: false,
       hasEntries: false,
     });
