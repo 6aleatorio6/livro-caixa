@@ -35,6 +35,7 @@ export function AddPersonCard({ people, isListLoaded }: IAddPersonCardProps) {
         label="Nome"
         supportText="É o nome que aparece nos lançamentos e na divisão por membro."
         autoCapitalize="words"
+        surfaceColor="surfaceContainerLow"
       />
       <TextFieldSmart
         control={control}
@@ -43,6 +44,7 @@ export function AddPersonCard({ people, isListLoaded }: IAddPersonCardProps) {
         supportText="A pessoa entra com a conta Google deste e-mail."
         keyboardType="email-address"
         autoCapitalize="none"
+        surfaceColor="surfaceContainerLow"
       />
       <Button
         label="Adicionar à família"
