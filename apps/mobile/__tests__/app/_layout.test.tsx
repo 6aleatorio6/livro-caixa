@@ -50,7 +50,8 @@ async function renderAppAs(
       'change-name': () => <Text>Página do seu nome</Text>,
       'recurring-bills/index': () => <Text>Página das contas recorrentes</Text>,
       'recurring-bills/new': () => <Text>Página da nova conta recorrente</Text>,
-      'recurring-bills/[id]': () => <Text>Página de alterar conta recorrente</Text>,
+      'recurring-bills/[id]/index': () => <Text>Página de alterar conta recorrente</Text>,
+      'recurring-bills/[id]/pay': () => <Text>Página de registrar pagamento</Text>,
       'tags/index': () => <Text>Página das tags</Text>,
       'tags/new': () => <Text>Página da nova tag</Text>,
       'tags/[id]': () => <Text>Página de alterar tag</Text>,
@@ -140,6 +141,7 @@ describe('RootLayout', () => {
       { url: '/recurring-bills', page: 'Página das contas recorrentes' },
       { url: '/recurring-bills/new', page: 'Página da nova conta recorrente' },
       { url: '/recurring-bills/internet', page: 'Página de alterar conta recorrente' },
+      { url: '/recurring-bills/internet/pay?month=2026-10', page: 'Página de registrar pagamento' },
     ];
 
     it.each(SCREENS)('Should let a member reach $url', async ({ url, page }) => {
