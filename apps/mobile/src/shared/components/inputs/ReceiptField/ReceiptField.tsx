@@ -29,7 +29,14 @@ interface IRejection {
  * recusado (ou se o seletor falha), o campo mostra o motivo e o nome do arquivo e zera o valor, para o formulário
  * não enviar o arquivo de antes. Cancelar o seletor não muda nada.
  */
-export function ReceiptField({ value, onValueChange, onBlur, errorMessage, currentReceipt, disabled = false }: IReceiptFieldProps) {
+export function ReceiptField({
+  value,
+  onValueChange,
+  onBlur,
+  errorMessage,
+  currentReceipt,
+  disabled = false,
+}: IReceiptFieldProps) {
   const [rejection, setRejection] = useState<IRejection | null>(null);
 
   const choose = async () => {
@@ -69,8 +76,7 @@ export function ReceiptField({ value, onValueChange, onBlur, errorMessage, curre
       file={shown}
       errorMessage={errorText}
       rejectedFileName={rejection?.fileName}
-      actionLabel={action}
-      onPress={choose}
+      action={{ label: action, onPress: choose }}
       disabled={disabled}
     />
   );

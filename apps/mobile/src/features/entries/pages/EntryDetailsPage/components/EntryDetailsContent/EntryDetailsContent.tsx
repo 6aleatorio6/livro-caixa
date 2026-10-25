@@ -84,9 +84,11 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
 
       <ReceiptSummary
         file={file ? { name: file.name, type: file.type, sizeBytes: file.sizeBytes } : null}
-        actionLabel="Ver"
         disabled={!file}
-        onPress={() => router.push({ pathname: '/entries/[id]/receipt', params: { id: entry.id } })}
+        action={{
+          label: 'Ver',
+          onPress: () => router.push({ pathname: '/entries/[id]/receipt', params: { id: entry.id } }),
+        }}
       />
 
       {isAuthor ? (
