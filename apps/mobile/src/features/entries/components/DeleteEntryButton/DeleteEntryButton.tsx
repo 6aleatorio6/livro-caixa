@@ -1,5 +1,4 @@
-import { doDeleteOneOffBill } from '@/features/entries/utils/actions/doDeleteOneOffBill';
-import { doDeletePayment } from '@/features/entries/utils/actions/doDeletePayment';
+import { doDeleteEntry } from '@/features/entries/utils/actions/doDeleteEntry';
 import { DeleteWithConfirm } from '@/shared/components/DeleteWithConfirm/DeleteWithConfirm';
 import type { IEntry } from '@/shared/types/entry/Entry';
 import { monthName } from '@/shared/utils/date/monthName';
@@ -17,7 +16,7 @@ export function DeleteEntryButton({ entry, label, onDeleted }: IDeleteEntryButto
   const isPayment = entry.kind === 'recurringPayment';
 
   async function deleteEntry() {
-    const { error } = await (isPayment ? doDeletePayment : doDeleteOneOffBill)(entry);
+    const { error } = await doDeleteEntry(entry);
     if (!error) onDeleted();
   }
 

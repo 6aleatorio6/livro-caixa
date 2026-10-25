@@ -1,14 +1,14 @@
 import { router } from 'expo-router';
-import { Check, Lock, Pencil, Receipt } from 'lucide-react-native';
+import { Pencil } from 'lucide-react-native';
 import { View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { DeleteEntryButton } from '@/features/entries/components/DeleteEntryButton/DeleteEntryButton';
+import { OnlyAuthorNotice } from '@/features/entries/components/OnlyAuthorNotice/OnlyAuthorNotice';
 import { AppText } from '@/shared/components/AppText/AppText';
 import { Button } from '@/shared/components/Button/Button';
 import { CircleMark } from '@/shared/components/CircleMark/CircleMark';
 import { DetailRow } from '@/shared/components/DetailRow/DetailRow';
-import { Notice } from '@/shared/components/Notice/Notice';
 import { ReceiptSummary } from '@/shared/components/ReceiptSummary/ReceiptSummary';
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
@@ -17,7 +17,8 @@ import { receiptFileQueryService } from '@/shared/services/file/query/receiptFil
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import type { IEntry } from '@/shared/types/entry/Entry';
 import { formatIsoDate } from '@/shared/utils/date/formatIsoDate';
-import { monthName } from '@/shared/utils/date/monthName';
+import { formatPaymentTitle } from '@/shared/utils/date/formatPaymentTitle';
+import { entryMarkOf } from '@/shared/utils/entry/entryMarkOf';
 import { formatCents } from '@/shared/utils/format/formatCents';
 import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 
@@ -38,20 +39,20 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
   const authorName = memberNameOf(entry.paidBy, people ?? []);
   // Uma tag apagada (só pelo SDK) deixa a conta sem a linha da tag.
   const tag = tags?.find((candidate) => candidate.id === entry.tagId);
-  const Icon = isPayment ? Check : Receipt;
+  const { icon: Icon, markColor, iconColor } = entryMarkOf(isPayment ? 'payment' : 'oneOff');
 
   return (
     <>
       <View style={styles.header}>
-        <CircleMark size={40} color={isPayment ? 'primaryContainer' : 'secondaryContainer'}>
-          <Icon size={20} color={theme.colors[isPayment ? 'onPrimaryContainer' : 'onSecondaryContainer']} />
+        <CircleMark size={40} color={markColor}>
+          <Icon size={20} color={theme.colors[iconColor]} />
         </CircleMark>
         <View style={styles.title}>
           <AppText variant="titleLarge" numberOfLines={2}>
             {entry.name}
           </AppText>
           <AppText variant="bodyMedium" color="onSurfaceVariant">
-            {isPayment ? `Pagamento de ${monthName(entry.month)} de ${entry.month.slice(0, 4)}` : 'Conta avulsa'}
+            {isPayment ? formatPaymentTitle(entry.month) : 'Conta avulsa'}
           </AppText>
         </View>
       </View>
@@ -101,7 +102,7 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
           </View>
         </View>
       ) : (
-        <Notice icon={Lock} text={`Só ${authorName} pode alterar ou excluir ${isPayment ? 'este pagamento' : 'esta conta'}.`} />
+        <OnlyAuthorNotice authorName={authorName} kind={entry.kind} />
       )}
     </>
   );

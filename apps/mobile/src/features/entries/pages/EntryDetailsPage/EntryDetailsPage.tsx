@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 
-import { AppText } from '@/shared/components/AppText/AppText';
+import { EntryProblem } from '@/features/entries/components/EntryProblem/EntryProblem';
 import { BottomSheet } from '@/shared/components/BottomSheet/BottomSheet';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { entryQueryService } from '@/shared/services/entry/query/entryQueryService';
@@ -16,16 +16,8 @@ export function EntryDetailsPage() {
     <BottomSheet onClose={() => router.back()}>
       {entry ? <EntryDetailsContent entry={entry} /> : null}
       {/* Só o servidor diz que o lançamento não existe mais: a leitura do aparelho pode estar atrasada. */}
-      {status === 'success' && !entry ? (
-        <AppText variant="bodyMedium" color="onSurfaceVariant">
-          Este lançamento foi excluído.
-        </AppText>
-      ) : null}
-      {status === 'error' ? (
-        <AppText variant="bodyMedium" color="onSurfaceVariant">
-          Não deu para carregar o lançamento.
-        </AppText>
-      ) : null}
+      {status === 'success' && !entry ? <EntryProblem reason="deleted" /> : null}
+      {status === 'error' ? <EntryProblem reason="unreadable" /> : null}
     </BottomSheet>
   );
 }

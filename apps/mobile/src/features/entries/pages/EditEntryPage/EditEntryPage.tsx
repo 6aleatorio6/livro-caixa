@@ -1,12 +1,11 @@
-import { Lock } from 'lucide-react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
-import { EditOneOffBillForm } from '@/features/entries/pages/EditEntryPage/components/EditOneOffBillForm/EditOneOffBillForm';
+import { DeleteEntryButton } from '@/features/entries/components/DeleteEntryButton/DeleteEntryButton';
+import { EntryProblem } from '@/features/entries/components/EntryProblem/EntryProblem';
+import { OnlyAuthorNotice } from '@/features/entries/components/OnlyAuthorNotice/OnlyAuthorNotice';
 import { EditPaymentForm } from '@/features/entries/pages/EditEntryPage/components/EditPaymentForm/EditPaymentForm';
-import { doUpdateOneOffBill } from '@/features/entries/pages/EditEntryPage/utils/actions/doUpdateOneOffBill';
-import { doUpdatePayment } from '@/features/entries/pages/EditEntryPage/utils/actions/doUpdatePayment';
-import { AppText } from '@/shared/components/AppText/AppText';
-import { Notice } from '@/shared/components/Notice/Notice';
+import { doUpdateEntry } from '@/features/entries/pages/EditEntryPage/utils/actions/doUpdateEntry';
+import { OneOffBillForm } from '@/shared/components/OneOffBillForm/OneOffBillForm';
 import { Screen } from '@/shared/components/Screen/Screen';
 import { ScreenContent } from '@/shared/components/Screen/ScreenContent';
 import { TopBar } from '@/shared/components/TopBar/TopBar';
@@ -41,10 +40,7 @@ export function EditEntryPage() {
       <TopBar title={entry ? (entry.kind === 'oneOffBill' ? 'Alterar conta avulsa' : 'Alterar pagamento') : ''} />
       <ScreenContent>
         {entry && !isAuthor ? (
-          <Notice
-            icon={Lock}
-            text={`Só ${memberNameOf(entry.paidBy, people ?? [])} pode alterar ou excluir ${entry.kind === 'recurringPayment' ? 'este pagamento' : 'esta conta'}.`}
-          />
+          <OnlyAuthorNotice authorName={memberNameOf(entry.paidBy, people ?? [])} kind={entry.kind} />
         ) : null}
         {isAuthor && isReceiptKnown && entry.kind === 'recurringPayment' ? (
           <EditPaymentForm
@@ -52,7 +48,7 @@ export function EditEntryPage() {
             tag={tags?.find((candidate) => candidate.id === entry.tagId)}
             currentReceipt={file ?? undefined}
             onSubmit={async (input) => {
-              const { error } = await doUpdatePayment(input);
+              const { error } = await doUpdateEntry(input);
               if (!error) router.back();
             }}
             // O pagamento excluído não tem o que mostrar: sai da tela e da folha dos detalhes.
@@ -60,29 +56,25 @@ export function EditEntryPage() {
           />
         ) : null}
         {isAuthor && isReceiptKnown && entry.kind === 'oneOffBill' ? (
-          <EditOneOffBillForm
-            entry={entry}
+          <OneOffBillForm
             tags={tags ?? []}
             hasTagsError={tagsStatus === 'error'}
+            initialValues={{ name: entry.name, amountCents: entry.amountCents, date: entry.date, tagId: entry.tagId }}
             currentReceipt={file ?? undefined}
-            onSubmit={async (input) => {
-              const { error } = await doUpdateOneOffBill(input);
+            submitLabel="Salvar alterações"
+            dateSupportText="A data define o mês em que a conta entra."
+            footer={
+              <DeleteEntryButton entry={entry} label="Excluir conta avulsa" onDeleted={() => router.dismiss(2)} />
+            }
+            onSubmit={async ({ receipt, ...changes }) => {
+              const { error } = await doUpdateEntry({ entry, changes, receipt });
               if (!error) router.back();
             }}
-            onDeleted={() => router.dismiss(2)}
           />
         ) : null}
         {/* Só o servidor diz que o lançamento não existe mais: a leitura do aparelho pode estar atrasada. */}
-        {entryStatus === 'success' && !entry ? (
-          <AppText variant="bodyMedium" color="onSurfaceVariant">
-            Este lançamento foi excluído.
-          </AppText>
-        ) : null}
-        {entryStatus === 'error' || fileStatus === 'error' ? (
-          <AppText variant="bodyMedium" color="onSurfaceVariant">
-            Não deu para carregar o lançamento.
-          </AppText>
-        ) : null}
+        {entryStatus === 'success' && !entry ? <EntryProblem reason="deleted" /> : null}
+        {entryStatus === 'error' || fileStatus === 'error' ? <EntryProblem reason="unreadable" /> : null}
       </ScreenContent>
     </Screen>
   );
