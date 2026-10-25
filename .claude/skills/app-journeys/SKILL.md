@@ -39,9 +39,10 @@ Where each file goes, and when something becomes a step or a scenario: `journeys
 "Pilha das jornadas de pé"; it refuses to start when one of its ports is taken, which means another
 stack or another Metro is up: never take it down. It needs:
 
-- the Android emulator open on the PC: the `Livro_Caixa_API_35` AVD (Android 15, the
-  `google_atd` image, Pixel 7 profile; Android 16 is a trap below). The person opens it;
-  `adb devices` shows it.
+- the Android emulator open on the PC: the `Livro_Caixa_API_35` AVD (Android 15, the default
+  image without Google Play, Pixel 7 profile at density 420; Android 16 is a trap below). It has
+  the status and navigation bars, so `adb exec-out screencap -p` and Maestro's `takeScreenshot`
+  show them. The person opens it; `adb devices` shows it.
 - the debug APK installed on it. The debug build loads the JavaScript from Metro, so a JS change
   needs no new build: when the native code is unchanged, this session reinstalls the last build
   with `adb install -r apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk`. A native
@@ -241,7 +242,12 @@ throwaway flow before the round counts as passing.
   for it (`Timed out waiting for animations to complete` and `transferring splash screen timeout`
   in the logcat). People don't notice, since a real touch doesn't wait. Android 15 doesn't have
   this path: keep the journeys on the `Livro_Caixa_API_35` AVD.
-- **The ATD image boots with app drawing off** (`debug.hwui.drawing_enabled=0`), and has no
+- **A density override** (`adb shell wm density` printing an `Override density` next to the
+  physical 420) makes the screen narrower in dp than the design's 411, so every comparison with
+  the `.pen` drifts and everything looks oversized. `adb shell wm density reset`, then relaunch
+  the app.
+- **The ATD image** (`google_atd`, the AVD's image until 2026-10-25) **boots with app drawing off**
+  (`debug.hwui.drawing_enabled=0`), and has no
   SystemUI: no status or navigation bar, no system splash, an empty black home. Apps run, the view
   hierarchy is full and the assertions pass, but every window stays black, screenshots and the
   person's emulator window included (the window freezes on the boot animation's last frame).
