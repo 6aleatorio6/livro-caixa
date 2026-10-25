@@ -20,10 +20,14 @@ journeys/
     startAs.yaml           resets the data and signs in as the PROFILE: every flow starts here
     signInAs.yaml          only signs in, with a LINK: switching accounts mid-flow
   data/                    the test data in the emulator's Firestore
-    server.ts              the HTTP server test.ts runs during the round, on port 4020
+    server.ts              the HTTP server test.ts runs during the round, on port 4020; it receives the
+                           Storage emulator's port and the app's bucket from test.ts
     scenarios.ts           the scenarios a flow asks for by name: reset, allowEmail, removeEmail…
     accounts.ts            the test accounts (Ana, Bruno, Carla) and their sign-in link
-    firestore.ts           the emulator's Firestore as the project owner (@firebase/rules-unit-testing)
+    firestore.ts           the emulator's Firestore and Storage as the project owner
+                           (@firebase/rules-unit-testing): deleteAll, putObject
+    fixtures/              the files a scenario puts in the Storage emulator (comprovante-luz.pdf,
+                           recibo-conserto.jpg): small, committed, read by scenarios.ts
     request.js             the Maestro side (runScript): asks for a scenario, copies the answer to output
   .local/                  (outside Git)
     explore/               throwaway flows, run like any other
@@ -39,6 +43,7 @@ journeys/
 | A sequence of screen steps that two or more flows repeat and that must change together in all of them | `steps/<what it does>.yaml` |
 | A navigation shortcut (open a screen) | written in the flow, not a step |
 | Data a flow needs: a reset, a change mid-flow, a screen's seed | a scenario in `data/scenarios.ts`; a new parameter also in `data/request.js` |
+| A file a scenario needs in the Storage (a receipt) | `data/fixtures/`; the scenario writes it with `putObject` |
 | A tool run from the terminal | a `.ts` at the root with its `pnpm journeys:*` script |
 | A throwaway flow | `.local/explore/` |
 | Anything a round or a tool writes | `.local/`, configured to land there |
@@ -59,4 +64,10 @@ only content.
 - **No loose `.js` for data.** A new kind of data is a scenario, typed, written with the Firebase
   SDK (`setDoc`, `updateDoc`…) on the database the scenario receives; the only JavaScript Maestro
   runs is `data/request.js`.
+- **A receipt a scenario writes is a real object in the Storage emulator**, put with
+  `OwnerFirestore.putObject` (path, bytes, content type and `uploadedBy`) next to the entry that
+  points to it, so the app downloads it as it would in production. The fixture is a file of
+  `data/fixtures/`, never bytes inline. `deleteAll` (the `reset`) also empties the Storage through
+  `environment.clearStorage()`. `test.ts` gives the data server the Storage port (from
+  `firebase.json`) and the bucket (`storage_bucket` of `google-services.json`).
 - **Nothing new loose at the root.** A new tool or configuration file enters the tree above.
