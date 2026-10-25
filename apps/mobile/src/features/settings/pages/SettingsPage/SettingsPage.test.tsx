@@ -107,6 +107,14 @@ describe('SettingsPage', () => {
       expect(screen.getByText('Tags')).toBeOnTheScreen();
     });
 
+    it('Should open the change name screen when the pencil is pressed', async () => {
+      await render(<SettingsPage />);
+
+      await userEvent.setup().press(screen.getByRole('button', { name: 'Alterar nome' }));
+
+      expect(router.push).toHaveBeenCalledWith('/change-name');
+    });
+
     it('Should sign out when Sair is pressed', async () => {
       mockServiceScenario(signOutService, signOutScenarios.memberSignsOut);
       const user = userEvent.setup();
@@ -127,7 +135,18 @@ describe('SettingsPage', () => {
     it('Should not announce the entries as buttons', async () => {
       await render(<SettingsPage />);
 
-      expect(screen.getAllByRole('button')).toHaveLength(1);
+      // Só os dois da pessoa logada: Alterar nome e Sair.
+      expect(screen.getAllByRole('button')).toHaveLength(2);
+    });
+  });
+
+  describe('as a person who has not entered yet', () => {
+    it('Should show the e-mail in place of the name, once', async () => {
+      jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.outsiderSignsIn));
+      mockRealtime({ service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailWithoutName });
+      await render(<SettingsPage />);
+
+      expect(screen.getAllByText('carla.lima@exemplo.com')).toHaveLength(1);
     });
   });
 });

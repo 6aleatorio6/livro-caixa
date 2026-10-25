@@ -47,6 +47,7 @@ async function renderAppAs(
       'no-access': () => <Text>Sem acesso</Text>,
       'test-sign-in': () => <Text>Entrada de teste</Text>,
       'allowed-emails': () => <Text>Página dos e-mails permitidos</Text>,
+      'change-name': () => <Text>Página do seu nome</Text>,
     },
     { initialUrl },
   );
@@ -104,6 +105,25 @@ describe('RootLayout', () => {
     expect(await screen.findByText('Página do início')).toBeOnTheScreen();
     expect(screen.queryByText('Sem acesso')).not.toBeOnTheScreen();
     expect(screen.queryByText('Entrar')).not.toBeOnTheScreen();
+  });
+
+  describe('The change-name screen', () => {
+    it('Should let a member reach /change-name', async () => {
+      await renderAppAs(
+        signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn),
+        allowedEmailQueryScenarios.emailInList,
+        '/change-name',
+      );
+
+      expect(screen.getByText('Página do seu nome')).toBeOnTheScreen();
+    });
+
+    it('Should keep a signed-out person out of /change-name', async () => {
+      await renderAppAs(SIGNED_OUT, null, '/change-name');
+
+      expect(screen.queryByText('Página do seu nome')).not.toBeOnTheScreen();
+      expect(screen.getByText('Entrar')).toBeOnTheScreen();
+    });
   });
 
   describe('The allowed-emails screen', () => {

@@ -1,4 +1,5 @@
-import { Repeat, Tag, LogOut } from 'lucide-react-native';
+import { router } from 'expo-router';
+import { LogOut, Pencil, Repeat, Tag } from 'lucide-react-native';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
@@ -22,7 +23,6 @@ import { SettingsRow } from './components/SettingsRow/SettingsRow';
 export function SettingsPage() {
   const email = signedInEmail(useAuthState());
   const { data: person } = useRealtime(allowedEmailQueryService, { email });
-  const name = person?.name ?? '';
 
   return (
     <Screen>
@@ -32,12 +32,13 @@ export function SettingsPage() {
         <View style={styles.signedIn}>
           <View style={styles.person}>
             <PersonItem
-              name={name}
-              email={email}
+              name={person?.name ?? null}
+              email={email ?? ''}
               situation={person?.isAdmin ? 'Admin · você' : undefined}
               situationColor="primary"
             />
           </View>
+          <IconButton icon={Pencil} label="Alterar nome" onPress={() => router.push('/change-name')} />
           <IconButton icon={LogOut} label="Sair" onPress={() => doSignOut()} />
         </View>
 
