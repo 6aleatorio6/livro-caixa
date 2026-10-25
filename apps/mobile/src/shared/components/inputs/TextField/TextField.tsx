@@ -118,6 +118,10 @@ export function TextField({
               onBlur();
             }}
             placeholderTextColor={theme.colors.onSurfaceVariant}
+            // Sem isto o cursor e a seleção ficam no verde-azulado padrão do Android.
+            cursorColor={theme.colors.primary}
+            selectionColor={theme.colors.primary}
+            selectionHandleColor={theme.colors.primary}
             style={styles.input}
           />
           {hasError && <CircleAlert size={20} color={theme.colors.error} accessible={false} />}
