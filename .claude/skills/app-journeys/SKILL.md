@@ -211,7 +211,14 @@ throwaway flow before the round counts as passing.
   for the next screen. The stack must have been started by `pnpm journeys:stack`, not by
   `pnpm mobile start`.
 - **The Firebase emulators down:** sign-in shows the error toast and the flow fails. Restart the
-  stack.
+  stack. After a few hours the stack can fall by itself (`Error: An unexpected error has occurred`
+  in its log, twice in G4, once right after a `touch` of the rules) and leave the Firestore Java on
+  8080: kill that process, then `pnpm journeys:stack` again.
+- **The emulator loses its network** (`wlan0` NO-CARRIER, `ping 10.0.2.2` says "Network is
+  unreachable"; Firestore and Storage fail with ENETUNREACH; twice in G4). Toggling wifi or airplane
+  mode doesn't bring the virtual AP back; `adb reboot` does, without the person. Wait for
+  `sys.boot_completed`, then redo `adb reverse tcp:8081 tcp:8081` (the reboot drops it, and the app
+  shows "Unable to load script") and `debug.hwui.drawing_enabled` (below).
 - **Port 4020 taken:** `pnpm journeys:test` serves the test data there and refuses to start; another
   round is running.
 - **`clearState`** erases the session and the cached data: every flow signs in again.
