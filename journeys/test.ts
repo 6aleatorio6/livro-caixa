@@ -106,22 +106,9 @@ async function runRound(target: string | undefined) {
     // Com `spawn`, e não `spawnSync`: o servidor de dados roda neste processo e responde durante a
     // rodada. O JUnit guarda o tempo de cada fluxo, que decide quando a suíte precisa rodar em paralelo.
     // O Maestro grava cada `takeScreenshot` em <rodada>/<sessão>/<fluxo>/takeScreenshot/.
-    // O fluxo descartável pula a reinstalação dos dois APKs do driver, 1 s que a exploração pagaria a
-    // cada passo; a rodada que conta reinstala uma vez só, e garante o driver da versão da CLI.
-    const driverFlags = isCountedRound(target) ? [] : ['--no-reinstall-driver'];
     const maestro = spawn(
       'maestro',
-      [
-        'test',
-        ...driverFlags,
-        '--test-output-dir',
-        round,
-        '--format',
-        'junit',
-        '--output',
-        join(round, 'report.xml'),
-        ...toMaestroSelection(target),
-      ],
+      ['test', '--test-output-dir', round, '--format', 'junit', '--output', join(round, 'report.xml'), ...toMaestroSelection(target)],
       {
         stdio: 'inherit',
         env: {

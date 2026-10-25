@@ -56,9 +56,10 @@ stack or another Metro is up: never take it down. It needs:
 
 1. `adb devices` lists `emulator-5554`. No device: ask the person to open the AVD.
 2. Check that no other round is running: one device and one Firestore serve every session, and
-   each flow wipes the data. A round holds port 4020, so `pnpm journeys:test` refuses to start
-   while another one runs. The Maestro driver in `adb shell ps -A | grep dev.mobile.maestro` is no
-   such sign: it outlives the run that started it for a while.
+   each flow wipes the data. `adb shell ps -A | grep dev.mobile.maestro` prints the Maestro driver
+   only while a round runs: at the end, Maestro uninstalls it, which also frees `uiautomator` for
+   `pnpm journeys:inspect`. A run with `--no-reinstall-driver` skips that uninstall and leaves the
+   driver holding `uiautomator`, so `journeys:test` never passes it.
 3. Every exploration starts like a journey, from a throwaway flow in `journeys/.local/explore/`
    (outside Git), which reaches `journeys/` by the same `../../` as a flow in `flows/`:
 
