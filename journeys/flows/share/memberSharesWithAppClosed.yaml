@@ -1,0 +1,35 @@
+# O Bruno, já logado, fecha o app e compartilha o PDF do Pix de outro app: o Android abre o Livro-Caixa a frio, e a
+# tela de escolher a conta aparece com o PDF, em vez de o app parar no Início.
+# Coberto por:
+# - A abertura a frio pelo Android (o SEND com o app fechado, a guarda que passa de `loading` a `allowed` antes de a
+#   tela abrir): só no aparelho. Abrir a tela pelo `setTimeout(0)` do layout raiz perdia a corrida com a guarda.
+# - O Início abrir a tela de compartilhar quando há arquivo esperando: HomePage.test.tsx.
+# - Sem acesso, o arquivo descartado: __tests__/app/_layout.test.tsx.
+appId: dev.leonardolf.livrocaixa
+tags:
+  - share
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: member
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: seedShareReceipt
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: "Registrar Água"
+    timeout: 30000
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: shareReceipt
+      FILE: pix-agua-outubro.pdf
+      COLD: "true"
+- extendedWaitUntil:
+    visible: "Qual conta você pagou?"
+    timeout: 30000
+- assertVisible: "pix-agua-outubro.pdf"
+- takeScreenshot: share-receipt--cold-start

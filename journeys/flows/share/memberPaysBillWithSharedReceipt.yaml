@@ -1,0 +1,67 @@
+# O Bruno compartilha o PDF do Pix de outro app (o SEND que o Android manda ao escolher o Livro-Caixa, pelo adb)
+# com o app aberto no Início, escolhe a Água, registra o pagamento e volta ao Início com a Água paga e a Internet
+# ainda a pagar; os detalhes da Água mostram o PDF compartilhado.
+# Coberto por:
+# - O app receber o arquivo do Android (o filtro do expo-sharing, a permissão de leitura do content://, a cópia
+#   para o cache, o redirecionamento do +native-intent): só no aparelho; o Jest não roda a parte nativa.
+#   useSharedReceipt.test.ts cobre o que o hook faz com o arquivo resolvido.
+# - A lista do mês com o comprovante e "Conta avulsa" por último, e o toque em "Registrar": ShareReceiptPage.test.tsx.
+# - O comprovante já no campo e o retorno ao Início depois de registrar: PayRecurringBillPage.test.tsx e
+#   sharedReceipt.test.ts.
+# - A Água paga e a Internet a pagar no Início: HomePage.test.tsx e monthSummary.test.ts.
+# - O comprovante nos detalhes: EntryDetailsPage.test.tsx e o contrato do payRecurringBillService.
+appId: dev.leonardolf.livrocaixa
+tags:
+  - share
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: member
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: seedShareReceipt
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: "Registrar Água"
+    timeout: 30000
+- assertVisible: "2 de 6 contas"
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: shareReceipt
+      FILE: pix-agua-outubro.pdf
+- extendedWaitUntil:
+    visible: "Qual conta você pagou?"
+    timeout: 15000
+- assertVisible: "pix-agua-outubro.pdf"
+- assertVisible: "A pagar em outubro"
+- assertVisible: "Registrar Internet"
+- assertVisible: "Uma conta que não se repete"
+- takeScreenshot: share-receipt--bills-to-pay
+- tapOn: "Registrar Água"
+- extendedWaitUntil:
+    visible: "vence dia 20 · previsto R\\$ 98,00"
+    timeout: 10000
+- assertVisible: "Comprovante: pix-agua-outubro.pdf. Trocar"
+- takeScreenshot: pay-recurring-bill--shared-receipt
+# O título da tela também diz "Registrar pagamento": o botão é o que fica abaixo do aviso.
+- tapOn:
+    text: "Registrar pagamento"
+    below: "Fica no seu nome.*"
+- extendedWaitUntil:
+    visible: "1 de 6 contas"
+    timeout: 60000
+- assertNotVisible: "Registrar Água"
+- assertNotVisible: "Qual conta você pagou?"
+- assertVisible: "Registrar Internet"
+- takeScreenshot: home--after-shared-payment
+- scrollUntilVisible:
+    element: "Água"
+- tapOn: "Água"
+- extendedWaitUntil:
+    visible: "Comprovante: pix-agua-outubro.pdf. Ver"
+    timeout: 10000
+- takeScreenshot: entry-details--shared-receipt
