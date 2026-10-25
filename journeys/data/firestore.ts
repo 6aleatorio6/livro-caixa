@@ -7,17 +7,17 @@ import type { Firestore } from 'firebase/firestore';
 // hora (o app derruba a conexão ao primeiro erro de uma escuta, e a tela de tags tem três), o aviso seguinte
 // vai para uma chamada cancelada, e o emulador responde 500 com o código 499, "call already cancelled",
 // embora o app não faça parte do pedido. Apagar de novo não custa nada: o que a primeira vez apagou fica
-// apagado, e a escuta fechada já não está na lista. O aviso no log evita que a repetição passe em silêncio.
+// apagado, e a escuta fechada já não está na lista. O aviso evita que a repetição passe em silêncio.
 const CLEAR_ATTEMPTS = 3;
 
-async function clearWithRetry(clear: () => Promise<void>) {
+async function clearWithRetry(clear: () => Promise<void>, warn: (message: string) => void) {
   for (let attempt = 1; ; attempt++) {
     try {
       return await clear();
     } catch (error) {
       const isCancelledCall = String(error).includes('call already cancelled');
       if (!isCancelledCall || attempt === CLEAR_ATTEMPTS) throw error;
-      console.warn(
+      warn(
         `O emulador falhou ao apagar o Firestore (escuta já cancelada); tentativa ${attempt + 1} de ${CLEAR_ATTEMPTS}.`,
       );
     }
@@ -27,7 +27,8 @@ async function clearWithRetry(clear: () => Promise<void>) {
 /** O que um cenário recebe: o banco, já sem as regras, e como apagá-lo inteiro. */
 export type OwnerFirestore = { db: Firestore; deleteAll: () => Promise<void> };
 
-export async function openEmulatorFirestore(projectId: string, port: number) {
+/** `warn` recebe os avisos do banco (hoje, o apagar repetido): o `test.ts` os junta no resumo da rodada. */
+export async function openEmulatorFirestore(projectId: string, port: number, warn: (message: string) => void) {
   const environment = await initializeTestEnvironment({
     projectId,
     firestore: { host: 'localhost', port },
@@ -40,7 +41,7 @@ export async function openEmulatorFirestore(projectId: string, port: number) {
         const db = context.firestore() as unknown as Firestore;
         result = await write({
           db,
-          deleteAll: () => clearWithRetry(() => environment.clearFirestore()),
+          deleteAll: () => clearWithRetry(() => environment.clearFirestore(), warn),
         });
       });
       return result as Result;

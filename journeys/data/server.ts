@@ -11,7 +11,14 @@ import { scenariosByName } from './scenarios.ts';
 type DataServerOptions = { port: number; firebaseProject: string; firestorePort: number };
 
 export async function startDataServer({ port, firebaseProject, firestorePort }: DataServerOptions) {
-  const firestore = await openEmulatorFirestore(firebaseProject, firestorePort);
+  // Os avisos da rodada (um apagar repetido, um cenário que falhou): vão para o log na hora e voltam em
+  // `warnings`, para o resumo da rodada não deixar uma repetição passar em silêncio.
+  const warnings: string[] = [];
+  const warn = (message: string) => {
+    warnings.push(message);
+    console.warn(message);
+  };
+  const firestore = await openEmulatorFirestore(firebaseProject, firestorePort, warn);
   const server = createServer(async (request, response) => {
     const name = (request.url ?? '/').slice(1);
     const scenario = Object.hasOwn(scenariosByName, name) ? scenariosByName[name] : undefined;
@@ -25,7 +32,9 @@ export async function startDataServer({ port, firebaseProject, firestorePort }: 
       const result = await firestore.asOwner((owner) => scenario(owner, body ? JSON.parse(body) : {}));
       response.writeHead(200, { 'Content-Type': 'application/json' }).end(JSON.stringify(result ?? {}));
     } catch (error) {
-      response.writeHead(500).end(error instanceof Error ? error.message : String(error));
+      const message = error instanceof Error ? error.message : String(error);
+      warn(`O cenário "${name}" falhou: ${message}`);
+      response.writeHead(500).end(message);
     }
   });
 
@@ -37,6 +46,7 @@ export async function startDataServer({ port, firebaseProject, firestorePort }: 
     throw new Error(`O servidor de dados não subiu na ${port}: outra rodada está no ar? (${error})`);
   }
   return {
+    warnings,
     close: async () => {
       server.close();
       await firestore.close();

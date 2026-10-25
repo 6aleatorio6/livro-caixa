@@ -78,6 +78,12 @@ function prepareEmulator() {
   if (status !== 0) console.warn('Emulador não preparado: ele está aberto?');
 }
 
+/** Os avisos do servidor de dados no fim do resumo: uma repetição ou um cenário que falhou não passa em silêncio. */
+function printDataServerWarnings(warnings: string[]) {
+  console.log(`\nAvisos do servidor de dados: ${warnings.length === 0 ? 'nenhum' : warnings.length}`);
+  for (const warning of warnings) console.log(`- ${warning}`);
+}
+
 async function runRound(target: string | undefined) {
   // O servidor primeiro: com a porta ocupada, outra rodada está no ar, e nada aqui pode começar.
   const dataServer = await startDataServer({
@@ -113,6 +119,7 @@ async function runRound(target: string | undefined) {
     );
     // Um `error` (o Maestro fora do PATH) rejeita o `once`, e o `finally` ainda fecha o servidor.
     const [exitCode] = await once(maestro, 'exit');
+    printDataServerWarnings(dataServer.warnings);
     return typeof exitCode === 'number' ? exitCode : 1;
   } finally {
     // Aberto, o servidor seguraria o processo vivo depois de qualquer falha daqui.
