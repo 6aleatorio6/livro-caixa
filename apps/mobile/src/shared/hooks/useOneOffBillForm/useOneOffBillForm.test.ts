@@ -14,11 +14,9 @@ const receipt: IReceipt = {
   wasReduced: false,
 };
 
-/** Envia o formulário preenchido com a data dada e devolve os erros que o schema achou. */
-async function submitWithDate(date: string) {
-  const { result } = await renderHook(() =>
-    useOneOffBillForm(undefined, { name: 'Farmácia', amountCents: 8990, date, receipt }),
-  );
+/** Envia o formulário preenchido com o nome e a data dados e devolve os erros que o schema achou. */
+async function submit({ name = 'Farmácia', date = '2026-09-30' }: { name?: string; date?: string }) {
+  const { result } = await renderHook(() => useOneOffBillForm(undefined, { name, amountCents: 8990, date, receipt }));
   const onValid = jest.fn();
   const onInvalid = jest.fn();
 
@@ -26,6 +24,8 @@ async function submitWithDate(date: string) {
 
   return { onValid, errors: onInvalid.mock.calls[0]?.[0] as Record<string, { message?: string }> | undefined };
 }
+
+const submitWithDate = (date: string) => submit({ date });
 
 describe('useOneOffBillForm', () => {
   beforeEach(() => {
@@ -53,5 +53,18 @@ describe('useOneOffBillForm', () => {
     const { onValid } = await submitWithDate('2026-09-30');
 
     expect(onValid).toHaveBeenCalledTimes(1);
+  });
+
+  it('Should accept a name of 60 characters', async () => {
+    const { onValid } = await submit({ name: 'a'.repeat(60) });
+
+    expect(onValid).toHaveBeenCalledTimes(1);
+  });
+
+  it('Should refuse a name of 61 characters', async () => {
+    const { onValid, errors } = await submit({ name: 'a'.repeat(61) });
+
+    expect(errors?.name?.message).toBe('Use no máximo 60 caracteres.');
+    expect(onValid).not.toHaveBeenCalled();
   });
 });
