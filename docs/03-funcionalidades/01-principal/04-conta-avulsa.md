@@ -12,9 +12,9 @@ Qualquer membro, depois de pagar uma conta da família que não é uma
 
 | Campo | Regra |
 | --- | --- |
-| Nome | O que foi a conta. Obrigatório |
+| Nome | O que foi a conta. Obrigatório, até 60 caracteres |
 | Valor | Obrigatório |
-| Data | Vem preenchida com a data de hoje, e o membro pode trocá-la. É ela que define o mês da conta |
+| Data | Vem preenchida com a data de hoje, e o membro pode trocá-la, mas só até hoje: a conta já está paga. É ela que define o mês da conta |
 | Tag | Opcional ([Tags](../02-suporte/02-tags.md)) |
 | Comprovante | Obrigatório ([Comprovantes](05-comprovantes.md)) |
 

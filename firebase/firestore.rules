@@ -50,6 +50,31 @@ service cloud.firestore {
         && (!('tagId' in bill) || bill.tagId is string);
     }
 
+    // Valida o documento inteiro de uma conta avulsa, na criação e na troca: as oito chaves
+    // obrigatórias e a `tagId` opcional. O nome é texto com conteúdo, até 60 caracteres; o valor é
+    // inteiro em centavos, de 1 até 999999999; a data é `AAAA-MM-DD` (mesmo padrão do início da conta
+    // recorrente) e o `month` é o ano e o mês dela, para o lançamento cair no mês certo. `kind` só
+    // aceita `oneOffBill`: o pagamento de conta recorrente (`recurringPayment`) fica para o G5. A
+    // regra NÃO confere que a data não é futura nem que a `tagId` existe em `settings/tags`: isso
+    // fica com o app.
+    function isValidOneOffBill(entry) {
+      return entry.keys().hasOnly(['kind', 'month', 'name', 'amountCents', 'date', 'tagId', 'paidBy', 'createdAt', 'receiptFileId'])
+        && entry.keys().hasAll(['kind', 'month', 'name', 'amountCents', 'date', 'paidBy', 'createdAt', 'receiptFileId'])
+        && entry.kind == 'oneOffBill'
+        && entry.name is string
+        && entry.name.trim().size() > 0
+        && entry.name.size() <= 60
+        && entry.amountCents is int
+        && entry.amountCents >= 1
+        && entry.amountCents <= 999999999
+        && entry.date is string
+        && entry.date.matches('^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$')
+        && entry.month == entry.date.split('-')[0] + '-' + entry.date.split('-')[1]
+        && entry.paidBy is string
+        && entry.receiptFileId is string
+        && (!('tagId' in entry) || entry.tagId is string);
+    }
+
     // A pessoa lê a entrada do próprio e-mail na lista de e-mails permitidos: é assim que o app
     // sabe, depois do login pelo Google, se ela tem acesso. O id do documento é o e-mail em
     // minúsculas, e o do login pode vir com maiúsculas.
@@ -76,14 +101,21 @@ service cloud.firestore {
       // Cada pessoa muda só o próprio nome, nunca o de outra (o admin também não). O nome precisa de
       // texto, até 60 caracteres. Na primeira entrada ela grava também o `uid` do login, que é o
       // dela e nunca é trocado por aqui: trocar a conta Google de uma pessoa é um script do Admin
-      // SDK. `isAdmin` e `hasEntries` não mudam por aqui.
+      // SDK. `isAdmin` nunca muda por aqui.
+      //
+      // O segundo ramo é o `hasEntries`: a própria pessoa (o admin também) o sobe de `false` para
+      // `true` no lote do primeiro lançamento dela, e nunca o desce. A regra NÃO garante que exista um
+      // lançamento: ela não sabe o id dele, então o `hasEntries` pode ir a `true` sem lançamento (o
+      // efeito é só a pessoa não poder ser removida da lista).
       allow update: if isOwnEmail(email)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'uid'])
-        && request.resource.data.name is string
-        && request.resource.data.name.trim().size() > 0
-        && request.resource.data.name.size() <= 60
-        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid'])
-          || (!('uid' in resource.data) && request.resource.data.uid == request.auth.uid));
+        && ((request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'uid'])
+            && request.resource.data.name is string
+            && request.resource.data.name.trim().size() > 0
+            && request.resource.data.name.size() <= 60
+            && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid'])
+              || (!('uid' in resource.data) && request.resource.data.uid == request.auth.uid)))
+          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hasEntries'])
+            && request.resource.data.hasEntries == true));
 
       // Quem tem lançamento fica na lista, porque os lançamentos citam a pessoa, e um admin não
       // se remove (a família não pode ficar sem quem a administra).
@@ -129,6 +161,57 @@ service cloud.firestore {
       allow get, list, delete: if isInList();
 
       allow create, update: if isInList() && isValidRecurringBill(request.resource.data);
+    }
+
+    // Os lançamentos da família: todo membro lê, para somar o mês e mostrar quem pagou. Só quem
+    // pagou (`paidBy`) altera e exclui: o admin também não mexe no lançamento de outra pessoa.
+    //
+    // A criação é um lote de três escritas: o lançamento, o registro do arquivo do comprovante
+    // (`files/{receiptFileId}`) e o `hasEntries: true` de quem lançou. A regra vê o fim do lote com
+    // `getAfter`, então exige o arquivo novo (um comprovante por lançamento, enviado por quem lança)
+    // e o `hasEntries` em `true` no fim.
+    //
+    // O que NÃO garante: que o arquivo exista no Storage (o envio vem antes do lote, e um arquivo
+    // pode ficar no Storage sem registro) e que o `hasEntries` suba só com lançamento (veja
+    // `allowedEmails`). O `paidBy` e o `receiptFileId` não mudam depois de criados.
+    match /entries/{id} {
+      allow get, list: if isInList();
+
+      allow create: if isInList()
+        && isValidOneOffBill(request.resource.data)
+        && request.resource.data.paidBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && !exists(/databases/$(database)/documents/files/$(request.resource.data.receiptFileId))
+        && getAfter(/databases/$(database)/documents/files/$(request.resource.data.receiptFileId)).data.uploadedBy == request.auth.uid
+        && getAfter(/databases/$(database)/documents/allowedEmails/$(request.auth.token.email.lower())).data.hasEntries == true;
+
+      allow update: if isInList()
+        && resource.data.paidBy == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'amountCents', 'date', 'month', 'tagId'])
+        && isValidOneOffBill(request.resource.data);
+
+      allow delete: if isInList()
+        && resource.data.paidBy == request.auth.uid;
+    }
+
+    // O registro de um arquivo (o comprovante): só a criação, no lote do lançamento. Ler e excluir
+    // entram quando o app mostrar e trocar o comprovante (G6). O arquivo mora em `files/{id}` no
+    // Storage. A regra NÃO confere o tamanho nem o tipo reais do objeto enviado: quem os confere é a
+    // regra do Storage, no envio.
+    match /files/{id} {
+      allow create: if isInList()
+        && request.resource.data.keys().hasOnly(['storagePath', 'type', 'contentType', 'sizeBytes', 'uploadedBy'])
+        && request.resource.data.keys().hasAll(['storagePath', 'type', 'contentType', 'sizeBytes', 'uploadedBy'])
+        && request.resource.data.storagePath == 'files/' + id
+        && request.resource.data.uploadedBy == request.auth.uid
+        && ((request.resource.data.type == 'image'
+            && request.resource.data.contentType is string
+            && request.resource.data.contentType.matches('image/(jpeg|jpg|png|webp|gif|heic|heif)'))
+          || (request.resource.data.type == 'pdf'
+            && request.resource.data.contentType == 'application/pdf'))
+        && request.resource.data.sizeBytes is int
+        && request.resource.data.sizeBytes >= 1
+        && request.resource.data.sizeBytes <= 5242880;
     }
   }
 }

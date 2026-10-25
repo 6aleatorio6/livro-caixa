@@ -1,8 +1,24 @@
 rules_version = '2';
 
-// Nenhum arquivo ainda: os comprovantes entram com os lançamentos.
+// Tudo o que não está liberado aqui é negado.
 service firebase.storage {
   match /b/{bucket}/o {
+    // O comprovante de um lançamento: todo membro da lista envia, uma imagem (sem SVG, que carrega script) ou um PDF de até 5 MB.
+    // `resource == null` recusa um caminho que já tem objeto (o emulador deixa o `create` sozinho
+    // sobrescrever), então ninguém troca um comprovante enviado.
+    // Ler e excluir ficam negados até o app mostrar e trocar o comprovante (G6). A regra NÃO garante
+    // que o envio tenha registro em `files/{id}` no Firestore (o envio vem antes do lote) nem que o
+    // objeto seja de quem lança.
+    match /files/{fileId} {
+      allow create: if resource == null
+        && request.auth != null
+        && request.auth.token.email_verified == true
+        && firestore.exists(/databases/(default)/documents/allowedEmails/$(request.auth.token.email.lower()))
+        && request.resource.size >= 1
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|jpg|png|webp|gif|heic|heif)|application/pdf');
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }
