@@ -52,6 +52,7 @@ async function renderAppAs(
       'recurring-bills/new': () => <Text>Página da nova conta recorrente</Text>,
       'recurring-bills/[id]/index': () => <Text>Página de alterar conta recorrente</Text>,
       'recurring-bills/[id]/pay': () => <Text>Página de registrar pagamento</Text>,
+      'entries/[id]/index': () => <Text>Página dos detalhes do lançamento</Text>,
       'tags/index': () => <Text>Página das tags</Text>,
       'tags/new': () => <Text>Página da nova tag</Text>,
       'tags/[id]': () => <Text>Página de alterar tag</Text>,
@@ -135,6 +136,7 @@ describe('RootLayout', () => {
 
   describe('The tags and recurring bills screens', () => {
     const SCREENS = [
+      { url: '/entries/fridge', page: 'Página dos detalhes do lançamento' },
       { url: '/tags', page: 'Página das tags' },
       { url: '/tags/new', page: 'Página da nova tag' },
       { url: '/tags/casa', page: 'Página de alterar tag' },

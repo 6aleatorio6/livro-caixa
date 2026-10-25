@@ -1,9 +1,22 @@
 // Os cenários que um fluxo pede pelo nome, pelo `data/request.js`. Cada um mexe nos dados como
 // alguém de fora do app faria, inclusive com o app aberto.
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
 import { deleteDoc, doc, setDoc, Timestamp, updateDoc, type Firestore } from 'firebase/firestore';
 
 import { ACCOUNTS, toSignInLink } from './accounts.ts';
 import type { OwnerFirestore } from './firestore.ts';
+
+/** Um comprovante de verdade: o arquivo de `data/fixtures/` que vai para o Storage com o nome que a tela mostra. */
+type ReceiptFixture = { name: string; type: 'image' | 'pdf'; contentType: string };
+
+const COMPROVANTE_LUZ: ReceiptFixture = { name: 'comprovante-luz.pdf', type: 'pdf', contentType: 'application/pdf' };
+const RECIBO_CONSERTO: ReceiptFixture = { name: 'recibo-conserto.jpg', type: 'image', contentType: 'image/jpeg' };
+
+function readFixture(name: string) {
+  return readFileSync(fileURLToPath(new URL(`fixtures/${name}`, import.meta.url)));
+}
 
 /** Os parâmetros que o `data/request.js` repassa, com o nome que têm no fluxo. */
 export type ScenarioParams = { EMAIL?: string };
@@ -108,30 +121,55 @@ async function writeOneOffBill(
   db: Firestore,
   id: string,
   bill: { name: string; amountCents: number; date: Date; tagId?: string; paidByEmail: string },
+  storedReceipt?: StoredReceipt,
 ) {
   const date = toDateText(bill.date);
-  await writeEntryWithReceipt(db, id, bill.paidByEmail, {
-    kind: 'oneOffBill',
-    month: date.slice(0, 7),
-    name: bill.name,
-    amountCents: bill.amountCents,
-    date,
-    ...(bill.tagId && { tagId: bill.tagId }),
-  });
+  await writeEntryWithReceipt(
+    db,
+    id,
+    bill.paidByEmail,
+    {
+      kind: 'oneOffBill',
+      month: date.slice(0, 7),
+      name: bill.name,
+      amountCents: bill.amountCents,
+      date,
+      ...(bill.tagId && { tagId: bill.tagId }),
+    },
+    storedReceipt,
+  );
 }
 
+/** Um comprovante com o objeto de verdade no Storage: o arquivo e como gravá-lo no emulador. */
+type StoredReceipt = { fixture: ReceiptFixture; putObject: OwnerFirestore['putObject'] };
+
 /**
- * Grava um lançamento como os serviços do app: o registro do comprovante (sem arquivo no Storage), o lançamento
- * com o `paidBy`, o `createdAt` e o `receiptFileId`, e o `hasEntries` de quem pagou.
+ * Grava um lançamento como os serviços do app: o registro do comprovante, o lançamento com o `paidBy`, o
+ * `createdAt` e o `receiptFileId`, e o `hasEntries` de quem pagou. Sem `storedReceipt`, o registro é de uma imagem
+ * que não existe no Storage; com ele, o objeto é gravado com o autor em `customMetadata.uploadedBy`.
  */
-async function writeEntryWithReceipt(db: Firestore, id: string, paidByEmail: string, entry: Record<string, unknown>) {
+async function writeEntryWithReceipt(
+  db: Firestore,
+  id: string,
+  paidByEmail: string,
+  entry: Record<string, unknown>,
+  storedReceipt?: StoredReceipt,
+) {
   const paidBy = await uidOf(db, paidByEmail);
-  await setDoc(doc(db, 'files', `${id}-receipt`), {
-    name: 'comprovante.jpg',
-    storagePath: `files/${id}-receipt`,
-    type: 'image',
-    contentType: 'image/jpeg',
-    sizeBytes: 120000,
+  const fileId = `${id}-receipt`;
+  const bytes = storedReceipt ? readFixture(storedReceipt.fixture.name) : null;
+  if (storedReceipt && bytes) {
+    await storedReceipt.putObject(`files/${fileId}`, bytes, {
+      contentType: storedReceipt.fixture.contentType,
+      uploadedBy: paidBy,
+    });
+  }
+  await setDoc(doc(db, 'files', fileId), {
+    name: storedReceipt?.fixture.name ?? 'comprovante.jpg',
+    storagePath: `files/${fileId}`,
+    type: storedReceipt?.fixture.type ?? 'image',
+    contentType: storedReceipt?.fixture.contentType ?? 'image/jpeg',
+    sizeBytes: bytes?.length ?? 120000,
     uploadedBy: paidBy,
   });
   await setDoc(doc(db, 'entries', id), { ...entry, paidBy, createdAt: Timestamp.now(), receiptFileId: `${id}-receipt` });
@@ -151,19 +189,26 @@ function lastDayOf(month: string) {
 async function writePayment(
   db: Firestore,
   payment: { month: string; billId: string; amountCents: number; paidByEmail: string },
+  storedReceipt?: StoredReceipt,
 ) {
   const { month, billId, amountCents, paidByEmail } = payment;
   const bill = BILLS_IN_USE[billId as keyof typeof BILLS_IN_USE];
-  await writeEntryWithReceipt(db, `${month}_${billId}`, paidByEmail, {
-    kind: 'recurringPayment',
-    month,
-    recurringBillId: billId,
-    name: bill.name,
-    amountCents,
-    dueDay: Math.min(bill.dayOfMonth, lastDayOf(month)),
-    expectedAmountCents: bill.expectedAmountCents,
-    tagId: bill.tagId,
-  });
+  await writeEntryWithReceipt(
+    db,
+    `${month}_${billId}`,
+    paidByEmail,
+    {
+      kind: 'recurringPayment',
+      month,
+      recurringBillId: billId,
+      name: bill.name,
+      amountCents,
+      dueDay: Math.min(bill.dayOfMonth, lastDayOf(month)),
+      expectedAmountCents: bill.expectedAmountCents,
+      tagId: bill.tagId,
+    },
+    storedReceipt,
+  );
 }
 
 export const scenariosByName: Record<string, Scenario> = {
@@ -249,5 +294,33 @@ export const scenariosByName: Record<string, Scenario> = {
       tagId: 'casa',
       paidByEmail: ACCOUNTS.member.email,
     });
+  },
+  /**
+   * Os detalhes do lançamento do design, sobre o que o `reset` deixou, no mês atual: as tags e as cinco contas, a
+   * Luz paga pela Ana (R$ 187,35, previsto R$ 210,00, dia 10, Serviços) com o `comprovante-luz.pdf` de duas
+   * páginas e a avulsa Conserto da geladeira do Bruno (R$ 350,00, Casa) com o `recibo-conserto.jpg`. Os objetos
+   * existem de verdade no Storage, com o autor nos metadados.
+   */
+  async seedEntryDetails({ db, putObject }) {
+    const today = new Date();
+    const month = toDateText(today).slice(0, 7);
+    await writeTagsAndBills(db);
+    await writePayment(
+      db,
+      { month, billId: 'electricity', amountCents: 18735, paidByEmail: ACCOUNTS.admin.email },
+      { fixture: COMPROVANTE_LUZ, putObject },
+    );
+    await writeOneOffBill(
+      db,
+      'fridge',
+      {
+        name: 'Conserto da geladeira',
+        amountCents: 35000,
+        date: new Date(today.getFullYear(), today.getMonth(), Math.min(12, today.getDate())),
+        tagId: 'casa',
+        paidByEmail: ACCOUNTS.member.email,
+      },
+      { fixture: RECIBO_CONSERTO, putObject },
+    );
   },
 };

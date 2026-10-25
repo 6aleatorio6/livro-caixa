@@ -48,6 +48,27 @@ describe('MyPaymentsPage', () => {
     expect(screen.queryByText('Estacionamento')).not.toBeOnTheScreen();
   });
 
+  it('Should open the details of an entry when its row is pressed', async () => {
+    mockRealtime(october, threeTags);
+    await render(<MyPaymentsPage />);
+
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Farmácia' }));
+
+    expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]', params: { id: 'pharmacy' } });
+  });
+
+  it('Should hint that a row can be pressed only when the month has entries', async () => {
+    mockRealtime(october, threeTags);
+    const { unmount } = await render(<MyPaymentsPage />);
+    expect(screen.getByText('Toque num lançamento para ver os detalhes e o comprovante.')).toBeOnTheScreen();
+    await unmount();
+
+    mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth }, threeTags);
+    await render(<MyPaymentsPage />);
+
+    expect(screen.queryByText('Toque num lançamento para ver os detalhes e o comprovante.')).not.toBeOnTheScreen();
+  });
+
   it('Should show the sum of the member entries and their share of the family month', async () => {
     mockRealtime(october, threeTags);
     await render(<MyPaymentsPage />);

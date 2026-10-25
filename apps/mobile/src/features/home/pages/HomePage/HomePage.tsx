@@ -120,6 +120,7 @@ export function HomePage() {
                     kind={entry.kind === 'recurringPayment' ? 'payment' : 'oneOff'}
                     name={entry.name}
                     amountCents={entry.amountCents}
+                    onPress={() => router.push({ pathname: '/entries/[id]', params: { id: entry.id } })}
                     support={homeEntrySupportOf(entry, {
                       memberName: memberNameOf(entry.paidBy, people ?? []),
                       tagName: tagNameOf(entry.tagId, tags),

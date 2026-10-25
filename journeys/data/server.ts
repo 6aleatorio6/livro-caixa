@@ -5,12 +5,12 @@ import { once } from 'node:events';
 import { createServer } from 'node:http';
 import { text } from 'node:stream/consumers';
 
-import { openEmulatorFirestore } from './firestore.ts';
+import { openEmulatorFirestore, type EmulatorPorts } from './firestore.ts';
 import { scenariosByName } from './scenarios.ts';
 
-type DataServerOptions = { port: number; firebaseProject: string; firestorePort: number };
+type DataServerOptions = { port: number; firebaseProject: string; ports: EmulatorPorts; storageBucket: string };
 
-export async function startDataServer({ port, firebaseProject, firestorePort }: DataServerOptions) {
+export async function startDataServer({ port, firebaseProject, ports, storageBucket }: DataServerOptions) {
   // Os avisos da rodada (um apagar repetido, um cenário que falhou): vão para o log na hora e voltam em
   // `warnings`, para o resumo da rodada não deixar uma repetição passar em silêncio.
   const warnings: string[] = [];
@@ -18,7 +18,7 @@ export async function startDataServer({ port, firebaseProject, firestorePort }: 
     warnings.push(message);
     console.warn(message);
   };
-  const firestore = await openEmulatorFirestore(firebaseProject, firestorePort, warn);
+  const firestore = await openEmulatorFirestore(firebaseProject, ports, storageBucket, warn);
   const server = createServer(async (request, response) => {
     const name = (request.url ?? '/').slice(1);
     const scenario = Object.hasOwn(scenariosByName, name) ? scenariosByName[name] : undefined;

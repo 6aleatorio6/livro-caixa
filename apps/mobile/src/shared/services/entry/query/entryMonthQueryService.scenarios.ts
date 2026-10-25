@@ -142,4 +142,12 @@ export const entryMonthQueryScenarios = {
       result: [toEntry('2026-10_internet', { ...INTERNET_PAYMENT, date: null, paidOn: '2026-10-15' }), toEntry('pharmacy', PHARMACY)],
     },
   },
+  // O autor exclui o pagamento da Internet com a lista aberta: a conta volta a estar a pagar.
+  paymentDeletedWhileOpen: {
+    signedInAs: BRUNO,
+    given: { ...BOTH_IN_THE_LIST, 'entries/pharmacy': PHARMACY, 'entries/2026-10_internet': INTERNET_PAYMENT },
+    input: { month: '2026-10' },
+    result: [toEntry('2026-10_internet', { ...INTERNET_PAYMENT, date: null, paidOn: '2026-10-15' }), toEntry('pharmacy', PHARMACY)],
+    afterChange: { write: { 'entries/2026-10_internet': null }, result: [toEntry('pharmacy', PHARMACY)] },
+  },
 } satisfies Record<string, IServiceScenario<{ month: string }, IEntry[]>>;

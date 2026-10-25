@@ -61,11 +61,15 @@ export function MyPaymentsPage() {
                   kind={entry.kind === 'recurringPayment' ? 'payment' : 'oneOff'}
                   name={entry.name}
                   amountCents={entry.amountCents}
+                  onPress={() => router.push({ pathname: '/entries/[id]', params: { id: entry.id } })}
                   // Uma conta com a tag apagada (só pelo SDK) fica sem a tag no detalhe.
                   support={myEntrySupportOf(entry, tagNameOf(entry.tagId, tags))}
                 />
               ))}
             </View>
+            <AppText variant="bodySmall" color="onSurfaceVariant">
+              Toque num lançamento para ver os detalhes e o comprovante.
+            </AppText>
           </>
         ) : mine ? (
           <EmptyState

@@ -200,6 +200,33 @@ describe('HomePage', () => {
     });
   });
 
+  it('Should open the details of a paid entry when its row is pressed', async () => {
+    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    await render(<HomePage />);
+    const user = userEvent.setup();
+
+    await user.press(screen.getByRole('button', { name: 'Aluguel' }));
+    await user.press(screen.getByRole('button', { name: 'Conserto da geladeira' }));
+
+    expect(router.push).toHaveBeenNthCalledWith(1, { pathname: '/entries/[id]', params: { id: '2026-10_rent' } });
+    expect(router.push).toHaveBeenNthCalledWith(2, { pathname: '/entries/[id]', params: { id: 'fridge' } });
+  });
+
+  it('Should bring a bill back to to pay when its payment is deleted with the screen open', async () => {
+    const realtime = mockRealtime(fiveBills, threeTags, family, {
+      service: entryMonthQueryService,
+      scenario: entryMonthQueryScenarios.paymentDeletedWhileOpen,
+    });
+    await render(<HomePage />);
+    expect(screen.queryByRole('button', { name: 'Registrar Internet' })).not.toBeOnTheScreen();
+    expect(screen.getByText('dia 15 · Ana · Casa')).toBeOnTheScreen();
+
+    await act(async () => realtime.applyChange(entryMonthQueryService));
+
+    expect(screen.getByRole('button', { name: 'Registrar Internet' })).toBeOnTheScreen();
+    expect(screen.queryByText('dia 15 · Ana · Casa')).not.toBeOnTheScreen();
+  });
+
   it('Should not offer to add a one-off bill', async () => {
     mockRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);

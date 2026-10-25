@@ -27,6 +27,10 @@ export default function RootLayout() {
           <Stack.Screen name="recurring-bills/[id]/index" />
           <Stack.Screen name="recurring-bills/[id]/pay" />
           <Stack.Screen name="one-off-bills/new" />
+          <Stack.Screen
+            name="entries/[id]/index"
+            options={{ presentation: 'transparentModal', animation: 'slide_from_bottom' }}
+          />
           <Stack.Screen name="tags/index" />
           <Stack.Screen name="tags/new" />
           <Stack.Screen name="tags/[id]" />
