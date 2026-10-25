@@ -102,35 +102,22 @@ async function uidOf(db: Firestore, email: string) {
 }
 
 /**
- * Grava a conta avulsa, o registro do comprovante (sem arquivo no Storage) e o `hasEntries` de quem pagou, como
- * o `addOneOffBillService`.
+ * Grava a conta avulsa como o `addOneOffBillService`: o lançamento com a data e o resto do `writeEntryWithReceipt`.
  */
 async function writeOneOffBill(
   db: Firestore,
   id: string,
   bill: { name: string; amountCents: number; date: Date; tagId?: string; paidByEmail: string },
 ) {
-  const paidBy = await uidOf(db, bill.paidByEmail);
   const date = toDateText(bill.date);
-  await setDoc(doc(db, 'files', `${id}-receipt`), {
-    storagePath: `files/${id}-receipt`,
-    type: 'image',
-    contentType: 'image/jpeg',
-    sizeBytes: 120000,
-    uploadedBy: paidBy,
-  });
-  await setDoc(doc(db, 'entries', id), {
+  await writeEntryWithReceipt(db, id, bill.paidByEmail, {
     kind: 'oneOffBill',
     month: date.slice(0, 7),
     name: bill.name,
     amountCents: bill.amountCents,
     date,
     ...(bill.tagId && { tagId: bill.tagId }),
-    paidBy,
-    createdAt: Timestamp.now(),
-    receiptFileId: `${id}-receipt`,
   });
-  await updateDoc(allowedEmail(db, bill.paidByEmail), { hasEntries: true });
 }
 
 /**
