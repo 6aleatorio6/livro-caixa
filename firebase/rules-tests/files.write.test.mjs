@@ -1,8 +1,8 @@
 import { describe } from 'node:test';
 
-import { collection, deleteDoc, getDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
+import { deleteDoc, setDoc, updateDoc } from 'firebase/firestore';
 
-import { MEMBERS, OUTSIDERS, assertAccess, fileOf, itEach, receiptFileOf, rowsFor, signedInAs } from './setup.mjs';
+import { OUTSIDERS, assertAccess, fileOf, itEach, receiptFileOf, rowsFor, signedInAs } from './setup.mjs';
 
 // O registro do comprovante nasce no lote do lançamento; aqui ele é gravado sozinho, com o `uid` de quem grava.
 describe('files create by profile', () => {
@@ -37,8 +37,13 @@ describe('files create by a member', () => {
     { title: 'Should not let a member create a file record with sizeBytes above 5 MB', data: receiptFileOf('f9', { sizeBytes: 5242881 }), isAllowed: false },
     { title: 'Should not let a member create a file record with a fractional sizeBytes', data: receiptFileOf('f9', { sizeBytes: 10.5 }), isAllowed: false },
     { title: 'Should let a member create a file record with sizeBytes of 5 MB', data: receiptFileOf('f9', { sizeBytes: 5242880 }), isAllowed: true },
-    { title: 'Should not let a member create a file record with a key besides the five', data: receiptFileOf('f9', { note: 'a mais' }), isAllowed: false },
-    ...['storagePath', 'type', 'contentType', 'sizeBytes', 'uploadedBy'].map((key) => ({
+    { title: 'Should not let a member create a file record with a key besides the six', data: receiptFileOf('f9', { note: 'a mais' }), isAllowed: false },
+    { title: 'Should let a member create a file record with a name of one character', data: receiptFileOf('f9', { name: 'a' }), isAllowed: true },
+    { title: 'Should let a member create a file record with a name of 255 characters', data: receiptFileOf('f9', { name: 'a'.repeat(255) }), isAllowed: true },
+    { title: 'Should not let a member create a file record with an empty name', data: receiptFileOf('f9', { name: '' }), isAllowed: false },
+    { title: 'Should not let a member create a file record with a name of 256 characters', data: receiptFileOf('f9', { name: 'a'.repeat(256) }), isAllowed: false },
+    { title: 'Should not let a member create a file record with a numeric name', data: receiptFileOf('f9', { name: 123 }), isAllowed: false },
+    ...['storagePath', 'type', 'contentType', 'sizeBytes', 'uploadedBy', 'name'].map((key) => ({
       title: `Should not let a member create a file record without ${key}`,
       data: receiptFileOf('f9', { [key]: undefined }),
       isAllowed: false,
@@ -48,12 +53,29 @@ describe('files create by a member', () => {
   itEach(cases, ({ data, isAllowed }) => assertAccess(isAllowed, setDoc(fileOf(bruno(), 'f9'), data)));
 });
 
-// Ler e apagar o registro entram com a tela que mostra e troca o comprovante.
-describe('files get, list, update and delete', () => {
-  const profiles = [...MEMBERS, ...OUTSIDERS];
+// O registro do comprovante só é apagado pelo dono, e só no lote da exclusão ou da troca; nunca é alterado.
+describe('files update and delete', () => {
+  const bruno = { who: 'the owner', as: () => signedInAs('bruno@gmail.com') };
+  const otherMember = { who: 'a member, on the file record of another person,', as: () => signedInAs('bruno@gmail.com') };
+  const admin = { who: 'the admin, on the file record of a member,', as: () => signedInAs('ana@gmail.com') };
+  const profiles = [bruno, otherMember, admin, ...OUTSIDERS];
 
-  itEach(rowsFor(profiles, 'read a file record', false), ({ as, isAllowed }) => assertAccess(isAllowed, getDoc(fileOf(as(), 'fbruno1'))));
-  itEach(rowsFor(profiles, 'list the file records', false), ({ as, isAllowed }) => assertAccess(isAllowed, getDocs(collection(as(), 'files'))));
   itEach(rowsFor(profiles, 'change a file record', false), ({ as, isAllowed }) => assertAccess(isAllowed, updateDoc(fileOf(as(), 'fbruno1'), { sizeBytes: 100 })));
-  itEach(rowsFor(profiles, 'delete a file record', false), ({ as, isAllowed }) => assertAccess(isAllowed, deleteDoc(fileOf(as(), 'fbruno1'))));
+  itEach(rowsFor(profiles, 'change the name of a file record', false), ({ as, isAllowed }) => assertAccess(isAllowed, updateDoc(fileOf(as(), 'fbruno1'), { name: 'outro.webp' })));
+
+  const deleteCases = [
+    ...rowsFor([bruno], 'delete their own file record', true, { id: 'fbruno1' }),
+    ...rowsFor([otherMember], 'delete a file record', false, { id: 'fana1' }),
+    ...rowsFor([admin], 'delete a file record', false, { id: 'fbruno1' }),
+    ...rowsFor(OUTSIDERS, 'delete a file record', false, { id: 'fbruno1' }),
+  ];
+
+  itEach(deleteCases, ({ as, id, isAllowed }) => assertAccess(isAllowed, deleteDoc(fileOf(as(), id))));
+});
+
+// O `delete` de um registro que não existe é um no-op: o lote que o inclui não pode cair por ele.
+describe('files delete of a record that does not exist', () => {
+  itEach(rowsFor([{ who: 'a member', as: () => signedInAs('bruno@gmail.com') }], 'delete a file record that does not exist', true), ({ as, isAllowed }) =>
+    assertAccess(isAllowed, deleteDoc(fileOf(as(), 'missing'))),
+  );
 });

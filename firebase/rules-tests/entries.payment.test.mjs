@@ -1,7 +1,6 @@
 import { describe } from 'node:test';
 
-import { OUTSIDERS, addPaymentBatch, asOwner, assertAccess, entryDocOf, itEach, receiptFileOf, recurringPaymentOf, rowsFor, signedInAs } from './setup.mjs';
-import { deleteDoc, updateDoc } from 'firebase/firestore';
+import { OUTSIDERS, addPaymentBatch, asOwner, assertAccess, itEach, receiptFileOf, recurringPaymentOf, signedInAs } from './setup.mjs';
 
 const bruno = () => signedInAs('bruno@gmail.com');
 const ana = () => signedInAs('ana@gmail.com');
@@ -119,33 +118,4 @@ describe('recurringPayment second payment in the same month', () => {
   ];
 
   itEach(cases, run);
-});
-
-// O pagamento só muda no G6: nenhum perfil o atualiza, nem o autor.
-describe('recurringPayment update', () => {
-  const update = { name: 'Outro nome' };
-  const profiles = [
-    ...rowsFor([{ who: 'the author', as: bruno }], 'update a recurring payment', false, { id: '2026-10_luz' }),
-    ...rowsFor([{ who: 'a member, on the payment of another person,', as: bruno }], 'update a recurring payment', false, { id: '2026-10_aluguel' }),
-    ...rowsFor([{ who: 'the admin, on the payment of a member,', as: ana }], 'update a recurring payment', false, { id: '2026-10_luz' }),
-    ...rowsFor(OUTSIDERS, 'update a recurring payment', false, { id: '2026-10_luz' }),
-  ];
-  const cases = profiles.flatMap((profile) => [
-    { ...profile, title: `${profile.title} (name)`, data: update },
-    { ...profile, title: `${profile.title} (amountCents)`, data: { amountCents: 5000 } },
-  ]);
-
-  itEach(cases, ({ as, id, data, isAllowed }) => assertAccess(isAllowed, updateDoc(entryDocOf(as(), id), data)));
-});
-
-// Só o autor exclui o pagamento dele.
-describe('recurringPayment delete', () => {
-  const cases = [
-    ...rowsFor([{ who: 'the author', as: bruno }], 'delete a recurring payment', true, { id: '2026-10_luz' }),
-    ...rowsFor([{ who: 'a member, on the payment of another person,', as: bruno }], 'delete a recurring payment', false, { id: '2026-10_aluguel' }),
-    ...rowsFor([{ who: 'the admin, on the payment of a member,', as: ana }], 'delete a recurring payment', false, { id: '2026-10_luz' }),
-    ...rowsFor(OUTSIDERS, 'delete a recurring payment', false, { id: '2026-10_luz' }),
-  ];
-
-  itEach(cases, ({ as, id, isAllowed }) => assertAccess(isAllowed, deleteDoc(entryDocOf(as(), id))));
 });

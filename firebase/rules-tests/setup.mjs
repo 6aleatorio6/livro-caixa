@@ -72,8 +72,9 @@ export function storageSignedInWithUnverifiedEmail(email) {
 }
 
 /** Grava um arquivo no Storage por fora das regras, para os casos de leitura, exclusão e sobrescrita. */
-export function seedStorageFile(path, bytes, contentType) {
-  return testEnvironment.withSecurityRulesDisabled((context) => context.storage().ref(path).put(bytes, { contentType }));
+export function seedStorageFile(path, bytes, contentType, customMetadata = undefined) {
+  const metadata = customMetadata === undefined ? { contentType } : { contentType, customMetadata };
+  return testEnvironment.withSecurityRulesDisabled((context) => context.storage().ref(path).put(bytes, metadata));
 }
 
 export function signedInWithUnverifiedEmail(email) {
@@ -124,13 +125,13 @@ export const MEMBERS = [
  * são os campos que a linha carrega (`data`, `id`).
  */
 export function rowsFor(profiles, action, isAllowed, rest = {}) {
-  return profiles.map(({ who, as }) => ({ title: `Should${isAllowed ? '' : ' not'} let ${who} ${action}`, as, isAllowed, ...rest }));
+  return profiles.map(({ who, as, uid }) => ({ title: `Should${isAllowed ? '' : ' not'} let ${who} ${action}`, as, uid, isAllowed, ...rest }));
 }
 
 /** Quem está na lista, vista pelo Storage. */
 export const STORAGE_MEMBERS = [
-  { who: 'a member', as: () => storageSignedInAs('bruno@gmail.com') },
-  { who: 'the admin', as: () => storageSignedInAs('ana@gmail.com') },
+  { who: 'a member', as: () => storageSignedInAs('bruno@gmail.com'), uid: uidOf('bruno@gmail.com') },
+  { who: 'the admin', as: () => storageSignedInAs('ana@gmail.com'), uid: uidOf('ana@gmail.com') },
 ];
 
 /** Quem está fora, vista pelo Storage: o Storage consulta a lista no Firestore, então um e-mail verificado fora dela não manda nada. */
@@ -144,15 +145,15 @@ export const STORAGE_OUTSIDERS = [
  * Os perfis de `entries.update` e `entries.delete`: só o autor (Bruno) mexe no lançamento dele; outro membro
  * no do outro, o admin no de um membro e quem está fora são recusados. `rest` são os campos de cada linha.
  */
-export function entryRowsFor(action, rest = {}) {
+export function entryRowsFor(action, rest = {}, ids = { own: 'bruno1', other: 'ana1' }) {
   const author = { who: 'the author', as: () => signedInAs('bruno@gmail.com') };
   const other = { who: 'a member, on the entry of another person,', as: () => signedInAs('bruno@gmail.com') };
   const admin = { who: 'the admin, on the entry of a member,', as: () => signedInAs('ana@gmail.com') };
   return [
-    ...rowsFor([author], `${action} the entry`, true, { id: 'bruno1', ...rest }),
-    ...rowsFor([other], `${action} the entry`, false, { id: 'ana1', ...rest }),
-    ...rowsFor([admin], `${action} the entry`, false, { id: 'bruno1', ...rest }),
-    ...rowsFor(OUTSIDERS, `${action} an entry`, false, { id: 'bruno1', ...rest }),
+    ...rowsFor([author], `${action} the entry`, true, { id: ids.own, ...rest }),
+    ...rowsFor([other], `${action} the entry`, false, { id: ids.other, ...rest }),
+    ...rowsFor([admin], `${action} the entry`, false, { id: ids.own, ...rest }),
+    ...rowsFor(OUTSIDERS, `${action} an entry`, false, { id: ids.own, ...rest }),
   ];
 }
 
@@ -197,7 +198,7 @@ export function oneOffBillOf(overrides = {}) {
 
 /** O registro do comprovante (uma imagem do Bruno), com os campos trocados em `overrides`. */
 export function receiptFileOf(id, overrides = {}) {
-  const file = { storagePath: `files/${id}`, type: 'image', contentType: 'image/webp', sizeBytes: 812345, uploadedBy: 'uid-bruno', ...overrides };
+  const file = { storagePath: `files/${id}`, type: 'image', contentType: 'image/webp', sizeBytes: 812345, uploadedBy: uidOf('bruno@gmail.com'), name: 'comprovante.webp', ...overrides };
   for (const key of Object.keys(file)) if (file[key] === undefined) delete file[key];
   return file;
 }
@@ -247,4 +248,28 @@ export function recurringPaymentOf(overrides = {}) {
  */
 export function addPaymentBatch(firestore, { entry = recurringPaymentOf(), entryId = `${entry.month}_${entry.recurringBillId}`, ...rest } = {}) {
   return addEntryBatch(firestore, { entryId, entry, ...rest });
+}
+
+/** O registro do comprovante semeado de cada lançamento semeado (`beforeEach`). */
+export const SEEDED_RECEIPT_OF = { bruno1: 'fbruno1', ana1: 'fana1', '2026-10_luz': 'fpbruno', '2026-10_aluguel': 'fpana' };
+
+/**
+ * O lote da troca do comprovante como o app grava: cria o registro novo (`newFile`, o padrão de `newFileId`;
+ * `null` deixa de fora, para apontar para um que já existia), atualiza o lançamento com o `receiptFileId` novo
+ * e o resto de `changes`, e apaga o registro antigo (`oldFileId: null` o deixa de fora).
+ */
+export function replaceReceiptBatch(firestore, { entryId, oldFileId, newFileId, changes = {}, newFile = receiptFileOf(newFileId) }) {
+  const batch = writeBatch(firestore);
+  if (newFile !== null) batch.set(fileOf(firestore, newFileId), newFile);
+  batch.update(entryDocOf(firestore, entryId), { receiptFileId: newFileId, ...changes });
+  if (oldFileId !== null) batch.delete(fileOf(firestore, oldFileId));
+  return batch.commit();
+}
+
+/** O lote da exclusão como o app grava: o lançamento e o registro do comprovante (`fileId: null` apaga só o lançamento). */
+export function deleteEntryBatch(firestore, { entryId, fileId }) {
+  const batch = writeBatch(firestore);
+  batch.delete(entryDocOf(firestore, entryId));
+  if (fileId !== null) batch.delete(fileOf(firestore, fileId));
+  return batch.commit();
 }
