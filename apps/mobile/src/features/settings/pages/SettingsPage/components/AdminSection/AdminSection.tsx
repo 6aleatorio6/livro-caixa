@@ -10,7 +10,10 @@ import { peopleCount } from '@/shared/utils/format/peopleCount';
 
 import { SettingsRow } from '../SettingsRow/SettingsRow';
 
-/** O que só o admin vê em Configurações. É um componente à parte porque só o admin pode ler a lista inteira. */
+/**
+ * O que só o admin vê em Configurações: o caminho para a tela de e-mails permitidos, com quantas pessoas há na
+ * família. É um componente à parte porque só o admin tem essa tela (as regras deixam todo membro ler a lista).
+ */
 export function AdminSection() {
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
 
