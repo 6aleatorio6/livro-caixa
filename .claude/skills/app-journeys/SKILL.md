@@ -196,6 +196,15 @@ Only a passing round lets the journey be committed. A failure that isn't clearly
 new code (a selector, a timing) is investigated with `pnpm journeys:inspect` and the round's
 `commands.json` before changing the flow; when it is unclear whether it is a regression, ask.
 
+A failed round is read before it is rerun: the failing step in `report.xml`, the data server's
+warnings and `firestore-debug.log`. A scenario that fails (a 500 from the data server) is a harness
+defect to fix, never a rerun until green: in G3, two rounds reran past one hid a screen stuck in
+error and a toast that the app shows to real people too.
+
+`assertNoErrors` sees only the end of a flow, and a toast lasts seconds. An error toast or error
+state seen anywhere in a round's captures, or by the person watching the device, is reproduced in a
+throwaway flow before the round counts as passing.
+
 ## Traps
 
 - **Metro without the variable:** the test link sends back to sign-in, and the flow fails waiting
