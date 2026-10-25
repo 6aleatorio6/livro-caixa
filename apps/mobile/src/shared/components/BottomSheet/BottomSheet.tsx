@@ -37,7 +37,8 @@ const styles = StyleSheet.create((theme, rt) => ({
     maxHeight: rt.screen.height - rt.insets.top,
     gap: theme.spacing.large,
     paddingHorizontal: theme.spacing.largeIncreased,
-    paddingBottom: theme.spacing.extraLargeIncreased,
+    // A folha encosta embaixo da tela: as últimas ações ficam acima da barra de navegação.
+    paddingBottom: theme.spacing.extraLargeIncreased + rt.insets.bottom,
     borderTopLeftRadius: theme.radii.extraLarge,
     borderTopRightRadius: theme.radii.extraLarge,
     backgroundColor: theme.colors.surfaceContainerLow,
