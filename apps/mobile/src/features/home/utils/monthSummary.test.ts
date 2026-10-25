@@ -26,6 +26,7 @@ const payment = (overrides: Partial<Extract<IEntry, { kind: 'recurringPayment' }
   amountCents: 100000,
   tagId: null,
   paidBy: 'ana',
+  receiptFileId: 'f1',
   ...overrides,
 });
 
@@ -38,6 +39,7 @@ const oneOff = (overrides: Partial<Extract<IEntry, { kind: 'oneOffBill' }>> = {}
   amountCents: 4500,
   tagId: null,
   paidBy: 'bruno',
+  receiptFileId: 'f1',
   ...overrides,
 });
 

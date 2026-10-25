@@ -28,6 +28,7 @@ const oneOff = (id: string, tagId: string | null, amountCents: number): IEntry =
   amountCents,
   tagId,
   paidBy: 'ana',
+  receiptFileId: 'f1',
 });
 
 describe('splitByTag', () => {

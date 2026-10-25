@@ -10,6 +10,7 @@ const payment = (overrides: Partial<Extract<IEntry, { kind: 'recurringPayment' }
   amountCents: 18735,
   tagId: 'casa',
   paidBy: 'u1',
+  receiptFileId: 'f1',
   recurringBillId: 'luz',
   dueDay: 10,
   expectedAmountCents: 21000,
@@ -40,6 +41,7 @@ describe('paymentTailOf', () => {
       amountCents: 100,
       tagId: 'casa',
       paidBy: 'u1',
+      receiptFileId: 'f1',
       date: '2026-10-12',
     };
 

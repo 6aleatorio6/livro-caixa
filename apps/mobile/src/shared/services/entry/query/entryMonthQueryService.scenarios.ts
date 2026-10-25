@@ -33,8 +33,8 @@ const BAKERY = { ...base, month: '2026-10', name: 'Padaria', amountCents: 1010, 
 const BIG_MARKET = { ...MARKET, amountCents: 30000 };
 const NEW_ONE = { ...base, month: '2026-10', name: 'Padaria', amountCents: 1200, date: '2026-10-25', paidBy: testAccountUid(BRUNO), receiptFileId: 'f5' };
 
-// O que a tela recebe: os mesmos campos, sem `createdAt` e `receiptFileId`, e `tagId: null` sem tag.
-const toEntry = (id: string, { createdAt: _createdAt, receiptFileId: _receiptFileId, ...entry }: Record<string, unknown>) =>
+// O que a tela recebe: os mesmos campos, sem `createdAt`, e `tagId: null` sem tag.
+const toEntry = (id: string, { createdAt: _createdAt, ...entry }: Record<string, unknown>) =>
   ({ id, tagId: null, ...entry }) as IEntry;
 
 const OCTOBER_ENTRIES: IEntry[] = [toEntry('market', MARKET), toEntry('pharmacy', PHARMACY), toEntry('garage', GARAGE)];

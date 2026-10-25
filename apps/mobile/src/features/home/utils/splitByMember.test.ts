@@ -21,6 +21,7 @@ const entry = (paidBy: string, amountCents: number): IEntry => ({
   amountCents,
   tagId: null,
   paidBy,
+  receiptFileId: 'f1',
 });
 
 describe('splitByMember', () => {

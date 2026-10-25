@@ -10,6 +10,7 @@ const payment: IEntry = {
   amountCents: 180000,
   tagId: 'casa',
   paidBy: 'u1',
+  receiptFileId: 'f1',
   recurringBillId: 'aluguel',
   dueDay: 5,
   expectedAmountCents: 180000,
@@ -25,6 +26,7 @@ const oneOff: IEntry = {
   amountCents: 35000,
   tagId: 'casa',
   paidBy: 'u1',
+  receiptFileId: 'f1',
   date: '2026-10-12',
 };
 

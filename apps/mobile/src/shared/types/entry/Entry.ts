@@ -10,6 +10,8 @@ interface IEntryBase {
   tagId: string | null;
   /** O uid de quem pagou. */
   paidBy: string;
+  /** O id do registro do comprovante em `files`. */
+  receiptFileId: string;
 }
 
 /** Uma conta avulsa já paga: tem a data do pagamento. */

@@ -1,8 +1,8 @@
 import { collection, query, where } from '@react-native-firebase/firestore';
 
+import { toEntry } from '@/shared/services/entry/query/toEntry';
 import { firestoreDb } from '@/shared/services/firebase/firestoreDb';
 import type { IEntry } from '@/shared/types/entry/Entry';
-import { toIsoDate } from '@/shared/utils/date/toIsoDate';
 import { compareNewestFirst } from '@/shared/utils/entry/compareNewestFirst';
 import { createRealtimeService } from '@/shared/utils/serviceUtils/createRealtimeService';
 
@@ -16,12 +16,8 @@ export const entryMonthQueryService = createRealtimeService({
   refs: ({ month }: { month: string }) => [query(collection(firestoreDb, 'entries'), where('month', '==', month))],
   resolve: ([entries]): IEntry[] =>
     entries
-      .map((entry) => Object.assign({}, entry, { paidOn: toIsoDate(entry.createdAt?.toDate() ?? new Date()) }))
+      // A ordem lê o `createdAt` do documento junto do dia que o `toEntry` já resolveu (o `paidOn` do pagamento).
+      .map((document) => ({ ...toEntry(document), createdAt: document.createdAt }))
       .sort(compareNewestFirst)
-      .map(({ id, kind, month, name, amountCents, date, recurringBillId, dueDay, expectedAmountCents, tagId, paidBy, paidOn }) => {
-        const common = { id, month, name, amountCents, tagId: tagId ?? null, paidBy };
-        return kind === 'recurringPayment'
-          ? { ...common, kind, recurringBillId, dueDay, expectedAmountCents, date: null, paidOn }
-          : { ...common, kind: 'oneOffBill', date };
-      }),
+      .map(({ createdAt: _createdAt, ...entry }) => entry),
 });

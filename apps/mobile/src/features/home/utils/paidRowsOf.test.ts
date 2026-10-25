@@ -10,6 +10,7 @@ const payment = (name: string, dueDay: number): IEntry => ({
   amountCents: 100,
   tagId: null,
   paidBy: 'u1',
+  receiptFileId: 'f1',
   recurringBillId: name,
   dueDay,
   expectedAmountCents: 100,
@@ -25,6 +26,7 @@ const oneOff = (name: string, date: string): IEntry => ({
   amountCents: 100,
   tagId: null,
   paidBy: 'u1',
+  receiptFileId: 'f1',
   date,
 });
 
