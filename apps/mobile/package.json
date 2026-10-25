@@ -1,6 +1,6 @@
 {
   "name": "livro-caixa-mobile",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "index.ts",
   "dependencies": {
     "@hookform/resolvers": "^6.0.0",
