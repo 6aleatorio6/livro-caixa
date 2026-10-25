@@ -25,6 +25,7 @@ export default function RootLayout() {
           <Stack.Screen name="recurring-bills/index" />
           <Stack.Screen name="recurring-bills/new" />
           <Stack.Screen name="recurring-bills/[id]" />
+          <Stack.Screen name="one-off-bills/new" />
           <Stack.Screen name="tags/index" />
           <Stack.Screen name="tags/new" />
           <Stack.Screen name="tags/[id]" />
