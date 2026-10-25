@@ -1,8 +1,9 @@
 // Esboço do modelo de dados, pensado para o Firestore. Cada tabela é uma coleção (ou, em tags, os
 // itens de um documento só), e a chave primária é o id do documento.
 //
-// Leituras do Início de um mês: o documento do próprio e-mail em allowedEmails, o documento único
-// das tags, todas as contas recorrentes e os lançamentos do mês (uma consulta por month). O que
+// Leituras do Início de um mês: a lista de allowedEmails inteira (dela sai o nome atual de quem
+// registrou cada lançamento), o documento único das tags, todas as contas recorrentes e os
+// lançamentos do mês (uma consulta por month). O que
 // falta pagar e as somas por tag e por membro são calculados no app, com o que já foi lido: não há
 // totais gravados. Trocar de mês lê só os lançamentos do novo mês.
 //
@@ -31,11 +32,12 @@ Enum FileType {
 
 Table allowedEmails {
   email varchar [pk, note: 'Id do documento: o e-mail em minúsculas. As regras conferem o acesso com exists() neste caminho, a partir do e-mail do login']
-  name varchar [not null, note: 'O nome da pessoa na família, cadastrado pelo admin junto com o e-mail. É o nome que o app mostra']
+  uid varchar [unique, note: 'O uid do login da pessoa. Vazio até a primeira entrada, quando o app o grava junto com o nome. Depois o app nunca o troca (as regras recusam); trocar a conta Google de uma pessoa é um script do Admin SDK. Os lançamentos apontam para ele']
+  name varchar [note: 'O nome que o app mostra. Vazio até a primeira entrada da pessoa, quando o app grava o nome da conta Google (sem nome na conta, o começo do e-mail). Depois, só a própria pessoa o altera. O nome não fica vazio e tem até 60 caracteres, e a primeira entrada corta o da conta Google nesse limite']
   isAdmin boolean [not null, default: false, note: 'Marcado à mão no console do Firebase. As regras não deixam o app gravar true. O esperado é um admin só, sem verificação']
   hasEntries boolean [not null, default: false, note: 'Vira true no mesmo lote do primeiro lançamento da pessoa, e as regras do lançamento exigem isso (getAfter). Com true, as regras recusam excluir o e-mail']
 
-  Note: 'A lista de e-mails permitidos. Só o admin cria e exclui.'
+  Note: 'A lista de e-mails permitidos. Só o admin cria, só com o e-mail, e exclui; cada pessoa grava e altera só o próprio nome (e grava o uid uma vez). Todo membro lê a lista inteira, para mostrar o nome atual de quem registrou cada lançamento.'
 }
 
 Table tags {
@@ -67,8 +69,7 @@ Table entries {
   amountCents int [not null, note: 'No pagamento, começa com o valor previsto e pode ser corrigido']
   date varchar [note: 'Só na conta avulsa: AAAA-MM-DD, preenchida com hoje. Trocar a data para outro mês muda o month junto']
   tagId varchar [ref: > tags.id, note: 'Opcional. No pagamento, cópia da tag da conta no momento do pagamento']
-  paidBy varchar [not null, note: 'O uid do login de quem registrou. As regras exigem o uid de quem grava e só deixam o autor alterar ou excluir']
-  paidByName varchar [not null, note: 'Cópia do name de allowedEmails de quem registrou, conferida pelas regras contra o documento do e-mail do login (get). Serve à separação por membro sem ler outra coleção']
+  paidBy varchar [not null, ref: > allowedEmails.uid, note: 'O uid do login de quem registrou. As regras exigem o uid de quem grava (request.auth.uid) e só deixam o autor alterar ou excluir. O nome não é copiado: o app o acha na lista pelo uid, e uma troca de nome chega aos lançamentos antigos']
   createdAt timestamp [not null, note: 'Quando o lançamento foi registrado, gravado pelo servidor (serverTimestamp). Aparece nos detalhes do lançamento']
   receiptFileId varchar [not null, ref: - files.id, note: 'O comprovante. As regras exigem que o registro exista ao fim do lote (getAfter) e tenha sido enviado por quem grava o lançamento']
 

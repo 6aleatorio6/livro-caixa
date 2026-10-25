@@ -8088,7 +8088,7 @@
                           "fill": "#1C1C1A",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "borda Outline, rótulo On Surface Variant, foco Primary, erro Error",
+                          "content": "borda Outline, rótulo On Surface Variant (na borda, Primary), foco Primary, erro Error",
                           "lineHeight": 1.5,
                           "fontFamily": "Inter",
                           "fontSize": 15,
@@ -19552,7 +19552,7 @@
                   "fill": "#1C1C1A",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Contornado, com rótulo sempre visível e texto de apoio. O erro diz o que aconteceu e como corrigir, sem pedir desculpas. Valores em reais com números tabulares.",
+                  "content": "Contornado, o “outlined” do Material. Vazio, o rótulo fica dentro da caixa, no lugar do valor; com foco ou valor, sobe para a borda, num recorte da cor do fundo. O erro diz o que aconteceu e como corrigir, sem pedir desculpas, e toma o lugar do texto de apoio. Valores em reais com números tabulares.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -19565,7 +19565,7 @@
                   "fill": "#6B6B66",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Borda: outline; foco: primary (2 px); erro: error · Rótulo: body-small, on-surface-variant · Valor: body-large, on-surface · Apoio: body-small",
+                  "content": "Caixa: 48 de altura, 16 de cada lado, raio 4 · Borda: 1 px, outline; foco: primary; erro: error · Rótulo vazio: body-large, on-surface-variant · Rótulo na borda: 0,78 do body-large, primary (error no erro), num recorte da cor do fundo (surface, ou a do cartão) · Valor: body-large, on-surface · Ícone de alerta: 20, error · Apoio: body-small, 16 de cada lado · Desabilitado: o campo a 0,38 de opacidade",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 13,
@@ -19608,14 +19608,20 @@
                           "width": 300,
                           "layout": "vertical",
                           "gap": 4,
+                          "padding": [
+                            12,
+                            0,
+                            0,
+                            0
+                          ],
                           "children": [
                             {
                               "type": "frame",
                               "id": "iYkq6",
                               "name": "Caixa",
                               "width": "fill_container",
-                              "height": 56,
-                              "cornerRadius": 8,
+                              "height": 48,
+                              "cornerRadius": 4,
                               "stroke": "$outline",
                               "strokeWidth": 1,
                               "gap": 12,
@@ -19626,37 +19632,35 @@
                               "alignItems": "center",
                               "children": [
                                 {
-                                  "type": "frame",
-                                  "id": "tnTn2",
-                                  "name": "Conteúdo",
+                                  "type": "text",
+                                  "id": "O7FcY",
+                                  "x": 0,
+                                  "y": 0,
+                                  "name": "Rótulo no lugar do valor",
+                                  "enabled": false,
+                                  "fill": "$on-surface-variant",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container(0)",
+                                  "content": "Valor pago",
+                                  "lineHeight": "$body-large-line-height",
+                                  "fontFamily": "$font-family",
+                                  "fontSize": "$body-large-size",
+                                  "fontWeight": "$body-large-weight",
+                                  "letterSpacing": "$body-large-tracking"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "VN2cR",
+                                  "name": "Valor",
+                                  "fill": "$on-surface",
+                                  "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "layout": "vertical",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "BLbJj",
-                                      "name": "Rótulo",
-                                      "fill": "$on-surface-variant",
-                                      "content": "Valor pago",
-                                      "lineHeight": "$body-small-line-height",
-                                      "fontFamily": "$font-family",
-                                      "fontSize": "$body-small-size",
-                                      "fontWeight": "$body-small-weight",
-                                      "letterSpacing": "$body-small-tracking"
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "VN2cR",
-                                      "name": "Valor",
-                                      "fill": "$on-surface",
-                                      "content": "R$ 187,35",
-                                      "lineHeight": "$body-large-line-height",
-                                      "fontFamily": "$font-family",
-                                      "fontSize": "$body-large-size",
-                                      "fontWeight": "$body-large-weight",
-                                      "letterSpacing": "$body-large-tracking"
-                                    }
-                                  ]
+                                  "content": "R$ 187,35",
+                                  "lineHeight": "$body-large-line-height",
+                                  "fontFamily": "$font-family",
+                                  "fontSize": "$body-large-size",
+                                  "fontWeight": "$body-large-weight",
+                                  "letterSpacing": "$body-large-tracking"
                                 },
                                 {
                                   "type": "icon",
@@ -19674,18 +19678,59 @@
                               ]
                             },
                             {
-                              "type": "text",
-                              "id": "vfVG1",
+                              "type": "frame",
+                              "id": "UruCv",
                               "name": "Apoio",
-                              "fill": "$on-surface-variant",
-                              "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Previsto: R$ 210,00. Corrija se pagou outro valor.",
-                              "lineHeight": "$body-small-line-height",
-                              "fontFamily": "$font-family",
-                              "fontSize": "$body-small-size",
-                              "fontWeight": "$body-small-weight",
-                              "letterSpacing": "$body-small-tracking"
+                              "padding": [
+                                0,
+                                16
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "vfVG1",
+                                  "name": "Texto de apoio",
+                                  "fill": "$on-surface-variant",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Previsto: R$ 210,00. Corrija se pagou outro valor.",
+                                  "lineHeight": "$body-small-line-height",
+                                  "fontFamily": "$font-family",
+                                  "fontSize": "$body-small-size",
+                                  "fontWeight": "$body-small-weight",
+                                  "letterSpacing": "$body-small-tracking"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "HSD7O",
+                              "layoutPosition": "absolute",
+                              "x": 12,
+                              "y": 0,
+                              "name": "Rótulo na borda",
+                              "height": 24,
+                              "fill": "$surface",
+                              "padding": [
+                                0,
+                                4
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "BLbJj",
+                                  "name": "Rótulo",
+                                  "fill": "$primary",
+                                  "content": "Valor pago",
+                                  "lineHeight": "$body-large-line-height",
+                                  "fontFamily": "$font-family",
+                                  "fontSize": 12.48,
+                                  "fontWeight": "$body-large-weight",
+                                  "letterSpacing": 0.195
+                                }
+                              ]
                             }
                           ]
                         },
@@ -19716,9 +19761,15 @@
                           "ref": "YXXAl",
                           "name": "Vazio",
                           "descendants": {
+                            "O7FcY": {
+                              "enabled": true,
+                              "content": "Valor pago"
+                            },
                             "VN2cR": {
-                              "content": "R$ 0,00",
-                              "fill": "$on-surface-variant"
+                              "enabled": false
+                            },
+                            "HSD7O": {
+                              "enabled": false
                             }
                           }
                         },
@@ -19751,10 +19802,7 @@
                           "descendants": {
                             "iYkq6": {
                               "stroke": "$primary",
-                              "strokeWidth": 2
-                            },
-                            "BLbJj": {
-                              "fill": "$primary"
+                              "strokeWidth": 1
                             }
                           }
                         },
@@ -19787,19 +19835,27 @@
                           "descendants": {
                             "iYkq6": {
                               "stroke": "$error",
-                              "strokeWidth": 2
+                              "strokeWidth": 1
                             },
-                            "BLbJj": {
+                            "O7FcY": {
+                              "enabled": true,
+                              "content": "Valor pago",
                               "fill": "$error"
                             },
                             "VN2cR": {
-                              "content": ""
+                              "enabled": false
                             },
                             "hkgOr": {
                               "enabled": true
                             },
                             "vfVG1": {
                               "content": "Informe o valor pago.",
+                              "fill": "$error"
+                            },
+                            "HSD7O": {
+                              "enabled": false
+                            },
+                            "BLbJj": {
                               "fill": "$error"
                             }
                           }
@@ -19839,9 +19895,6 @@
                           "ref": "YXXAl",
                           "name": "Data",
                           "descendants": {
-                            "BLbJj": {
-                              "content": "Data"
-                            },
                             "VN2cR": {
                               "content": "12/10/2026"
                             },
@@ -19852,6 +19905,9 @@
                             },
                             "vfVG1": {
                               "content": "Hoje, por padrão. A data define o mês da conta."
+                            },
+                            "BLbJj": {
+                              "content": "Data"
                             }
                           }
                         },
@@ -19882,14 +19938,14 @@
                           "ref": "YXXAl",
                           "name": "Nome",
                           "descendants": {
-                            "BLbJj": {
-                              "content": "Nome da conta"
-                            },
                             "VN2cR": {
                               "content": "Conserto da geladeira"
                             },
-                            "vfVG1": {
+                            "UruCv": {
                               "enabled": false
+                            },
+                            "BLbJj": {
+                              "content": "Nome da conta"
                             }
                           }
                         },
@@ -19919,19 +19975,20 @@
                           "type": "ref",
                           "ref": "YXXAl",
                           "name": "Desabilitado",
+                          "opacity": 0.38,
                           "descendants": {
                             "iYkq6": {
-                              "stroke": "$outline-variant"
-                            },
-                            "BLbJj": {
-                              "fill": "$outline"
+                              "stroke": "$outline"
                             },
                             "VN2cR": {
-                              "fill": "$outline"
+                              "fill": "$on-surface"
                             },
                             "vfVG1": {
-                              "content": "A conta já tem pagamento neste mês.",
-                              "fill": "$outline"
+                              "fill": "$on-surface-variant",
+                              "content": "A conta já tem pagamento neste mês."
+                            },
+                            "BLbJj": {
+                              "fill": "$primary"
                             }
                           }
                         },
@@ -24796,7 +24853,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Só o admin vê, pela aba Configurações. Cadastra cada pessoa da família com o nome, que é o que aparece no app, e o e-mail do Google com que ela entra.",
+                  "content": "Só o admin vê, pela aba Configurações. Cadastra cada pessoa da família só com o e-mail do Google com que ela entra; o nome vem da conta Google, na primeira entrada. Quem ainda não entrou aparece pelo e-mail.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -24839,7 +24896,93 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "O e-mail é a chave da lista: um repetido é recusado, com o nome de quem já o usa.",
+                  "content": "O e-mail é a chave da lista: um repetido é recusado.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "rsiK5",
+              "name": "Tela · Alterar nome",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "rG3gA",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Alterar nome",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "I7CY2Z",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Cada membro muda o próprio nome pelo lápis do cartão de quem está logado, em Configurações. O nome novo aparece em todos os lançamentos da pessoa, os antigos também.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "XaG91",
+              "name": "Estado · Nome vazio",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "cbHDz",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Estado · Nome vazio",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "bBODp",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Sem nome, o app não salva: a mensagem fica sob o campo, como nos outros formulários.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -25418,6 +25561,40 @@
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
                   "content": "Lançamento e conta recorrente pedem confirmação, com o Diálogo. Uma tag em uso não chega ao diálogo: o botão fica desabilitado e diz por quê, em vez de um erro depois do toque.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "VOXag",
+              "name": "Próprio nome",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "x8gdF",
+                  "name": "Rótulo",
+                  "fill": "#6B6B66",
+                  "content": "Próprio nome",
+                  "lineHeight": 1.3,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "zCApM",
+                  "name": "Texto",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Cada membro muda o próprio nome, e só o próprio, pelo lápis ao lado do sair, e responde por ele. O nome inicial vem da conta Google, na primeira entrada: o admin adiciona só o e-mail e não muda o nome de ninguém. Descartado: o admin dar e mudar o nome de todos, e o cartão inteiro tocável, sem sinal de que abre algo.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 16,
@@ -30607,10 +30784,7 @@
               "descendants": {
                 "iYkq6": {
                   "stroke": "$primary",
-                  "strokeWidth": 2
-                },
-                "BLbJj": {
-                  "fill": "$primary"
+                  "strokeWidth": 1
                 },
                 "VN2cR": {
                   "content": "R$ 119,90"
@@ -31418,14 +31592,14 @@
               "name": "Nome",
               "width": "fill_container",
               "descendants": {
-                "BLbJj": {
-                  "content": "Nome da conta"
-                },
                 "VN2cR": {
                   "content": "Conserto da geladeira"
                 },
-                "vfVG1": {
+                "UruCv": {
                   "enabled": false
+                },
+                "BLbJj": {
+                  "content": "Nome da conta"
                 }
               }
             },
@@ -31438,17 +31612,16 @@
               "descendants": {
                 "iYkq6": {
                   "stroke": "$primary",
-                  "strokeWidth": 2
-                },
-                "BLbJj": {
-                  "content": "Valor pago",
-                  "fill": "$primary"
+                  "strokeWidth": 1
                 },
                 "VN2cR": {
                   "content": "R$ 350,00"
                 },
-                "vfVG1": {
+                "UruCv": {
                   "enabled": false
+                },
+                "BLbJj": {
+                  "content": "Valor pago"
                 }
               }
             },
@@ -31459,9 +31632,6 @@
               "name": "Data",
               "width": "fill_container",
               "descendants": {
-                "BLbJj": {
-                  "content": "Data"
-                },
                 "VN2cR": {
                   "content": "12/10/2026"
                 },
@@ -31472,6 +31642,9 @@
                 },
                 "vfVG1": {
                   "content": "Hoje, por padrão. A data define o mês em que a conta entra."
+                },
+                "BLbJj": {
+                  "content": "Data"
                 }
               }
             },
@@ -33505,6 +33678,17 @@
                   "id": "nzu2V",
                   "type": "ref",
                   "ref": "m2ArK2",
+                  "name": "Alterar nome",
+                  "descendants": {
+                    "uRzVL": {
+                      "icon": "pencil"
+                    }
+                  }
+                },
+                {
+                  "id": "ZOL39",
+                  "type": "ref",
+                  "ref": "m2ArK2",
                   "name": "Sair da conta",
                   "descendants": {
                     "uRzVL": {
@@ -33830,24 +34014,6 @@
                   "letterSpacing": "$title-medium-emphasized-tracking"
                 },
                 {
-                  "id": "p64SBG",
-                  "type": "ref",
-                  "ref": "YXXAl",
-                  "name": "Nome",
-                  "width": "fill_container",
-                  "descendants": {
-                    "BLbJj": {
-                      "content": "Nome"
-                    },
-                    "VN2cR": {
-                      "content": "Daniel"
-                    },
-                    "vfVG1": {
-                      "content": "É o nome que aparece nos lançamentos e na divisão por membro."
-                    }
-                  }
-                },
-                {
                   "id": "v5SGN",
                   "type": "ref",
                   "ref": "YXXAl",
@@ -33856,17 +34022,19 @@
                   "descendants": {
                     "iYkq6": {
                       "stroke": "$primary",
-                      "strokeWidth": 2
-                    },
-                    "BLbJj": {
-                      "content": "E-mail do Google",
-                      "fill": "$primary"
+                      "strokeWidth": 1
                     },
                     "VN2cR": {
                       "content": "daniel.lima@gmail.com"
                     },
                     "vfVG1": {
-                      "content": "A pessoa entra com a conta Google deste e-mail."
+                      "content": "A pessoa entra com a conta Google deste e-mail, e o nome vem dela."
+                    },
+                    "HSD7O": {
+                      "fill": "$surface-container-low"
+                    },
+                    "BLbJj": {
+                      "content": "E-mail do Google"
                     }
                   }
                 },
@@ -33929,7 +34097,7 @@
                       "id": "NCnDZ",
                       "name": "Resumo",
                       "fill": "$on-surface-variant",
-                      "content": "3 pessoas",
+                      "content": "4 pessoas",
                       "lineHeight": "$label-medium-line-height",
                       "fontFamily": "$font-family",
                       "fontSize": "$label-medium-size",
@@ -33993,6 +34161,27 @@
                   "ref": "Sd3X5",
                   "name": "Clara",
                   "width": "fill_container"
+                },
+                {
+                  "id": "ALkOq",
+                  "type": "ref",
+                  "ref": "Sd3X5",
+                  "name": "Elisa",
+                  "width": "fill_container",
+                  "descendants": {
+                    "HTDlV": {
+                      "content": "E"
+                    },
+                    "T6dYyG": {
+                      "content": "elisa.souza@gmail.com"
+                    },
+                    "n4ZjVZ": {
+                      "enabled": false
+                    },
+                    "PumPV": {
+                      "content": "Ainda não entrou"
+                    }
+                  }
                 }
               ]
             }
@@ -34017,24 +34206,6 @@
       "padding": 20,
       "children": [
         {
-          "id": "e05eP",
-          "type": "ref",
-          "ref": "YXXAl",
-          "name": "Nome",
-          "width": "fill_container",
-          "descendants": {
-            "BLbJj": {
-              "content": "Nome"
-            },
-            "VN2cR": {
-              "content": "Bruno"
-            },
-            "vfVG1": {
-              "enabled": false
-            }
-          }
-        },
-        {
           "id": "boASk",
           "type": "ref",
           "ref": "YXXAl",
@@ -34043,11 +34214,7 @@
           "descendants": {
             "iYkq6": {
               "stroke": "$error",
-              "strokeWidth": 2
-            },
-            "BLbJj": {
-              "content": "E-mail do Google",
-              "fill": "$error"
+              "strokeWidth": 1
             },
             "VN2cR": {
               "content": "bruno.souza@gmail.com"
@@ -34056,7 +34223,14 @@
               "enabled": true
             },
             "vfVG1": {
-              "content": "Este e-mail já está na lista, com o nome Bruno.",
+              "content": "Este e-mail já está na lista.",
+              "fill": "$error"
+            },
+            "HSD7O": {
+              "fill": "$surface-container-low"
+            },
+            "BLbJj": {
+              "content": "E-mail do Google",
               "fill": "$error"
             }
           }
@@ -34560,14 +34734,14 @@
               "name": "Nome",
               "width": "fill_container",
               "descendants": {
-                "BLbJj": {
-                  "content": "Nome da conta"
-                },
                 "VN2cR": {
                   "content": "Gás"
                 },
-                "vfVG1": {
+                "UruCv": {
                   "enabled": false
+                },
+                "BLbJj": {
+                  "content": "Nome da conta"
                 }
               }
             },
@@ -34580,17 +34754,16 @@
               "descendants": {
                 "iYkq6": {
                   "stroke": "$primary",
-                  "strokeWidth": 2
-                },
-                "BLbJj": {
-                  "content": "Valor previsto",
-                  "fill": "$primary"
+                  "strokeWidth": 1
                 },
                 "VN2cR": {
                   "content": "R$ 120,00"
                 },
                 "vfVG1": {
                   "content": "Quem paga confirma ou corrige este valor no pagamento."
+                },
+                "BLbJj": {
+                  "content": "Valor previsto"
                 }
               }
             },
@@ -34601,14 +34774,14 @@
               "name": "Dia do mês",
               "width": "fill_container",
               "descendants": {
-                "BLbJj": {
-                  "content": "Dia do mês"
-                },
                 "VN2cR": {
                   "content": "25"
                 },
                 "vfVG1": {
                   "content": "De 1 a 31. Num mês mais curto, vence no último dia."
+                },
+                "BLbJj": {
+                  "content": "Dia do mês"
                 }
               }
             },
@@ -34619,9 +34792,6 @@
               "name": "Vale a partir de",
               "width": "fill_container",
               "descendants": {
-                "BLbJj": {
-                  "content": "Vale a partir de"
-                },
                 "VN2cR": {
                   "content": "01/11/2026"
                 },
@@ -34632,6 +34802,9 @@
                 },
                 "vfVG1": {
                   "content": "Antes desta data, a conta não aparece no Início."
+                },
+                "BLbJj": {
+                  "content": "Vale a partir de"
                 }
               }
             },
@@ -34905,14 +35078,14 @@
               "name": "Nome",
               "width": "fill_container",
               "descendants": {
-                "BLbJj": {
-                  "content": "Nome da conta"
-                },
                 "VN2cR": {
                   "content": "Internet"
                 },
-                "vfVG1": {
+                "UruCv": {
                   "enabled": false
+                },
+                "BLbJj": {
+                  "content": "Nome da conta"
                 }
               }
             },
@@ -34925,17 +35098,16 @@
               "descendants": {
                 "iYkq6": {
                   "stroke": "$primary",
-                  "strokeWidth": 2
-                },
-                "BLbJj": {
-                  "content": "Valor previsto",
-                  "fill": "$primary"
+                  "strokeWidth": 1
                 },
                 "VN2cR": {
                   "content": "R$ 129,90"
                 },
                 "vfVG1": {
                   "content": "Era R$ 119,90."
+                },
+                "BLbJj": {
+                  "content": "Valor previsto"
                 }
               }
             },
@@ -34946,14 +35118,14 @@
               "name": "Dia do mês",
               "width": "fill_container",
               "descendants": {
-                "BLbJj": {
-                  "content": "Dia do mês"
-                },
                 "VN2cR": {
                   "content": "15"
                 },
                 "vfVG1": {
                   "content": "De 1 a 31. Num mês mais curto, vence no último dia."
+                },
+                "BLbJj": {
+                  "content": "Dia do mês"
                 }
               }
             },
@@ -34964,9 +35136,6 @@
               "name": "Vale a partir de",
               "width": "fill_container",
               "descendants": {
-                "BLbJj": {
-                  "content": "Vale a partir de"
-                },
                 "VN2cR": {
                   "content": "01/01/2026"
                 },
@@ -34975,8 +35144,11 @@
                   "icon": "calendar",
                   "fill": "$on-surface-variant"
                 },
-                "vfVG1": {
+                "UruCv": {
                   "enabled": false
+                },
+                "BLbJj": {
+                  "content": "Vale a partir de"
                 }
               }
             },
@@ -35544,14 +35716,14 @@
               "name": "Nome",
               "width": "fill_container",
               "descendants": {
-                "BLbJj": {
-                  "content": "Nome da tag"
-                },
                 "VN2cR": {
                   "content": "Mercado"
                 },
                 "vfVG1": {
                   "content": "O nome não se repete: “Saúde” e “saude” são a mesma tag."
+                },
+                "BLbJj": {
+                  "content": "Nome da tag"
                 }
               }
             },
@@ -35786,14 +35958,14 @@
               "name": "Nome",
               "width": "fill_container",
               "descendants": {
-                "BLbJj": {
-                  "content": "Nome da tag"
-                },
                 "VN2cR": {
                   "content": "Casa"
                 },
                 "vfVG1": {
                   "content": "O nome não se repete: “Saúde” e “saude” são a mesma tag."
+                },
+                "BLbJj": {
+                  "content": "Nome da tag"
                 }
               }
             },
@@ -36069,11 +36241,7 @@
               "descendants": {
                 "iYkq6": {
                   "stroke": "$error",
-                  "strokeWidth": 2
-                },
-                "BLbJj": {
-                  "content": "Nome da tag",
-                  "fill": "$error"
+                  "strokeWidth": 1
                 },
                 "VN2cR": {
                   "content": "saude"
@@ -36083,6 +36251,10 @@
                 },
                 "vfVG1": {
                   "content": "Já existe a tag Saúde. Escolha outro nome.",
+                  "fill": "$error"
+                },
+                "BLbJj": {
+                  "content": "Nome da tag",
                   "fill": "$error"
                 }
               }
@@ -36389,17 +36561,16 @@
               "descendants": {
                 "iYkq6": {
                   "stroke": "$primary",
-                  "strokeWidth": 2
-                },
-                "BLbJj": {
-                  "content": "Valor pago",
-                  "fill": "$primary"
+                  "strokeWidth": 1
                 },
                 "VN2cR": {
                   "content": "R$ 187,35"
                 },
                 "vfVG1": {
                   "content": "Corrija se pagou outro valor."
+                },
+                "BLbJj": {
+                  "content": "Valor pago"
                 }
               }
             },
@@ -36645,14 +36816,14 @@
               "name": "Nome",
               "width": "fill_container",
               "descendants": {
-                "BLbJj": {
-                  "content": "Nome da conta"
-                },
                 "VN2cR": {
                   "content": "Conserto da geladeira"
                 },
-                "vfVG1": {
+                "UruCv": {
                   "enabled": false
+                },
+                "BLbJj": {
+                  "content": "Nome da conta"
                 }
               }
             },
@@ -36665,17 +36836,16 @@
               "descendants": {
                 "iYkq6": {
                   "stroke": "$primary",
-                  "strokeWidth": 2
-                },
-                "BLbJj": {
-                  "content": "Valor pago",
-                  "fill": "$primary"
+                  "strokeWidth": 1
                 },
                 "VN2cR": {
                   "content": "R$ 350,00"
                 },
-                "vfVG1": {
+                "UruCv": {
                   "enabled": false
+                },
+                "BLbJj": {
+                  "content": "Valor pago"
                 }
               }
             },
@@ -36686,9 +36856,6 @@
               "name": "Data",
               "width": "fill_container",
               "descendants": {
-                "BLbJj": {
-                  "content": "Data"
-                },
                 "VN2cR": {
                   "content": "12/10/2026"
                 },
@@ -36699,6 +36866,9 @@
                 },
                 "vfVG1": {
                   "content": "A data define o mês em que a conta entra."
+                },
+                "BLbJj": {
+                  "content": "Data"
                 }
               }
             },
@@ -39175,6 +39345,348 @@
           "ref": "cryGB",
           "name": "Navegação",
           "width": "fill_container"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "u4PoDq",
+      "x": 5644,
+      "y": 22722,
+      "name": "Tela · Alterar nome",
+      "theme": {
+        "mode": "light"
+      },
+      "reusable": true,
+      "clip": true,
+      "width": 412,
+      "fill": "$surface",
+      "cornerRadius": 28,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#0000001A",
+        "offset": {
+          "x": 0,
+          "y": 8
+        },
+        "blur": 32
+      },
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "s9XM9",
+          "name": "Barra de status",
+          "width": "fill_container",
+          "height": 36,
+          "padding": [
+            0,
+            20
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "CAgSm",
+              "name": "Hora",
+              "fill": "$on-surface",
+              "content": "10:24",
+              "lineHeight": "$label-large-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$label-large-size",
+              "fontWeight": "$label-large-weight",
+              "letterSpacing": "$label-large-tracking"
+            },
+            {
+              "type": "frame",
+              "id": "XtVhp",
+              "name": "Ícones",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "IkCvU",
+                  "name": "signal",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                },
+                {
+                  "type": "icon",
+                  "id": "hqbpf",
+                  "name": "wifi",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                },
+                {
+                  "type": "icon",
+                  "id": "Vh3np",
+                  "name": "battery-full",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Yzbcw",
+          "type": "ref",
+          "ref": "ovMSg",
+          "name": "Barra superior",
+          "width": "fill_container",
+          "descendants": {
+            "QgaRn": {
+              "content": "Seu nome"
+            }
+          }
+        },
+        {
+          "type": "frame",
+          "id": "PGNDg",
+          "name": "Conteúdo",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 20,
+          "padding": [
+            8,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "id": "fPmPs",
+              "type": "ref",
+              "ref": "YXXAl",
+              "name": "Nome",
+              "width": "fill_container",
+              "descendants": {
+                "VN2cR": {
+                  "content": "Ana"
+                },
+                "vfVG1": {
+                  "content": "É o nome que a família vê nos seus lançamentos e na divisão por membro."
+                },
+                "BLbJj": {
+                  "content": "Nome"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "NGQEK",
+              "name": "Espaço",
+              "width": "fill_container",
+              "height": 24,
+              "layout": "vertical"
+            },
+            {
+              "id": "uf2X9",
+              "type": "ref",
+              "ref": "k9xma",
+              "name": "Salvar nome",
+              "width": "fill_container",
+              "descendants": {
+                "u3Umir": {
+                  "width": 372
+                },
+                "E0Y5Tt": {
+                  "content": "Salvar nome"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "hEEUK",
+      "x": 6152,
+      "y": 22722,
+      "name": "Estado · Nome vazio",
+      "theme": {
+        "mode": "light"
+      },
+      "clip": true,
+      "width": 412,
+      "fill": "$surface",
+      "cornerRadius": 28,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#0000001A",
+        "offset": {
+          "x": 0,
+          "y": 8
+        },
+        "blur": 32
+      },
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "S0aQgV",
+          "name": "Barra de status",
+          "width": "fill_container",
+          "height": 36,
+          "padding": [
+            0,
+            20
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "UZdhY",
+              "name": "Hora",
+              "fill": "$on-surface",
+              "content": "10:24",
+              "lineHeight": "$label-large-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$label-large-size",
+              "fontWeight": "$label-large-weight",
+              "letterSpacing": "$label-large-tracking"
+            },
+            {
+              "type": "frame",
+              "id": "ZplxC",
+              "name": "Ícones",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "gqSgH",
+                  "name": "signal",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                },
+                {
+                  "type": "icon",
+                  "id": "FmIDB",
+                  "name": "wifi",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                },
+                {
+                  "type": "icon",
+                  "id": "BBFAY",
+                  "name": "battery-full",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "e3jkm",
+          "type": "ref",
+          "ref": "ovMSg",
+          "name": "Barra superior",
+          "width": "fill_container",
+          "descendants": {
+            "QgaRn": {
+              "content": "Seu nome"
+            }
+          }
+        },
+        {
+          "type": "frame",
+          "id": "KHqlP",
+          "name": "Conteúdo",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 20,
+          "padding": [
+            8,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "id": "HPbUR",
+              "type": "ref",
+              "ref": "YXXAl",
+              "name": "Nome",
+              "width": "fill_container",
+              "descendants": {
+                "iYkq6": {
+                  "stroke": "$error",
+                  "strokeWidth": 1
+                },
+                "O7FcY": {
+                  "enabled": true,
+                  "content": "Nome",
+                  "fill": "$error"
+                },
+                "VN2cR": {
+                  "enabled": false
+                },
+                "hkgOr": {
+                  "enabled": true
+                },
+                "vfVG1": {
+                  "content": "Preencha este campo.",
+                  "fill": "$error"
+                },
+                "HSD7O": {
+                  "enabled": false
+                },
+                "BLbJj": {
+                  "content": "Nome",
+                  "fill": "$error"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "TIeuG",
+              "name": "Espaço",
+              "width": "fill_container",
+              "height": 24,
+              "layout": "vertical"
+            },
+            {
+              "id": "z8iBuQ",
+              "type": "ref",
+              "ref": "k9xma",
+              "name": "Salvar nome",
+              "width": "fill_container",
+              "descendants": {
+                "u3Umir": {
+                  "width": 372
+                },
+                "E0Y5Tt": {
+                  "content": "Salvar nome"
+                }
+              }
+            }
+          ]
         }
       ]
     }

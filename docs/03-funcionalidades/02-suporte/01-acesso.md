@@ -1,12 +1,14 @@
 # Acesso
 
 O app só tem login pelo Google, e só entra quem tem o e-mail na lista de e-mails permitidos. O
-admin mantém essa lista, com o nome de cada pessoa.
+admin mantém essa lista, só com os e-mails: o nome de cada pessoa vem da conta Google, e depois ela
+mesma cuida dele.
 
 ## Quem usa e quando
 
 - Todo membro, ao entrar no app.
-- O admin, ao cadastrar uma pessoa da família: o nome e o e-mail do Google.
+- O admin, ao cadastrar uma pessoa da família: só o e-mail do Google.
+- Todo membro, para mudar o próprio nome, em [Configurações](03-configuracoes.md).
 
 ## Login
 
@@ -33,12 +35,22 @@ admin mantém essa lista, com o nome de cada pessoa.
   todas funcionam como admin.
 - Tem uma tela para adicionar e remover pessoas da lista de e-mails permitidos, na aba
   [Configurações](03-configuracoes.md). Só ele vê essa tela.
-- Cada pessoa entra na lista com o nome e o e-mail do Google, os dois obrigatórios. O nome é o que
-  o app mostra: nos lançamentos da pessoa e na separação por membro do
-  [Início](../01-principal/01-inicio.md).
+- Cada pessoa entra na lista só com o e-mail do Google, obrigatório. O nome vem da conta Google
+  ([O próprio nome](#o-próprio-nome)): até a primeira entrada, a lista mostra a pessoa pelo e-mail,
+  como quem ainda não entrou.
 - O e-mail não se repete na lista: um e-mail que já está nela é recusado.
 - Um e-mail só pode ser removido enquanto a pessoa não tem nenhum lançamento. A partir do primeiro
   pagamento ou conta avulsa, ela não sai mais da lista.
+
+## O próprio nome
+
+- Na primeira entrada, o nome da pessoa é o da conta Google. Se a conta não tiver nome, o app usa o
+  começo do e-mail, até o @. Um nome com mais de 60 caracteres é cortado nesse limite.
+- Cada membro muda o próprio nome em [Configurações](03-configuracoes.md), pelo lápis ao lado do
+  nome, e responde por ele. Ninguém muda o nome de outra pessoa, nem o admin.
+- O nome não fica vazio e tem até 60 caracteres.
+- O app mostra sempre o nome atual: nos lançamentos da pessoa, inclusive nos registrados antes da
+  troca, e na separação por membro do [Início](../01-principal/01-inicio.md).
 
 ## Critérios de aceite
 
@@ -48,8 +60,14 @@ admin mantém essa lista, com o nome de cada pessoa.
 - [ ] Na tela de aguardando permissão, Sair volta para a entrada.
 - [ ] Em Configurações, o ícone de sair tira o membro da conta e volta para a entrada.
 - [ ] Um e-mail adicionado pelo admin consegue entrar.
-- [ ] Sem o nome ou sem o e-mail, a pessoa não é adicionada.
-- [ ] O nome cadastrado aparece nos lançamentos da pessoa e na separação por membro do Início.
+- [ ] Sem o e-mail, a pessoa não é adicionada.
+- [ ] Na primeira entrada, o nome da pessoa é o da conta Google.
+- [ ] Quem ainda não entrou aparece na lista de e-mails permitidos pelo e-mail.
+- [ ] O nome atual da pessoa aparece nos lançamentos dela, inclusive nos registrados antes de uma
+      troca de nome, e na separação por membro do Início.
+- [ ] O membro muda o próprio nome em Configurações.
+- [ ] Sem nome, a troca não é salva.
+- [ ] Nenhum membro, nem o admin, muda o nome de outra pessoa.
 - [ ] O app recusa um e-mail que já está na lista.
 - [ ] Só o admin vê a tela de e-mails permitidos.
 - [ ] O admin remove o e-mail de uma pessoa que ainda não tem lançamentos, e ela deixa de entrar.
