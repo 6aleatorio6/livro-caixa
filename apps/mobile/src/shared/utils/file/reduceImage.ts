@@ -27,7 +27,8 @@ export async function reduceImage(image: ILocalFile): Promise<ILocalFile> {
     const reducedSizeBytes = new File(reduced.uri).size;
     if (!reducedSizeBytes || reducedSizeBytes >= image.sizeBytes) return image;
 
-    return { uri: reduced.uri, contentType: 'image/webp', sizeBytes: reducedSizeBytes };
+    // O arquivo reduzido é WebP, mas a pessoa reconhece o nome que escolheu.
+    return { uri: reduced.uri, name: image.name, contentType: 'image/webp', sizeBytes: reducedSizeBytes };
   } catch {
     return image;
   }

@@ -16,7 +16,7 @@ const REDUCED_URI = 'file:///cache/ImageManipulator/boleto-luz.webp';
 const saveAsync = jest.fn();
 
 function pickedFile(contentType: string, sizeBytes = OVER_THE_THRESHOLD): ILocalFile {
-  return { uri: 'file:///storage/Download/boleto-luz', contentType, sizeBytes };
+  return { uri: 'file:///storage/Download/boleto-luz', name: 'boleto-luz.jpg', contentType, sizeBytes };
 }
 
 function reducesTo(sizeBytes: number | null) {
@@ -36,7 +36,7 @@ describe('reduceImage', () => {
     reducesTo(1024);
     const image = pickedFile('image/jpeg');
 
-    expect(await reduceImage(image)).toEqual({ uri: REDUCED_URI, contentType: 'image/webp', sizeBytes: 1024 });
+    expect(await reduceImage(image)).toEqual({ uri: REDUCED_URI, name: 'boleto-luz.jpg', contentType: 'image/webp', sizeBytes: 1024 });
     expect(ImageManipulator.manipulate).toHaveBeenCalledWith(image.uri, { maxWidth: 2560, maxHeight: 2560 });
     expect(saveAsync).toHaveBeenCalledWith({ compress: 0.82, format: 'webp' });
   });
