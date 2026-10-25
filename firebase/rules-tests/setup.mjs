@@ -4,8 +4,8 @@ import { after, before, beforeEach, it } from 'node:test';
 import { assertFails, assertSucceeds, initializeTestEnvironment } from '@firebase/rules-unit-testing';
 import { collection, doc, setDoc } from 'firebase/firestore';
 
-// O ambiente dos testes das regras: cada arquivo `*.test.mjs` importa este módulo, que liga o emulador
-// do Firestore (`pnpm test:rules`, no PC, que tem o Java) e semeia a lista antes de cada caso. Os
+// O ambiente dos testes das regras: cada arquivo `*.test.mjs` importa este módulo, que liga os emuladores
+// do Firestore e do Storage (`pnpm test:rules`, no PC, que tem o Java) e semeia a lista antes de cada caso. Os
 // arquivos limpam o mesmo emulador a cada caso, então não rodam em paralelo (`--test-concurrency=1`).
 let testEnvironment;
 
@@ -13,6 +13,7 @@ before(async () => {
   testEnvironment = await initializeTestEnvironment({
     projectId: 'demo-livro-caixa',
     firestore: { rules: readFileSync('firebase/firestore.rules', 'utf8') },
+    storage: { rules: readFileSync('firebase/storage.rules', 'utf8') },
   });
 });
 
@@ -40,6 +41,11 @@ function uidOf(email) {
 
 export function signedInAs(email, uid = uidOf(email)) {
   return testEnvironment.authenticatedContext(uid, { email, email_verified: true }).firestore();
+}
+
+/** O Storage de quem entrou: a API compat, com `ref(caminho).put(bytes, { contentType })`. */
+export function storageSignedInAs(email, uid = uidOf(email)) {
+  return testEnvironment.authenticatedContext(uid, { email, email_verified: true }).storage();
 }
 
 export function signedInWithUnverifiedEmail(email) {

@@ -10,4 +10,5 @@ import { CONTRACT_EMULATORS } from './contractEmulators';
 export const rulesTestEnvironment = initializeTestEnvironment({
   projectId: CONTRACT_EMULATORS.projectId,
   firestore: { host: CONTRACT_EMULATORS.firestoreHost, port: CONTRACT_EMULATORS.firestorePort },
+  storage: { host: CONTRACT_EMULATORS.storageHost, port: CONTRACT_EMULATORS.storagePort },
 });
