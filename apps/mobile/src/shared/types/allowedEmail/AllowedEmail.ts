@@ -4,5 +4,7 @@
  */
 export interface IAllowedEmail {
   name: string | null;
+  /** O `uid` do login, gravado na primeira entrada; `null` até lá. */
+  uid: string | null;
   isAdmin: boolean;
 }

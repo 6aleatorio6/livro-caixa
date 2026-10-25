@@ -1,3 +1,4 @@
+import { testAccountUid } from '@/shared/testing/testAccountUid';
 import type { IAllowedEmail } from '@/shared/types/allowedEmail/AllowedEmail';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 
@@ -5,10 +6,10 @@ import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 const ANA = 'ana.souza@exemplo.com';
 const BRUNO = 'bruno.souza@exemplo.com';
 const CARLA = 'carla.lima@exemplo.com';
-const ANA_PERSON = { name: 'Ana Souza', isAdmin: true };
+const ANA_PERSON = { name: 'Ana Souza', uid: testAccountUid(ANA), isAdmin: true };
 const ANA_AS_MEMBER = { ...ANA_PERSON, isAdmin: false };
-const BRUNO_PERSON = { name: 'Bruno Souza', isAdmin: false };
-const CARLA_PERSON = { name: 'Carla Lima', isAdmin: false };
+const BRUNO_PERSON = { name: 'Bruno Souza', uid: testAccountUid(BRUNO), isAdmin: false };
+const CARLA_PERSON = { name: 'Carla Lima', uid: testAccountUid(CARLA), isAdmin: false };
 const ANA_IN_THE_LIST = { [`allowedEmails/${ANA}`]: { ...ANA_PERSON, hasEntries: false } };
 const BRUNO_IN_THE_LIST = { [`allowedEmails/${BRUNO}`]: { ...BRUNO_PERSON, hasEntries: false } };
 
@@ -17,13 +18,20 @@ export const allowedEmailQueryScenarios = {
   adminInList: { signedInAs: ANA, given: ANA_IN_THE_LIST, input: { email: ANA }, result: ANA_PERSON },
   // A regra deixa ler o documento do próprio e-mail mesmo quando ele não existe: vem `null`, e não erro.
   emailOutsideList: { signedInAs: CARLA, given: BRUNO_IN_THE_LIST, input: { email: CARLA }, result: null },
+  // O admin que o dono criou à mão no console: tem nome, mas o `uid` só chega na primeira entrada.
+  emailWithNameWithoutUid: {
+    signedInAs: ANA,
+    given: { [`allowedEmails/${ANA}`]: { name: 'Ana Souza', isAdmin: true, hasEntries: false } },
+    input: { email: ANA },
+    result: { name: 'Ana Souza', uid: null, isAdmin: true },
+  },
   // O id na lista é o e-mail em minúsculas, e o do login pode vir com maiúsculas.
   // Quem o admin acabou de adicionar: sem nome até a primeira entrada, quando o app grava o da conta Google.
   emailWithoutName: {
     signedInAs: CARLA,
     given: { [`allowedEmails/${CARLA}`]: { isAdmin: false, hasEntries: false } },
     input: { email: CARLA },
-    result: { name: null, isAdmin: false },
+    result: { name: null, uid: null, isAdmin: false },
   },
   emailWithCapitals: {
     signedInAs: 'Bruno.Souza@Exemplo.com',

@@ -35,7 +35,17 @@ describe('useEnsureOwnName', () => {
     expect(changeOwnNameService).toHaveBeenCalledWith(...changeOwnNameScenarios.memberGetsGoogleName.input);
   });
 
-  it('Should not write anything for a person who already has a name', async () => {
+  it('Should write only the uid of a person who has a name but no uid yet', async () => {
+    jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.adminSignsIn));
+    mockRealtime({ service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailWithNameWithoutUid });
+    mockServiceScenario(changeOwnNameService, changeOwnNameScenarios.adminWithNameGetsUid);
+
+    await renderHook(() => useEnsureOwnName());
+
+    expect(changeOwnNameService).toHaveBeenCalledWith(...changeOwnNameScenarios.adminWithNameGetsUid.input);
+  });
+
+  it('Should not write anything for a person who already has a name and a uid', async () => {
     jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn));
     mockRealtime({ service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailInList });
 

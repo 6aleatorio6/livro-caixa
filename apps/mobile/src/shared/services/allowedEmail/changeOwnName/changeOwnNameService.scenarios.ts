@@ -1,7 +1,8 @@
 import { testAccountUid } from '@/shared/testing/testAccountUid';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 
-// As pessoas são as contas de teste das jornadas: Bruno está na lista com nome e uid, Carla acabou de entrar.
+// As pessoas são as contas de teste das jornadas: Ana é admin com nome e sem uid, Bruno está na lista com nome e uid, Carla acabou de entrar.
+const ANA = 'ana.souza@exemplo.com';
 const BRUNO = 'bruno.souza@exemplo.com';
 const CARLA = 'carla.lima@exemplo.com';
 const BRUNO_IN_THE_LIST = {
@@ -29,4 +30,11 @@ export const changeOwnNameScenarios = {
     input: [{ email: CARLA, name: 'Carla Lima', uid: testAccountUid(CARLA) }],
     result: undefined,
   },
-} satisfies Record<string, IServiceScenario<[{ email: string; name: string; uid?: string }], void>>;
+  // O admin que o dono criou à mão no console já tem nome: o app grava só o uid do login.
+  adminWithNameGetsUid: {
+    signedInAs: ANA,
+    given: { [`allowedEmails/${ANA}`]: { name: 'Ana Souza', isAdmin: true, hasEntries: false } },
+    input: [{ email: ANA, uid: testAccountUid(ANA) }],
+    result: undefined,
+  },
+} satisfies Record<string, IServiceScenario<[{ email: string; name?: string; uid?: string }], void>>;

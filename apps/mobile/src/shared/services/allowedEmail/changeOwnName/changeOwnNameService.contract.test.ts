@@ -7,12 +7,11 @@ import { changeOwnNameService } from './changeOwnNameService';
 import { changeOwnNameScenarios } from './changeOwnNameService.scenarios';
 
 describe('changeOwnNameService', () => {
-  it.each(scenarioEntries(changeOwnNameScenarios))(
+  it.each(scenarioEntries<Parameters<typeof changeOwnNameService>, void>(changeOwnNameScenarios))(
     'Should write the name of the scenario %s',
     async (_name, scenario) => {
       await arrangeScenario(scenario);
-      // O `uid` só vem na primeira entrada; o tipo geral da lista de cenários não o conhece.
-      const [{ email, name, uid }] = scenario.input as Parameters<typeof changeOwnNameService>;
+      const [{ email, name, uid }] = scenario.input;
 
       expect(await changeOwnNameService(...scenario.input)).toBe(scenario.result);
 
@@ -20,7 +19,7 @@ describe('changeOwnNameService', () => {
       const path = `allowedEmails/${allowedEmailId(email)}`;
       expect(await readWithoutRules(path)).toEqual({
         ...(scenario.given as Record<string, object>)[path],
-        name,
+        ...(name && { name }),
         ...(uid && { uid }),
       });
     },

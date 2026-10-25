@@ -9,7 +9,7 @@ import { accessStatusFor } from './accessStatusFor';
 
 const signedIn: IAuthState = { status: 'signedIn', user: { email: 'ana@gmail.com' } as User };
 
-const PERSON: IAllowedEmail = { name: 'Bruno Souza', isAdmin: false };
+const PERSON: IAllowedEmail = { name: 'Bruno Souza', uid: 'uid-bruno', isAdmin: false };
 
 function allowedEmail(
   status: IRealtimeState<IAllowedEmail | null>['status'],
