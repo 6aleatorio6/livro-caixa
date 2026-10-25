@@ -1,6 +1,7 @@
 import { Timestamp } from 'firebase/firestore';
 
 import { AppError } from '@/shared/exceptions/AppError';
+import { uploadReceipt } from '@/shared/services/entry/uploadReceipt';
 import { arrangeScenario } from '@/shared/testing/contract/arrangeScenario';
 import { readCollectionWithoutRules } from '@/shared/testing/contract/readCollectionWithoutRules';
 import { readStorageWithoutRules } from '@/shared/testing/contract/readStorageWithoutRules';
@@ -8,10 +9,17 @@ import { readWithoutRules } from '@/shared/testing/contract/readWithoutRules';
 import { RECEIPT_FIXTURE } from '@/shared/testing/contract/fixtures/receiptFixture';
 import { scenarioEntries } from '@/shared/testing/contract/scenarioEntries';
 import { testAccountUid } from '@/shared/testing/testAccountUid';
+import { writeWithoutRules } from '@/shared/testing/contract/writeWithoutRules';
 import type { IRecurringPaymentInput } from '@/shared/types/entry/RecurringPaymentInput';
 
 import { payRecurringBillService } from './payRecurringBillService';
 import { payRecurringBillRejectedScenarios, payRecurringBillScenarios } from './payRecurringBillService.scenarios';
+
+// O envio do comprovante é o de verdade; o mock só deixa o teste gravar o pagamento de outro membro durante ele.
+jest.mock('@/shared/services/entry/uploadReceipt', () => {
+  const actual = jest.requireActual('@/shared/services/entry/uploadReceipt');
+  return { uploadReceipt: jest.fn(actual.uploadReceipt) };
+});
 
 describe('payRecurringBillService', () => {
   it.each(scenarioEntries<[IRecurringPaymentInput], void>(payRecurringBillScenarios))(
@@ -75,5 +83,23 @@ describe('payRecurringBillService', () => {
     expect(await readCollectionWithoutRules('files')).toEqual([]);
     expect((await readCollectionWithoutRules('entries')).map(({ id }) => id)).toEqual(alreadyThere);
     expect(await readWithoutRules(`allowedEmails/${scenario.signedInAs}`)).toMatchObject({ hasEntries: false });
+  });
+
+  // A corrida: o mês estava livre na leitura, e outro membro o paga durante o envio do comprovante. A regra recusa o
+  // lote (o SDK do contrato manda `permission-denied`, sem o prefixo do React Native Firebase).
+  it('Should say the bill was already paid when another member pays it while the receipt is uploading', async () => {
+    const scenario = payRecurringBillScenarios.memberPaysBill;
+    const paidByAna = payRecurringBillRejectedScenarios.billAlreadyPaidByAnother.given['entries/2026-10_internet'];
+    await arrangeScenario(scenario);
+    const actualUpload = jest.mocked(uploadReceipt).getMockImplementation()!;
+    jest.mocked(uploadReceipt).mockImplementationOnce(async (...args) => {
+      await writeWithoutRules({ 'entries/2026-10_internet': paidByAna });
+      return actualUpload(...args);
+    });
+
+    const refusal = payRecurringBillService(...scenario.input);
+
+    await expect(refusal).rejects.toBeInstanceOf(AppError);
+    await expect(refusal).rejects.toMatchObject({ code: 'ALREADY_PAID' });
   });
 });

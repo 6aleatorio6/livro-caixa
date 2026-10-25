@@ -6,6 +6,7 @@ import { uploadReceipt } from '@/shared/services/entry/uploadReceipt';
 import { firebaseAuth } from '@/shared/services/firebase/firebaseAuth';
 import { firestoreDb } from '@/shared/services/firebase/firestoreDb';
 import type { IRecurringPaymentInput } from '@/shared/types/entry/RecurringPaymentInput';
+import { isPermissionDenied } from '@/shared/utils/handlerError/isPermissionDenied';
 import { dueDateInMonth } from '@/shared/utils/recurringBill/dueDateInMonth';
 
 /**
@@ -48,7 +49,7 @@ export async function payRecurringBillService({ bill, month, amountCents, receip
   } catch (error) {
     // A corrida: outro membro gravou o mês depois da leitura acima, e a regra recusa o lote (vira um `update`).
     // O app só oferece o pagamento de uma conta que existe e vence no mês, então a recusa é essa corrida.
-    if ((error as { code?: string }).code === 'firestore/permission-denied') throw alreadyPaid();
+    if (isPermissionDenied(error)) throw alreadyPaid();
     throw error;
   }
 }
