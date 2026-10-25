@@ -18,6 +18,14 @@ describe('MonthSwitcher', () => {
     expect(screen.getByText('Outubro de 2026')).toBeOnTheScreen();
   });
 
+  it('Should show only the month title without a label', async () => {
+    await render(<MonthSwitcher month="2026-10" onMonthChange={jest.fn()} />);
+
+    expect(screen.getByText('Outubro de 2026')).toBeOnTheScreen();
+    expect(screen.queryByText('Meus pagamentos')).not.toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Mês anterior' })).toBeOnTheScreen();
+  });
+
   it('Should ask for the previous month, even across a year', async () => {
     const onMonthChange = jest.fn();
     await render(<MonthSwitcher label="Meus pagamentos" month="2026-01" onMonthChange={onMonthChange} />);

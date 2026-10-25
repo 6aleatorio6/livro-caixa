@@ -9,21 +9,23 @@ import { formatMonthTitle } from '@/shared/utils/date/formatMonthTitle';
 import { shiftMonth } from '@/shared/utils/date/shiftMonth';
 
 export interface IMonthSwitcherProps {
-  /** O rótulo da aba, em cima do mês: "Meus pagamentos". */
-  label: string;
+  /** O rótulo da aba, em cima do mês: "Meus pagamentos". Sem ele, só o mês aparece e o cabeçalho tem 48 de altura. */
+  label?: string;
   /** O mês mostrado, 'AAAA-MM'. */
   month: string;
   onMonthChange: (month: string) => void;
 }
 
-/** O cabeçalho de uma aba por mês: o rótulo, o mês por extenso e os botões de mês anterior e próximo. Não há próximo depois do mês atual. */
+/** O cabeçalho de uma aba por mês: o rótulo (opcional), o mês por extenso e os botões de mês anterior e próximo. Não há próximo depois do mês atual. */
 export function MonthSwitcher({ label, month, onMonthChange }: IMonthSwitcherProps) {
   return (
     <View style={styles.container}>
       <View style={styles.titles}>
-        <AppText variant="labelMedium" color="onSurfaceVariant">
-          {label}
-        </AppText>
+        {label ? (
+          <AppText variant="labelMedium" color="onSurfaceVariant">
+            {label}
+          </AppText>
+        ) : null}
         <AppText variant="headlineSmallEmphasized">{formatMonthTitle(month)}</AppText>
       </View>
       <View style={styles.buttons}>
