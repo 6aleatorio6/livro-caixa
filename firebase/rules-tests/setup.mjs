@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { after, before, beforeEach, it } from 'node:test';
 
 import { assertFails, assertSucceeds, initializeTestEnvironment } from '@firebase/rules-unit-testing';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { collection, doc, serverTimestamp, setDoc, writeBatch } from 'firebase/firestore';
 
 // O ambiente dos testes das regras: cada arquivo `*.test.mjs` importa este módulo, que liga os emuladores
 // do Firestore e do Storage (`pnpm test:rules`, no PC, que tem o Java) e semeia a lista antes de cada caso. Os
@@ -29,6 +29,11 @@ beforeEach(async () => {
     await setDoc(entryOf(firestore, 'davi@gmail.com'), { name: 'Davi', isAdmin: false, hasEntries: true });
     await setDoc(tagsDocOf(firestore), { items: { t1: { ...SEEDED_TAG } } });
     await setDoc(recurringBillOf(firestore, 'internet'), { ...SEEDED_BILL });
+    // Uma conta avulsa de cada um, com o registro do comprovante, para `get`, `update` e `delete`.
+    await setDoc(fileOf(firestore, 'fana1'), receiptFileOf('fana1', { uploadedBy: 'uid-ana' }));
+    await setDoc(entryDocOf(firestore, 'ana1'), oneOffBillOf({ paidBy: 'uid-ana', receiptFileId: 'fana1' }));
+    await setDoc(fileOf(firestore, 'fbruno1'), receiptFileOf('fbruno1'));
+    await setDoc(entryDocOf(firestore, 'bruno1'), oneOffBillOf({ paidBy: 'uid-bruno', receiptFileId: 'fbruno1' }));
   });
 });
 
@@ -48,6 +53,21 @@ export function storageSignedInAs(email, uid = uidOf(email)) {
   return testEnvironment.authenticatedContext(uid, { email, email_verified: true }).storage();
 }
 
+/** O Storage de quem não entrou. */
+export function storageSignedOut() {
+  return testEnvironment.unauthenticatedContext().storage();
+}
+
+/** O Storage de quem entrou com o e-mail não verificado. */
+export function storageSignedInWithUnverifiedEmail(email) {
+  return testEnvironment.authenticatedContext(uidOf(email), { email, email_verified: false }).storage();
+}
+
+/** Grava um arquivo no Storage por fora das regras, para os casos de leitura, exclusão e sobrescrita. */
+export function seedStorageFile(path, bytes, contentType) {
+  return testEnvironment.withSecurityRulesDisabled((context) => context.storage().ref(path).put(bytes, { contentType }));
+}
+
 export function signedInWithUnverifiedEmail(email) {
   return testEnvironment.authenticatedContext(uidOf(email), { email, email_verified: false }).firestore();
 }
@@ -63,6 +83,12 @@ export const tagsDocOf = (firestore) => doc(firestore, 'settings', 'tags');
 export const settingsDocOf = (firestore, id) => doc(firestore, 'settings', id);
 
 export const recurringBillOf = (firestore, id) => doc(firestore, 'recurringBills', id);
+
+export const entryDocOf = (firestore, id) => doc(firestore, 'entries', id);
+
+export const entriesOf = (firestore) => collection(firestore, 'entries');
+
+export const fileOf = (firestore, id) => doc(firestore, 'files', id);
 
 export const recurringBillsOf = (firestore) => collection(firestore, 'recurringBills');
 
@@ -93,6 +119,35 @@ export function rowsFor(profiles, action, isAllowed, rest = {}) {
   return profiles.map(({ who, as }) => ({ title: `Should${isAllowed ? '' : ' not'} let ${who} ${action}`, as, isAllowed, ...rest }));
 }
 
+/** Quem está na lista, vista pelo Storage. */
+export const STORAGE_MEMBERS = [
+  { who: 'a member', as: () => storageSignedInAs('bruno@gmail.com') },
+  { who: 'the admin', as: () => storageSignedInAs('ana@gmail.com') },
+];
+
+/** Quem está fora, vista pelo Storage: o Storage consulta a lista no Firestore, então um e-mail verificado fora dela não manda nada. */
+export const STORAGE_OUTSIDERS = [
+  { who: 'a signed-out person', as: () => storageSignedOut() },
+  { who: 'a person with an unverified e-mail', as: () => storageSignedInWithUnverifiedEmail('bruno@gmail.com') },
+  { who: 'a person outside the list', as: () => storageSignedInAs('carla@gmail.com') },
+];
+
+/**
+ * Os perfis de `entries.update` e `entries.delete`: só o autor (Bruno) mexe no lançamento dele; outro membro
+ * no do outro, o admin no de um membro e quem está fora são recusados. `rest` são os campos de cada linha.
+ */
+export function entryRowsFor(action, rest = {}) {
+  const author = { who: 'the author', as: () => signedInAs('bruno@gmail.com') };
+  const other = { who: 'a member, on the entry of another person,', as: () => signedInAs('bruno@gmail.com') };
+  const admin = { who: 'the admin, on the entry of a member,', as: () => signedInAs('ana@gmail.com') };
+  return [
+    ...rowsFor([author], `${action} the entry`, true, { id: 'bruno1', ...rest }),
+    ...rowsFor([other], `${action} the entry`, false, { id: 'ana1', ...rest }),
+    ...rowsFor([admin], `${action} the entry`, false, { id: 'bruno1', ...rest }),
+    ...rowsFor(OUTSIDERS, `${action} an entry`, false, { id: 'bruno1', ...rest }),
+  ];
+}
+
 /** Grava ou muda a lista por fora das regras, como quem administra pelo console. */
 export function asOwner(write) {
   return testEnvironment.withSecurityRulesDisabled((context) => write(context.firestore()));
@@ -109,4 +164,44 @@ export function assertAccess(isAllowed, operation) {
  */
 export function itEach(rows, run) {
   for (const row of rows) it(row.title, () => run(row));
+}
+
+/**
+ * A conta avulsa válida do Bruno, com os campos trocados em `overrides`. Um campo com `undefined` sai
+ * do documento (o Firestore recusa `undefined`, e a regra olha as chaves que faltam).
+ */
+export function oneOffBillOf(overrides = {}) {
+  const entry = {
+    kind: 'oneOffBill',
+    month: '2026-09',
+    name: 'Conserto da geladeira',
+    amountCents: 35000,
+    date: '2026-09-30',
+    tagId: 't1',
+    paidBy: 'uid-bruno',
+    createdAt: serverTimestamp(),
+    receiptFileId: 'f1',
+    ...overrides,
+  };
+  for (const key of Object.keys(entry)) if (entry[key] === undefined) delete entry[key];
+  return entry;
+}
+
+/** O registro do comprovante (uma imagem do Bruno), com os campos trocados em `overrides`. */
+export function receiptFileOf(id, overrides = {}) {
+  const file = { storagePath: `files/${id}`, type: 'image', contentType: 'image/webp', sizeBytes: 812345, uploadedBy: 'uid-bruno', ...overrides };
+  for (const key of Object.keys(file)) if (file[key] === undefined) delete file[key];
+  return file;
+}
+
+/**
+ * O lote como o app grava: o registro do arquivo, o lançamento e o `hasEntries: true` de `email`.
+ * `file: null` deixa o registro de fora, e `markHasEntries: false` deixa de fora o `hasEntries`.
+ */
+export function addOneOffBillBatch(firestore, { entryId = 'e1', entry = oneOffBillOf(), fileId = entry.receiptFileId, file = receiptFileOf(fileId), email = 'bruno@gmail.com', markHasEntries = true } = {}) {
+  const batch = writeBatch(firestore);
+  if (file !== null) batch.set(fileOf(firestore, fileId), file);
+  batch.set(entryDocOf(firestore, entryId), entry);
+  if (markHasEntries) batch.update(entryOf(firestore, email), { hasEntries: true });
+  return batch.commit();
 }

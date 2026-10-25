@@ -37,7 +37,6 @@ describe('allowedEmails update of the own entry', () => {
     { title: 'Should not let a member change their own uid', as: bruno, email: 'bruno@gmail.com', data: { uid: 'uid-other' }, isAllowed: false },
     { title: 'Should not let a member change their own uid along with the name', as: bruno, email: 'bruno@gmail.com', data: { name: 'Bruno S.', uid: 'uid-other' }, isAllowed: false },
     { title: 'Should not let the admin change their own isAdmin', as: ana, email: 'ana@gmail.com', data: { isAdmin: false }, isAllowed: false },
-    { title: 'Should not let the admin change their own hasEntries', as: ana, email: 'ana@gmail.com', data: { hasEntries: true }, isAllowed: false },
     { title: 'Should not let the admin change their own uid', as: ana, email: 'ana@gmail.com', data: { uid: 'uid-other' }, isAllowed: false },
     { title: 'Should not let the admin change their own name to an empty one', as: ana, email: 'ana@gmail.com', data: { name: '' }, isAllowed: false },
     { title: 'Should not let the admin change their own name to only spaces', as: ana, email: 'ana@gmail.com', data: { name: '   ' }, isAllowed: false },
@@ -48,6 +47,24 @@ describe('allowedEmails update of the own entry', () => {
   it('Should not let a person write to the list', async () => {
     await assertFails(setDoc(entryOf(signedInAs('ana@gmail.com'), 'ana@gmail.com'), { isAdmin: true }));
   });
+});
+
+// O `hasEntries` só sobe: a própria pessoa marca `true` ao gravar o primeiro lançamento, no lote dele.
+describe('allowedEmails update of hasEntries', () => {
+  const ana = () => signedInAs('ana@gmail.com');
+  const bruno = () => signedInAs('bruno@gmail.com');
+  const cases = [
+    { title: 'Should let a member mark their own hasEntries', as: bruno, email: 'bruno@gmail.com', data: { hasEntries: true }, isAllowed: true },
+    { title: 'Should let the admin mark their own hasEntries', as: ana, email: 'ana@gmail.com', data: { hasEntries: true }, isAllowed: true },
+    { title: 'Should not let a member mark the hasEntries of another person', as: bruno, email: 'ana@gmail.com', data: { hasEntries: true }, isAllowed: false },
+    { title: 'Should not let the admin mark the hasEntries of another person', as: ana, email: 'bruno@gmail.com', data: { hasEntries: true }, isAllowed: false },
+    { title: 'Should not let a signed-out person mark a hasEntries', as: () => signedOut(), email: 'bruno@gmail.com', data: { hasEntries: true }, isAllowed: false },
+    { title: 'Should not let a member with an unverified e-mail mark their own hasEntries', as: () => signedInWithUnverifiedEmail('bruno@gmail.com'), email: 'bruno@gmail.com', data: { hasEntries: true }, isAllowed: false },
+    { title: 'Should not let a person outside the list mark a hasEntries', as: () => signedInAs('carla@gmail.com'), email: 'bruno@gmail.com', data: { hasEntries: true }, isAllowed: false },
+    { title: 'Should not let a member mark their own hasEntries along with isAdmin', as: bruno, email: 'bruno@gmail.com', data: { hasEntries: true, isAdmin: true }, isAllowed: false },
+  ];
+
+  itEach(cases, ({ as, email, data, isAllowed }) => assertAccess(isAllowed, updateDoc(entryOf(as(), email), data)));
 });
 
 describe('allowedEmails update of the entry of another person', () => {
