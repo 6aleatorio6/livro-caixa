@@ -1,4 +1,4 @@
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { showToast } from '@/core/utils/storeActions/showToast';
@@ -10,6 +10,7 @@ import { AppText } from '@/shared/components/AppText/AppText';
 import { Button } from '@/shared/components/Button/Button';
 import { PersonItem } from '@/shared/components/PersonItem/PersonItem';
 import { Screen } from '@/shared/components/Screen/Screen';
+import { ScreenContent } from '@/shared/components/Screen/ScreenContent';
 import { TopBar } from '@/shared/components/TopBar/TopBar';
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
@@ -49,7 +50,7 @@ export function AllowedEmailsPage() {
   return (
     <Screen>
       <TopBar title="E-mails permitidos" />
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
+      <ScreenContent gap="extraLarge">
         <AppText variant="bodyMedium" color="onSurfaceVariant">
           Só entra no app quem está nesta lista, com a conta Google deste e-mail.
         </AppText>
@@ -91,18 +92,12 @@ export function AllowedEmailsPage() {
             ))}
           </View>
         ) : null}
-      </ScrollView>
+      </ScreenContent>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create((theme) => ({
-  content: {
-    gap: theme.spacing.extraLarge,
-    paddingTop: theme.spacing.small,
-    paddingHorizontal: theme.spacing.largeIncreased,
-    paddingBottom: theme.spacing.extraLarge,
-  },
   title: {
     flexDirection: 'row',
     alignItems: 'center',

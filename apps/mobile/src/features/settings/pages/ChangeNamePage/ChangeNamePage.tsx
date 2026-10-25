@@ -1,9 +1,8 @@
 import { router } from 'expo-router';
-import { ScrollView } from 'react-native';
-import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
 import { Screen } from '@/shared/components/Screen/Screen';
+import { ScreenContent } from '@/shared/components/Screen/ScreenContent';
 import { TopBar } from '@/shared/components/TopBar/TopBar';
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
@@ -20,7 +19,7 @@ export function ChangeNamePage() {
   return (
     <Screen>
       <TopBar title="Seu nome" />
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
+      <ScreenContent>
         {/* O formulário começa com o nome atual: só aparece com a leitura respondida, do servidor ou do aparelho. */}
         {(status === 'success' || status === 'cached') && person && email ? (
           <ChangeNameForm email={email} currentName={person.name ?? ''} onSaved={() => router.back()} />
@@ -30,15 +29,7 @@ export function ChangeNamePage() {
             Não deu para carregar o seu nome.
           </AppText>
         ) : null}
-      </ScrollView>
+      </ScreenContent>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create((theme) => ({
-  content: {
-    paddingTop: theme.spacing.small,
-    paddingHorizontal: theme.spacing.largeIncreased,
-    paddingBottom: theme.spacing.extraLarge,
-  },
-}));
