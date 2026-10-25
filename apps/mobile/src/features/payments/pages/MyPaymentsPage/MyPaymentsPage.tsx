@@ -11,6 +11,7 @@ import { EntryItem } from '@/shared/components/EntryItem/EntryItem';
 import { ExtendedFab } from '@/shared/components/ExtendedFab/ExtendedFab';
 import { MonthSwitcher } from '@/shared/components/MonthSwitcher/MonthSwitcher';
 import { MonthTotalCard } from '@/shared/components/MonthTotalCard/MonthTotalCard';
+import { LoadingState } from '@/shared/components/LoadingState/LoadingState';
 import { Screen } from '@/shared/components/Screen/Screen';
 import { ScreenContent } from '@/shared/components/Screen/ScreenContent';
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
@@ -46,6 +47,8 @@ export function MyPaymentsPage() {
           </AppText>
         ) : null}
 
+        {!entries && status !== 'error' ? <LoadingState /> : null}
+
         {mine && mine.length > 0 ? (
           <>
             <MonthTotalCard
@@ -79,15 +82,12 @@ export function MyPaymentsPage() {
           />
         ) : null}
 
-        <View style={styles.action}>
-          <ExtendedFab icon={Plus} label="Nova conta avulsa" onPress={() => router.push('/one-off-bills/new')} />
-        </View>
       </ScreenContent>
+      <ExtendedFab icon={Plus} label="Nova conta avulsa" onPress={() => router.push('/one-off-bills/new')} />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create((theme) => ({
   entries: { gap: theme.spacing.extraExtraSmall },
-  action: { alignItems: 'flex-end' },
 }));

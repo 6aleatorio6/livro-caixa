@@ -103,6 +103,25 @@ describe('TagsPage', () => {
     expect(screen.queryByText('Nenhuma tag ainda.')).not.toBeOnTheScreen();
   });
 
+  it('Should show the loading state while the list loads', async () => {
+    mockRealtime({ service: tagListQueryService, status: 'loading' }, fiveBills, noOneOffBills);
+    await render(<TagsPage />);
+
+    expect(screen.getByLabelText('Carregando')).toBeOnTheScreen();
+  });
+
+  it('Should not show the loading state once the tags arrive or when the read fails', async () => {
+    mockRealtime(threeTags, fiveBills, noOneOffBills);
+    const { unmount } = await render(<TagsPage />);
+    expect(screen.queryByLabelText('Carregando')).not.toBeOnTheScreen();
+    await unmount();
+
+    mockRealtime({ service: tagListQueryService, status: 'error' }, fiveBills, noOneOffBills);
+    await render(<TagsPage />);
+
+    expect(screen.queryByLabelText('Carregando')).not.toBeOnTheScreen();
+  });
+
   it('Should say the list could not be loaded when the read fails', async () => {
     mockRealtime({ service: tagListQueryService, status: 'error' }, fiveBills, noOneOffBills);
     await render(<TagsPage />);

@@ -155,6 +155,25 @@ describe('MyPaymentsPage', () => {
     expect(screen.getByRole('button', { name: 'Próximo mês' })).toBeEnabled();
   });
 
+  it('Should show the loading state while the list loads', async () => {
+    mockRealtime({ service: entryMonthQueryService, status: 'loading' }, threeTags);
+    await render(<MyPaymentsPage />);
+
+    expect(screen.getByLabelText('Carregando')).toBeOnTheScreen();
+  });
+
+  it('Should not show the loading state once the month arrives or when the read fails', async () => {
+    mockRealtime(october, threeTags);
+    const { unmount } = await render(<MyPaymentsPage />);
+    expect(screen.queryByLabelText('Carregando')).not.toBeOnTheScreen();
+    await unmount();
+
+    mockRealtime({ service: entryMonthQueryService, status: 'error' }, threeTags);
+    await render(<MyPaymentsPage />);
+
+    expect(screen.queryByLabelText('Carregando')).not.toBeOnTheScreen();
+  });
+
   it('Should show neither the list nor the empty state while the month loads', async () => {
     mockRealtime({ service: entryMonthQueryService, status: 'loading' }, threeTags);
     await render(<MyPaymentsPage />);

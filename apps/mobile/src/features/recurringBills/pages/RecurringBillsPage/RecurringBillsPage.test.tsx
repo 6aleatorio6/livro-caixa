@@ -102,6 +102,25 @@ describe('RecurringBillsPage', () => {
     expect(screen.queryByText('Nenhuma conta recorrente')).not.toBeOnTheScreen();
   });
 
+  it('Should show the loading state while the list loads', async () => {
+    mockRealtime({ service: recurringBillListQueryService, status: 'loading' }, threeTags);
+    await render(<RecurringBillsPage />);
+
+    expect(screen.getByLabelText('Carregando')).toBeOnTheScreen();
+  });
+
+  it('Should not show the loading state once the bills arrive or when the read fails', async () => {
+    mockRealtime(fiveBills, threeTags);
+    const { unmount } = await render(<RecurringBillsPage />);
+    expect(screen.queryByLabelText('Carregando')).not.toBeOnTheScreen();
+    await unmount();
+
+    mockRealtime({ service: recurringBillListQueryService, status: 'error' }, threeTags);
+    await render(<RecurringBillsPage />);
+
+    expect(screen.queryByLabelText('Carregando')).not.toBeOnTheScreen();
+  });
+
   it('Should say the list could not be loaded when the read fails', async () => {
     mockRealtime({ service: recurringBillListQueryService, status: 'error' }, threeTags);
     await render(<RecurringBillsPage />);

@@ -1,11 +1,11 @@
 import { router } from 'expo-router';
 import { Plus, Tag } from 'lucide-react-native';
 import { View } from 'react-native';
-import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
 import { ExtendedFab } from '@/shared/components/ExtendedFab/ExtendedFab';
 import { ListItem } from '@/shared/components/ListItem/ListItem';
+import { LoadingState } from '@/shared/components/LoadingState/LoadingState';
 import { Screen } from '@/shared/components/Screen/Screen';
 import { ScreenContent } from '@/shared/components/Screen/ScreenContent';
 import { TopBar } from '@/shared/components/TopBar/TopBar';
@@ -37,6 +37,8 @@ export function TagsPage() {
           </AppText>
         ) : null}
 
+        {!tags && status !== 'error' ? <LoadingState /> : null}
+
         {tags?.length === 0 ? (
           <AppText variant="bodyMedium" color="onSurfaceVariant">
             Nenhuma tag ainda.
@@ -64,14 +66,8 @@ export function TagsPage() {
           </View>
         ) : null}
 
-        <View style={styles.action}>
-          <ExtendedFab icon={Plus} label="Nova tag" onPress={() => router.push('/tags/new')} />
-        </View>
       </ScreenContent>
+      <ExtendedFab icon={Plus} label="Nova tag" onPress={() => router.push('/tags/new')} />
     </Screen>
   );
 }
-
-const styles = StyleSheet.create((theme) => ({
-  action: { alignItems: 'flex-end', paddingTop: theme.spacing.extraExtraExtraLarge },
-}));

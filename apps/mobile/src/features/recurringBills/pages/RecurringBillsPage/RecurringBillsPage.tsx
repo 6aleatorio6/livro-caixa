@@ -6,6 +6,7 @@ import { StyleSheet } from 'react-native-unistyles';
 import { AppText } from '@/shared/components/AppText/AppText';
 import { BillItem } from '@/shared/components/BillItem/BillItem';
 import { ExtendedFab } from '@/shared/components/ExtendedFab/ExtendedFab';
+import { LoadingState } from '@/shared/components/LoadingState/LoadingState';
 import { Screen } from '@/shared/components/Screen/Screen';
 import { ScreenContent } from '@/shared/components/Screen/ScreenContent';
 import { TopBar } from '@/shared/components/TopBar/TopBar';
@@ -35,6 +36,8 @@ export function RecurringBillsPage() {
           </AppText>
         ) : null}
 
+        {!bills && status !== 'error' ? <LoadingState /> : null}
+
         {bills ? (
           <View style={styles.total}>
             <AppText variant="labelLarge" color="onSurfaceVariant">
@@ -63,10 +66,8 @@ export function RecurringBillsPage() {
           </View>
         ) : null}
 
-        <View style={styles.action}>
-          <ExtendedFab icon={Plus} label="Nova conta recorrente" onPress={() => router.push('/recurring-bills/new')} />
-        </View>
       </ScreenContent>
+      <ExtendedFab icon={Plus} label="Nova conta recorrente" onPress={() => router.push('/recurring-bills/new')} />
     </Screen>
   );
 }
@@ -79,5 +80,4 @@ const styles = StyleSheet.create((theme) => ({
     backgroundColor: theme.colors.surfaceContainerLow,
   },
   bills: { gap: theme.spacing.extraExtraSmall },
-  action: { alignItems: 'flex-end', paddingTop: theme.spacing.extraExtraExtraLarge },
 }));

@@ -10,7 +10,11 @@ export interface IExtendedFabProps {
   onPress: () => void;
 }
 
-/** O botão flutuante estendido, com ícone e rótulo, para a ação principal da lista ("Nova tag"). */
+/**
+ * O botão flutuante estendido, com ícone e rótulo, para a ação principal da lista ("Nova tag"). Ele
+ * mesmo se põe no canto inferior direito: a página o renderiza logo depois do `ScreenContent`, dentro
+ * do `Screen`, e ele fica embaixo do corpo que rola (o `Screen` já cuida da barra de navegação e das abas).
+ */
 export function ExtendedFab({ icon: Icon, label, onPress }: IExtendedFabProps) {
   const { theme } = useUnistyles();
 
@@ -31,6 +35,10 @@ export function ExtendedFab({ icon: Icon, label, onPress }: IExtendedFabProps) {
 
 const styles = StyleSheet.create((theme) => ({
   container: (isPressed: boolean) => ({
+    alignSelf: 'flex-end',
+    marginHorizontal: theme.spacing.largeIncreased, // o recuo lateral da tela, como no `ScreenContent`
+    marginTop: theme.spacing.large,
+    marginBottom: theme.spacing.extraLarge, // um respiro maior acima da barra de navegação e da de abas
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.smallIncreased,
