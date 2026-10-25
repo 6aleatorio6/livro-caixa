@@ -75,8 +75,8 @@ service cloud.firestore {
     // inteiro em centavos, de 1 até 999999999; a data é `AAAA-MM-DD` (mesmo padrão do início da conta
     // recorrente) e o `month` é o ano e o mês dela, para o lançamento cair no mês certo. `kind` só
     // aceita `oneOffBill`: o pagamento de conta recorrente é validado à parte
-    // (`isValidRecurringPayment`). A regra NÃO confere que a data não é futura nem que a `tagId` existe em `settings/tags`: isso
-    // fica com o app.
+    // (`isValidRecurringPayment`). O mês não passa do mês de `request.time` (`isUpToCurrentMonth`, como no pagamento);
+    // a regra NÃO confere o dia dentro do mês nem que a `tagId` existe em `settings/tags`: isso fica com o app.
     function isValidOneOffBill(entry) {
       return entry.keys().hasOnly(['kind', 'month', 'name', 'amountCents', 'date', 'tagId', 'paidBy', 'createdAt', 'receiptFileId'])
         && entry.keys().hasAll(['kind', 'month', 'name', 'amountCents', 'date', 'paidBy', 'createdAt', 'receiptFileId'])
@@ -86,6 +86,7 @@ service cloud.firestore {
         && entry.date is string
         && entry.date.matches('^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$')
         && entry.month == entry.date.split('-')[0] + '-' + entry.date.split('-')[1]
+        && isUpToCurrentMonth(entry.month)
         && entry.paidBy is string
         && entry.receiptFileId is string
         && (!('tagId' in entry) || entry.tagId is string);

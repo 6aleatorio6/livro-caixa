@@ -45,6 +45,7 @@ describe('entries update by the author, one-off bill', () => {
     { title: 'Should let the author change the date together with the month', data: { date: '2026-10-05', month: '2026-10' }, isAllowed: true },
     { title: 'Should let the author change the date inside the same month', data: { date: '2026-09-01' }, isAllowed: true },
     { title: 'Should not let the author change the date to another month without the month', data: { date: '2026-10-05' }, isAllowed: false },
+    { title: 'Should not let the author change the date to a future month', data: { date: '2099-12-31', month: '2099-12' }, isAllowed: false },
     { title: 'Should not let the author change paidBy', data: { paidBy: 'uid-ana' }, isAllowed: false },
     { title: 'Should not let the author change the kind', data: { kind: 'recurringPayment' }, isAllowed: false },
     { title: 'Should not let the author change createdAt', data: { createdAt: serverTimestamp() }, isAllowed: false },

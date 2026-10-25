@@ -74,6 +74,7 @@ describe('entries create by a member', () => {
     row('Should not let a member create a one-off bill with amountCents as a text', false, { entry: { amountCents: '35000' } }),
     row('Should let a member create a one-off bill with amountCents 1', true, { entry: { amountCents: 1 } }),
     row('Should let a member create a one-off bill with amountCents at the limit', true, { entry: { amountCents: 999999999 } }),
+    row('Should not let a member create a one-off bill with a date in a future month', false, { entry: { date: '2099-12-31', month: '2099-12' } }),
     row('Should not let a member create a one-off bill with a date in month 13', false, { entry: { date: '2026-13-01', month: '2026-13' } }),
     row('Should not let a member create a one-off bill with a date on day 32', false, { entry: { date: '2026-09-32' } }),
     row('Should not let a member create a one-off bill with a date as dd/mm/yyyy', false, { entry: { date: '30/09/2026', month: '09/2026' } }),
