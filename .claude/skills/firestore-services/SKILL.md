@@ -81,7 +81,7 @@ in `src/shared/types/realtime/`.
 - `subscribeToRefs` delivers only when **every** ref has answered once, then on every change.
 - An empty `refs` keeps the hook `idle` (a parameter is still missing).
 - `status`: `idle`, `loading`, `cached` (from the device cache, may be behind the server),
-  `success`, `error` (the hook already showed the toast).
+  `success`, `error` (no toast: the screen shows the error state, and the hook listens again by itself after 2 s, 5 s, 15 s, then every 30 s, while the screen is mounted).
 - Changing the params (another month) closes the old listener and opens the new one; until the new
   one answers, the hook returns `loading`, never the old data.
 
