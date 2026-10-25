@@ -1,3 +1,4 @@
+import { Info } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { useWatch } from 'react-hook-form';
 import { View } from 'react-native';
@@ -7,15 +8,15 @@ import { AppText } from '@/shared/components/AppText/AppText';
 import { Button } from '@/shared/components/Button/Button';
 import { DateFieldSmart } from '@/shared/components/inputs/DateFieldSmart/DateFieldSmart';
 import { MoneyFieldSmart } from '@/shared/components/inputs/MoneyFieldSmart/MoneyFieldSmart';
+import { TagChoiceSmart } from '@/shared/components/inputs/TagChoiceSmart/TagChoiceSmart';
 import { TextFieldSmart } from '@/shared/components/inputs/TextFieldSmart/TextFieldSmart';
+import { Notice } from '@/shared/components/Notice/Notice';
 import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 import type { IRecurringBillInput } from '@/shared/types/recurringBill/RecurringBillInput';
 import type { ITag } from '@/shared/types/tag/Tag';
 import { firstDayOfThisMonth } from '@/shared/utils/date/firstDayOfThisMonth';
 import { formatCents } from '@/shared/utils/format/formatCents';
 
-import { EditNotice } from '@/features/recurringBills/components/EditNotice/EditNotice';
-import { TagChoiceSmart } from '@/features/recurringBills/components/TagChoiceSmart/TagChoiceSmart';
 import { useRecurringBillForm } from '@/features/recurringBills/hooks/useRecurringBillForm/useRecurringBillForm';
 import { recurringBillFormValuesOf } from '@/features/recurringBills/utils/recurringBillFormValuesOf';
 import { recurringBillInputOf } from '@/features/recurringBills/utils/recurringBillInputOf';
@@ -52,7 +53,9 @@ export function RecurringBillForm({ tags, hasTagsError, bill, submitLabel, onSub
 
   return (
     <View style={styles.form}>
-      {bill ? <EditNotice /> : null}
+      {bill ? (
+        <Notice icon={Info} text="A mudança vale para os meses ainda sem pagamento. Os meses já pagos não mudam." />
+      ) : null}
 
       <TextFieldSmart control={control} name="name" label="Nome da conta" autoCapitalize="sentences" />
       <MoneyFieldSmart control={control} name="amountCents" label="Valor previsto" supportText={amountSupport} />
