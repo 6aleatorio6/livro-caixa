@@ -1,0 +1,97 @@
+// Esboço do modelo de dados, pensado para o Firestore. Cada tabela é uma coleção (ou, em tags, os
+// itens de um documento só), e a chave primária é o id do documento.
+//
+// Leituras do Início de um mês: a lista de allowedEmails inteira (dela sai o nome atual de quem
+// registrou cada lançamento), o documento único das tags, todas as contas recorrentes e os
+// lançamentos do mês (uma consulta por month). O que
+// falta pagar e as somas por tag e por membro são calculados no app, com o que já foi lido: não há
+// totais gravados. Trocar de mês lê só os lançamentos do novo mês.
+//
+// Sem servidor próprio: as regras de segurança do Firestore garantem o acesso, a autoria, o
+// pagamento único por mês e a trava de remoção do e-mail.
+//
+// Os arquivos ficam no Cloud Storage, em files/{id}, e cada um tem o seu registro na coleção files:
+// é o único lugar que lista os arquivos do app. O lançamento aponta para o registro do comprovante, e
+// a lista do mês não baixa arquivo nenhum. As regras do Cloud Storage conferem que quem envia está em
+// allowedEmails (firestore.exists), que o autor está nos metadados do objeto (customMetadata.uploadedBy), que o arquivo é imagem ou PDF e tem até 5 MB, e que ainda não
+// existe arquivo nesse caminho. O app envia o arquivo primeiro e grava, num lote só, o registro em
+// files e o lançamento; excluir o lançamento apaga, num lote, o lançamento e o registro, e depois o arquivo.
+//
+// Valores em dinheiro em centavos, inteiros. Datas sem hora como texto AAAA-MM-DD, e meses como
+// AAAA-MM, para o fuso do celular não trocar o dia.
+
+Enum EntryKind {
+  recurringPayment [note: 'Pagamento de uma conta recorrente num mês']
+  oneOffBill [note: 'Conta avulsa']
+}
+
+Enum FileType {
+  image [note: 'Imagem de até 5 MB; acima de 2 MB, reduzida no app e salva em WebP']
+  pdf [note: 'PDF de até 5 MB; acima disso, recusado']
+}
+
+Table allowedEmails {
+  email varchar [pk, note: 'Id do documento: o e-mail em minúsculas. As regras conferem o acesso com exists() neste caminho, a partir do e-mail do login']
+  uid varchar [unique, note: 'O uid do login da pessoa. Vazio até a primeira entrada, quando o app o grava junto com o nome. Depois o app nunca o troca (as regras recusam); trocar a conta Google de uma pessoa é um script do Admin SDK. Os lançamentos apontam para ele']
+  name varchar [note: 'O nome que o app mostra. Vazio até a primeira entrada da pessoa, quando o app grava o nome da conta Google (sem nome na conta, o começo do e-mail). Depois, só a própria pessoa o altera. O nome não fica vazio e tem até 60 caracteres, e a primeira entrada corta o da conta Google nesse limite']
+  isAdmin boolean [not null, default: false, note: 'Marcado à mão no console do Firebase. As regras não deixam o app gravar true. O esperado é um admin só, sem verificação']
+  hasEntries boolean [not null, default: false, note: 'Vira true no mesmo lote do primeiro lançamento da pessoa, e as regras do lançamento exigem isso (getAfter). Com true, as regras recusam excluir o e-mail']
+
+  Note: 'A lista de e-mails permitidos. Só o admin cria, só com o e-mail, e exclui; cada pessoa grava e altera só o próprio nome (e grava o uid uma vez). Todo membro lê a lista inteira, para mostrar o nome atual de quem registrou cada lançamento.'
+}
+
+Table tags {
+  id varchar [pk, note: 'A chave do item no mapa items do documento settings/tags']
+  name varchar [not null]
+  nameKey varchar [not null, unique, note: 'O nome em minúsculas e sem acento. Criar e renomear acontecem numa transação sobre o documento único, que confere que a chave não existe']
+  color varchar [not null, note: 'Um valor do enum de cores definido no código; a lista de cores sai do design']
+
+  Note: 'Todas as tags num documento só, settings/tags: uma leitura traz todas, e a transação garante o nome único. A exclusão confere antes, no app, que nenhuma conta usa a tag.'
+}
+
+Table recurringBills {
+  id varchar [pk]
+  name varchar [not null]
+  expectedAmountCents int [not null, note: 'O valor previsto; quem paga confirma ou corrige']
+  dayOfMonth int [not null, note: 'De 1 a 31; num mês mais curto, a conta vence no último dia']
+  startsOn varchar [not null, note: 'AAAA-MM-DD. Um mês só tem a conta se o vencimento dele cai nesta data ou depois']
+  tagId varchar [ref: > tags.id, note: 'Opcional']
+
+  Note: 'Coleção pequena, lida inteira. Os meses não são gravados: cada mês a pagar sai deste cadastro. A exclusão apaga o documento, porque os pagamentos guardam a própria cópia do nome e da tag.'
+}
+
+Table entries {
+  id varchar [pk, note: 'No pagamento, month + "_" + recurringBillId: o segundo pagamento do mês encontra o documento existente, e as regras recusam a escrita para qualquer pessoa, o autor inclusive. Na conta avulsa, um id gerado, que as regras não deixam ter a forma do pagamento (AAAA-MM_...), para ela não ocupar o id de uma conta recorrente']
+  kind EntryKind [not null]
+  month varchar [not null, note: 'AAAA-MM. Os lançamentos do Início vêm de uma consulta por este campo']
+  recurringBillId varchar [ref: > recurringBills.id, note: 'Só no pagamento. As regras exigem que a conta exista na hora do pagamento; depois pode ficar apontando para uma conta já excluída']
+  name varchar [not null, note: 'No pagamento, cópia do nome da conta no momento do pagamento']
+  amountCents int [not null, note: 'No pagamento, começa com o valor previsto e pode ser corrigido']
+  dueDay int [note: 'Só no pagamento: o dia (1 a 31) em que a conta vencia naquele mês, cópia no momento do pagamento (o dia 31 vira 30 num mês de 30 dias)']
+  expectedAmountCents int [note: 'Só no pagamento: cópia do valor previsto da conta no momento do pagamento, para o pagamento não mudar quando a conta mudar']
+  date varchar [note: 'Só na conta avulsa: AAAA-MM-DD, preenchida com hoje. Trocar a data para outro mês muda o month junto']
+  tagId varchar [ref: > tags.id, note: 'Opcional. No pagamento, cópia da tag da conta no momento do pagamento']
+  paidBy varchar [not null, ref: > allowedEmails.uid, note: 'O uid do login de quem registrou. As regras exigem o uid de quem grava (request.auth.uid) e só deixam o autor alterar ou excluir. O nome não é copiado: o app o acha na lista pelo uid, e uma troca de nome chega aos lançamentos antigos']
+  createdAt timestamp [not null, note: 'Quando o lançamento foi registrado, gravado pelo servidor (serverTimestamp). Aparece nos detalhes do lançamento']
+  receiptFileId varchar [not null, ref: - files.id, note: 'O comprovante. As regras exigem que o registro exista ao fim do lote (getAfter) e tenha sido enviado por quem grava o lançamento']
+
+  indexes {
+    (month, recurringBillId) [unique, note: 'Garantido pelo id do documento, não por um índice: o Firestore não tem índice único']
+    month
+    tagId
+  }
+
+  Note: 'Os lançamentos, pagamentos e contas avulsas, numa coleção só: uma consulta traz o mês inteiro. Só o autor altera: no pagamento, o valor pago e o comprovante; na conta avulsa, o nome, o valor, a data (e o month com ela), a tag e o comprovante. Trocar o comprovante é um lote: cria o files novo, atualiza o lançamento e apaga o files antigo. Excluir é um lote que apaga o lançamento e o files dele, e depois o app apaga o objeto no Storage. Excluir não desfaz o hasEntries.'
+}
+
+Table files {
+  id varchar [pk, note: 'Id gerado pelo app antes do envio']
+  name varchar [not null, note: 'O nome do arquivo escolhido (1 a 255 caracteres), que o app mostra nos detalhes e no visualizador']
+  storagePath varchar [not null, note: 'files/{id}, no Cloud Storage']
+  type FileType [not null]
+  contentType varchar [not null, note: 'image/... ou application/pdf']
+  sizeBytes int [not null, note: 'Até 5 MB (5.242.880 bytes), conferido pelas regras do Cloud Storage no envio']
+  uploadedBy varchar [not null, note: 'O uid do login de quem enviou. Só ele exclui o registro e o arquivo. O app grava o mesmo uid em customMetadata.uploadedBy do objeto no Cloud Storage, porque a exclusão do objeto vem depois do lote, quando o registro já não existe para a regra consultar']
+
+  Note: 'Todos os arquivos do app, num lugar só. Hoje só há comprovantes, cada um usado por um lançamento. Todo membro lê um registro por id (nunca a lista). Não há update: trocar o comprovante cria um registro novo e apaga o antigo no mesmo lote.'
+}

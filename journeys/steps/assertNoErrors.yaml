@@ -1,0 +1,7 @@
+# O fim de um fluxo sem nenhum erro de leitura na tela: nem o aviso que o `useRealtime` mostra quando uma
+# escuta falha, nem o texto das telas de lista que ficam no erro. Sem isto, um fluxo passa com o erro à vista,
+# porque cada passo só confere o que espera ver.
+appId: dev.leonardolf.livrocaixa
+---
+- assertNotVisible: Algo deu errado. Tente de novo.
+- assertNotVisible: Não deu para carregar a lista.

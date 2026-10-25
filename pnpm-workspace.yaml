@@ -1,10 +1,20 @@
 packages:
   - apps/*
 
-# Scripts de instalação que o portal dispensa: o do @swc/core só confere o binário nativo, que já
-# chega pelas dependências opcionais, e o do core-js só imprime um pedido de doação. Listá-los aqui
-# tira o aviso "Ignored build scripts" de cada install. O back e o web, quando entrarem, aprovam os
-# deles em `onlyBuiltDependencies`.
+# Scripts de instalação dispensados: o do @swc/core (portal) e o do @parcel/watcher (app) só
+# conferem o binário nativo, que já chega pelas dependências opcionais; o do @firebase/util (teste das
+# regras) só grava a configuração padrão do SDK web, que o teste não usa; e o do core-js só imprime um
+# pedido de doação. Listá-los aqui tira o aviso "Ignored build scripts" de cada install.
 ignoredBuiltDependencies:
+  - '@firebase/util'
+  - '@parcel/watcher'
   - '@swc/core'
   - core-js
+
+# Scripts de instalação que rodam: o unrs-resolver (resolvedor de imports do ESLint do app) confere
+# se o binário nativo da plataforma veio; o re2 e o protobufjs são do firebase-tools, que sem eles
+# não sobe os emuladores.
+onlyBuiltDependencies:
+  - protobufjs
+  - re2
+  - unrs-resolver

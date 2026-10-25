@@ -1,15 +1,36 @@
-# new-project
+# Livro-Caixa
 
-Documentation for new-project; the brainstorm is still defining the product.
+A mobile app to manage one family's finances. The brainstorm is still writing its documentation.
 
-A pnpm monorepo. For now only the documentation exists: the Markdown in `docs/` and the Docusaurus
-portal that publishes it, in `apps/docusaurus`. The back-end and the front-end come later, as
-`apps/back` and `apps/web`, once the project's context settles the stack. Until then, no stack
-decision is made without being written in `docs/`.
+A pnpm monorepo with the documentation (the Markdown in `docs/` and the Docusaurus portal that
+publishes it, in `apps/docusaurus`), the design, in `design/livro-caixa.pen`, and the Android app,
+in `apps/mobile`: Expo SDK 58 + React Native on Firebase, with no web app —
+[docs/05-arquitetura/01-plataforma-e-stack.md](docs/05-arquitetura/01-plataforma-e-stack.md). No
+other stack decision is made without being written there.
 
 - `pnpm install` at the root installs the workspace.
 - `pnpm dev:docs` serves the portal at `http://localhost:4000`.
 - `pnpm verify` runs the portal's tests and the build, which fails on a broken link.
+- `pnpm typecheck:mobile` type-checks the app; `pnpm mobile <script>` runs any script of
+  `apps/mobile`.
+- `pnpm android` builds the app and opens it on the Android emulator. It needs the Android SDK,
+  which only the developer's PC has: this container runs the type check, the lint and the tests,
+  never the native build. `pnpm android --no-bundler` skips the Metro it would leave on 8081, which
+  the journeys' stack needs.
+- `pnpm firebase:emulators` starts the Firebase emulators (Auth, Firestore, Storage; their UI on
+  port 4001, since the portal holds 4000), and `pnpm test:rules` tests `firebase/firestore.rules`.
+  Both need Java, which the claude-box lends this container from the PC, so they run here too.
+  `pnpm firebase:emulators` takes the journeys' ports, so it doesn't run while their stack is up.
+  The app talks to the emulators when started with `EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true`.
+- `pnpm test:contract` runs every service against the Firebase emulators, scenario by scenario
+  (skill `firestore-services`); the page tests mock the services only with those scenarios (skill
+  `testing`). It and `pnpm test:rules` start emulators of their own on other ports
+  (`firebase/firebase.test.json`), so they run with the journeys' stack up, one at a time.
+- `pnpm journeys:stack` starts the journeys' stack (the Firebase emulators and Metro with the app
+  pointed at them) and `pnpm journeys:test` runs the Maestro flows, both in this container, against
+  the Android 15 emulator of the PC (`Livro_Caixa_API_35`): skill `app-journeys`.
+- `apps/mobile/google-services.json` comes from the Firebase console and stays out of Git: the
+  native build needs it.
 
 ## Language
 
@@ -34,8 +55,9 @@ In the shell, quote the name: a `#` at the start of a word begins a comment —
 The rules for writing the documentation are in [docs/CLAUDE.md](docs/CLAUDE.md). Working drafts
 (plans, notes, PR descriptions) live in `docs/local/`, outside Git.
 
-The design is made in Pencil, in `design/`. A `.pen` file can only be read and edited through the
-`pencil` MCP.
+The design is made in Pencil, in `design/livro-caixa.pen`, following the `design-from-scratch`
+skill. A `.pen` file can only be read and edited through the `pencil` MCP, which acts on the file
+active in the editor: check it with `get_app_state` before writing.
 
 The data model is drawn in dbdiagram.io, in
 [docs/05-arquitetura/modelo-de-dados.dbml](docs/05-arquitetura/modelo-de-dados.dbml), and serves

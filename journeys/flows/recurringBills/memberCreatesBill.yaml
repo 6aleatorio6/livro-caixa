@@ -1,0 +1,70 @@
+# O Bruno (membro) cadastra o Gás: preenche o nome, o valor, o dia, a data no calendário do Android e a
+# tag Casa. A conta entra na lista com o total novo, e a Água continua.
+# Coberto por:
+# - Qualquer membro cadastrar conta: as linhas do membro em settings.write e o contrato do addRecurringBillService.
+# - O formulário, o valor em centavos e a tag escolhida: NewRecurringBillPage.test.tsx e MoneyField.test.tsx.
+# - A data escolhida no calendário (OK grava, cancelar não muda): DateField.test.tsx e NewRecurringBillPage.test.tsx.
+#   O calendário abrir pelo toque no texto da data é só desta jornada: o Jest não tem o toque nativo
+#   (o `TextInput` do Android pegava o toque), e o seletor de data também é nativo.
+# - A conta na lista, "todo dia 12 · Casa" e o total: RecurringBillsPage.test.tsx, BillItem e totalExpectedCents.test.ts.
+appId: dev.leonardolf.livrocaixa
+tags:
+  - recurringBills
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: member
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: seedRecurringBills
+- tapOn: Configurações
+- tapOn: Contas recorrentes
+- assertVisible: Nova conta recorrente
+- assertVisible: 5 contas recorrentes
+- assertVisible: R$ 2.677,90
+- assertVisible: Água
+- assertNotVisible: Gás
+- takeScreenshot: recurring-bills--list
+- tapOn: Nova conta recorrente
+- assertVisible: Cadastrar conta
+- tapOn: Nome da conta
+- inputText: Gás
+- hideKeyboard
+- tapOn: Valor previsto
+# Os dígitos entram pela direita, em centavos: 8500 vira R$ 85,00.
+- inputText: "8500"
+- hideKeyboard
+- assertVisible: R$ 85,00
+- tapOn: Dia do mês
+- inputText: "12"
+- hideKeyboard
+# O toque cai no meio do campo, em cima do texto da data: é ali que o `TextInput` pegava o toque e o
+# calendário não abria.
+- tapOn: Vale a partir de, 01/10/2026
+- assertVisible: OK
+- tapOn: "3"
+- tapOn: OK
+- assertVisible: 03/10/2026
+- assertNotVisible: 01/10/2026
+- tapOn: Casa
+- takeScreenshot: new-recurring-bill--filled
+- tapOn: Cadastrar conta
+- extendedWaitUntil:
+    visible: Conta cadastrada
+    timeout: 10000
+# A conta nova entra na lista, o previsto por mês soma o valor dela e a Água continua.
+- assertVisible: Nova conta recorrente
+- assertNotVisible: Cadastrar conta
+- assertVisible: Gás
+- assertVisible: todo dia 12 · Casa
+- assertVisible: R$ 85,00
+- assertVisible: 6 contas recorrentes
+- assertVisible: R$ 2.762,90
+- assertVisible: Água
+- assertVisible: todo dia 20 · Serviços
+- assertVisible: R$ 98,00
+- takeScreenshot: recurring-bills--bill-created
+# Nenhum erro de leitura (aviso ou texto da lista) na tela final.
+- runFlow: ../../steps/assertNoErrors.yaml

@@ -1,0 +1,70 @@
+# O Bruno (membro) cria a tag "Mercado" e ela entra na lista com as outras; depois tenta "saude", que
+# é a Saúde sem o acento, e a tela recusa o nome.
+# Coberto por:
+# - Qualquer membro criar tag: as linhas do membro em settings.write e o contrato do createTagService.
+# - A tag nova na lista e a volta: NewTagPage.test.tsx e TagsPage.test.tsx.
+# - "saude" recusada por "Saúde": tagNameKey.test.ts e o contrato do createTagService (os dois nomes
+#   recusados com TAG_NAME_IN_USE). Só esta jornada prova o `normalize('NFD')` no Hermes, que o Jest
+#   (Node) não prova.
+appId: dev.leonardolf.livrocaixa
+tags:
+  - tags
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: member
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: seedTags
+- tapOn: Configurações
+- tapOn: Tags
+- assertVisible: Nova tag
+- assertVisible: Casa
+- assertVisible: Serviços
+- assertVisible: Saúde
+- assertNotVisible: Mercado
+- takeScreenshot: tags--list
+# Cria "Mercado" em Petróleo.
+- tapOn: Nova tag
+- assertVisible: Criar tag
+- tapOn: Nome da tag
+- inputText: Mercado
+- hideKeyboard
+- tapOn: Petróleo
+- takeScreenshot: new-tag--filled
+- tapOn: Criar tag
+- extendedWaitUntil:
+    visible: Tag criada
+    timeout: 10000
+- assertVisible: Nova tag
+- assertNotVisible: Criar tag
+# A tag nova entra na lista e as três de antes continuam.
+- assertVisible: Mercado
+- assertVisible: Casa
+- assertVisible: Serviços
+- assertVisible: Saúde
+- takeScreenshot: tags--tag-created
+# "saude" é a Saúde sem o acento: recusada, e a tela fica no formulário.
+- tapOn: Nova tag
+- tapOn: Nome da tag
+- inputText: saude
+- hideKeyboard
+- tapOn: Lavanda
+- tapOn: Criar tag
+- extendedWaitUntil:
+    visible: Já existe a tag Saúde. Escolha outro nome.
+    timeout: 10000
+- assertVisible: Criar tag
+- takeScreenshot: new-tag--name-in-use
+# Nada foi criado: voltando, a lista continua com as quatro.
+- tapOn: Voltar
+- assertVisible: Nova tag
+- assertNotVisible: saude
+- assertVisible: Mercado
+- assertVisible: Casa
+- assertVisible: Serviços
+- assertVisible: Saúde
+# Nenhum erro de leitura (aviso ou texto da lista) na tela final.
+- runFlow: ../../steps/assertNoErrors.yaml

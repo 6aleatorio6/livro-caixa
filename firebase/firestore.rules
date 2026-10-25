@@ -1,0 +1,318 @@
+rules_version = '2';
+
+// Tudo o que não está liberado aqui é negado.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // O admin é quem tem `isAdmin` na própria entrada da lista. O e-mail do login é comparado em
+    // minúsculas, como o id do documento, e só vale com o e-mail verificado.
+    function isAdmin() {
+      return isVerified()
+        && get(/databases/$(database)/documents/allowedEmails/$(request.auth.token.email.lower())).data.isAdmin == true;
+    }
+
+    // Só vale o login com sessão e com o e-mail verificado pelo Google.
+    function isVerified() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    // O e-mail do login é o do documento: a pessoa só mexe na própria entrada. Mesma comparação do
+    // `isAdmin`: minúsculas e só com o e-mail verificado.
+    function isOwnEmail(email) {
+      return isVerified() && request.auth.token.email.lower() == email;
+    }
+
+    // Está na lista quem tem entrada com o próprio e-mail; é o que deixa o membro ver a família.
+    function isInList() {
+      return isVerified()
+        && exists(/databases/$(database)/documents/allowedEmails/$(request.auth.token.email.lower()));
+    }
+
+    // Valida o documento inteiro de uma conta recorrente, na criação e na troca: só os cinco campos,
+    // com os quatro obrigatórios. O nome é texto com conteúdo, até 60 caracteres; o valor esperado é
+    // inteiro em centavos, de 1 até 999999999 (R$ 9.999.999,99, o teto do campo de valor); o dia do
+    // mês é inteiro de 1 a 31; o início é uma data `AAAA-MM-DD` em texto, com mês de 01 a 12 e dia de
+    // 01 a 31 (o 30 de fevereiro passa no formato: o app só grava datas do calendário); a tag, se
+    // houver, é o texto da chave dela em `settings/tags`.
+    function isValidRecurringBill(bill) {
+      return bill.keys().hasOnly(['name', 'expectedAmountCents', 'dayOfMonth', 'startsOn', 'tagId'])
+        && bill.keys().hasAll(['name', 'expectedAmountCents', 'dayOfMonth', 'startsOn'])
+        && bill.name is string
+        && bill.name.trim().size() > 0
+        && bill.name.size() <= 60
+        && bill.expectedAmountCents is int
+        && bill.expectedAmountCents > 0
+        && bill.expectedAmountCents <= 999999999
+        && bill.dayOfMonth is int
+        && bill.dayOfMonth >= 1
+        && bill.dayOfMonth <= 31
+        && bill.startsOn is string
+        && bill.startsOn.matches('^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$')
+        && (!('tagId' in bill) || bill.tagId is string);
+    }
+
+    // O nome de um lançamento é texto com conteúdo, até 60 caracteres.
+    function isValidEntryName(name) {
+      return name is string
+        && name.trim().size() > 0
+        && name.size() <= 60;
+    }
+
+    // Um valor em centavos é inteiro, de 1 até 999999999 (R$ 9.999.999,99, o teto do campo de valor).
+    function isValidAmountCents(amountCents) {
+      return amountCents is int
+        && amountCents >= 1
+        && amountCents <= 999999999;
+    }
+
+    // O mês de um lançamento é `AAAA-MM` em texto, com mês de 01 a 12.
+    function isValidMonth(month) {
+      return month is string
+        && month.matches('^\\d{4}-(0[1-9]|1[0-2])$');
+    }
+
+    // Valida o documento inteiro de uma conta avulsa, na criação e na troca: as oito chaves
+    // obrigatórias e a `tagId` opcional. O nome é texto com conteúdo, até 60 caracteres; o valor é
+    // inteiro em centavos, de 1 até 999999999; a data é `AAAA-MM-DD` (mesmo padrão do início da conta
+    // recorrente) e o `month` é o ano e o mês dela, para o lançamento cair no mês certo. `kind` só
+    // aceita `oneOffBill`: o pagamento de conta recorrente é validado à parte
+    // (`isValidRecurringPayment`). O mês não passa do mês de `request.time` (`isUpToCurrentMonth`, como no pagamento);
+    // a regra NÃO confere o dia dentro do mês nem que a `tagId` existe em `settings/tags`: isso fica com o app.
+    function isValidOneOffBill(entry) {
+      return entry.keys().hasOnly(['kind', 'month', 'name', 'amountCents', 'date', 'tagId', 'paidBy', 'createdAt', 'receiptFileId'])
+        && entry.keys().hasAll(['kind', 'month', 'name', 'amountCents', 'date', 'paidBy', 'createdAt', 'receiptFileId'])
+        && entry.kind == 'oneOffBill'
+        && isValidEntryName(entry.name)
+        && isValidAmountCents(entry.amountCents)
+        && entry.date is string
+        && entry.date.matches('^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$')
+        && entry.month == entry.date.split('-')[0] + '-' + entry.date.split('-')[1]
+        && isUpToCurrentMonth(entry.month)
+        && entry.paidBy is string
+        && entry.receiptFileId is string
+        && (!('tagId' in entry) || entry.tagId is string);
+    }
+
+    // Valida o documento inteiro do pagamento de uma conta recorrente, na criação: as dez chaves
+    // obrigatórias e a `tagId` opcional. Não tem `date`: o dia do pagamento é o do `createdAt`. O
+    // `month` é `AAAA-MM` com mês de 01 a 12; o nome é texto com conteúdo, até 60 caracteres, e o valor
+    // é inteiro em centavos, de 1 até 999999999 (o valor pago, que pode ser diferente do previsto). O
+    // `dueDay` (1 a 31) e o `expectedAmountCents` (1 a 999999999) são a cópia do dia do vencimento
+    // naquele mês e do valor previsto da conta, como o nome e a tag: o pagamento não muda quando a conta
+    // muda. A regra NÃO confere que a conta vence naquele mês, que o `dueDay` e o previsto são os da
+    // conta nem que a `tagId` existe em `settings/tags`: isso fica com o app.
+    function isValidRecurringPayment(entry) {
+      return entry.keys().hasOnly(['kind', 'month', 'recurringBillId', 'name', 'amountCents', 'dueDay', 'expectedAmountCents', 'tagId', 'paidBy', 'createdAt', 'receiptFileId'])
+        && entry.keys().hasAll(['kind', 'month', 'recurringBillId', 'name', 'amountCents', 'dueDay', 'expectedAmountCents', 'paidBy', 'createdAt', 'receiptFileId'])
+        && entry.kind == 'recurringPayment'
+        && isValidMonth(entry.month)
+        && entry.recurringBillId is string
+        && entry.recurringBillId.size() > 0
+        && isValidEntryName(entry.name)
+        && isValidAmountCents(entry.amountCents)
+        && entry.dueDay is int
+        && entry.dueDay >= 1
+        && entry.dueDay <= 31
+        && isValidAmountCents(entry.expectedAmountCents)
+        && entry.paidBy is string
+        && entry.receiptFileId is string
+        && (!('tagId' in entry) || entry.tagId is string);
+    }
+
+    // A troca do comprovante de um lançamento, vista no fim do lote: o `files` novo nasce no lote e é de
+    // quem troca, e o `files` antigo some no mesmo lote (`files` fica um para um com os lançamentos).
+    // Sem trocar o `receiptFileId`, não há o que conferir.
+    function isReceiptKeptOrReplacedByAuthor() {
+      let newFile = /databases/$(database)/documents/files/$(request.resource.data.receiptFileId);
+      let oldFile = /databases/$(database)/documents/files/$(resource.data.receiptFileId);
+      return request.resource.data.receiptFileId == resource.data.receiptFileId
+        || (!exists(newFile)
+          && getAfter(newFile).data.uploadedBy == request.auth.uid
+          && !existsAfter(oldFile));
+    }
+
+    // O mês `AAAA-MM` (já validado) não passa do mês de `request.time`, em UTC.
+    function isUpToCurrentMonth(month) {
+      return int(month.split('-')[0]) < request.time.year()
+        || (int(month.split('-')[0]) == request.time.year() && int(month.split('-')[1]) <= request.time.month());
+    }
+
+    // O que a criação de qualquer lançamento exige, da conta avulsa e do pagamento: quem lança é o
+    // `paidBy`, o `createdAt` é a hora do servidor, o registro do arquivo do comprovante nasce no lote
+    // e é de quem lança, e o `hasEntries` de quem lança termina o lote em `true`. Leituras: 3 aqui; com o `isInList` da
+    // criação são 4 na conta avulsa e 5 no pagamento (com o `exists` da conta), dentro do limite de 10.
+    function isNewEntryOfAuthor(entry) {
+      return entry.paidBy == request.auth.uid
+        && entry.createdAt == request.time
+        && !exists(/databases/$(database)/documents/files/$(entry.receiptFileId))
+        && getAfter(/databases/$(database)/documents/files/$(entry.receiptFileId)).data.uploadedBy == request.auth.uid
+        && getAfter(/databases/$(database)/documents/allowedEmails/$(request.auth.token.email.lower())).data.hasEntries == true;
+    }
+
+    // A pessoa lê a entrada do próprio e-mail na lista de e-mails permitidos: é assim que o app
+    // sabe, depois do login pelo Google, se ela tem acesso. O id do documento é o e-mail em
+    // minúsculas, e o do login pode vir com maiúsculas.
+    match /allowedEmails/{email} {
+      // Cada pessoa lê a própria entrada, e o admin lê a de qualquer uma.
+      allow get: if isOwnEmail(email) || isAdmin();
+
+      // Todo membro lista a família inteira, o admin também, que está na lista: o nome de cada pessoa
+      // aparece nos lançamentos e na divisão por membro, e a tela de e-mails permitidos é do admin.
+      allow list: if isInList();
+
+      // Só chaves exatas e um id que é um e-mail em minúsculas. A pessoa nova nasce sem nome nem
+      // `uid`: ela os grava na primeira entrada. Nunca nasce admin nem com lançamentos: o admin só se
+      // torna admin pelo console. Create sobre um e-mail que já está na lista é update, e o admin só
+      // altera a própria entrada.
+      allow create: if isAdmin()
+        && email == email.lower()
+        && email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+        && request.resource.data.keys().hasOnly(['isAdmin', 'hasEntries'])
+        && request.resource.data.keys().hasAll(['isAdmin', 'hasEntries'])
+        && request.resource.data.isAdmin == false
+        && request.resource.data.hasEntries == false;
+
+      // Cada pessoa muda só o próprio nome, nunca o de outra (o admin também não). O nome precisa de
+      // texto, até 60 caracteres. Na primeira entrada ela grava também o `uid` do login, que é o
+      // dela e nunca é trocado por aqui: trocar a conta Google de uma pessoa é um script do Admin
+      // SDK. `isAdmin` nunca muda por aqui.
+      //
+      // O segundo ramo é o `hasEntries`: a própria pessoa (o admin também) o sobe de `false` para
+      // `true` no lote do primeiro lançamento dela, e nunca o desce. A regra NÃO garante que exista um
+      // lançamento: ela não sabe o id dele, então o `hasEntries` pode ir a `true` sem lançamento (o
+      // efeito é só a pessoa não poder ser removida da lista).
+      allow update: if isOwnEmail(email)
+        && ((request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'uid'])
+            && request.resource.data.name is string
+            && request.resource.data.name.trim().size() > 0
+            && request.resource.data.name.size() <= 60
+            && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid'])
+              || (!('uid' in resource.data) && request.resource.data.uid == request.auth.uid)))
+          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hasEntries'])
+            && request.resource.data.hasEntries == true));
+
+      // Quem tem lançamento fica na lista, porque os lançamentos citam a pessoa, e um admin não
+      // se remove (a família não pode ficar sem quem a administra).
+      allow delete: if isAdmin()
+        && resource.data.hasEntries == false
+        && resource.data.isAdmin == false;
+    }
+
+    // As tags da família moram num único documento, `settings/tags`, com o mapa `items` (chave da tag
+    // -> nome, chave do nome e cor). Qualquer outro documento de `settings` continua negado.
+    //
+    // O que estas regras NÃO garantem, e fica com o app: o nome único da tag (sem diferença de
+    // maiúsculas e acentos) e o "tag em uso" (excluir só a tag que nenhuma conta usa). O app confere o
+    // nome numa transação e o uso na leitura das contas. A regra não consegue: ela não tira a chave de
+    // um item do conjunto de chaves do mapa para validar o item que mudou, então não separa o item
+    // alterado dos demais para comparar os nomes, e uma regra não lê as contas ao excluir um item.
+    match /settings/{docId} {
+      // Todo membro lê as tags, que aparecem na escolha das contas e dos lançamentos.
+      allow get: if docId == 'tags' && isInList();
+
+      // Todo membro cria o documento (o primeiro item o cria) e muda os itens: criar, renomear, tirar.
+      // Só a chave `items`, e ela é um mapa. Sem `delete` nem `list`: o documento fica, mesmo vazio.
+      // Cada escrita traz um item só: o app nunca muda dois, e assim quem abusa do SDK não troca nem
+      // esvazia as tags de todos de uma vez.
+      allow create: if docId == 'tags'
+        && isInList()
+        && request.resource.data.keys().hasOnly(['items'])
+        && request.resource.data.keys().hasAll(['items'])
+        && request.resource.data.items is map
+        && request.resource.data.items.size() <= 1;
+
+      allow update: if docId == 'tags'
+        && isInList()
+        && request.resource.data.keys().hasOnly(['items'])
+        && request.resource.data.keys().hasAll(['items'])
+        && request.resource.data.items is map
+        && request.resource.data.items.diff(resource.data.items).affectedKeys().size() <= 1;
+    }
+
+    // As contas recorrentes da família: todo membro lê, cria, altera e exclui, porque a conta é de
+    // todos. A forma do documento é validada na criação e na troca (`isValidRecurringBill`).
+    match /recurringBills/{id} {
+      allow get, list, delete: if isInList();
+
+      allow create, update: if isInList() && isValidRecurringBill(request.resource.data);
+    }
+
+    // Os lançamentos da família: todo membro lê, para somar o mês e mostrar quem pagou. Só quem
+    // pagou (`paidBy`) altera e exclui: o admin também não mexe no lançamento de outra pessoa.
+    //
+    // A criação é um lote de três escritas: o lançamento, o registro do arquivo do comprovante
+    // (`files/{receiptFileId}`) e o `hasEntries: true` de quem lançou. A regra vê o fim do lote com
+    // `getAfter`, então exige o arquivo novo (um comprovante por lançamento, enviado por quem lança)
+    // e o `hasEntries` em `true` no fim.
+    //
+    // O que NÃO garante: que o arquivo exista no Storage (o envio vem antes do lote, e um arquivo
+    // pode ficar no Storage sem registro) e que o `hasEntries` suba só com lançamento (veja
+    // `allowedEmails`). O `paidBy` e o `receiptFileId` não mudam depois de criados.
+    //
+    // O lançamento é a conta avulsa (`oneOffBill`) ou o pagamento de conta recorrente
+    // (`recurringPayment`), cujo id é `{month}_{recurringBillId}`. O pagamento único por mês vem do
+    // id: o segundo pagamento da mesma conta no mês encontra o documento e vira um `update`, que a
+    // regra recusa para qualquer pessoa (o `createdAt` muda e o `update` é só da conta avulsa). A
+    // conta avulsa não usa um id com a forma do pagamento (`AAAA-MM_...`), senão ela ocuparia o id e a
+    // conta recorrente ficaria sem poder ser paga. O pagamento exige que a conta recorrente exista e que o
+    // mês não seja futuro; a regra NÃO confere que a conta vence naquele mês. O `update` do
+    // pagamento muda só o valor pago e o comprovante; a conta avulsa, o nome, o valor, a data (e com
+    // ela o `month`), a tag e o comprovante. Trocar o comprovante é um lote (o `files` novo, o
+    // lançamento e a exclusão do `files` antigo). Excluir é um lote que apaga o lançamento e o `files`
+    // dele; o `hasEntries` não desce (veja `allowedEmails`).
+    match /entries/{id} {
+      allow get, list: if isInList();
+
+      allow create: if isInList()
+        && ((isValidOneOffBill(request.resource.data) && !id.matches('^\\d{4}-\\d{2}_.*'))
+          || (isValidRecurringPayment(request.resource.data)
+            && id == request.resource.data.month + '_' + request.resource.data.recurringBillId
+            && isUpToCurrentMonth(request.resource.data.month)
+            && exists(/databases/$(database)/documents/recurringBills/$(request.resource.data.recurringBillId))))
+        && isNewEntryOfAuthor(request.resource.data);
+
+      allow update: if isInList()
+        && resource.data.paidBy == request.auth.uid
+        && isReceiptKeptOrReplacedByAuthor()
+        && ((resource.data.kind == 'oneOffBill'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'amountCents', 'date', 'month', 'tagId', 'receiptFileId'])
+            && isValidOneOffBill(request.resource.data))
+          || (resource.data.kind == 'recurringPayment'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['amountCents', 'receiptFileId'])
+            && isValidRecurringPayment(request.resource.data)));
+
+      allow delete: if isInList()
+        && resource.data.paidBy == request.auth.uid
+        && !existsAfter(/databases/$(database)/documents/files/$(resource.data.receiptFileId));
+    }
+
+    // O registro de um arquivo (o comprovante): todo membro lê um por id (`get`, nunca `list`), para ver
+    // o comprovante de qualquer lançamento; a criação é no lote do lançamento; só quem enviou
+    // (`uploadedBy`) exclui, no lote que troca o comprovante ou exclui o lançamento; o registro que já não existe
+    // também passa, para o lote do lançamento sem registro não cair por ele. Não há `update`.
+    // O arquivo mora em `files/{id}` no Storage. A regra NÃO confere o tamanho nem o tipo reais do objeto enviado: quem os confere é a
+    // regra do Storage, no envio.
+    match /files/{id} {
+      allow get: if isInList();
+
+      allow delete: if isInList()
+        && (resource == null || resource.data.uploadedBy == request.auth.uid);
+
+      allow create: if isInList()
+        && request.resource.data.keys().hasOnly(['name', 'storagePath', 'type', 'contentType', 'sizeBytes', 'uploadedBy'])
+        && request.resource.data.keys().hasAll(['name', 'storagePath', 'type', 'contentType', 'sizeBytes', 'uploadedBy'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 1
+        && request.resource.data.name.size() <= 255
+        && request.resource.data.storagePath == 'files/' + id
+        && request.resource.data.uploadedBy == request.auth.uid
+        && ((request.resource.data.type == 'image'
+            && request.resource.data.contentType is string
+            && request.resource.data.contentType.matches('image/(jpeg|jpg|png|webp|gif|heic|heif)'))
+          || (request.resource.data.type == 'pdf'
+            && request.resource.data.contentType == 'application/pdf'))
+        && request.resource.data.sizeBytes is int
+        && request.resource.data.sizeBytes >= 1
+        && request.resource.data.sizeBytes <= 5242880;
+    }
+  }
+}

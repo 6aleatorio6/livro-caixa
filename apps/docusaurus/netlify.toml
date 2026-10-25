@@ -11,7 +11,7 @@
 # a Netlify só instala com pnpm quando o `pnpm-lock.yaml` está no base directory.
 # Por isso os caminhos abaixo são relativos à raiz do repositório.
 [build]
-  command = "pnpm --filter new-project-docs build"
+  command = "pnpm --filter livro-caixa-docs build"
   publish = "apps/docusaurus/build"
   edge_functions = "apps/docusaurus/netlify/edge-functions"
 

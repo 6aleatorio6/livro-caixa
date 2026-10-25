@@ -1,0 +1,19 @@
+# Abre o app limpo, sem sessão, entra pelo link de teste da conta e só volta quando a entrada
+# termina. O `LINK` vem de `output.accounts.<perfil>.signInLink`, que o cenário `reset` devolve, ou
+# é o de uma pessoa que o fluxo inventa. Para começar um fluxo, o `startAs.yaml`.
+appId: dev.leonardolf.livrocaixa
+---
+- launchApp:
+    clearState: true
+# O primeiro bundle do Metro depois de limpar o app demora.
+- extendedWaitUntil:
+    visible: Entrar com Google
+    timeout: 60000
+- openLink: ${LINK}
+# Saem a tela de login e depois a de "Entrando como…": daí em diante, a tela é a do perfil.
+- extendedWaitUntil:
+    notVisible: Entrar com Google
+    timeout: 15000
+- extendedWaitUntil:
+    notVisible: Entrando como.*
+    timeout: 15000

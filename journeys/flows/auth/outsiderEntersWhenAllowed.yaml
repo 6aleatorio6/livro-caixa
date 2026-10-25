@@ -1,0 +1,38 @@
+# Quem espera em Aguardando permissão entra sozinha quando o e-mail é liberado, sem sair do app.
+# Coberto por:
+# - Carla em sem acesso: _layout.test.tsx e o contrato do allowedEmailQueryService (emailOutsideList).
+# - O nome da conta Google gravado na primeira entrada: useEnsureOwnName.test.ts, initialNameOf.test.ts
+#   e o contrato do changeOwnNameService (memberGetsGoogleName).
+# - O nome no cartão de Configurações: SettingsPage.test.tsx.
+# - A liberação com a espera aberta: _layout.test.tsx (Should open the app when the e-mail enters
+#   the list while the no-access screen is open) e o contrato do allowedEmailQueryService
+#   (emailAddedWhileOpen).
+appId: dev.leonardolf.livrocaixa
+tags:
+  - auth
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: outsider
+- assertVisible: Aguardando permissão
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: allowEmail
+      EMAIL: ${output.accounts.outsider.email}
+- extendedWaitUntil:
+    notVisible: Aguardando permissão
+    timeout: 10000
+- assertVisible:
+    text: Início
+    selected: true
+- takeScreenshot: home--outsider-allowed
+# Na primeira entrada o app grava o nome da conta Google, e Configurações o mostra no cartão.
+- tapOn: Configurações
+- extendedWaitUntil:
+    visible: ${output.accounts.outsider.name}
+    timeout: 10000
+- assertVisible: ${output.accounts.outsider.email}
+- assertNotVisible: Admin · você
+- takeScreenshot: settings--outsider-google-name

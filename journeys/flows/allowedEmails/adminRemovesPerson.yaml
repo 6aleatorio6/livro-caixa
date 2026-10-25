@@ -1,0 +1,51 @@
+# A admin tira a Clara, que está na lista sem lançamentos; ela some da lista e, ao entrar, espera permissão.
+# Quem não entrou (Elisa) e quem tem lançamentos (Bruno) continuam na lista.
+# Coberto por:
+# - O Remover, o aviso "Clara Souza saiu da lista" e a Clara saindo da lista: AllowedEmailsPage.test.tsx
+#   e o contrato do removeAllowedEmailService.
+# - A recusa de remover admin ou quem tem lançamentos: rules-tests/allowedEmails.delete.test.mjs.
+# - A Clara em sem acesso: _layout.test.tsx e o contrato do allowedEmailQueryService (emailOutsideList).
+appId: dev.leonardolf.livrocaixa
+tags:
+  - allowedEmails
+env:
+  CLARA_EMAIL: clara.souza@exemplo.com
+  CLARA_NAME: Clara Souza
+  ELISA_EMAIL: elisa.souza@exemplo.com
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: admin
+# A lista do design: Ana, Bruno (com lançamentos), Clara (sem lançamentos) e Elisa (ainda não entrou).
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: seedAllowedEmails
+- tapOn: Configurações
+- tapOn: E-mails permitidos
+- assertVisible: Adicionar pessoa
+- assertVisible: ${CLARA_NAME}
+- assertVisible: ${ELISA_EMAIL}
+- assertVisible: Remover ${CLARA_NAME}
+- assertVisible: Remover ${ELISA_EMAIL}
+- assertNotVisible: Remover Bruno Souza
+- takeScreenshot: allowedEmails--before-remove
+- tapOn: Remover ${CLARA_NAME}
+- extendedWaitUntil:
+    visible: ${CLARA_NAME} saiu da lista
+    timeout: 30000
+- extendedWaitUntil:
+    notVisible: Remover ${CLARA_NAME}
+    timeout: 10000
+- assertVisible: ${output.accounts.member.name}
+- assertVisible: ${output.accounts.admin.name}
+- assertVisible: ${ELISA_EMAIL}
+- takeScreenshot: allowedEmails--person-removed
+# A Clara tenta entrar: já não está na lista.
+- runFlow:
+    file: ../../steps/signInAs.yaml
+    env:
+      LINK: livrocaixa://test-sign-in?email=clara.souza%40exemplo.com&name=Clara%20Souza
+- assertVisible: Aguardando permissão
+- takeScreenshot: no-access--person-removed

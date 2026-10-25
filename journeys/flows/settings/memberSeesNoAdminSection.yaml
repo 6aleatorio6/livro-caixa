@@ -1,0 +1,28 @@
+# O membro não vê a seção do admin, e Sair da conta em Configurações volta ao login.
+# Coberto por:
+# - Nome, e-mail e a falta da seção do admin: SettingsPage.test.tsx (as a member) e o contrato do
+#   allowedEmailQueryService (emailInList).
+# - Sair volta ao login: SettingsPage.test.tsx (Should sign out when Sair is pressed), o contrato do
+#   signOutService (a sessão acaba), useAuthState.test.ts (sem sessão vira signedOut) e
+#   _layout.test.tsx (signedOut mostra o login).
+appId: dev.leonardolf.livrocaixa
+tags:
+  - settings
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: member
+- tapOn: Configurações
+- assertVisible: ${output.accounts.member.name}
+- assertVisible: ${output.accounts.member.email}
+- assertVisible: Contas recorrentes
+- assertVisible: Tags
+- assertNotVisible: Admin · você
+- assertNotVisible: Só para o admin
+- assertNotVisible: E-mails permitidos
+- takeScreenshot: settings--member
+- tapOn: Sair da conta
+- assertVisible: Entrar com Google
+- assertNotVisible: Início
+- takeScreenshot: sign-in--after-settings-sign-out

@@ -1,0 +1,21 @@
+# Tirar o e-mail da lista com o app aberto leva a pessoa para sem acesso, sem ela fechar o app.
+# Coberto por:
+# - Bruno vê o Início: _layout.test.tsx e o contrato do allowedEmailQueryService (emailInList).
+# - Sem acesso depois de tirar o e-mail: _layout.test.tsx (a mudança com o app aberto) e o contrato
+#   do allowedEmailQueryService (emailRemovedWhileOpen).
+appId: dev.leonardolf.livrocaixa
+tags:
+  - auth
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: member
+- assertVisible: Sem contas
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: removeEmail
+      EMAIL: ${output.accounts.member.email}
+- assertVisible: Aguardando permissão
+- takeScreenshot: no-access--removed-while-open

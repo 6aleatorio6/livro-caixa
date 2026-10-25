@@ -1,0 +1,83 @@
+# O Bruno paga a Internet de outubro com o valor corrigido (R$ 125,00) e um PDF escolhido no seletor de
+# arquivos do Android; o Início passa a Internet de "A pagar" para "Pagas" e o anel muda; o pagamento aparece
+# em Meus pagamentos com o previsto; a Ana, abrindo a mesma conta pela rota do mês, vê o aviso de que já foi paga, sem o formulário.
+# Coberto por:
+# - O PDF escolhido no seletor do Android e enviado ao Storage: só esta jornada prova o envio pelo
+#   React Native Firebase no aparelho; o campo do comprovante em ReceiptField.test.tsx.
+# - O valor vem do previsto e a correção vale: PayRecurringBillPage.test.tsx e o contrato do
+#   payRecurringBillService (memberPaysWithCorrectedAmount).
+# - A conta sai do "A pagar", entra nas "Pagas" e o anel muda: HomePage.test.tsx e monthSummary.test.ts.
+# - "pago em … · previsto R$ 119,90" em Meus pagamentos: MyPaymentsPage.test.tsx.
+# - Mês já pago: a tela mostra o aviso e não oferece o formulário: PayRecurringBillPage.test.tsx; a
+#   corrida do segundo lote, no contrato (billAlreadyPaidByAnother) e nas regras do pagamento
+#   (entries.payment.test.mjs).
+appId: dev.leonardolf.livrocaixa
+tags:
+  - home
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: admin
+# O Bruno entra uma vez, para o nome dele chegar à lista de pessoas antes do pagamento.
+- runFlow:
+    file: ../../steps/signInAs.yaml
+    env:
+      LINK: ${output.accounts.member.signInLink}
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: seedHome
+- stopApp
+- launchApp
+- assertVisible: "R\\$ 217,90"
+- assertVisible: "2 de 6 contas"
+- takeScreenshot: home--before-payment
+- tapOn: Registrar Internet
+- assertVisible: "vence dia 15 · previsto R\\$ 119,90"
+- assertVisible: "R\\$ 119,90"
+- tapOn: Valor pago
+- eraseText: 20
+- inputText: 12500
+- hideKeyboard
+- tapOn: "Comprovante: Nenhum arquivo anexado. Escolher"
+- tapOn: Show roots
+- tapOn: Downloads
+- tapOn: recibo-pequeno.pdf
+- assertVisible: "PDF · .*"
+- takeScreenshot: pay-recurring-bill--filled
+# O título da tela também diz "Registrar pagamento": o botão é o que fica abaixo do aviso.
+- tapOn:
+    text: "Registrar pagamento"
+    below: "Fica no seu nome.*"
+- extendedWaitUntil:
+    visible: "Pagamento registrado."
+    timeout: 60000
+- extendedWaitUntil:
+    visible: "1 de 6 contas"
+    timeout: 20000
+- assertVisible: "R\\$ 98,00"
+- assertNotVisible: "Registrar Internet"
+- takeScreenshot: home--after-payment
+- scrollUntilVisible:
+    element: "R\\$ 125,00"
+- assertVisible: "R\\$ 125,00"
+# Meus pagamentos: o pagamento com o previsto, no nome dele.
+- tapOn: Meus pagamentos
+- assertVisible: "pago em ../.. · previsto R\\$ 119,90"
+- assertVisible: "R\\$ 125,00"
+- takeScreenshot: my-payments--recurring-payment
+# A Ana abre a mesma conta no mesmo mês e é recusada.
+- runFlow:
+    file: ../../steps/signInAs.yaml
+    env:
+      LINK: ${output.accounts.admin.signInLink}
+# O mês de hoje, como o seed o usa (a data local).
+- evalScript: ${output.month = new Date().getFullYear() + '-' + ('0' + (new Date().getMonth() + 1)).slice(-2)}
+- openLink: "livrocaixa:///recurring-bills/internet/pay?month=${output.month}"
+- extendedWaitUntil:
+    visible: "Esta conta já foi paga neste mês."
+    timeout: 30000
+- assertNotVisible: "Comprovante.*"
+- takeScreenshot: pay-recurring-bill--already-paid
+- runFlow: ../../steps/assertNoErrors.yaml

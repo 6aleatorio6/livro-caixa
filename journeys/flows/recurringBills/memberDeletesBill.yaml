@@ -1,0 +1,46 @@
+# O Bruno (membro) exclui a Internet pelo diálogo de confirmação; ela sai da lista e as outras quatro
+# continuam, com o total sem o valor dela.
+# Coberto por:
+# - Qualquer membro excluir conta: as linhas do membro em settings.write e o contrato do removeRecurringBillService.
+# - O diálogo pedir a confirmação, e o Cancelar não excluir: EditRecurringBillPage.test.tsx e ConfirmDialog.test.tsx.
+# - A conta sair da lista e o total novo: RecurringBillsPage.test.tsx e totalExpectedCents.test.ts.
+appId: dev.leonardolf.livrocaixa
+tags:
+  - recurringBills
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: member
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: seedRecurringBills
+- tapOn: Configurações
+- tapOn: Contas recorrentes
+- assertVisible: Nova conta recorrente
+- assertVisible: Internet
+- assertVisible: 5 contas recorrentes
+- tapOn: Internet
+- assertVisible: Alterar conta recorrente
+- assertVisible: A mudança vale para os meses ainda sem pagamento. Os meses já pagos não mudam.
+- tapOn: Excluir conta
+- assertVisible: Excluir a conta Internet?
+- takeScreenshot: edit-recurring-bill--confirm-delete
+- tapOn: Excluir
+- extendedWaitUntil:
+    visible: Conta excluída
+    timeout: 10000
+# A Internet saiu da lista; as outras quatro continuam, e o previsto por mês perde os R$ 119,90 dela.
+- assertVisible: Nova conta recorrente
+- assertNotVisible: Alterar conta recorrente
+- assertNotVisible: Internet
+- assertVisible: 4 contas recorrentes
+- assertVisible: R$ 2.558,00
+- assertVisible: Aluguel
+- assertVisible: Condomínio
+- assertVisible: Luz
+- assertVisible: Água
+- takeScreenshot: recurring-bills--bill-deleted
+# Nenhum erro de leitura (aviso ou texto da lista) na tela final.
+- runFlow: ../../steps/assertNoErrors.yaml

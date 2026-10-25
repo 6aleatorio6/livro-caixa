@@ -10,3 +10,14 @@ node_modules
 # Pasta de trabalho local: planos do Claude Code, notas, descrições de PR. Nunca vai
 # para o repositório.
 docs/local/
+
+# Posições das tabelas que o editor do dbdiagram grava ao lado de cada .dbml: é estado do editor,
+# não documentação.
+*.dbdiagram
+
+# Tudo o que as jornadas geram ou exploram: as rodadas, as capturas e os fluxos descartáveis
+# (journeys/CLAUDE.md).
+journeys/.local/
+
+# Logs que os emuladores do Firebase gravam na pasta de onde sobem.
+*-debug.log

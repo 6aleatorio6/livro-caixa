@@ -1,0 +1,42 @@
+# A admin adiciona só o e-mail da Carla; ela aparece em "Na família" pelo e-mail, com "Ainda não entrou",
+# e, ao entrar, cai no Início.
+# Coberto por:
+# - Adicionar só o e-mail e a Carla na lista pelo e-mail, "Ainda não entrou": AllowedEmailsPage.test.tsx,
+#   os contratos do addAllowedEmailService e do allowedEmailListQueryService (familyWithPersonNotEntered).
+# - A recusa de quem não é admin: rules-tests/allowedEmails.create.test.mjs.
+# - A Carla entrar depois: _layout.test.tsx e o contrato do allowedEmailQueryService (emailInList).
+appId: dev.leonardolf.livrocaixa
+tags:
+  - allowedEmails
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: admin
+- tapOn: Configurações
+- tapOn: E-mails permitidos
+- assertVisible: Adicionar pessoa
+- assertNotVisible: ${output.accounts.outsider.email}
+- tapOn: E-mail do Google
+- inputText: ${output.accounts.outsider.email}
+- hideKeyboard
+- tapOn: Adicionar à família
+- extendedWaitUntil:
+    visible: ${output.accounts.outsider.email}
+    timeout: 10000
+- assertVisible: Na família
+- assertVisible: Ainda não entrou
+# Sem nome, a lista mostra só o e-mail: o nome da Carla vem da conta Google, quando ela entra.
+- assertNotVisible: ${output.accounts.outsider.name}
+- assertVisible: Remover ${output.accounts.outsider.email}
+- takeScreenshot: allowedEmails--person-added
+# A Carla entra com a conta dela: a lista já a libera.
+- runFlow:
+    file: ../../steps/signInAs.yaml
+    env:
+      LINK: ${output.accounts.outsider.signInLink}
+- assertNotVisible: Aguardando permissão
+- assertVisible:
+    text: Início
+    selected: true
+- takeScreenshot: home--outsider-added-by-admin

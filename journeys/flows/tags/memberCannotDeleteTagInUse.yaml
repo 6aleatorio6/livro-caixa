@@ -1,0 +1,53 @@
+# O Bruno (membro) abre a Casa, que duas contas usam: o Excluir tag fica desligado e a tela diz o motivo.
+# A Saúde, sem uso, ele exclui depois de confirmar; a Casa e os Serviços continuam na lista.
+# Coberto por:
+# - O Excluir tag desligado e o motivo, e o serviço não chamado: EditTagPage.test.tsx.
+# - A contagem de contas por tag: TagsPage.test.tsx e o contrato do recurringBillListQueryService.
+# - A exclusão pedir a confirmação e a tag sair: EditTagPage.test.tsx e o contrato do removeTagService.
+appId: dev.leonardolf.livrocaixa
+tags:
+  - tags
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: member
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: seedTags
+- tapOn: Configurações
+- tapOn: Tags
+- assertVisible: Nova tag
+# A Casa está em uso por duas contas: não dá para excluir.
+- tapOn: Casa
+- assertVisible: Alterar tag
+- assertVisible:
+    text: Excluir tag
+    enabled: false
+- assertVisible: A tag Casa está em 2 contas recorrentes. Para excluir, tire a tag delas.
+- takeScreenshot: edit-tag--in-use
+- tapOn: Voltar
+# A Saúde não tem uso: o Excluir tag está ligado, sem motivo, e pede a confirmação.
+- tapOn: Saúde
+- assertVisible: Alterar tag
+- assertVisible:
+    text: Excluir tag
+    enabled: true
+- assertNotVisible: A tag Saúde está em.*
+- tapOn: Excluir tag
+- assertVisible: Excluir a tag Saúde?
+- takeScreenshot: edit-tag--confirm-delete
+- tapOn: Excluir
+- extendedWaitUntil:
+    visible: Tag excluída
+    timeout: 10000
+# A Saúde saiu da lista; a Casa e os Serviços continuam.
+- assertVisible: Nova tag
+- assertNotVisible: Saúde
+- assertNotVisible: Alterar tag
+- assertVisible: Casa
+- assertVisible: Serviços
+- takeScreenshot: tags--tag-deleted
+# Nenhum erro de leitura (aviso ou texto da lista) na tela final.
+- runFlow: ../../steps/assertNoErrors.yaml

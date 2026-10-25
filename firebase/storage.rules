@@ -1,0 +1,41 @@
+rules_version = '2';
+
+// Tudo o que não está liberado aqui é negado.
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Está na lista quem entrou com o e-mail verificado e tem entrada em `allowedEmails`.
+    function isInList() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && firestore.exists(/databases/(default)/documents/allowedEmails/$(request.auth.token.email.lower()));
+    }
+
+    // O comprovante de um lançamento: todo membro da lista envia, uma imagem (sem SVG, que carrega script) ou um PDF de até 5 MB,
+    // e lê (`get`, para ver o comprovante de qualquer lançamento). O envio grava o autor em
+    // `customMetadata.uploadedBy`, e só ele exclui: a exclusão vem depois do lote do Firestore, quando o
+    // registro em `files` já não existe para a regra consultar.
+    // `resource == null` recusa um caminho que já tem objeto (o emulador deixa o `create` sozinho
+    // sobrescrever), então ninguém troca um comprovante enviado.
+    // O caminho de um registro em `files/{id}` que já existe também é recusado: o app envia antes do lote, quando o
+    // registro ainda não existe, e outro membro não preenche o objeto que falta de um registro vivo.
+    // A regra NÃO garante que o envio tenha registro em `files/{id}` no Firestore (o envio vem antes do lote).
+    match /files/{fileId} {
+      allow get: if isInList();
+
+      allow create: if resource == null
+        && isInList()
+        && !firestore.exists(/databases/(default)/documents/files/$(fileId))
+        && request.resource.metadata.uploadedBy == request.auth.uid
+        && request.resource.size >= 1
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|jpg|png|webp|gif|heic|heif)|application/pdf');
+
+      allow delete: if isInList()
+        && resource.metadata.uploadedBy == request.auth.uid;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,7 +1,7 @@
 # Language: code and instructions in English, text for people in pt-BR
 
 **Code and the instructions for the AI are written in English.** That holds for `apps/docusaurus`,
-`scripts/`, the apps to come (`apps/back`, `apps/web`) and `.claude/`, and includes:
+`apps/mobile`, `scripts/` and `.claude/`, and includes:
 
 - identifiers: classes, functions, components, *hooks*, variables, parameters, properties, types,
   constants and enum values;
