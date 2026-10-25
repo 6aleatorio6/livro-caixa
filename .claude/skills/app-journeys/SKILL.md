@@ -214,6 +214,10 @@ throwaway flow before the round counts as passing.
   stack. After a few hours the stack can fall by itself (`Error: An unexpected error has occurred`
   in its log, twice in G4, once right after a `touch` of the rules) and leave the Firestore Java on
   8080: kill that process, then `pnpm journeys:stack` again.
+- **Metro serves an old bundle after a rebase** (the rebase rewrites the app's files one commit at a
+  time, and Metro bundles one of the intermediate states: "Unable to resolve …" in the stack log, a
+  Render Error on the device that the code at `HEAD` can't produce). Restart the stack after every
+  rebase, before a round.
 - **The emulator loses its network** (`wlan0` NO-CARRIER, `ping 10.0.2.2` says "Network is
   unreachable"; Firestore and Storage fail with ENETUNREACH; twice in G4). Toggling wifi or airplane
   mode doesn't bring the virtual AP back; `adb reboot` does, without the person. Wait for
