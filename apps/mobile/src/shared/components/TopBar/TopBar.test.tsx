@@ -26,4 +26,14 @@ describe('TopBar', () => {
 
     expect(router.back).toHaveBeenCalledTimes(1);
   });
+
+  it('Should run onBack instead of going back when it is given', async () => {
+    const onBack = jest.fn();
+    await render(<TopBar title="Qual conta você pagou?" icon="close" onBack={onBack} />);
+
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Fechar' }));
+
+    expect(onBack).toHaveBeenCalledTimes(1);
+    expect(router.back).not.toHaveBeenCalled();
+  });
 });

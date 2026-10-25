@@ -13,38 +13,41 @@ export interface IReceiptSummaryProps {
   errorMessage?: string;
   /** O nome do arquivo recusado, mostrado no lugar de `file` com a marca de arquivo inválido. */
   rejectedFileName?: string;
-  /** O texto da ação à direita: "Ver" na folha de detalhes, "Trocar" ou "Escolher" no formulário. */
-  actionLabel: string;
-  onPress: () => void;
+  /** A ação à direita: "Ver" na folha de detalhes, "Trocar" ou "Escolher" no formulário. Sem ela a linha é só leitura. */
+  action?: { label: string; onPress: () => void };
   disabled?: boolean;
+  /** O arquivo veio do compartilhamento do Android: o texto de cima começa com "Veio do compartilhamento · ". */
+  isShared?: boolean;
 }
 
 /** A linha do comprovante: a marca com o tipo de arquivo, o tipo e o tamanho, o nome e a ação. Toda ela é o alvo do toque. */
-export function ReceiptSummary({ file, errorMessage, rejectedFileName, actionLabel, onPress, disabled = false }: IReceiptSummaryProps) {
+export function ReceiptSummary({
+  file,
+  errorMessage,
+  rejectedFileName,
+  action,
+  disabled = false,
+  isShared = false,
+}: IReceiptSummaryProps) {
   const { theme } = useUnistyles();
 
   const hasError = Boolean(errorMessage);
   const attached = rejectedFileName === undefined ? file : null;
 
   const markColor = hasError ? 'errorContainer' : attached ? 'primaryContainer' : 'secondaryContainer';
-  const iconColor = theme.colors[hasError ? 'onErrorContainer' : attached ? 'onPrimaryContainer' : 'onSecondaryContainer'];
-  const Icon = rejectedFileName !== undefined ? FileX : attached ? (attached.type === 'pdf' ? FileCheck : Image) : Paperclip;
+  const iconColor =
+    theme.colors[hasError ? 'onErrorContainer' : attached ? 'onPrimaryContainer' : 'onSecondaryContainer'];
+  const Icon =
+    rejectedFileName !== undefined ? FileX : attached ? (attached.type === 'pdf' ? FileCheck : Image) : Paperclip;
   const typeName = attached?.type === 'pdf' ? 'PDF' : 'Imagem';
   const attachedLabel = attached
-    ? `${typeName} · ${attached.wasReduced ? 'comprimida para ' : ''}${formatFileSize(attached.sizeBytes)}`
+    ? `${isShared ? 'Veio do compartilhamento · ' : ''}${typeName} · ${attached.wasReduced ? 'comprimida para ' : ''}${formatFileSize(attached.sizeBytes)}`
     : null;
   const label = errorMessage ?? attachedLabel ?? 'Comprovante';
   const fileText = rejectedFileName ?? attached?.name ?? 'Nenhum arquivo anexado';
 
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={`Comprovante: ${hasError ? `${errorMessage} ` : ''}${fileText}. ${actionLabel}`}
-      accessibilityState={{ disabled }}
-      disabled={disabled}
-      onPress={onPress}
-      style={({ pressed }) => styles.field(hasError, disabled, pressed)}
-    >
+  const content = (
+    <>
       <CircleMark size={40} color={markColor}>
         <Icon size={20} color={iconColor} />
       </CircleMark>
@@ -56,9 +59,33 @@ export function ReceiptSummary({ file, errorMessage, rejectedFileName, actionLab
           {fileText}
         </AppText>
       </View>
-      <AppText variant="labelLarge" color="primary">
-        {actionLabel}
-      </AppText>
+      {action ? (
+        <AppText variant="labelLarge" color="primary">
+          {action.label}
+        </AppText>
+      ) : null}
+    </>
+  );
+  const accessibilityLabel = `Comprovante: ${hasError ? `${errorMessage} ` : ''}${fileText}${action ? `. ${action.label}` : ''}`;
+
+  if (!action) {
+    return (
+      <View accessible accessibilityLabel={accessibilityLabel} style={styles.field(hasError, false, false)}>
+        {content}
+      </View>
+    );
+  }
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={action.onPress}
+      style={({ pressed }) => styles.field(hasError, disabled, pressed)}
+    >
+      {content}
     </Pressable>
   );
 }

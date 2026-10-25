@@ -296,6 +296,13 @@ export const scenariosByName: Record<string, Scenario> = {
     });
   },
   /**
+   * A tela de compartilhar do design: as contas do `seedHome` (a Internet e a Água ficam a pagar). O arquivo
+   * `pix-agua-outubro.pdf` de `data/fixtures/` não entra no Storage: a jornada o põe no aparelho e o compartilha.
+   */
+  async seedShareReceipt(owner, params) {
+    await scenariosByName.seedHome(owner, params);
+  },
+  /**
    * Os detalhes do lançamento do design, sobre o que o `reset` deixou, no mês atual: as tags e as cinco contas, a
    * Luz paga pela Ana (R$ 187,35, previsto R$ 210,00, dia 10, Serviços) com o `comprovante-luz.pdf` de duas
    * páginas e a avulsa Conserto da geladeira do Bruno (R$ 350,00, Casa) com o `recibo-conserto.jpg`. Os objetos

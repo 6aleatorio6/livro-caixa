@@ -9,22 +9,24 @@ import { pluralize } from '@/shared/utils/format/pluralize';
 export interface IMonthListSectionProps {
   /** "A pagar" ou "Pagas". */
   title: string;
-  count: number;
-  totalCents: number;
+  /** O resumo "2 contas · R$ 217,90" ao lado do título; sem ele só o título. */
+  summary?: { count: number; totalCents: number };
   children: ReactNode;
 }
 
-/** Uma seção da lista do mês: o título, o resumo "2 contas · R$ 217,90" e as linhas. */
-export function MonthListSection({ title, count, totalCents, children }: IMonthListSectionProps) {
+/** Uma seção da lista do mês: o título, o resumo "2 contas · R$ 217,90" (quando dado) e as linhas. */
+export function MonthListSection({ title, summary, children }: IMonthListSectionProps) {
   return (
     <View style={styles.section}>
-      <View style={styles.header}>
+      <View style={styles.header(Boolean(summary))}>
         <AppText variant="titleMediumEmphasized" accessibilityRole="header">
           {title}
         </AppText>
-        <AppText variant="labelMedium" color="onSurfaceVariant">
-          {pluralize(count, 'conta', 'contas')} · {formatCents(totalCents)}
-        </AppText>
+        {summary ? (
+          <AppText variant="labelMedium" color="onSurfaceVariant">
+            {pluralize(summary.count, 'conta', 'contas')} · {formatCents(summary.totalCents)}
+          </AppText>
+        ) : null}
       </View>
       {children}
     </View>
@@ -33,10 +35,10 @@ export function MonthListSection({ title, count, totalCents, children }: IMonthL
 
 const styles = StyleSheet.create((theme) => ({
   section: { gap: theme.spacing.extraExtraSmall },
-  header: {
+  header: (hasSummary: boolean) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingBottom: theme.spacing.extraSmallIncreased,
-  },
+    paddingBottom: hasSummary ? theme.spacing.extraSmallIncreased : 0,
+  }),
 }));

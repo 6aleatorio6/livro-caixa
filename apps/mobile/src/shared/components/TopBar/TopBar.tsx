@@ -10,17 +10,19 @@ export interface ITopBarProps {
   title: string;
   /** `close` troca a seta de voltar pelo `x` de fechar, nas telas que cobrem tudo (o comprovante em tela cheia). */
   icon?: 'back' | 'close';
+  /** O que o botão faz no lugar de desfazer a última navegação: a tela que limpa algo antes de sair. */
+  onBack?: () => void;
 }
 
 /** A barra superior de uma tela fora das abas: o voltar (ou o fechar), que desfaz a última navegação, e o título numa linha só. */
-export function TopBar({ title, icon = 'back' }: ITopBarProps) {
+export function TopBar({ title, icon = 'back', onBack = () => router.back() }: ITopBarProps) {
   return (
     <View style={styles.bar}>
       <IconButton
         icon={icon === 'close' ? X : ArrowLeft}
         label={icon === 'close' ? 'Fechar' : 'Voltar'}
         color="onSurface"
-        onPress={() => router.back()}
+        onPress={onBack}
       />
       <AppText variant="titleLarge" accessibilityRole="header" numberOfLines={1} style={styles.title}>
         {title}
