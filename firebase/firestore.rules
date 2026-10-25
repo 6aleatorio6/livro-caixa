@@ -50,12 +50,32 @@ service cloud.firestore {
         && (!('tagId' in bill) || bill.tagId is string);
     }
 
+    // O nome de um lançamento é texto com conteúdo, até 60 caracteres.
+    function isValidEntryName(name) {
+      return name is string
+        && name.trim().size() > 0
+        && name.size() <= 60;
+    }
+
+    // Um valor em centavos é inteiro, de 1 até 999999999 (R$ 9.999.999,99, o teto do campo de valor).
+    function isValidAmountCents(amountCents) {
+      return amountCents is int
+        && amountCents >= 1
+        && amountCents <= 999999999;
+    }
+
+    // O mês de um lançamento é `AAAA-MM` em texto, com mês de 01 a 12.
+    function isValidMonth(month) {
+      return month is string
+        && month.matches('^\\d{4}-(0[1-9]|1[0-2])$');
+    }
+
     // Valida o documento inteiro de uma conta avulsa, na criação e na troca: as oito chaves
     // obrigatórias e a `tagId` opcional. O nome é texto com conteúdo, até 60 caracteres; o valor é
     // inteiro em centavos, de 1 até 999999999; a data é `AAAA-MM-DD` (mesmo padrão do início da conta
     // recorrente) e o `month` é o ano e o mês dela, para o lançamento cair no mês certo. `kind` só
-    // aceita `oneOffBill`: o pagamento de conta recorrente (`recurringPayment`) fica para o G5. A
-    // regra NÃO confere que a data não é futura nem que a `tagId` existe em `settings/tags`: isso
+    // aceita `oneOffBill`: o pagamento de conta recorrente é validado à parte
+    // (`isValidRecurringPayment`). A regra NÃO confere que a data não é futura nem que a `tagId` existe em `settings/tags`: isso
     // fica com o app.
     function isValidOneOffBill(entry) {
       return entry.keys().hasOnly(['kind', 'month', 'name', 'amountCents', 'date', 'tagId', 'paidBy', 'createdAt', 'receiptFileId'])
@@ -73,6 +93,49 @@ service cloud.firestore {
         && entry.paidBy is string
         && entry.receiptFileId is string
         && (!('tagId' in entry) || entry.tagId is string);
+    }
+
+    // Valida o documento inteiro do pagamento de uma conta recorrente, na criação: as dez chaves
+    // obrigatórias e a `tagId` opcional. Não tem `date`: o dia do pagamento é o do `createdAt`. O
+    // `month` é `AAAA-MM` com mês de 01 a 12; o nome é texto com conteúdo, até 60 caracteres, e o valor
+    // é inteiro em centavos, de 1 até 999999999 (o valor pago, que pode ser diferente do previsto). O
+    // `dueDay` (1 a 31) e o `expectedAmountCents` (1 a 999999999) são a cópia do dia do vencimento
+    // naquele mês e do valor previsto da conta, como o nome e a tag: o pagamento não muda quando a conta
+    // muda. A regra NÃO confere que a conta vence naquele mês, que o `dueDay` e o previsto são os da
+    // conta nem que a `tagId` existe em `settings/tags`: isso fica com o app.
+    function isValidRecurringPayment(entry) {
+      return entry.keys().hasOnly(['kind', 'month', 'recurringBillId', 'name', 'amountCents', 'dueDay', 'expectedAmountCents', 'tagId', 'paidBy', 'createdAt', 'receiptFileId'])
+        && entry.keys().hasAll(['kind', 'month', 'recurringBillId', 'name', 'amountCents', 'dueDay', 'expectedAmountCents', 'paidBy', 'createdAt', 'receiptFileId'])
+        && entry.kind == 'recurringPayment'
+        && isValidMonth(entry.month)
+        && entry.recurringBillId is string
+        && entry.recurringBillId.size() > 0
+        && isValidEntryName(entry.name)
+        && isValidAmountCents(entry.amountCents)
+        && entry.dueDay is int
+        && entry.dueDay >= 1
+        && entry.dueDay <= 31
+        && isValidAmountCents(entry.expectedAmountCents)
+        && entry.paidBy is string
+        && entry.receiptFileId is string
+        && (!('tagId' in entry) || entry.tagId is string);
+    }
+
+    // O mês `AAAA-MM` (já validado) não passa do mês de `request.time`, em UTC.
+    function isUpToCurrentMonth(month) {
+      return int(month.split('-')[0]) < request.time.year()
+        || (int(month.split('-')[0]) == request.time.year() && int(month.split('-')[1]) <= request.time.month());
+    }
+
+    // O que a criação de qualquer lançamento exige, da conta avulsa e do pagamento: quem lança é o
+    // `paidBy`, o `createdAt` é a hora do servidor, o registro do arquivo do comprovante nasce no lote
+    // e é de quem lança, e o `hasEntries` de quem lança termina o lote em `true`. Leituras: 3.
+    function isNewEntryOfAuthor(entry) {
+      return entry.paidBy == request.auth.uid
+        && entry.createdAt == request.time
+        && !exists(/databases/$(database)/documents/files/$(entry.receiptFileId))
+        && getAfter(/databases/$(database)/documents/files/$(entry.receiptFileId)).data.uploadedBy == request.auth.uid
+        && getAfter(/databases/$(database)/documents/allowedEmails/$(request.auth.token.email.lower())).data.hasEntries == true;
     }
 
     // A pessoa lê a entrada do próprio e-mail na lista de e-mails permitidos: é assim que o app
@@ -174,16 +237,25 @@ service cloud.firestore {
     // O que NÃO garante: que o arquivo exista no Storage (o envio vem antes do lote, e um arquivo
     // pode ficar no Storage sem registro) e que o `hasEntries` suba só com lançamento (veja
     // `allowedEmails`). O `paidBy` e o `receiptFileId` não mudam depois de criados.
+    //
+    // O lançamento é a conta avulsa (`oneOffBill`) ou o pagamento de conta recorrente
+    // (`recurringPayment`), cujo id é `{month}_{recurringBillId}`. O pagamento único por mês vem do
+    // id: o segundo pagamento da mesma conta no mês encontra o documento e vira um `update`, que a
+    // regra recusa para qualquer pessoa (o `createdAt` muda e o `update` é só da conta avulsa). A
+    // conta avulsa não usa um id com a forma do pagamento (`AAAA-MM_...`), senão ela ocuparia o id e a
+    // conta recorrente ficaria sem poder ser paga. O pagamento exige que a conta recorrente exista e que o
+    // mês não seja futuro; a regra NÃO confere que a conta vence naquele mês. O `update` do
+    // pagamento fica para o G6; o `delete` é do autor, como o da conta avulsa.
     match /entries/{id} {
       allow get, list: if isInList();
 
       allow create: if isInList()
-        && isValidOneOffBill(request.resource.data)
-        && request.resource.data.paidBy == request.auth.uid
-        && request.resource.data.createdAt == request.time
-        && !exists(/databases/$(database)/documents/files/$(request.resource.data.receiptFileId))
-        && getAfter(/databases/$(database)/documents/files/$(request.resource.data.receiptFileId)).data.uploadedBy == request.auth.uid
-        && getAfter(/databases/$(database)/documents/allowedEmails/$(request.auth.token.email.lower())).data.hasEntries == true;
+        && ((isValidOneOffBill(request.resource.data) && !id.matches('^\\d{4}-\\d{2}_.*'))
+          || (isValidRecurringPayment(request.resource.data)
+            && id == request.resource.data.month + '_' + request.resource.data.recurringBillId
+            && isUpToCurrentMonth(request.resource.data.month)
+            && exists(/databases/$(database)/documents/recurringBills/$(request.resource.data.recurringBillId))))
+        && isNewEntryOfAuthor(request.resource.data);
 
       allow update: if isInList()
         && resource.data.paidBy == request.auth.uid
