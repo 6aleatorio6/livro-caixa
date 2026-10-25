@@ -115,12 +115,20 @@ documentation's "Testes" page). A journey is never the only test of a behavior.
 - **A bug a journey finds** becomes, first, a failing test in the cheapest layer that reproduces it;
   then the fix; then the journey again, to see it on screen. Ex.: the no-access screen showing
   another person's e-mail is a page test with the session from a sign-in scenario.
-- **A path worth replaying** is kept as a flow: a behavior change just made, a reported bug, a
-  difference between profiles (admin, member, outsider), a path across screens, or the person asks
-  for it ("guarda esse caminho"). Each check in it already has its cheaper test, or gets one in the
-  same commit.
+- **A flow comes out of an exploration, never out of a plan.** A plan schedules the exploration of
+  the paths a change touches (the profiles, the states, the screens it crosses) and asks for its
+  findings; it doesn't list flows to write, and a plan's coverage table doesn't count a flow. A flow
+  written from the plan's text has no one looking at the screen: in G2 the "Remover" flow tapped
+  another person's button and passed.
+- **After exploring, a path is kept as a flow** when the exploration found something on it (a bug, a
+  difference between profiles worth replaying), when the check only runs on the device, or when the
+  person asks for it ("guarda esse caminho"). A behavior change by itself is no reason: its checks
+  already have cheaper tests. Each check in a kept flow already has its cheaper test, or gets one in
+  the same commit.
 - **A check with no cheaper test is a missing test**: write it in the layer that proves it, instead
-  of leaning on the journey.
+  of leaning on the journey. The exception is what only the device runs (the app's JS engine,
+  Hermes, which Jest doesn't use; a native picker): that check is the flow's own, and its
+  `# Coberto por:` line says so.
 - **A path that already has a flow** gets that flow updated, not a second one.
 - **Only a person judges** how it feels to use (scroll, gestures, delays) and the screen against the
   design: it goes to a "só uma pessoa julga" list, not into a flow.
