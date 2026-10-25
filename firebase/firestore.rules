@@ -81,12 +81,8 @@ service cloud.firestore {
       return entry.keys().hasOnly(['kind', 'month', 'name', 'amountCents', 'date', 'tagId', 'paidBy', 'createdAt', 'receiptFileId'])
         && entry.keys().hasAll(['kind', 'month', 'name', 'amountCents', 'date', 'paidBy', 'createdAt', 'receiptFileId'])
         && entry.kind == 'oneOffBill'
-        && entry.name is string
-        && entry.name.trim().size() > 0
-        && entry.name.size() <= 60
-        && entry.amountCents is int
-        && entry.amountCents >= 1
-        && entry.amountCents <= 999999999
+        && isValidEntryName(entry.name)
+        && isValidAmountCents(entry.amountCents)
         && entry.date is string
         && entry.date.matches('^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$')
         && entry.month == entry.date.split('-')[0] + '-' + entry.date.split('-')[1]
@@ -129,7 +125,8 @@ service cloud.firestore {
 
     // O que a criação de qualquer lançamento exige, da conta avulsa e do pagamento: quem lança é o
     // `paidBy`, o `createdAt` é a hora do servidor, o registro do arquivo do comprovante nasce no lote
-    // e é de quem lança, e o `hasEntries` de quem lança termina o lote em `true`. Leituras: 3.
+    // e é de quem lança, e o `hasEntries` de quem lança termina o lote em `true`. Leituras: 3 aqui; com o `isInList` da
+    // criação são 4 na conta avulsa e 5 no pagamento (com o `exists` da conta), dentro do limite de 10.
     function isNewEntryOfAuthor(entry) {
       return entry.paidBy == request.auth.uid
         && entry.createdAt == request.time
