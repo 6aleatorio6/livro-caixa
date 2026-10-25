@@ -1,4 +1,4 @@
-import { CircleAlert } from 'lucide-react-native';
+import { CircleAlert, type LucideIcon } from 'lucide-react-native';
 import { type ComponentRef, useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, TextInput, type TextInputProps, useAnimatedValue, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
@@ -20,12 +20,21 @@ const FLOAT_DURATION_MS = 100;
 const FLOAT_RANGE = [0, 1];
 
 export interface ITextFieldProps
-  extends IInputMinimalProps<string>, Pick<TextInputProps, 'keyboardType' | 'autoCapitalize' | 'placeholder'> {
+  extends
+    IInputMinimalProps<string>,
+    Pick<TextInputProps, 'keyboardType' | 'autoCapitalize' | 'placeholder' | 'selection'> {
   label: string;
   /** O texto de apoio sob o campo; some quando há erro, que ocupa o lugar dele. */
   supportText?: string;
   /** A cor do que está atrás do campo: o recorte do rótulo na borda é pintado com ela. */
   surfaceColor?: IColorRole;
+  /** O ícone no fim da caixa, de 20, na cor de `onSurfaceVariant`; fica depois do ícone de erro. */
+  trailingIcon?: LucideIcon;
+  /**
+   * Faz do campo um botão: o toque em qualquer parte da caixa chama `onPress` em vez de abrir o teclado, e o
+   * texto deixa de ser editável. O leitor de tela o lê como botão, com o rótulo e o valor.
+   */
+  onPress?: () => void;
 }
 
 /**
@@ -36,6 +45,8 @@ export function TextField({
   label,
   supportText,
   surfaceColor = 'surface',
+  trailingIcon: TrailingIcon,
+  onPress,
   value,
   onValueChange,
   onBlur,
@@ -51,19 +62,27 @@ export function TextField({
   const [boxHeight, setBoxHeight] = useState(0);
   const [labelSize, setLabelSize] = useState({ width: 0, height: 0 });
   const hasError = Boolean(errorMessage);
+  const isButton = onPress !== undefined;
   const isFloated = isFocused || Boolean(value);
   // De 0, o rótulo no lugar do valor, a 1, o rótulo na borda.
   const floatProgress = useAnimatedValue(isFloated ? 1 : 0);
 
   useEffect(() => {
     // `top`, `color` e a largura do recorte não andam pelo driver nativo.
-    Animated.timing(floatProgress, { toValue: isFloated ? 1 : 0, duration: FLOAT_DURATION_MS, useNativeDriver: false }).start();
+    Animated.timing(floatProgress, {
+      toValue: isFloated ? 1 : 0,
+      duration: FLOAT_DURATION_MS,
+      useNativeDriver: false,
+    }).start();
   }, [floatProgress, isFloated]);
 
   const borderColor = hasError ? theme.colors.error : isFocused ? theme.colors.primary : theme.colors.outline;
   const labelColor = hasError
     ? theme.colors.error
-    : floatProgress.interpolate({ inputRange: FLOAT_RANGE, outputRange: [theme.colors.onSurfaceVariant, theme.colors.primary] });
+    : floatProgress.interpolate({
+        inputRange: FLOAT_RANGE,
+        outputRange: [theme.colors.onSurfaceVariant, theme.colors.primary],
+      });
   const labelTop = floatProgress.interpolate({
     inputRange: FLOAT_RANGE,
     outputRange: [(boxHeight - labelSize.height) / 2, -labelSize.height / 2],
@@ -95,36 +114,51 @@ export function TextField({
           {isRequired && <RequiredMark />}
         </Animated.Text>
         <Pressable
-          accessible={false}
+          accessible={isButton}
+          accessibilityRole={isButton ? 'button' : undefined}
+          accessibilityLabel={isButton ? label : undefined}
+          accessibilityValue={isButton && value ? { text: value } : undefined}
+          accessibilityHint={isButton && isRequired ? 'Campo obrigatório' : undefined}
+          accessibilityState={isButton ? { disabled } : undefined}
           disabled={disabled}
-          onPress={() => inputRef.current?.focus()}
+          onPress={onPress ?? (() => inputRef.current?.focus())}
           onLayout={(event) => setBoxHeight(event.nativeEvent.layout.height)}
           style={styles.box}
         >
-          <TextInput
-            {...inputProps}
-            ref={inputRef}
-            accessibilityLabel={label}
-            accessibilityHint={isRequired ? 'Campo obrigatório' : undefined}
-            accessibilityState={{ disabled }}
-            editable={!disabled}
-            // Com o rótulo no lugar do valor, o placeholder ficaria por baixo dele.
-            placeholder={isFloated ? placeholder : undefined}
-            value={value}
-            onChangeText={onValueChange}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => {
-              setIsFocused(false);
-              onBlur();
-            }}
-            placeholderTextColor={theme.colors.onSurfaceVariant}
-            // Sem isto o cursor e a seleção ficam no verde-azulado padrão do Android.
-            cursorColor={theme.colors.primary}
-            selectionColor={theme.colors.primary}
-            selectionHandleColor={theme.colors.primary}
-            style={styles.input}
-          />
+          {/*
+            No modo botão, quem recebe o toque é o botão da caixa. O `pointerEvents` do próprio `TextInput`
+            não basta no Android: o campo nativo ainda pega o toque, ganha o foco e mostra cursor e seleção,
+            e o `onPress` da caixa não roda. A `View` em volta, com `pointerEvents="none"`, tira o texto do
+            alvo do toque e deixa a `View` da caixa receber.
+          */}
+          <View pointerEvents={isButton ? 'none' : 'auto'} style={styles.inputWrapper}>
+            <TextInput
+              {...inputProps}
+              ref={inputRef}
+              accessible={!isButton}
+              accessibilityLabel={label}
+              accessibilityHint={isRequired ? 'Campo obrigatório' : undefined}
+              accessibilityState={{ disabled }}
+              editable={!disabled && !isButton}
+              // Com o rótulo no lugar do valor, o placeholder ficaria por baixo dele.
+              placeholder={isFloated ? placeholder : undefined}
+              value={value}
+              onChangeText={onValueChange}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => {
+                setIsFocused(false);
+                onBlur();
+              }}
+              placeholderTextColor={theme.colors.onSurfaceVariant}
+              // Sem isto o cursor e a seleção ficam no verde-azulado padrão do Android.
+              cursorColor={theme.colors.primary}
+              selectionColor={theme.colors.primary}
+              selectionHandleColor={theme.colors.primary}
+              style={styles.input}
+            />
+          </View>
           {hasError && <CircleAlert size={20} color={theme.colors.error} accessible={false} />}
+          {TrailingIcon && <TrailingIcon size={20} color={theme.colors.onSurfaceVariant} accessible={false} />}
         </Pressable>
       </View>
       {hasError ? (
@@ -175,9 +209,9 @@ const styles = StyleSheet.create((theme) => ({
     gap: theme.spacing.medium,
     paddingHorizontal: theme.spacing.large,
   },
+  inputWrapper: { flex: 1 },
   input: {
     ...theme.typography.bodyLarge,
-    flex: 1,
     color: theme.colors.onSurface,
     padding: 0,
   },
