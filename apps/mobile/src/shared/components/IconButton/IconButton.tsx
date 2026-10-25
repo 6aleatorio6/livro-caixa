@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react-native';
-import { Pressable } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import type { IColorRole } from '@/core/types/ColorRole';
@@ -24,21 +24,30 @@ export function IconButton({ icon: Icon, label, onPress, disabled = false, color
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => styles.container(pressed, disabled)}
+      style={styles.container}
     >
-      <Icon size={24} color={theme.colors[color]} />
+      {({ pressed }) => (
+        <>
+          {pressed ? <View style={styles.stateLayer} /> : null}
+          <Icon size={24} color={theme.colors[disabled ? 'outlineVariant' : color]} />
+        </>
+      )}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create((theme) => ({
-  container: (isPressed: boolean, isDisabled: boolean) => ({
+  container: {
     width: 48,
     height: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: theme.radii.full,
-    backgroundColor: isPressed ? theme.colors.surfaceContainerHighest : 'transparent',
-    opacity: isDisabled ? theme.opacity.disabled : 1,
-  }),
+    borderRadius: theme.radii.extraLargeDecreased,
+    overflow: 'hidden',
+  },
+  stateLayer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: theme.colors.onSurfaceVariant,
+    opacity: 0.1,
+  },
 }));
