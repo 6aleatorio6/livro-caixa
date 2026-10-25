@@ -55,8 +55,9 @@ stack or another Metro is up: never take it down. It needs:
 
 1. `adb devices` lists `emulator-5554`. No device: ask the person to open the AVD.
 2. Check that no other round is running: one device and one Firestore serve every session, and
-   each flow wipes the data. `adb shell ps -A | grep dev.mobile.maestro` prints the Maestro driver
-   only while a round runs.
+   each flow wipes the data. A round holds port 4020, so `pnpm journeys:test` refuses to start
+   while another one runs. The Maestro driver in `adb shell ps -A | grep dev.mobile.maestro` is no
+   such sign: it outlives the run that started it for a while.
 3. Every exploration starts like a journey, from a throwaway flow in `journeys/.local/explore/`
    (outside Git), which reaches `journeys/` by the same `../../` as a flow in `flows/`:
 
@@ -225,6 +226,9 @@ throwaway flow before the round counts as passing.
   shows "Unable to load script") and `debug.hwui.drawing_enabled` (below).
 - **Port 4020 taken:** `pnpm journeys:test` serves the test data there and refuses to start; another
   round is running.
+- **"Unable to load script" after the emulator was opened again:** a new boot drops the
+  `adb reverse` that `pnpm android` set, and `signInAs` fails waiting for "Entrar com Google".
+  `adb reverse tcp:8081 tcp:8081`, then the flow again.
 - **`clearState`** erases the session and the cached data: every flow signs in again.
 - **A native change** needs `pnpm android` on the PC again; Metro alone won't bring it.
 - **The first bundle** after `clearState` takes a while: `signInAs` waits up to 60 s for the
