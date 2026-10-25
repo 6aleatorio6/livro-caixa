@@ -17,7 +17,10 @@ export interface IPersonItemProps {
   trailing?: ReactNode;
 }
 
-/** Uma pessoa da família: o círculo com a inicial, o nome, o e-mail e, se houver, a situação e uma ação. */
+/**
+ * Uma pessoa da família: o círculo com a inicial, o nome (de quem ainda não tem, o e-mail) e, sob ele, o e-mail
+ * de quem tem nome; se houver, a situação e uma ação.
+ */
 export function PersonItem({ name, email, situation, situationColor = 'onSurfaceVariant', trailing }: IPersonItemProps) {
   return (
     <View style={styles.item}>
@@ -28,9 +31,11 @@ export function PersonItem({ name, email, situation, situationColor = 'onSurface
       </CircleMark>
       <View style={styles.texts}>
         <AppText variant="bodyLarge">{name}</AppText>
-        <AppText variant="bodySmall" color="onSurfaceVariant">
-          {email}
-        </AppText>
+        {name !== null ? (
+          <AppText variant="bodySmall" color="onSurfaceVariant">
+            {email}
+          </AppText>
+        ) : null}
         {situation ? (
           <AppText variant="labelMedium" color={situationColor}>
             {situation}

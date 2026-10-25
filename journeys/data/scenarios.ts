@@ -28,6 +28,10 @@ function addPerson(db: Firestore, email: string, { name, isAdmin = false }: { na
   return setDoc(allowedEmail(db, email), { ...nameField, isAdmin, hasEntries: false });
 }
 
+/** Quem a tela de e-mails permitidos mostra no design: a Elisa ainda não entrou, então não tem nome. */
+const CLARA = { email: 'clara.souza@exemplo.com', name: 'Clara Souza' };
+const ELISA = { email: 'elisa.souza@exemplo.com' };
+
 export const scenariosByName: Record<string, Scenario> = {
   /** O começo de cada fluxo: o Firestore apagado e a lista de e-mails com as contas liberadas. */
   async reset({ db, deleteAll }) {
@@ -39,6 +43,15 @@ export const scenariosByName: Record<string, Scenario> = {
       Object.entries(ACCOUNTS).map(([profile, account]) => [profile, { ...account, signInLink: toSignInLink(account) }]),
     );
     return { accounts };
+  },
+  /**
+   * A lista do design da tela de e-mails permitidos, sobre o que o `reset` deixou: a Ana (admin), o Bruno
+   * (agora com lançamentos), a Clara (sem lançamentos) e a Elisa (sem nome).
+   */
+  async seedAllowedEmails({ db }) {
+    await updateDoc(allowedEmail(db, ACCOUNTS.member.email), { hasEntries: true });
+    await addPerson(db, CLARA.email, { name: CLARA.name });
+    await addPerson(db, ELISA.email);
   },
   /** Põe o `EMAIL` na lista como o admin faria: sem nome (ele vem da conta Google), sem a marca de admin. */
   allowEmail: ({ db }, params) => addPerson(db, getParam(params, 'EMAIL')),

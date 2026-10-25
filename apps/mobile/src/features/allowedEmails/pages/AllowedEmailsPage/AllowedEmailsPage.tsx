@@ -74,7 +74,7 @@ export function AllowedEmailsPage() {
               <PersonItem
                 key={person.email}
                 name={person.name}
-                email={person.name === null ? null : person.email}
+                email={person.email}
                 situation={situationOf(person)}
                 situationColor={person.isAdmin ? 'primary' : 'onSurfaceVariant'}
                 trailing={

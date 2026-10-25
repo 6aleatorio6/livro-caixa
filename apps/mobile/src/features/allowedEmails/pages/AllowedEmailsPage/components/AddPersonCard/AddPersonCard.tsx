@@ -17,7 +17,7 @@ export interface IAddPersonCardProps {
   isListLoaded: boolean;
 }
 
-/** O cartão em que o admin coloca uma pessoa na lista; depois de adicionar, os campos voltam vazios. */
+/** O cartão em que o admin coloca uma pessoa na lista; depois de adicionar, o campo volta vazio. */
 export function AddPersonCard({ people, isListLoaded }: IAddPersonCardProps) {
   const { control, handleSubmit, reset, formState } = useAddPersonForm({ people });
 
@@ -31,17 +31,9 @@ export function AddPersonCard({ people, isListLoaded }: IAddPersonCardProps) {
       <AppText variant="titleMediumEmphasized">Adicionar pessoa</AppText>
       <TextFieldSmart
         control={control}
-        name="name"
-        label="Nome"
-        supportText="É o nome que aparece nos lançamentos e na divisão por membro."
-        autoCapitalize="words"
-        surfaceColor="surfaceContainerLow"
-      />
-      <TextFieldSmart
-        control={control}
         name="email"
         label="E-mail do Google"
-        supportText="A pessoa entra com a conta Google deste e-mail."
+        supportText="A pessoa entra com a conta Google deste e-mail, e o nome vem dela."
         keyboardType="email-address"
         autoCapitalize="none"
         surfaceColor="surfaceContainerLow"

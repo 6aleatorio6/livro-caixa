@@ -100,8 +100,7 @@ describe('AllowedEmailsPage', () => {
       return userEvent.setup();
     }
 
-    async function fillAndSubmit(user: Awaited<ReturnType<typeof renderFamilyList>>, name: string, email: string) {
-      if (name) await user.type(screen.getByLabelText('Nome'), name);
+    async function fillAndSubmit(user: Awaited<ReturnType<typeof renderFamilyList>>, email: string) {
       if (email) await user.type(screen.getByLabelText('E-mail do Google'), email);
       await user.press(screen.getByRole('button', { name: 'Adicionar à família' }));
     }
@@ -111,53 +110,39 @@ describe('AllowedEmailsPage', () => {
       mockServiceScenario(addAllowedEmailService, scenario);
       const user = await renderFamilyList();
 
-      // O formulário ainda pede o nome (sai na seção da tela), mas só o e-mail chega ao serviço.
-      await fillAndSubmit(user, 'Carla Lima', scenario.input[0].email);
+      await fillAndSubmit(user, scenario.input[0].email);
 
       expect(addAllowedEmailService).toHaveBeenCalledWith(...scenario.input);
-      expect(screen.getByLabelText('Nome')).toHaveDisplayValue('');
       expect(screen.getByLabelText('E-mail do Google')).toHaveDisplayValue('');
     });
 
+    it('Should not ask for the name of the person', async () => {
+      await renderFamilyList();
+
+      expect(screen.queryByLabelText('Nome')).not.toBeOnTheScreen();
+    });
+
     it.each([
-      { case: 'an empty name', name: '', email: 'carla.lima@exemplo.com', message: 'Preencha este campo.' },
-      {
-        case: 'a name with only spaces',
-        name: '   ',
-        email: 'carla.lima@exemplo.com',
-        message: 'Preencha este campo.',
-      },
-      { case: 'an empty e-mail', name: 'Carla Lima', email: '', message: 'Preencha este campo.' },
-      {
-        case: 'an e-mail in the wrong format',
-        name: 'Carla Lima',
-        email: 'carla.lima',
-        message: 'Digite um e-mail válido.',
-      },
-    ])('Should refuse $case', async ({ name, email, message }) => {
+      { case: 'an empty e-mail', email: '', message: 'Preencha este campo.' },
+      { case: 'an e-mail in the wrong format', email: 'carla.lima', message: 'Digite um e-mail válido.' },
+    ])('Should refuse $case', async ({ email, message }) => {
       const user = await renderFamilyList();
 
-      await fillAndSubmit(user, name, email);
+      await fillAndSubmit(user, email);
 
       expect(await screen.findByText(message)).toBeOnTheScreen();
       expect(addAllowedEmailService).not.toHaveBeenCalled();
     });
 
-    it('Should refuse an e-mail already in the list and say whose it is', async () => {
+    it.each([
+      { case: 'in lower case', email: 'bruno.souza@exemplo.com' },
+      { case: 'written with capitals', email: 'Bruno.Souza@Exemplo.com' },
+    ])('Should refuse an e-mail already in the list, $case', async ({ email }) => {
       const user = await renderFamilyList();
 
-      await fillAndSubmit(user, 'Outro Bruno', 'bruno.souza@exemplo.com');
+      await fillAndSubmit(user, email);
 
-      expect(await screen.findByText('Este e-mail já está na lista, com o nome Bruno Souza.')).toBeOnTheScreen();
-      expect(addAllowedEmailService).not.toHaveBeenCalled();
-    });
-
-    it('Should refuse an e-mail in the list even written with capitals', async () => {
-      const user = await renderFamilyList();
-
-      await fillAndSubmit(user, 'Outro Bruno', 'Bruno.Souza@Exemplo.com');
-
-      expect(await screen.findByText('Este e-mail já está na lista, com o nome Bruno Souza.')).toBeOnTheScreen();
+      expect(await screen.findByText('Este e-mail já está na lista.')).toBeOnTheScreen();
       expect(addAllowedEmailService).not.toHaveBeenCalled();
     });
 
@@ -172,7 +157,6 @@ describe('AllowedEmailsPage', () => {
       let resolveAdd!: () => void;
       jest.mocked(addAllowedEmailService).mockReturnValue(new Promise<void>((resolve) => (resolveAdd = resolve)));
       const user = await renderFamilyList();
-      await user.type(screen.getByLabelText('Nome'), 'Carla Lima');
       await user.type(screen.getByLabelText('E-mail do Google'), 'carla.lima@exemplo.com');
 
       await user.press(screen.getByRole('button', { name: 'Adicionar à família' }));
@@ -180,6 +164,28 @@ describe('AllowedEmailsPage', () => {
 
       expect(addAllowedEmailService).toHaveBeenCalledTimes(1);
       await act(async () => resolveAdd());
+    });
+  });
+
+  describe('Person who has not entered yet', () => {
+    beforeEach(async () => {
+      mockRealtime({
+        service: allowedEmailListQueryService,
+        scenario: allowedEmailListQueryScenarios.familyWithPersonNotEntered,
+      });
+      await render(<AllowedEmailsPage />);
+    });
+
+    it('Should show the e-mail in the name line, with no e-mail line and the situation Ainda não entrou', () => {
+      // O e-mail aparece uma vez só: na linha do nome, sem a linha do e-mail.
+      expect(screen.getAllByText('elisa.souza@exemplo.com')).toHaveLength(1);
+      expect(screen.getByText('Ainda não entrou')).toBeOnTheScreen();
+      expect(screen.getByText('4 pessoas')).toBeOnTheScreen();
+    });
+
+    it('Should offer Remover for her, named by the e-mail', () => {
+      expect(screen.getByRole('button', { name: 'Remover elisa.souza@exemplo.com' })).toBeOnTheScreen();
+      expect(screen.getAllByRole('button', { name: /^Remover / })).toHaveLength(2);
     });
   });
 
