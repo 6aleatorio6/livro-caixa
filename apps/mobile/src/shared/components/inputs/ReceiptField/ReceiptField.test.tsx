@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useLoaderStore } from '@/core/store/loader.store';
 import { AppError } from '@/shared/exceptions/AppError';
 import type { IReceipt } from '@/shared/types/file/Receipt';
+import type { IReceiptFile } from '@/shared/types/file/ReceiptFile';
 import { pickReceiptFile } from '@/shared/utils/file/pickReceiptFile';
 import { prepareReceipt } from '@/shared/utils/file/prepareReceipt';
 
@@ -28,9 +29,16 @@ const pdf: IReceipt = {
   type: 'pdf',
   wasReduced: false,
 };
+const savedReceipt: IReceiptFile = {
+  id: 'file-1',
+  name: 'comprovante-luz.pdf',
+  type: 'pdf',
+  sizeBytes: 182 * 1024,
+  storagePath: 'receipts/file-1',
+};
 const pickedFile = { uri: 'file:///x', name: 'x.pdf', contentType: 'application/pdf', sizeBytes: 10 };
 
-async function renderField(overrides: { initial?: IReceipt | null; errorMessage?: string } = {}) {
+async function renderField(overrides: { initial?: IReceipt | null; errorMessage?: string; currentReceipt?: IReceiptFile } = {}) {
   const onBlur = jest.fn();
   const onValueChange = jest.fn();
   function Harness() {
@@ -44,6 +52,7 @@ async function renderField(overrides: { initial?: IReceipt | null; errorMessage?
         }}
         onBlur={onBlur}
         errorMessage={overrides.errorMessage}
+        currentReceipt={overrides.currentReceipt}
       />
     );
   }
@@ -86,6 +95,21 @@ describe('ReceiptField', () => {
 
     expect(screen.getByText('PDF · 182 KB')).toBeOnTheScreen();
     expect(screen.getByText('comprovante-luz.pdf')).toBeOnTheScreen();
+  });
+
+  it('Should show the saved receipt until a new file is picked', async () => {
+    jest.mocked(pickReceiptFile).mockResolvedValue(pickedFile);
+    jest.mocked(prepareReceipt).mockResolvedValue(jpg);
+    const { user } = await renderField({ currentReceipt: savedReceipt });
+
+    expect(screen.getByText('PDF · 182 KB')).toBeOnTheScreen();
+    expect(screen.getByText('comprovante-luz.pdf')).toBeOnTheScreen();
+    expect(screen.getByText('Trocar')).toBeOnTheScreen();
+
+    await user.press(screen.getByRole('button'));
+
+    expect(await screen.findByText('recibo-conserto.jpg')).toBeOnTheScreen();
+    expect(screen.queryByText('comprovante-luz.pdf')).toBeNull();
   });
 
   it('Should attach the file the person picks and leave the field', async () => {

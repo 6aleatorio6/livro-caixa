@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react-native';
+import { render, screen, userEvent } from '@testing-library/react-native';
 
 import { EntryItem } from './EntryItem';
 
@@ -23,5 +23,14 @@ describe('EntryItem', () => {
     await render(<EntryItem kind={kind} name="Aluguel" amountCents={180000} support="dia 5" />);
 
     expect(screen.queryByRole('button')).not.toBeOnTheScreen();
+  });
+
+  it('Should be a button named after the entry and call onPress when given one', async () => {
+    const onPress = jest.fn();
+    await render(<EntryItem kind="payment" name="Aluguel" amountCents={180000} support="dia 5" onPress={onPress} />);
+
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Aluguel' }));
+
+    expect(onPress).toHaveBeenCalledTimes(1);
   });
 });

@@ -8,7 +8,7 @@ import { MonthCard } from '@/features/home/components/MonthCard/MonthCard';
 import { MonthListSection } from '@/features/home/components/MonthListSection/MonthListSection';
 import { SplitRow } from '@/features/home/components/SplitRow/SplitRow';
 import { homeEntrySupportOf } from '@/features/home/utils/homeEntrySupportOf';
-import { memberNameOf } from '@/features/home/utils/memberNameOf';
+import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 import { monthSummary } from '@/features/home/utils/monthSummary';
 import { paidRowsOf } from '@/features/home/utils/paidRowsOf';
 import { splitByMember } from '@/features/home/utils/splitByMember';

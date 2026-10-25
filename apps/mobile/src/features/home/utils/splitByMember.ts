@@ -1,7 +1,7 @@
 import type { IAllowedEmailListItem } from '@/shared/types/allowedEmail/AllowedEmailListItem';
 import type { IEntry } from '@/shared/types/entry/Entry';
 import type { IMemberSplit } from '../types/MemberSplit';
-import { memberNameOf } from './memberNameOf';
+import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 
 /**
  * Divide o pago do mês por pessoa, do maior para o menor. O nome é o primeiro nome atual, da lista de pessoas (não o

@@ -1,21 +1,20 @@
-import { FileCheck, FileX, Image, Paperclip } from 'lucide-react-native';
 import { useState } from 'react';
-import { Pressable, View } from 'react-native';
-import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { hideLoader } from '@/core/utils/storeActions/hideLoader';
 import { showLoader } from '@/core/utils/storeActions/showLoader';
 import { AppError } from '@/shared/exceptions/AppError';
 import type { IReceipt } from '@/shared/types/file/Receipt';
+import type { IReceiptFile } from '@/shared/types/file/ReceiptFile';
 import type { IInputMinimalProps } from '@/shared/types/form/InputMinimalProps';
 
-import { AppText } from '@/shared/components/AppText/AppText';
-import { CircleMark } from '@/shared/components/CircleMark/CircleMark';
-import { formatFileSize } from '@/shared/utils/format/formatFileSize';
+import { ReceiptSummary } from '@/shared/components/ReceiptSummary/ReceiptSummary';
 import { pickReceiptFile } from '@/shared/utils/file/pickReceiptFile';
 import { prepareReceipt } from '@/shared/utils/file/prepareReceipt';
 
-export type IReceiptFieldProps = IInputMinimalProps<IReceipt | null>;
+export type IReceiptFieldProps = IInputMinimalProps<IReceipt | null> & {
+  /** O comprovante já salvo do lançamento: aparece enquanto nenhum arquivo novo foi escolhido. */
+  currentReceipt?: IReceiptFile;
+};
 
 const UNREADABLE_MESSAGE = 'Não deu para ler o arquivo. Escolha outro.';
 
@@ -30,8 +29,7 @@ interface IRejection {
  * recusado (ou se o seletor falha), o campo mostra o motivo e o nome do arquivo e zera o valor, para o formulário
  * não enviar o arquivo de antes. Cancelar o seletor não muda nada.
  */
-export function ReceiptField({ value, onValueChange, onBlur, errorMessage, disabled = false }: IReceiptFieldProps) {
-  const { theme } = useUnistyles();
+export function ReceiptField({ value, onValueChange, onBlur, errorMessage, currentReceipt, disabled = false }: IReceiptFieldProps) {
   const [rejection, setRejection] = useState<IRejection | null>(null);
 
   const choose = async () => {
@@ -62,61 +60,18 @@ export function ReceiptField({ value, onValueChange, onBlur, errorMessage, disab
   };
 
   const errorText = rejection?.message ?? errorMessage;
-  const hasError = Boolean(errorText);
-  const attached = rejection ? null : value;
-
-  const markColor = hasError ? 'errorContainer' : attached ? 'primaryContainer' : 'secondaryContainer';
-  const iconColor = theme.colors[hasError ? 'onErrorContainer' : attached ? 'onPrimaryContainer' : 'onSecondaryContainer'];
-  const Icon = rejection ? FileX : attached ? (attached.type === 'pdf' ? FileCheck : Image) : Paperclip;
-  const typeName = attached?.type === 'pdf' ? 'PDF' : 'Imagem';
-  const attachedLabel = attached
-    ? `${typeName} · ${attached.wasReduced ? 'comprimida para ' : ''}${formatFileSize(attached.sizeBytes)}`
-    : null;
-  const label = errorText ?? attachedLabel ?? 'Comprovante';
-  const fileText = rejection?.fileName ?? attached?.name ?? 'Nenhum arquivo anexado';
-  const action = rejection ? 'Escolher outro' : attached ? 'Trocar' : 'Escolher';
+  // O arquivo recusado não é mostrado como anexado; sem arquivo novo, vale o comprovante já salvo.
+  const shown = rejection ? null : (value ?? currentReceipt ?? null);
+  const action = rejection ? 'Escolher outro' : shown ? 'Trocar' : 'Escolher';
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={`Comprovante: ${hasError ? `${errorText} ` : ''}${fileText}. ${action}`}
-      accessibilityState={{ disabled }}
-      disabled={disabled}
+    <ReceiptSummary
+      file={shown}
+      errorMessage={errorText}
+      rejectedFileName={rejection?.fileName}
+      actionLabel={action}
       onPress={choose}
-      style={({ pressed }) => styles.field(hasError, disabled, pressed)}
-    >
-      <CircleMark size={40} color={markColor}>
-        <Icon size={20} color={iconColor} />
-      </CircleMark>
-      <View style={styles.texts}>
-        <AppText variant="labelMedium" color={hasError ? 'error' : 'onSurfaceVariant'}>
-          {label}
-        </AppText>
-        <AppText variant="bodyMedium" numberOfLines={1}>
-          {fileText}
-        </AppText>
-      </View>
-      <AppText variant="labelLarge" color="primary">
-        {action}
-      </AppText>
-    </Pressable>
+      disabled={disabled}
+    />
   );
 }
-
-const styles = StyleSheet.create((theme) => ({
-  field: (hasError: boolean, isDisabled: boolean, isPressed: boolean) => ({
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.medium,
-    // No design a borda está dentro dos 70 de altura e do respiro [14, 16]; no React Native ela soma por fora
-    // (1 normal, 2 no erro), então o respiro cede o que a borda ocupa.
-    paddingVertical: theme.spacing.mediumIncreased - (hasError ? 2 : 1),
-    paddingHorizontal: theme.spacing.large - (hasError ? 2 : 1),
-    borderRadius: theme.radii.medium,
-    borderWidth: hasError ? 2 : 1,
-    borderColor: theme.colors[hasError ? 'error' : 'outlineVariant'],
-    backgroundColor: theme.colors.surfaceContainerLow,
-    opacity: isDisabled ? theme.opacity.disabled : isPressed ? theme.opacity.pressed : 1,
-  }),
-  texts: { flex: 1, gap: theme.spacing.extraExtraSmall },
-}));
