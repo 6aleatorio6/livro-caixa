@@ -4,7 +4,7 @@
 # - O lápis levar a Seu nome, o campo com o nome atual, o Salvar nome e a volta: SettingsPage.test.tsx
 #   (Should open the change name screen when the pencil is pressed) e ChangeNamePage.test.tsx.
 # - O nome gravado só no documento dele, com o resto igual: o contrato do changeOwnNameService
-#   (memberChangesOwnName) e firestore.rules.test.mjs (update do próprio nome).
+#   (memberChangesOwnName) e rules-tests/allowedEmails.update.test.mjs (o próprio nome).
 # - O nome novo na lista da admin: AllowedEmailsPage.test.tsx e o contrato do allowedEmailListQueryService.
 appId: dev.leonardolf.livrocaixa
 tags:

@@ -22,7 +22,7 @@ to the cheapest layer that proves it:
 | Unit | a decision of the app's own code: a pure function, a hook, a component, the code that wraps Firebase | next to the code | `pnpm test:mobile` |
 | Page | what a person sees and does on a screen, with `useRealtime`, `useAuthState` and the services mocked from scenarios | next to the page; a route's in `__tests__/app/` | `pnpm test:mobile` |
 | Contract | what each service really returns from the Firebase emulators, scenario by scenario | next to the service — skill `firestore-services` | `pnpm test:contract` |
-| Rules | what no service does but someone with an account could try | `firebase/firestore.rules.test.mjs` | `pnpm test:rules` |
+| Rules | what no service does but someone with an account could try | `firebase/rules-tests/` | `pnpm test:rules` |
 
 The journeys are not a layer. They are the developer testing by hand (skill `app-journeys`): a bug one
 finds becomes a failing test in the cheapest layer that reproduces it, before the fix.

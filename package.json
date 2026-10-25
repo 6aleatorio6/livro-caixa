@@ -19,7 +19,7 @@
     "journeys:test": "node journeys/test.ts",
     "journeys:inspect": "node journeys/inspect.ts",
     "typecheck:journeys": "tsc -p journeys",
-    "test:rules": "firebase -c firebase/firebase.test.json emulators:exec --only firestore --project demo-livro-caixa \"node --test firebase/firestore.rules.test.mjs\"",
+    "test:rules": "firebase -c firebase/firebase.test.json emulators:exec --only firestore --project demo-livro-caixa \"node --test --test-concurrency=1 firebase/rules-tests/*.test.mjs\"",
     "test:contract": "firebase -c firebase/firebase.test.json emulators:exec --only auth,firestore --project demo-livro-caixa \"pnpm mobile test:contract\"",
     "build": "pnpm --recursive build",
     "verify": "pnpm docusaurus test && pnpm docusaurus build",

@@ -3,7 +3,7 @@
 # Coberto por:
 # - O Remover, o aviso "Clara Souza saiu da lista" e a Clara saindo da lista: AllowedEmailsPage.test.tsx
 #   e o contrato do removeAllowedEmailService.
-# - A recusa de remover admin ou quem tem lançamentos: firestore.rules.test.mjs (allowedEmails).
+# - A recusa de remover admin ou quem tem lançamentos: rules-tests/allowedEmails.delete.test.mjs.
 # - A Clara em sem acesso: _layout.test.tsx e o contrato do allowedEmailQueryService (emailOutsideList).
 appId: dev.leonardolf.livrocaixa
 tags:

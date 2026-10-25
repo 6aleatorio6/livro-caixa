@@ -1,4 +1,4 @@
-// O Firestore do emulador como dono do projeto, pela mesma biblioteca do `firebase/firestore.rules.test.mjs`:
+// O Firestore do emulador como dono do projeto, pela mesma biblioteca do `firebase/rules-tests/`:
 // o `withSecurityRulesDisabled` passa por cima das regras, como quem administra pelo console.
 import { initializeTestEnvironment } from '@firebase/rules-unit-testing';
 import type { Firestore } from 'firebase/firestore';

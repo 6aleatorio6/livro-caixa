@@ -3,7 +3,7 @@
 # Coberto por:
 # - Adicionar só o e-mail e a Carla na lista pelo e-mail, "Ainda não entrou": AllowedEmailsPage.test.tsx,
 #   os contratos do addAllowedEmailService e do allowedEmailListQueryService (familyWithPersonNotEntered).
-# - A recusa de quem não é admin: firestore.rules.test.mjs (allowedEmails).
+# - A recusa de quem não é admin: rules-tests/allowedEmails.create.test.mjs.
 # - A Carla entrar depois: _layout.test.tsx e o contrato do allowedEmailQueryService (emailInList).
 appId: dev.leonardolf.livrocaixa
 tags:

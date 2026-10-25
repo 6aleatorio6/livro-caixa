@@ -204,7 +204,10 @@ rule carries a pt-BR comment with the business reason.
 - **What a service does** is proven by its contract, which runs with the rules on: a rule change
   reruns `pnpm test:contract`.
 - **What no service does, but someone with an account could try** through the SDK (read another
-  person's entry, write to the allowed list) goes to `firebase/firestore.rules.test.mjs`
-  (`@firebase/rules-unit-testing`, `node:test`), run with `pnpm test:rules`.
+  person's entry, write to the allowed list) goes to `firebase/rules-tests/`
+  (`@firebase/rules-unit-testing`, `node:test`), run with `pnpm test:rules`. One `*.test.mjs` per
+  document and operation (`allowedEmails.update.test.mjs`) and `setup.mjs` with the emulator, the seed
+  and the logins; the cases that only change the login or the field are a table of rows, one `it`
+  each, and a new rule starts with its failing rows.
 
 Both run in this container, against the emulators: Java comes from the PC through the claude-box.
