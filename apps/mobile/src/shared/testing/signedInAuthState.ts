@@ -7,7 +7,7 @@ import type { IAuthState } from '@/shared/types/auth/AuthState';
  * os campos que as telas leem, que o contrato do serviço de entrada confere no emulador do Auth.
  */
 export function signedInAuthState(signIn: {
-  result: Pick<User, 'email' | 'displayName' | 'emailVerified'>;
+  result: Pick<User, 'uid' | 'email' | 'displayName' | 'emailVerified'>;
 }): IAuthState {
   return { status: 'signedIn', user: signIn.result as User };
 }

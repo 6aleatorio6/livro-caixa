@@ -2,6 +2,7 @@ import { signOut } from '@react-native-firebase/auth';
 
 import { firebaseAuth } from '@/shared/services/firebase/firebaseAuth';
 import { arrangeScenario } from '@/shared/testing/contract/arrangeScenario';
+import { createAuthAccount } from '@/shared/testing/contract/createAuthAccount';
 import { scenarioEntries } from '@/shared/testing/contract/scenarioEntries';
 
 import { signInWithFakeGoogleService } from './signInWithFakeGoogleService';
@@ -12,6 +13,7 @@ describe('signInWithFakeGoogleService', () => {
     'Should return what the scenario %s says',
     async (_name, scenario) => {
       await arrangeScenario(scenario);
+      await createAuthAccount(scenario.input[0]);
 
       expect(await signInWithFakeGoogleService(...scenario.input)).toMatchObject(scenario.result);
     },
