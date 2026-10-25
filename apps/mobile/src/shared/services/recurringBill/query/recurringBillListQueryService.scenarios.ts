@@ -75,4 +75,15 @@ export const recurringBillListQueryScenarios = {
     result: FIVE_BILLS_IN_ORDER,
     afterChange: { write: { 'recurringBills/gas': GAS }, result: [...FIVE_BILLS_IN_ORDER, { id: 'gas', ...GAS }] },
   },
+  // Alguém exclui a Internet com a alteração dela aberta: o documento sai, e as outras quatro ficam.
+  billDeletedWhileOpen: {
+    signedInAs: BRUNO,
+    given: { ...BRUNO_IN_THE_LIST, ...FIVE_BILLS },
+    input: {},
+    result: FIVE_BILLS_IN_ORDER,
+    afterChange: {
+      write: { 'recurringBills/internet': null },
+      result: FIVE_BILLS_IN_ORDER.filter(({ id }) => id !== 'internet'),
+    },
+  },
 } satisfies Record<string, IServiceScenario<object, IRecurringBill[]>>;

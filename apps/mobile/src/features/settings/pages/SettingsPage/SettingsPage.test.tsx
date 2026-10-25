@@ -9,6 +9,8 @@ import { allowedEmailQueryScenarios } from '@/shared/services/allowedEmail/query
 import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
 import { signOutService } from '@/shared/services/auth/signOutService';
 import { signOutScenarios } from '@/shared/services/auth/signOutService.scenarios';
+import { recurringBillListQueryService } from '@/shared/services/recurringBill/query/recurringBillListQueryService';
+import { recurringBillListQueryScenarios } from '@/shared/services/recurringBill/query/recurringBillListQueryService.scenarios';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { tagListQueryScenarios } from '@/shared/services/tag/query/tagListQueryService.scenarios';
 import { mockRealtime } from '@/shared/testing/mockRealtime';
@@ -24,6 +26,9 @@ jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.f
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailQueryService', () => ({ allowedEmailQueryService: {} }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({ allowedEmailListQueryService: {} }));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
+jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService', () => ({
+  recurringBillListQueryService: {},
+}));
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 jest.mock('@/shared/services/auth/signOutService', () => ({ signOutService: jest.fn() }));
 
@@ -36,11 +41,18 @@ function adminInList() {
     { service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.adminInList },
     familyList(),
     tagList(),
+    billList(),
   ] as const;
 }
 
 function tagList(scenario: (typeof tagListQueryScenarios)[keyof typeof tagListQueryScenarios] = tagListQueryScenarios.threeTags) {
   return { service: tagListQueryService, scenario };
+}
+
+function billList(
+  scenario: (typeof recurringBillListQueryScenarios)[keyof typeof recurringBillListQueryScenarios] = recurringBillListQueryScenarios.fiveBills,
+) {
+  return { service: recurringBillListQueryService, scenario };
 }
 
 function familyList() {
@@ -83,6 +95,7 @@ describe('SettingsPage', () => {
         { service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.adminLosesAdminWhileOpen },
         familyList(),
         tagList(),
+        billList(),
       );
       await render(<SettingsPage />);
       expect(screen.getByText('E-mails permitidos')).toBeOnTheScreen();
@@ -97,7 +110,7 @@ describe('SettingsPage', () => {
   describe('as a member', () => {
     beforeEach(() => {
       jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn));
-      mockRealtime({ service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailInList }, tagList());
+      mockRealtime({ service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailInList }, tagList(), billList());
     });
 
     it('Should show neither the allowed e-mails entry nor the admin mark', async () => {
@@ -155,23 +168,28 @@ describe('SettingsPage', () => {
       expect(screen.getByText('Casa, Saúde, Serviços')).toBeOnTheScreen();
     });
 
-    it('Should say there is no tag on the Tags entry when the family has none', async () => {
-      mockRealtime(
-        { service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailInList },
-        tagList(tagListQueryScenarios.noTagsDocument),
-      );
+    it('Should open the recurring bills screen when the Contas recorrentes entry is pressed', async () => {
       await render(<SettingsPage />);
 
-      expect(screen.getByText('Nenhuma tag')).toBeOnTheScreen();
+      await userEvent.setup().press(screen.getByRole('button', { name: 'Contas recorrentes' }));
+
+      expect(router.push).toHaveBeenCalledWith('/recurring-bills');
+    });
+
+    it('Should give the count and the monthly total on the Contas recorrentes entry', async () => {
+      await render(<SettingsPage />);
+
+      expect(screen.getByText('5 contas · R$ 2.677,90 por mês')).toBeOnTheScreen();
     });
 
     it('Should announce as buttons only the entries that lead somewhere', async () => {
       await render(<SettingsPage />);
 
-      // Os dois da pessoa logada (Alterar nome e Sair da conta) e Tags; as contas recorrentes ainda não têm tela.
+      // Os dois da pessoa logada (Alterar nome e Sair da conta) e as duas linhas da família.
       expect(screen.getAllByRole('button').map((button) => button.props.accessibilityLabel)).toEqual([
         'Alterar nome',
         'Sair da conta',
+        'Contas recorrentes',
         'Tags',
       ]);
     });
@@ -180,7 +198,7 @@ describe('SettingsPage', () => {
   describe('as a person who has not entered yet', () => {
     it('Should show the e-mail in place of the name, once', async () => {
       jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.outsiderSignsIn));
-      mockRealtime({ service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailWithoutName }, tagList());
+      mockRealtime({ service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailWithoutName }, tagList(), billList());
       await render(<SettingsPage />);
 
       expect(screen.getAllByText('carla.lima@exemplo.com')).toHaveLength(1);

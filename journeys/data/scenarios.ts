@@ -55,6 +55,14 @@ const BILLS_IN_USE = {
   water: { name: 'Água', expectedAmountCents: 9800, dayOfMonth: 20, startsOn: '2026-01-01', tagId: 'servicos' },
 };
 
+/** Grava as três tags e as cinco contas recorrentes, como o app as grava. */
+async function writeTagsAndBills(db: Firestore) {
+  await setDoc(doc(db, 'settings', 'tags'), { items: TAGS });
+  for (const [id, bill] of Object.entries(BILLS_IN_USE)) {
+    await setDoc(doc(db, 'recurringBills', id), bill);
+  }
+}
+
 export const scenariosByName: Record<string, Scenario> = {
   /** O começo de cada fluxo: o Firestore apagado e a lista de e-mails com as contas liberadas. */
   async reset({ db, deleteAll }) {
@@ -85,10 +93,10 @@ export const scenariosByName: Record<string, Scenario> = {
    * As tags do design (Casa, Serviços e Saúde) sobre o que o `reset` deixou, com as contas recorrentes que
    * deixam a Casa em uso por 2 contas e os Serviços por 3; a Saúde não tem uso e pode ser excluída.
    */
-  async seedTags({ db }) {
-    await setDoc(doc(db, 'settings', 'tags'), { items: TAGS });
-    for (const [id, bill] of Object.entries(BILLS_IN_USE)) {
-      await setDoc(doc(db, 'recurringBills', id), bill);
-    }
-  },
+  seedTags: ({ db }) => writeTagsAndBills(db),
+  /**
+   * As cinco contas recorrentes da tela de contas (Aluguel, Condomínio, Luz, Internet e Água) com as três
+   * tags: os mesmos dados do `seedTags`, que já são os do design.
+   */
+  seedRecurringBills: ({ db }) => writeTagsAndBills(db),
 };

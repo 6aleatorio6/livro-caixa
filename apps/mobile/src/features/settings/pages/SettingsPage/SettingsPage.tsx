@@ -1,11 +1,10 @@
 import { router } from 'expo-router';
-import { LogOut, Pencil, Repeat, Tag } from 'lucide-react-native';
+import { LogOut, Pencil } from 'lucide-react-native';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
 import { IconButton } from '@/shared/components/IconButton/IconButton';
-import { ListItem } from '@/shared/components/ListItem/ListItem';
 import { PersonItem } from '@/shared/components/PersonItem/PersonItem';
 import { Screen } from '@/shared/components/Screen/Screen';
 
@@ -13,18 +12,18 @@ import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 
 import { allowedEmailQueryService } from '@/shared/services/allowedEmail/query/allowedEmailQueryService';
-import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { APP_VERSION } from '@/shared/constants/appVersion';
 import { doSignOut } from '@/shared/utils/actions/doSignOut';
 import { signedInEmail } from '@/shared/utils/auth/signedInEmail';
 
 import { AdminSection } from './components/AdminSection/AdminSection';
+import { RecurringBillsRow } from './components/RecurringBillsRow/RecurringBillsRow';
+import { TagsRow } from './components/TagsRow/TagsRow';
 
 /** A terceira aba: quem está logado com a saída, o que se usa pouco e a versão do app. */
 export function SettingsPage() {
   const email = signedInEmail(useAuthState());
   const { data: person } = useRealtime(allowedEmailQueryService, { email });
-  const { data: tags } = useRealtime(tagListQueryService, {});
 
   return (
     <Screen>
@@ -48,13 +47,8 @@ export function SettingsPage() {
           <AppText variant="labelMedium" color="onSurfaceVariant">
             Da família
           </AppText>
-          <ListItem icon={Repeat} title="Contas recorrentes" />
-          <ListItem
-            icon={Tag}
-            title="Tags"
-            support={tags ? (tags.length === 0 ? 'Nenhuma tag' : tags.map((tag) => tag.name).join(', ')) : undefined}
-            onPress={() => router.push('/tags')}
-          />
+          <RecurringBillsRow />
+          <TagsRow />
         </View>
 
         {person?.isAdmin ? <AdminSection /> : null}
