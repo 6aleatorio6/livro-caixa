@@ -25,7 +25,7 @@ tema aparece na documentação.
 | D-17 | Onde o easter egg do "Paia" aparece no app? | 🟢 Respondido — na arte da splash screen |
 | D-18 | Como o Maestro alcança o emulador do PC? | 🟢 Respondido — pela rede do PC, que o container divide |
 | D-19 | O JSON do Google falso leva o nome da pessoa? | 🟢 Respondido — sim, no campo `name` |
-| D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🔴 Em aberto |
+| D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🟢 Respondido — por um comando do adb, antes do fluxo |
 | D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🟢 Respondido — Meus pagamentos, um mês por vez, com a troca de mês |
 | D-22 | O app lê o valor no comprovante? | 🟢 Respondido — fica para depois, com a leitura no celular |
 | D-23 | O comprovante em PDF abre dentro do app ou no leitor do celular? | 🟢 Respondido — dentro do app, como a imagem |
@@ -195,10 +195,14 @@ A documentação do Firebase só mostra `sub`, `email` e `email_verified`, num e
 
 **Dúvida:** como a jornada chega à tela de compartilhar do Android.
 
-**O que se sabe:** o Maestro comanda o aparelho inteiro, então pode abrir o app de arquivos,
-compartilhar e escolher o Livro-Caixa, como a família faz. A alternativa é um
-`adb shell am start -a android.intent.action.SEND …` antes do fluxo, mais frágil, porque precisa de
-um endereço de arquivo que o app consiga ler. Nenhuma das duas foi testada.
+**Resposta:** por um comando do adb, e não pelo app de arquivos: o app de arquivos muda com a versão e
+o idioma do Android. O cenário `shareReceipt` copia o arquivo para `/sdcard/Download`, avisa a
+MediaStore, descobre o endereço `content://media/external/downloads/<id>` e abre o app com um `SEND`
+para ele (`am start -a android.intent.action.SEND -t <tipo> -d <endereço> --eu
+android.intent.extra.STREAM <endereço> --grant-read-uri-permission -n …/.MainActivity`). O endereço vai
+também em `-d`, porque só assim o `am` concede a leitura ao app. Testado no emulador do Android 15: o
+app aparece entre os destinos (`cmd package query-activities`) e abre a tela de compartilhar com o
+arquivo.
 
 **Onde aparece:** [Jornadas de Teste](../05-arquitetura/02-jornadas-de-teste.md).
 

@@ -7,6 +7,7 @@ import { deleteDoc, doc, setDoc, Timestamp, updateDoc, type Firestore } from 'fi
 
 import { ACCOUNTS, toSignInLink } from './accounts.ts';
 import type { OwnerFirestore } from './firestore.ts';
+import { shareFixture } from './share.ts';
 
 /** Um comprovante de verdade: o arquivo de `data/fixtures/` que vai para o Storage com o nome que a tela mostra. */
 type ReceiptFixture = { name: string; type: 'image' | 'pdf'; contentType: string };
@@ -19,7 +20,7 @@ function readFixture(name: string) {
 }
 
 /** Os parâmetros que o `data/request.js` repassa, com o nome que têm no fluxo. */
-export type ScenarioParams = { EMAIL?: string };
+export type ScenarioParams = { EMAIL?: string; FILE?: string; COLD?: string };
 type Scenario = (owner: OwnerFirestore, params: ScenarioParams) => Promise<object | void>;
 
 function getParam(params: ScenarioParams, name: keyof ScenarioParams) {
@@ -301,6 +302,14 @@ export const scenariosByName: Record<string, Scenario> = {
    */
   async seedShareReceipt(owner, params) {
     await scenariosByName.seedHome(owner, params);
+  },
+  /**
+   * Compartilha com o app um arquivo de `data/fixtures/` pelo adb, como o Android faz ao escolher o Livro-Caixa
+   * num outro app (`data/share.ts`). Com o app aberto, a intent chega ao app que está rodando; com `COLD=true`,
+   * o app fecha antes e abre já com ela.
+   */
+  async shareReceipt(_owner, params) {
+    shareFixture(getParam(params, 'FILE'), { cold: params.COLD === 'true' });
   },
   /**
    * Os detalhes do lançamento do design, sobre o que o `reset` deixou, no mês atual: as tags e as cinco contas, a

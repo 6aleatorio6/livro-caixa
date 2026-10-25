@@ -179,5 +179,21 @@ O Maestro comanda o aparelho inteiro, não só o app. A jornada pode fazer o que
 outro app, compartilhar uma imagem ou um PDF e escolher o Livro-Caixa
 ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md)).
 
-> 🔴 **A validar:** se a jornada chega à tela de compartilhar pelo app de arquivos do Android ou por
-> um comando do adb que abre o app já com o arquivo.
+**A jornada chega à tela de compartilhar por um comando do adb, e não pelo app de arquivos**, que muda
+com a versão e o idioma do Android. O cenário `shareReceipt` (`journeys/data/share.ts`) faz o que o
+Android faz quando a pessoa escolhe o Livro-Caixa: o servidor de dados roda neste container, que tem o
+adb, e o fluxo só pede o cenário com o nome do arquivo de `journeys/data/fixtures/`.
+
+1. `adb push` do arquivo para `/sdcard/Download` e um `MEDIA_SCANNER_SCAN_FILE`, para a MediaStore dar
+   um `_id` ao arquivo (a `content query` em `content://media/external/downloads` o mostra).
+2. `am start -a android.intent.action.SEND -t <tipo> -d <endereço> --eu android.intent.extra.STREAM
+   <endereço> --grant-read-uri-permission -n dev.leonardolf.livrocaixa/.MainActivity`, com o
+   `content://media/external/downloads/<id>` nos dois lugares. O endereço também em `-d` porque o
+   `--grant-read-uri-permission` só vale para o que está no `data` ou no `ClipData`, e o `am` não
+   monta o `ClipData` do `EXTRA_STREAM`: sem o `-d` o app abre, mas falha ao ler o arquivo (`has no
+   access to content://…`).
+3. Os fluxos começam com o app aberto no Início: a intent chega ao app que está rodando, como quando
+   a pessoa compartilha com ele já aberto.
+
+O Livro-Caixa aparece entre os destinos: `cmd package query-activities -a
+android.intent.action.SEND -t application/pdf` lista a `MainActivity` do app.

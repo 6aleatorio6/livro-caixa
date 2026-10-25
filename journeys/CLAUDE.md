@@ -26,8 +26,11 @@ journeys/
     accounts.ts            the test accounts (Ana, Bruno, Carla) and their sign-in link
     firestore.ts           the emulator's Firestore and Storage as the project owner
                            (@firebase/rules-unit-testing): deleteAll, putObject
-    fixtures/              the files a scenario puts in the Storage emulator (comprovante-luz.pdf,
-                           recibo-conserto.jpg): small, committed, read by scenarios.ts
+    share.ts               shareFixture: pushes a fixture to the phone's Downloads and shares it with the
+                           app through adb (the shareReceipt scenario)
+    fixtures/              the small committed files scenarios read: the ones a scenario puts in the
+                           Storage emulator (comprovante-luz.pdf, recibo-conserto.jpg) and the ones
+                           shareFixture pushes to the phone (pix-agua-outubro.pdf)
     request.js             the Maestro side (runScript): asks for a scenario, copies the answer to output
   .local/                  (outside Git)
     explore/               throwaway flows, run like any other
@@ -44,6 +47,7 @@ journeys/
 | A navigation shortcut (open a screen) | written in the flow, not a step |
 | Data a flow needs: a reset, a change mid-flow, a screen's seed | a scenario in `data/scenarios.ts`; a new parameter also in `data/request.js` |
 | A file a scenario needs in the Storage (a receipt) | `data/fixtures/`; the scenario writes it with `putObject` |
+| A file a flow shares with the app, as another Android app would | `data/fixtures/`; the `shareReceipt` scenario (`data/share.ts`) pushes it to the phone and runs the `SEND` through adb, because Maestro has no shell |
 | A tool run from the terminal | a `.ts` at the root with its `pnpm journeys:*` script |
 | A throwaway flow | `.local/explore/` |
 | Anything a round or a tool writes | `.local/`, configured to land there |
