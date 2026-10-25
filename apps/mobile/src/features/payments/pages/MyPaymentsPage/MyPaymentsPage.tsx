@@ -17,9 +17,10 @@ import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
-import type { IEntry } from '@/shared/types/entry/Entry';
+import { myEntrySupportOf } from '@/features/payments/utils/myEntrySupportOf';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { monthName } from '@/shared/utils/date/monthName';
+import { tagNameOf } from '@/shared/utils/tag/tagNameOf';
 
 /** Os lançamentos de quem está logado, mês a mês, com o total do mês; o botão registra uma conta avulsa. */
 export function MyPaymentsPage() {
@@ -29,11 +30,8 @@ export function MyPaymentsPage() {
   const { status, data: entries } = useRealtime(entryMonthQueryService, { month });
   const { data: tags } = useRealtime(tagListQueryService, {});
 
-  // A leitura traz o mês da família inteira; a lista é só das contas avulsas de quem está logado (os pagamentos
-  // das contas recorrentes entram no G5).
-  const mine = entries?.filter(
-    (entry): entry is Extract<IEntry, { kind: 'oneOffBill' }> => entry.kind === 'oneOffBill' && entry.paidBy === uid,
-  );
+  // A leitura traz o mês da família inteira; a lista é só do que quem está logado pagou.
+  const mine = entries?.filter((entry) => entry.paidBy === uid);
   const familyAmountCents = entries?.reduce((sum, entry) => sum + entry.amountCents, 0) ?? 0;
   const mineAmountCents = mine?.reduce((sum, entry) => sum + entry.amountCents, 0) ?? 0;
 
@@ -60,11 +58,11 @@ export function MyPaymentsPage() {
               {mine.map((entry) => (
                 <EntryItem
                   key={entry.id}
+                  kind={entry.kind === 'recurringPayment' ? 'payment' : 'oneOff'}
                   name={entry.name}
                   amountCents={entry.amountCents}
-                  date={entry.date}
                   // Uma conta com a tag apagada (só pelo SDK) fica sem a tag no detalhe.
-                  tagName={tags?.find((tag) => tag.id === entry.tagId)?.name}
+                  support={myEntrySupportOf(entry, tagNameOf(entry.tagId, tags))}
                 />
               ))}
             </View>

@@ -61,7 +61,7 @@ describe('MyPaymentsPage', () => {
   it('Should sum all the entries of the member, not only the first, against the whole family month', async () => {
     mockRealtime(
       { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithTwoEntriesOfTheMember },
-      threeTags,
+      threeTags
     );
     await render(<MyPaymentsPage />);
 
@@ -73,10 +73,35 @@ describe('MyPaymentsPage', () => {
     expect(screen.queryByText('Mercado')).not.toBeOnTheScreen();
   });
 
+  it('Should list a payment of the member with the payment date and the expected value when it differs, counted in the total', async () => {
+    mockRealtime(
+      { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithPaymentOfTheMember },
+      threeTags
+    );
+    await render(<MyPaymentsPage />);
+
+    expect(screen.getByText('Internet')).toBeOnTheScreen();
+    expect(screen.getByText('pago em 15/10 · previsto R$ 119,90')).toBeOnTheScreen();
+    expect(screen.getByText('12/10 · avulsa · Casa')).toBeOnTheScreen();
+    // Bruno: R$ 125,00 + R$ 89,90.
+    expect(screen.getByText('R$ 214,90')).toBeOnTheScreen();
+    expect(screen.getByText('2 lançamentos · 100% do que a família pagou')).toBeOnTheScreen();
+  });
+
+  it('Should keep the expected amount of the payment when the bill changed afterwards', async () => {
+    mockRealtime(
+      { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithPaymentOfAlteredBill },
+      threeTags
+    );
+    await render(<MyPaymentsPage />);
+
+    expect(screen.getByText('pago em 10/10 · previsto R$ 250,00')).toBeOnTheScreen();
+  });
+
   it('Should show only the date for an entry without tag', async () => {
     mockRealtime(
       { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.previousMonthWithEntries },
-      threeTags,
+      threeTags
     );
     jest.setSystemTime(new Date(2026, 8, 15));
     await render(<MyPaymentsPage />);
