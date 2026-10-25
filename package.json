@@ -12,6 +12,7 @@
     "dev:docs": "pnpm docusaurus start",
     "mobile": "pnpm --filter livro-caixa-mobile",
     "android": "bash scripts/android.sh",
+    "apk": "bash scripts/apk.sh",
     "typecheck:mobile": "pnpm mobile typecheck",
     "test:mobile": "pnpm mobile test",
     "firebase:emulators": "firebase emulators:start",

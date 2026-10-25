@@ -17,6 +17,9 @@ other stack decision is made without being written there.
   which only the developer's PC has: this container runs the type check, the lint and the tests,
   never the native build. `pnpm android --no-bundler` skips the Metro it would leave on 8081, which
   the journeys' stack needs.
+- `pnpm apk`, also on the developer's PC, builds the release APK with the JavaScript bundled and the
+  real Firebase (no emulators), to install on a phone without Metro:
+  `apps/mobile/android/app/build/outputs/apk/release/app-release.apk`.
 - `pnpm firebase:emulators` starts the Firebase emulators (Auth, Firestore, Storage; their UI on
   port 4001, since the portal holds 4000), and `pnpm test:rules` tests `firebase/firestore.rules`.
   Both need Java, which the claude-box lends this container from the PC, so they run here too.
