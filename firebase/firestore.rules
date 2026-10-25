@@ -6,8 +6,7 @@ service cloud.firestore {
     // O admin é quem tem `isAdmin` na própria entrada da lista. O e-mail do login é comparado em
     // minúsculas, como o id do documento, e só vale com o e-mail verificado.
     function isAdmin() {
-      return request.auth != null
-        && request.auth.token.email_verified == true
+      return isVerified()
         && get(/databases/$(database)/documents/allowedEmails/$(request.auth.token.email.lower())).data.isAdmin == true;
     }
 
@@ -32,13 +31,11 @@ service cloud.firestore {
     // sabe, depois do login pelo Google, se ela tem acesso. O id do documento é o e-mail em
     // minúsculas, e o do login pode vir com maiúsculas.
     match /allowedEmails/{email} {
-      allow get: if isOwnEmail(email);
+      // Cada pessoa lê a própria entrada, e o admin lê a de qualquer uma.
+      allow get: if isOwnEmail(email) || isAdmin();
 
-      // O admin lê qualquer entrada da lista, que alimenta a tela de e-mails permitidos.
-      allow list, get: if isAdmin();
-
-      // Todo membro vê a família inteira (o nome de cada pessoa aparece nos lançamentos e na divisão
-      // por membro), mas só o admin lê a entrada de uma pessoa avulsa.
+      // Todo membro lista a família inteira, o admin também, que está na lista: o nome de cada pessoa
+      // aparece nos lançamentos e na divisão por membro, e a tela de e-mails permitidos é do admin.
       allow list: if isInList();
 
       // Só chaves exatas e um id que é um e-mail em minúsculas. A pessoa nova nasce sem nome nem
