@@ -13,6 +13,7 @@ import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 
 import { allowedEmailQueryService } from '@/shared/services/allowedEmail/query/allowedEmailQueryService';
+import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { APP_VERSION } from '@/shared/constants/appVersion';
 import { doSignOut } from '@/shared/utils/actions/doSignOut';
 import { signedInEmail } from '@/shared/utils/auth/signedInEmail';
@@ -23,6 +24,7 @@ import { AdminSection } from './components/AdminSection/AdminSection';
 export function SettingsPage() {
   const email = signedInEmail(useAuthState());
   const { data: person } = useRealtime(allowedEmailQueryService, { email });
+  const { data: tags } = useRealtime(tagListQueryService, {});
 
   return (
     <Screen>
@@ -47,7 +49,12 @@ export function SettingsPage() {
             Da família
           </AppText>
           <ListItem icon={Repeat} title="Contas recorrentes" />
-          <ListItem icon={Tag} title="Tags" />
+          <ListItem
+            icon={Tag}
+            title="Tags"
+            support={tags ? (tags.length === 0 ? 'Nenhuma tag' : tags.map((tag) => tag.name).join(', ')) : undefined}
+            onPress={() => router.push('/tags')}
+          />
         </View>
 
         {person?.isAdmin ? <AdminSection /> : null}

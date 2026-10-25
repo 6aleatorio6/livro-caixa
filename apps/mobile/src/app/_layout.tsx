@@ -22,6 +22,9 @@ export default function RootLayout() {
         <Stack.Protected guard={accessStatus === 'allowed'}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="change-name" />
+          <Stack.Screen name="tags/index" />
+          <Stack.Screen name="tags/new" />
+          <Stack.Screen name="tags/[id]" />
           <Stack.Protected guard={isAdmin}>
             <Stack.Screen name="allowed-emails" />
           </Stack.Protected>

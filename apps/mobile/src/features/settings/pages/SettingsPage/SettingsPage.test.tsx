@@ -9,6 +9,8 @@ import { allowedEmailQueryScenarios } from '@/shared/services/allowedEmail/query
 import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
 import { signOutService } from '@/shared/services/auth/signOutService';
 import { signOutScenarios } from '@/shared/services/auth/signOutService.scenarios';
+import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
+import { tagListQueryScenarios } from '@/shared/services/tag/query/tagListQueryService.scenarios';
 import { mockRealtime } from '@/shared/testing/mockRealtime';
 import { mockServiceScenario } from '@/shared/testing/mockServiceScenario';
 import { signedInAuthState } from '@/shared/testing/signedInAuthState';
@@ -21,6 +23,7 @@ jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jes
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailQueryService', () => ({ allowedEmailQueryService: {} }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({ allowedEmailListQueryService: {} }));
+jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 jest.mock('@/shared/services/auth/signOutService', () => ({ signOutService: jest.fn() }));
 
@@ -32,7 +35,12 @@ function adminInList() {
   return [
     { service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.adminInList },
     familyList(),
+    tagList(),
   ] as const;
+}
+
+function tagList(scenario: (typeof tagListQueryScenarios)[keyof typeof tagListQueryScenarios] = tagListQueryScenarios.threeTags) {
+  return { service: tagListQueryService, scenario };
 }
 
 function familyList() {
@@ -74,6 +82,7 @@ describe('SettingsPage', () => {
       const realtime = mockRealtime(
         { service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.adminLosesAdminWhileOpen },
         familyList(),
+        tagList(),
       );
       await render(<SettingsPage />);
       expect(screen.getByText('E-mails permitidos')).toBeOnTheScreen();
@@ -88,7 +97,7 @@ describe('SettingsPage', () => {
   describe('as a member', () => {
     beforeEach(() => {
       jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn));
-      mockRealtime({ service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailInList });
+      mockRealtime({ service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailInList }, tagList());
     });
 
     it('Should show neither the allowed e-mails entry nor the admin mark', async () => {
@@ -132,18 +141,46 @@ describe('SettingsPage', () => {
       expect(screen.getByText(`Livro-Caixa · versão ${APP_VERSION}`)).toBeOnTheScreen();
     });
 
-    it('Should not announce the entries as buttons', async () => {
+    it('Should open the tags screen when the Tags entry is pressed', async () => {
       await render(<SettingsPage />);
 
-      // Só os dois da pessoa logada: Alterar nome e Sair da conta.
-      expect(screen.getAllByRole('button')).toHaveLength(2);
+      await userEvent.setup().press(screen.getByRole('button', { name: 'Tags' }));
+
+      expect(router.push).toHaveBeenCalledWith('/tags');
+    });
+
+    it('Should list the names of the tags in order on the Tags entry', async () => {
+      await render(<SettingsPage />);
+
+      expect(screen.getByText('Casa, Saúde, Serviços')).toBeOnTheScreen();
+    });
+
+    it('Should say there is no tag on the Tags entry when the family has none', async () => {
+      mockRealtime(
+        { service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailInList },
+        tagList(tagListQueryScenarios.noTagsDocument),
+      );
+      await render(<SettingsPage />);
+
+      expect(screen.getByText('Nenhuma tag')).toBeOnTheScreen();
+    });
+
+    it('Should announce as buttons only the entries that lead somewhere', async () => {
+      await render(<SettingsPage />);
+
+      // Os dois da pessoa logada (Alterar nome e Sair da conta) e Tags; as contas recorrentes ainda não têm tela.
+      expect(screen.getAllByRole('button').map((button) => button.props.accessibilityLabel)).toEqual([
+        'Alterar nome',
+        'Sair da conta',
+        'Tags',
+      ]);
     });
   });
 
   describe('as a person who has not entered yet', () => {
     it('Should show the e-mail in place of the name, once', async () => {
       jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.outsiderSignsIn));
-      mockRealtime({ service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailWithoutName });
+      mockRealtime({ service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailWithoutName }, tagList());
       await render(<SettingsPage />);
 
       expect(screen.getAllByText('carla.lima@exemplo.com')).toHaveLength(1);

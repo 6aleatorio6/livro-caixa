@@ -48,6 +48,9 @@ async function renderAppAs(
       'test-sign-in': () => <Text>Entrada de teste</Text>,
       'allowed-emails': () => <Text>Página dos e-mails permitidos</Text>,
       'change-name': () => <Text>Página do seu nome</Text>,
+      'tags/index': () => <Text>Página das tags</Text>,
+      'tags/new': () => <Text>Página da nova tag</Text>,
+      'tags/[id]': () => <Text>Página de alterar tag</Text>,
     },
     { initialUrl },
   );
@@ -122,6 +125,29 @@ describe('RootLayout', () => {
       await renderAppAs(SIGNED_OUT, null, '/change-name');
 
       expect(screen.queryByText('Página do seu nome')).not.toBeOnTheScreen();
+      expect(screen.getByText('Entrar')).toBeOnTheScreen();
+    });
+  });
+
+  describe('The tags screens', () => {
+    it.each([
+      { url: '/tags', page: 'Página das tags' },
+      { url: '/tags/new', page: 'Página da nova tag' },
+      { url: '/tags/casa', page: 'Página de alterar tag' },
+    ])('Should let a member reach $url', async ({ url, page }) => {
+      await renderAppAs(
+        signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn),
+        allowedEmailQueryScenarios.emailInList,
+        url,
+      );
+
+      expect(screen.getByText(page)).toBeOnTheScreen();
+    });
+
+    it.each(['/tags', '/tags/new', '/tags/casa'])('Should keep a signed-out person out of %s', async (url) => {
+      await renderAppAs(SIGNED_OUT, null, url);
+
+      expect(screen.queryByText(/^Página (das tags|da nova tag|de alterar tag)$/)).not.toBeOnTheScreen();
       expect(screen.getByText('Entrar')).toBeOnTheScreen();
     });
   });

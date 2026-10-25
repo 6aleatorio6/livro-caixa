@@ -75,4 +75,17 @@ export const tagListQueryScenarios = {
       ],
     },
   },
+  // Alguém exclui a Saúde com a alteração dela aberta: a tag sai da lista, e o documento fica com as outras.
+  tagDeletedWhileOpen: {
+    signedInAs: BRUNO,
+    given: { ...BRUNO_IN_THE_LIST, 'settings/tags': THREE_TAGS_DOCUMENT },
+    input: {},
+    result: THREE_TAGS_IN_ORDER,
+    afterChange: {
+      write: {
+        'settings/tags': { items: { [HOME_TAG_ID]: HOME_TAG, [UTILITIES_TAG_ID]: UTILITIES_TAG } },
+      },
+      result: [THREE_TAGS_IN_ORDER[0], THREE_TAGS_IN_ORDER[2]],
+    },
+  },
 } satisfies Record<string, IServiceScenario<object, ITag[]>>;
