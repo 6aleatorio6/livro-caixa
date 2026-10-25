@@ -195,6 +195,9 @@ project, the journeys' one. Running `pnpm mobile test:contract` alone refuses: w
   emulator stores the e-mail in lower case, even when the account signs in with capitals.
 - **A new product** (Storage, for the receipts) gets its mapping and its contract instance with the
   first service that uses it.
+- **Storage's `putFile` is a shim.** The contract maps `@react-native-firebase/storage` to a `putFile` that
+  reads the file from disk and sends it with the JavaScript SDK's `uploadBytes`: it proves the rules and
+  the batch, not the native upload (RNFB's own `putFile` and its retries), which only the device proves.
 
 ## Security rules
 
