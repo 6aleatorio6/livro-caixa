@@ -20,12 +20,12 @@ export function AppToast() {
 const styles = StyleSheet.create((theme, rt) => ({
   toast: (kind: IToastKind) => ({
     position: 'absolute',
-    left: theme.spacing.large,
-    right: theme.spacing.large,
+    left: theme.spacing.largeIncreased,
+    right: theme.spacing.largeIncreased,
     bottom: rt.insets.bottom + theme.spacing.large,
     paddingHorizontal: theme.spacing.large,
-    paddingVertical: theme.spacing.medium,
-    borderRadius: theme.radii.extraSmall,
+    paddingVertical: theme.spacing.mediumIncreased,
+    borderRadius: theme.radii.small,
     backgroundColor: kind === 'error' ? theme.colors.errorContainer : theme.colors.inverseSurface,
   }),
   message: (kind: IToastKind) => ({
