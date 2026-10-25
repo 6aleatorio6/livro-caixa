@@ -2,7 +2,7 @@ import { describe } from 'node:test';
 
 import { deleteDoc } from 'firebase/firestore';
 
-import { SEEDED_RECEIPT_OF, asOwner, assertAccess, deleteEntryBatch, entryDocOf, entryRowsFor, fileOf, itEach, signedInAs } from './setup.mjs';
+import { SEEDED_RECEIPT_OF, asOwner, assertAccess, deleteEntryBatch, entryDocOf, entryRowsFor, fileOf, itEach, signedInAs } from './setup/index.mjs';
 
 const ONE_OFF_IDS = { own: 'bruno1', other: 'ana1' };
 const PAYMENT_IDS = { own: '2026-10_luz', other: '2026-10_aluguel' };

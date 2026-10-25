@@ -1,6 +1,6 @@
 import { describe } from 'node:test';
 
-import { OUTSIDERS, addOneOffBillBatch, asOwner, assertAccess, entryOf, itEach, oneOffBillOf, receiptFileOf, signedInAs } from './setup.mjs';
+import { OUTSIDERS, addOneOffBillBatch, asOwner, assertAccess, entryOf, itEach, oneOffBillOf, receiptFileOf, signedInAs } from './setup/index.mjs';
 import { setDoc } from 'firebase/firestore';
 
 const bruno = () => signedInAs('bruno@gmail.com');

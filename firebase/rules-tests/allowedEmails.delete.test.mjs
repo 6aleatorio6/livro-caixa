@@ -2,7 +2,7 @@ import { describe } from 'node:test';
 
 import { deleteDoc } from 'firebase/firestore';
 
-import { assertAccess, entryOf, itEach, signedInAs, signedInWithUnverifiedEmail, signedOut } from './setup.mjs';
+import { assertAccess, entryOf, itEach, signedInAs, signedInWithUnverifiedEmail, signedOut } from './setup/index.mjs';
 
 describe('allowedEmails delete', () => {
   // `as` é quem exclui e `email` é a entrada excluída.

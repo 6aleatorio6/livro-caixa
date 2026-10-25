@@ -1,6 +1,6 @@
 import { describe } from 'node:test';
 
-import { OUTSIDERS, addPaymentBatch, asOwner, assertAccess, itEach, receiptFileOf, recurringPaymentOf, signedInAs } from './setup.mjs';
+import { OUTSIDERS, addPaymentBatch, asOwner, assertAccess, itEach, receiptFileOf, recurringPaymentOf, signedInAs } from './setup/index.mjs';
 
 const bruno = () => signedInAs('bruno@gmail.com');
 const ana = () => signedInAs('ana@gmail.com');

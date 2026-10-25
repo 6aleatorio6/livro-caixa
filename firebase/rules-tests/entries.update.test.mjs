@@ -2,7 +2,7 @@ import { describe } from 'node:test';
 
 import { deleteDoc, deleteField, serverTimestamp, updateDoc } from 'firebase/firestore';
 
-import { SEEDED_RECEIPT_OF, asOwner, assertAccess, entryDocOf, entryRowsFor, fileOf, itEach, receiptFileOf, replaceReceiptBatch, signedInAs } from './setup.mjs';
+import { SEEDED_RECEIPT_OF, asOwner, assertAccess, entryDocOf, entryRowsFor, fileOf, itEach, receiptFileOf, replaceReceiptBatch, signedInAs } from './setup/index.mjs';
 
 const bruno = () => signedInAs('bruno@gmail.com');
 

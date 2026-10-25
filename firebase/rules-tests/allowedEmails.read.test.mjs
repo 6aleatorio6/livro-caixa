@@ -2,7 +2,7 @@ import { describe } from 'node:test';
 
 import { collection, getDoc, getDocs } from 'firebase/firestore';
 
-import { assertAccess, entryOf, itEach, signedInAs, signedInWithUnverifiedEmail, signedOut } from './setup.mjs';
+import { assertAccess, entryOf, itEach, signedInAs, signedInWithUnverifiedEmail, signedOut } from './setup/index.mjs';
 
 describe('allowedEmails get', () => {
   const cases = [

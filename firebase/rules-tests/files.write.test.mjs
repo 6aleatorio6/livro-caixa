@@ -2,7 +2,7 @@ import { describe } from 'node:test';
 
 import { deleteDoc, setDoc, updateDoc } from 'firebase/firestore';
 
-import { OUTSIDERS, assertAccess, fileOf, itEach, receiptFileOf, rowsFor, signedInAs } from './setup.mjs';
+import { OUTSIDERS, assertAccess, fileOf, itEach, receiptFileOf, rowsFor, signedInAs } from './setup/index.mjs';
 
 // O registro do comprovante nasce no lote do lançamento; aqui ele é gravado sozinho, com o `uid` de quem grava.
 describe('files create by profile', () => {

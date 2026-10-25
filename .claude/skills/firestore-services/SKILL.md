@@ -209,8 +209,9 @@ rule carries a pt-BR comment with the business reason.
 - **What no service does, but someone with an account could try** through the SDK (read another
   person's entry, write to the allowed list) goes to `firebase/rules-tests/`
   (`@firebase/rules-unit-testing`, `node:test`), run with `pnpm test:rules`. One `*.test.mjs` per
-  document and operation (`allowedEmails.update.test.mjs`) and `setup.mjs` with the emulator, the seed
-  and the logins; the cases that only change the login or the field are a table of rows, one `it`
+  document and operation (`allowedEmails.update.test.mjs`) and `setup/` with the emulator and the seed
+  (`environment.mjs`), the logins (`profiles.mjs`), the refs, documents, batches and row helpers, all
+  re-exported by `setup/index.mjs`; the cases that only change the login or the field are a table of rows, one `it`
   each, and a new rule starts with its failing rows.
 
 Both run in this container, against the emulators: Java comes from the PC through the claude-box.

@@ -11,7 +11,7 @@ import {
   signedInAs,
   signedInWithUnverifiedEmail,
   signedOut,
-} from './setup.mjs';
+} from './setup/index.mjs';
 
 // Em cada tabela, `as` é quem muda, `email` é a entrada e `data` são os campos que ele grava.
 describe('allowedEmails update of the own entry', () => {

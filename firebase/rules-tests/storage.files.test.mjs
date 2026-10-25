@@ -2,7 +2,7 @@ import { describe } from 'node:test';
 
 import { assertFails } from '@firebase/rules-unit-testing';
 
-import { STORAGE_MEMBERS as MEMBERS, STORAGE_OUTSIDERS as OUTSIDERS, assertAccess, itEach, rowsFor, seedStorageFile } from './setup.mjs';
+import { STORAGE_MEMBERS as MEMBERS, STORAGE_OUTSIDERS as OUTSIDERS, assertAccess, itEach, rowsFor, seedStorageFile } from './setup/index.mjs';
 
 const MAX_BYTES = 5 * 1024 * 1024;
 
