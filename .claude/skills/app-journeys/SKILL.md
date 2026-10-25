@@ -231,6 +231,15 @@ throwaway flow before the round counts as passing.
 - **"Unable to load script" after the emulator was opened again:** a new boot drops the
   `adb reverse` that `pnpm android` set, and `signInAs` fails waiting for "Entrar com Google".
   `adb reverse tcp:8081 tcp:8081`, then the flow again.
+- **The file picker's files live only on the device.** `home/memberPaysRecurringBill` and
+  `payments/memberRegistersOneOffBillWithReducedReceipt` pick `recibo-pequeno.pdf`,
+  `recibo-grande.pdf` (over 5 MB) and `foto-grande.jpg` (over 2 MB) from Downloads; a new AVD or
+  image has none, and the flows fail on "Element not found". Rebuild them from `data/fixtures/`
+  (a copy of `comprovante-luz.pdf`; the same PDF padded with `%` comment lines to 6 MB;
+  `recibo-conserto.jpg` with JPEG comment segments, `FF FE`, after the `FF D8`, to 22 MB), then
+  `adb push` each to `/sdcard/Download/` and send `MEDIA_SCANNER_SCAN_FILE` for it.
+- **The status and navigation bars take height:** a list item near the end of the Início (the
+  Água) sits below the fold. Wait for the first item, or scroll to the one the flow needs.
 - **`clearState`** erases the session and the cached data: every flow signs in again.
 - **A native change** needs `pnpm android` on the PC again; Metro alone won't bring it.
 - **The first bundle** after `clearState` takes a while: `signInAs` waits up to 60 s for the

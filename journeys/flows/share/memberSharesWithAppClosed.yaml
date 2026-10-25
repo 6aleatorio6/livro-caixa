@@ -19,8 +19,9 @@ tags:
       SCENARIO: seedShareReceipt
 - stopApp
 - launchApp
+# A Água fica abaixo da dobra com as barras do sistema: a Internet, primeira da lista, diz que o Início abriu.
 - extendedWaitUntil:
-    visible: "Registrar Água"
+    visible: "Registrar Internet"
     timeout: 30000
 - runScript:
     file: ../../data/request.js
