@@ -1,0 +1,67 @@
+# O Bruno (membro) registra uma conta avulsa do mês passado: o PDF de 6 MB é recusado no campo, a foto
+# de 22 MB é reduzida e o campo mostra "comprimida para"; depois de registrar, o mês anterior mostra a conta
+# e o total, e o mês atual continua vazio.
+# Coberto por:
+# - A redução da imagem (a foto passa de 2 MB e sai em WebP de até 2560): só esta jornada prova o
+#   `expo-image-manipulator` no aparelho, pelo seletor de arquivos do Android, que o Jest não roda.
+#   O formato WebP e o lado maior do objeto foram conferidos no emulador do Storage, fora do fluxo.
+# - O PDF acima de 5 MB recusado: pickReceiptFile e ReceiptField.test.tsx.
+# - A conta no mês anterior, o total e o mês atual vazio: MyPaymentsPage.test.tsx e o contrato do
+#   entryMonthQueryService.
+# - O registro da conta com o comprovante: doAddOneOffBill e o contrato do addOneOffBillService.
+appId: dev.leonardolf.livrocaixa
+tags:
+  - payments
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: member
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: seedTags
+- tapOn: Meus pagamentos
+- assertVisible: Nenhum pagamento seu em outubro
+- takeScreenshot: my-payments--empty
+- tapOn: Nova conta avulsa
+- tapOn: Nome da conta
+- inputText: Conserto da geladeira
+- hideKeyboard
+- tapOn: Valor pago
+- inputText: 35000
+- hideKeyboard
+# O calendário do Android: o dia 15 do mês anterior.
+- tapOn: "Data, .*"
+- tapOn: Previous month
+- tapOn:
+    text: "15"
+    below: "Previous month"
+- tapOn: OK
+- tapOn: Casa
+# O seletor de arquivos do Android, na pasta Downloads: primeiro o PDF grande, que o campo recusa.
+- tapOn: "Comprovante: Nenhum arquivo anexado. Escolher"
+- tapOn: Show roots
+- tapOn: Downloads
+- tapOn: recibo-grande.pdf
+- assertVisible: O PDF passa de 5 MB. Escolha outro arquivo.
+- takeScreenshot: new-one-off-bill--pdf-too-big
+# Depois a foto grande, reduzida pelo expo-image-manipulator.
+- tapOn: "Comprovante: .*Escolher outro"
+- tapOn: foto-grande.jpg
+- extendedWaitUntil:
+    visible: "Imagem · comprimida para .*"
+    timeout: 60000
+- takeScreenshot: new-one-off-bill--image-reduced
+- tapOn: Registrar conta avulsa
+- extendedWaitUntil:
+    visible: Nenhum pagamento seu em outubro
+    timeout: 60000
+- assertNotVisible: Conserto da geladeira
+- tapOn: Mês anterior
+- assertVisible: Conserto da geladeira
+- assertVisible: "15/.. · avulsa · Casa"
+- assertVisible: "R$ 350,00"
+- assertVisible: "1 lançamento.*"
+- takeScreenshot: my-payments--previous-month
+- runFlow: ../../steps/assertNoErrors.yaml
