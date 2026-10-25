@@ -1,8 +1,8 @@
 import { describe } from 'node:test';
 
-import { deleteDoc, deleteField, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { deleteField, serverTimestamp, updateDoc } from 'firebase/firestore';
 
-import { SEEDED_RECEIPT_OF, asOwner, assertAccess, entryDocOf, entryRowsFor, fileOf, itEach, receiptFileOf, replaceReceiptBatch, signedInAs } from './setup/index.mjs';
+import { SEEDED_RECEIPT_OF, asOwner, assertAccess, deleteReceiptBatch, entryDocOf, entryRowsFor, itEach, receiptFileOf, replaceReceiptBatch, signedInAs } from './setup/index.mjs';
 
 const bruno = () => signedInAs('bruno@gmail.com');
 
@@ -67,7 +67,7 @@ describe('entries update receipt replacement by the author, one-off bill', () =>
     { title: 'Should not let the author replace the receipt without deleting the old record', run: () => replaceReceipt(bruno, 'bruno1', {}, { oldFileId: null }), isAllowed: false },
     {
       title: 'Should not let the author replace the receipt with a record of another person',
-      run: () => replaceReceipt(bruno, 'bruno1', {}, { newFile: receiptFileOf('fnew', { uploadedBy: 'uid-ana' }) }),
+      run: () => replaceReceipt(bruno, 'bruno1', {}, { newFile: receiptFileOf({ uploadedBy: 'uid-ana' }) }),
       isAllowed: false,
     },
   ];
@@ -118,12 +118,12 @@ describe('entries update receipt replacement by the author, recurring payment', 
 // A troca do comprovante de quem ficou sem o registro antigo (apagado por fora): o `delete` dele não pode derrubar o lote.
 describe('entries update receipt replacement when the old file record is already gone', () => {
   const cases = [
-    { title: 'Should let the author replace the receipt of a one-off bill whose old file record is gone', id: 'bruno1' },
-    { title: 'Should let the author replace the receipt of a recurring payment whose old file record is gone', id: '2026-10_luz' },
+    { title: 'Should let the author replace the receipt of a one-off bill whose old file record and content are gone', id: 'bruno1' },
+    { title: 'Should let the author replace the receipt of a recurring payment whose old file record and content are gone', id: '2026-10_luz' },
   ];
 
   itEach(cases, async ({ id }) => {
-    await asOwner((firestore) => deleteDoc(fileOf(firestore, SEEDED_RECEIPT_OF[id])));
+    await asOwner((firestore) => deleteReceiptBatch(firestore, SEEDED_RECEIPT_OF[id]));
     return assertAccess(true, replaceReceipt(bruno, id));
   });
 });

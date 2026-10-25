@@ -4,8 +4,8 @@ import { after, before, beforeEach } from 'node:test';
 import { initializeTestEnvironment } from '@firebase/rules-unit-testing';
 import { setDoc } from 'firebase/firestore';
 
-import { SEEDED_BILL, SEEDED_TAG, oneOffBillOf, receiptFileOf, recurringPaymentOf } from './documents.mjs';
-import { entryDocOf, entryOf, fileOf, recurringBillOf, tagsDocOf } from './refs.mjs';
+import { SEEDED_BILL, SEEDED_TAG, oneOffBillOf, receiptContentOf, receiptFileOf, recurringPaymentOf } from './documents.mjs';
+import { entryDocOf, entryOf, fileContentOf, fileOf, recurringBillOf, tagsDocOf } from './refs.mjs';
 
 // O ambiente dos testes das regras: cada arquivo `*.test.mjs` importa o `setup/`, que liga os emuladores
 // do Firestore e do Storage (`pnpm test:rules`, no PC, que tem o Java) e semeia a lista antes de cada caso. Os
@@ -34,21 +34,27 @@ beforeEach(async () => {
     await setDoc(recurringBillOf(firestore, 'internet'), { ...SEEDED_BILL });
     await setDoc(recurringBillOf(firestore, 'aluguel'), { ...SEEDED_BILL, name: 'Aluguel' });
     await setDoc(recurringBillOf(firestore, 'luz'), { ...SEEDED_BILL, name: 'Luz' });
-    // Uma conta avulsa de cada um, com o registro do comprovante, para `get`, `update` e `delete`.
-    await setDoc(fileOf(firestore, 'fana1'), receiptFileOf('fana1', { uploadedBy: 'uid-ana' }));
+    // Uma conta avulsa de cada um, com o registro e o conteúdo do comprovante, para `get`, `update` e `delete`.
+    await seedReceipt(firestore, 'fana1', { uploadedBy: 'uid-ana' });
     await setDoc(entryDocOf(firestore, 'ana1'), oneOffBillOf({ paidBy: 'uid-ana', receiptFileId: 'fana1' }));
-    await setDoc(fileOf(firestore, 'fbruno1'), receiptFileOf('fbruno1'));
+    await seedReceipt(firestore, 'fbruno1');
     await setDoc(entryDocOf(firestore, 'bruno1'), oneOffBillOf({ paidBy: 'uid-bruno', receiptFileId: 'fbruno1' }));
     // Um pagamento de conta recorrente de cada um, no mês 2026-10 (o da Ana é do aluguel, o do Bruno da luz;
     // `internet` fica livre para o pagamento novo), para o segundo pagamento, o `update` e o `delete`.
-    await setDoc(fileOf(firestore, 'fpana'), receiptFileOf('fpana', { uploadedBy: 'uid-ana' }));
+    await seedReceipt(firestore, 'fpana', { uploadedBy: 'uid-ana' });
     await setDoc(entryDocOf(firestore, '2026-10_aluguel'), recurringPaymentOf({ recurringBillId: 'aluguel', name: 'Aluguel', paidBy: 'uid-ana', receiptFileId: 'fpana' }));
-    await setDoc(fileOf(firestore, 'fpbruno'), receiptFileOf('fpbruno'));
+    await seedReceipt(firestore, 'fpbruno');
     await setDoc(entryDocOf(firestore, '2026-10_luz'), recurringPaymentOf({ recurringBillId: 'luz', name: 'Luz', paidBy: 'uid-bruno', receiptFileId: 'fpbruno' }));
   });
 });
 
 after(() => testEnvironment.cleanup());
+
+// O registro e o conteúdo de um comprovante, gravados juntos como o lote do app os deixa.
+function seedReceipt(firestore, id, overrides = {}) {
+  const file = receiptFileOf(overrides);
+  return Promise.all([setDoc(fileOf(firestore, id), file), setDoc(fileContentOf(firestore, id), receiptContentOf(file.sizeBytes))]);
+}
 
 /** Grava ou muda a lista por fora das regras, como quem administra pelo console. */
 export function asOwner(write) {

@@ -1,15 +1,44 @@
 import { writeBatch } from 'firebase/firestore';
 
-import { oneOffBillOf, receiptFileOf, recurringPaymentOf } from './documents.mjs';
-import { entryDocOf, entryOf, fileOf } from './refs.mjs';
+import { oneOffBillOf, receiptContentOf, receiptFileOf, recurringPaymentOf } from './documents.mjs';
+import { entryDocOf, entryOf, fileContentOf, fileOf } from './refs.mjs';
+
+// O registro e o conteúdo do comprovante entram e saem do lote juntos, como o app os grava.
+function addReceipt(batch, firestore, id, file) {
+  batch.set(fileOf(firestore, id), file);
+  batch.set(fileContentOf(firestore, id), receiptContentOf(file.sizeBytes));
+}
+
+function deleteReceipt(batch, firestore, id) {
+  batch.delete(fileOf(firestore, id));
+  batch.delete(fileContentOf(firestore, id));
+}
+
+/** O lote que apaga o registro e o conteúdo de um comprovante, sem o lançamento. */
+export function deleteReceiptBatch(firestore, id) {
+  const batch = writeBatch(firestore);
+  deleteReceipt(batch, firestore, id);
+  return batch.commit();
+}
 
 /**
- * O lote como o app grava: o registro do arquivo, o lançamento e o `hasEntries: true` de `email`.
- * `file: null` deixa o registro de fora, e `markHasEntries: false` deixa de fora o `hasEntries`.
+ * O lote de um comprovante sem o lançamento: o registro e o conteúdo (`content: null` deixa o conteúdo de fora; o
+ * padrão tem o tamanho do `sizeBytes` do registro).
  */
-export function addEntryBatch(firestore, { entryId, entry, fileId = entry.receiptFileId, file = receiptFileOf(fileId), email = 'bruno@gmail.com', markHasEntries = true }) {
+export function receiptBatch(firestore, id, { file = receiptFileOf(), content = receiptContentOf(file.sizeBytes) } = {}) {
   const batch = writeBatch(firestore);
-  if (file !== null) batch.set(fileOf(firestore, fileId), file);
+  batch.set(fileOf(firestore, id), file);
+  if (content !== null) batch.set(fileContentOf(firestore, id), content);
+  return batch.commit();
+}
+
+/**
+ * O lote como o app grava: o registro e o conteúdo do arquivo, o lançamento e o `hasEntries: true` de `email`.
+ * `file: null` deixa o registro e o conteúdo de fora, e `markHasEntries: false` deixa de fora o `hasEntries`.
+ */
+export function addEntryBatch(firestore, { entryId, entry, fileId = entry.receiptFileId, file = receiptFileOf(), email = 'bruno@gmail.com', markHasEntries = true }) {
+  const batch = writeBatch(firestore);
+  if (file !== null) addReceipt(batch, firestore, fileId, file);
   batch.set(entryDocOf(firestore, entryId), entry);
   if (markHasEntries) batch.update(entryOf(firestore, email), { hasEntries: true });
   return batch.commit();
@@ -28,22 +57,23 @@ export function addPaymentBatch(firestore, { entry = recurringPaymentOf(), entry
 }
 
 /**
- * O lote da troca do comprovante como o app grava: cria o registro novo (`newFile`, o padrão de `newFileId`;
- * `null` deixa de fora, para apontar para um que já existia), atualiza o lançamento com o `receiptFileId` novo
- * e o resto de `changes`, e apaga o registro antigo (`oldFileId: null` o deixa de fora).
+ * O lote da troca do comprovante como o app grava: cria o registro e o conteúdo novos (`newFile`, o padrão de
+ * `newFileId`; `null` deixa os dois de fora, para apontar para um que já existia), atualiza o lançamento com o
+ * `receiptFileId` novo e o resto de `changes`, e apaga o registro e o conteúdo antigos (`oldFileId: null` os deixa
+ * de fora).
  */
-export function replaceReceiptBatch(firestore, { entryId, oldFileId, newFileId, changes = {}, newFile = receiptFileOf(newFileId) }) {
+export function replaceReceiptBatch(firestore, { entryId, oldFileId, newFileId, changes = {}, newFile = receiptFileOf() }) {
   const batch = writeBatch(firestore);
-  if (newFile !== null) batch.set(fileOf(firestore, newFileId), newFile);
+  if (newFile !== null) addReceipt(batch, firestore, newFileId, newFile);
   batch.update(entryDocOf(firestore, entryId), { receiptFileId: newFileId, ...changes });
-  if (oldFileId !== null) batch.delete(fileOf(firestore, oldFileId));
+  if (oldFileId !== null) deleteReceipt(batch, firestore, oldFileId);
   return batch.commit();
 }
 
-/** O lote da exclusão como o app grava: o lançamento e o registro do comprovante (`fileId: null` apaga só o lançamento). */
+/** O lote da exclusão como o app grava: o lançamento, o registro e o conteúdo do comprovante (`fileId: null` apaga só o lançamento). */
 export function deleteEntryBatch(firestore, { entryId, fileId }) {
   const batch = writeBatch(firestore);
   batch.delete(entryDocOf(firestore, entryId));
-  if (fileId !== null) batch.delete(fileOf(firestore, fileId));
+  if (fileId !== null) deleteReceipt(batch, firestore, fileId);
   return batch.commit();
 }

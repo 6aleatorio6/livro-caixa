@@ -1,4 +1,4 @@
-import { serverTimestamp } from 'firebase/firestore';
+import { Bytes, serverTimestamp } from 'firebase/firestore';
 
 /** A tag semeada em `settings/tags`, com a chave `t1`. */
 export const SEEDED_TAG = { name: 'Casa', nameKey: 'casa', color: 'wood' };
@@ -49,7 +49,22 @@ export function recurringPaymentOf(overrides = {}) {
   });
 }
 
+/** O tamanho do comprovante dos casos: pequeno, para o emulador não carregar quase 1 MiB a cada lote. */
+export const RECEIPT_SIZE_BYTES = 1234;
+
+/** O maior comprovante que cabe no documento (900 KiB), o mesmo limite do app. */
+export const RECEIPT_MAX_BYTES = 921600;
+
 /** O registro do comprovante (uma imagem do Bruno), com os campos trocados em `overrides`. */
-export function receiptFileOf(id, overrides = {}) {
-  return withoutUndefined({ storagePath: `files/${id}`, type: 'image', contentType: 'image/webp', sizeBytes: 812345, uploadedBy: 'uid-bruno', name: 'comprovante.webp', ...overrides });
+export function receiptFileOf(overrides = {}) {
+  return withoutUndefined({ type: 'image', contentType: 'image/webp', sizeBytes: RECEIPT_SIZE_BYTES, uploadedBy: 'uid-bruno', name: 'comprovante.webp', ...overrides });
+}
+
+/**
+ * O conteúdo do comprovante em `fileContents/{id}`: `sizeBytes` bytes zerados. Um `sizeBytes` que não serve de
+ * tamanho (fracionário, ausente) dá o tamanho padrão.
+ */
+export function receiptContentOf(sizeBytes = RECEIPT_SIZE_BYTES) {
+  const length = Number.isInteger(sizeBytes) ? sizeBytes : RECEIPT_SIZE_BYTES;
+  return { content: Bytes.fromUint8Array(new Uint8Array(length)) };
 }
