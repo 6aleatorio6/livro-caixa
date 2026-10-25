@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
 import { AppContainer } from '@/core/AppContainer';
 import { SplashScreenController } from '@/core/components/SplashScreenController/SplashScreenController';
@@ -12,6 +13,8 @@ export default function RootLayout() {
   // Enquanto a sessão carrega, a splash cobre a tela de login, que é a única liberada.
   return (
     <AppContainer>
+      {/* Os ícones da barra seguem o tema do telefone, como o `adaptiveThemes`; o comprovante em tela cheia põe o dele. */}
+      <StatusBar style="auto" />
       <SplashScreenController isLoading={accessStatus === 'loading'} />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Protected guard={accessStatus === 'signedOut' || accessStatus === 'loading'}>
