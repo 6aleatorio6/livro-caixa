@@ -5,11 +5,24 @@ import { TopBar } from './TopBar';
 
 jest.mock('expo-router', () => ({ router: { back: jest.fn() } }));
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 describe('TopBar', () => {
   it('Should go back when Voltar is pressed', async () => {
     await render(<TopBar title="E-mails permitidos" />);
 
     await userEvent.setup().press(screen.getByRole('button', { name: 'Voltar' }));
+
+    expect(router.back).toHaveBeenCalledTimes(1);
+  });
+
+  it('Should offer Fechar instead of Voltar for the close icon, and go back with it', async () => {
+    await render(<TopBar title="recibo.jpg" icon="close" />);
+
+    expect(screen.queryByRole('button', { name: 'Voltar' })).not.toBeOnTheScreen();
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Fechar' }));
 
     expect(router.back).toHaveBeenCalledTimes(1);
   });

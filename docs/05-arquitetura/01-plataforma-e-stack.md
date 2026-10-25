@@ -54,6 +54,15 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   plugins que a documentação dela indica ficam de fora: o do `blob-util` só prepara o gerenciador de
   downloads do Android, que o app não usa, e o dela só põe no APK uma cópia da `libc++_shared.so`,
   o que o `expo-build-properties` já faz.
+- **Zoom da imagem do comprovante escrito à mão, com o `react-native-gesture-handler` 3 e a
+  Reanimated 4**, que o app já tem ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md)).
+  A pinça aproxima de 1× a 4×, dois toques alternam 1× e 2×, e só com zoom a imagem se arrasta; são
+  umas 40 linhas de gestos. O app tem a raiz dos gestos (`GestureHandlerRootView`) no `AppContainer`.
+- **A folha de baixo dos detalhes do lançamento é uma rota em modal transparente do expo-router**,
+  e não um componente dentro de cada lista: o "Ver" (o comprovante em tela cheia) e o "Alterar"
+  empilham por cima da folha e voltam para ela, e as duas listas só fazem a navegação. A
+  `@gorhom/bottom-sheet` seria uma dependência nova, e o `formSheet` do `react-native-screens`, que
+  tem implementação no Android, não foi experimentado.
 - **Arquivos compartilhados recebidos com o `expo-sharing`**, do próprio Expo, que sai junto com
   o SDK ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#compartilhar-pelo-android)).
   O plugin dele põe no manifesto o filtro que faz o app aparecer entre os destinos de uma imagem ou
@@ -80,6 +89,9 @@ Ficaram de fora:
   marca é passada componente a componente, sem um tema próprio global, e o layout dentro dele segue
   as regras do Compose, não as do React Native.
 - **Material Symbols:** no React Native, o pacote oficial só desenha os ícones dentro do Expo UI.
+- **Bibliotecas de zoom de imagem:** o `maximumZoomScale` do `ScrollView` é só do iOS; a
+  `react-native-zoom-toolkit` não foi testada com o `react-native-gesture-handler` 3; e a
+  `@likashefqet/react-native-image-zoom` está parada desde 2024.
 - **`react-native-better-pdf`:** desenha o PDF com o `PdfRenderer` do próprio Android, sem motor
   embutido (cerca de 2 MB contra 5 MB), e gera a imagem de cada página. Mas o código que o
   `nitrogen` 0.37.1 gera para ela não compila no Kotlin 2.4, que o React Native Firebase 27 pede: o

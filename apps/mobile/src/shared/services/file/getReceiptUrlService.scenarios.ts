@@ -1,29 +1,33 @@
+import { ANA, BOTH_IN_THE_LIST, BRUNO, RECEIPT_FILE_ID } from '@/shared/testing/entryFixtures';
 import { testAccountUid } from '@/shared/testing/testAccountUid';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 
-// As pessoas são as contas de teste das jornadas: Ana e Bruno estão na lista.
-const ANA = 'ana.souza@exemplo.com';
-const BRUNO = 'bruno.souza@exemplo.com';
-const BOTH_IN_THE_LIST = {
-  [`allowedEmails/${ANA}`]: { name: 'Ana Souza', isAdmin: true, hasEntries: true },
-  [`allowedEmails/${BRUNO}`]: { name: 'Bruno Souza', isAdmin: false, hasEntries: true },
-};
+// O comprovante dos lançamentos dos cenários de alterar e excluir, no Storage.
+const RECEIPT_PATH = `files/${RECEIPT_FILE_ID}`;
 
 /**
  * O endereço de verdade leva um token sorteado pelo Storage, então o contrato não o compara com a `result`:
  * ele confere que o endereço vem do objeto pedido e que abrir o endereço devolve o arquivo (200 e o tipo do
  * objeto). A `result` é só o texto que o teste de página recebe no lugar do endereço.
  */
-export const RECEIPT_URL_EXAMPLE = 'https://storage.example.com/files/f-fridge?alt=media&token=abc';
+export const RECEIPT_URL_EXAMPLE = `https://storage.example.com/${RECEIPT_PATH}?alt=media&token=abc`;
 
 export const getReceiptUrlScenarios = {
-  // O Bruno abre o comprovante que a Ana enviou: o objeto é dela, e a leitura é de todo membro.
+  // A Ana abre o comprovante que o Bruno enviou: o objeto é dele, e a leitura é de todo membro.
   receiptOfAnotherMember: {
+    signedInAs: ANA,
+    given: BOTH_IN_THE_LIST,
+    storageGiven: { [RECEIPT_PATH]: { contentType: 'image/png', uploadedBy: testAccountUid(BRUNO) } },
+    input: [RECEIPT_PATH],
+    result: RECEIPT_URL_EXAMPLE,
+  },
+  // O PDF da Luz, que o próprio Bruno enviou: o objeto é `application/pdf`, e o endereço abre as páginas.
+  pdfReceiptOfTheMember: {
     signedInAs: BRUNO,
     given: BOTH_IN_THE_LIST,
-    storageGiven: { 'files/f-fridge': { contentType: 'image/png', uploadedBy: testAccountUid(ANA) } },
-    input: ['files/f-fridge'],
-    result: RECEIPT_URL_EXAMPLE,
+    storageGiven: { [RECEIPT_PATH]: { contentType: 'application/pdf', uploadedBy: testAccountUid(BRUNO) } },
+    input: [RECEIPT_PATH],
+    result: `https://storage.example.com/${RECEIPT_PATH}?alt=media&token=def`,
   },
 } satisfies Record<string, IServiceScenario<[string], string>>;
 
@@ -33,7 +37,7 @@ export const getReceiptUrlRejectedScenarios = {
   receiptObjectMissing: {
     signedInAs: BRUNO,
     given: BOTH_IN_THE_LIST,
-    input: ['files/f-fridge'],
+    input: [RECEIPT_PATH],
     result: { code: 'RECEIPT_NOT_FOUND', userMessage: 'O comprovante não foi encontrado.' },
   },
 } satisfies Record<string, IServiceScenario<[string], { code: string; userMessage: string }>>;
@@ -46,8 +50,8 @@ export const getReceiptUrlFailedScenarios = {
   outsiderAsksForAddress: {
     signedInAs: 'carla.lima@exemplo.com',
     given: BOTH_IN_THE_LIST,
-    storageGiven: { 'files/f-fridge': { contentType: 'image/png', uploadedBy: testAccountUid(ANA) } },
-    input: ['files/f-fridge'],
+    storageGiven: { [RECEIPT_PATH]: { contentType: 'image/png', uploadedBy: testAccountUid(BRUNO) } },
+    input: [RECEIPT_PATH],
     result: { code: 'storage/unauthorized' },
   },
 } satisfies Record<string, IServiceScenario<[string], { code: string }>>;

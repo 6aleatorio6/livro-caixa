@@ -28,8 +28,8 @@ export interface IEntryDetailsContentProps {
 }
 
 /** O corpo da folha: o cabeçalho, o valor, as linhas, o comprovante e, no fim, as ações do autor ou o aviso de quem pode mudar. */
-// O visualizador (`entries/[id]/receipt`) e a tela de alterar (`entries/[id]/edit`) ainda não têm arquivo de rota,
-// então as rotas tipadas não os conhecem: o `as unknown as Href` sai com cada uma.
+// A tela de alterar (`entries/[id]/edit`) ainda não tem arquivo de rota, então as rotas tipadas não a conhecem:
+// o `as unknown as Href` sai com ela.
 export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
   const { theme } = useUnistyles();
   const authState = useAuthState();
@@ -94,7 +94,7 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
         file={file ? { name: file.name, type: file.type, sizeBytes: file.sizeBytes } : null}
         actionLabel="Ver"
         disabled={!file}
-        onPress={() => router.push({ pathname: '/entries/[id]/receipt', params: { id: entry.id } } as unknown as Href)}
+        onPress={() => router.push({ pathname: '/entries/[id]/receipt', params: { id: entry.id } })}
       />
 
       {isAuthor ? (

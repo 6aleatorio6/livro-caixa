@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, X } from 'lucide-react-native';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
@@ -8,14 +8,21 @@ import { IconButton } from '@/shared/components/IconButton/IconButton';
 
 export interface ITopBarProps {
   title: string;
+  /** `close` troca a seta de voltar pelo `x` de fechar, nas telas que cobrem tudo (o comprovante em tela cheia). */
+  icon?: 'back' | 'close';
 }
 
-/** A barra superior de uma tela fora das abas: o voltar, que desfaz a última navegação, e o título. */
-export function TopBar({ title }: ITopBarProps) {
+/** A barra superior de uma tela fora das abas: o voltar (ou o fechar), que desfaz a última navegação, e o título numa linha só. */
+export function TopBar({ title, icon = 'back' }: ITopBarProps) {
   return (
     <View style={styles.bar}>
-      <IconButton icon={ArrowLeft} label="Voltar" color="onSurface" onPress={() => router.back()} />
-      <AppText variant="titleLarge" accessibilityRole="header">
+      <IconButton
+        icon={icon === 'close' ? X : ArrowLeft}
+        label={icon === 'close' ? 'Fechar' : 'Voltar'}
+        color="onSurface"
+        onPress={() => router.back()}
+      />
+      <AppText variant="titleLarge" accessibilityRole="header" numberOfLines={1} style={styles.title}>
         {title}
       </AppText>
     </View>
@@ -31,4 +38,5 @@ const styles = StyleSheet.create((theme) => ({
     paddingLeft: theme.spacing.extraSmall,
     paddingRight: theme.spacing.large,
   },
+  title: { flex: 1 },
 }));
