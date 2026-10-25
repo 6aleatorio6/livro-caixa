@@ -6,10 +6,12 @@ import type { IColorRole } from '@/core/types/ColorRole';
 
 import { AppText } from '@/shared/components/AppText/AppText';
 import { CircleMark } from '@/shared/components/CircleMark/CircleMark';
+import { displayNameOf } from '@/shared/utils/person/displayNameOf';
 
 export interface IPersonItemProps {
-  name: string;
-  email: string | null;
+  /** `null` enquanto a pessoa não entrou: a linha do nome mostra o e-mail, e a do e-mail some. */
+  name: string | null;
+  email: string;
   /** A linha de situação sob o e-mail (o papel, se a pessoa tem lançamentos). */
   situation?: string;
   situationColor?: IColorRole;
@@ -21,16 +23,24 @@ export interface IPersonItemProps {
  * Uma pessoa da família: o círculo com a inicial, o nome (de quem ainda não tem, o e-mail) e, sob ele, o e-mail
  * de quem tem nome; se houver, a situação e uma ação.
  */
-export function PersonItem({ name, email, situation, situationColor = 'onSurfaceVariant', trailing }: IPersonItemProps) {
+export function PersonItem({
+  name,
+  email,
+  situation,
+  situationColor = 'onSurfaceVariant',
+  trailing,
+}: IPersonItemProps) {
+  const displayName = displayNameOf({ name, email });
+
   return (
     <View style={styles.item}>
       <CircleMark size={40} color="secondaryContainer">
         <AppText variant="labelLargeEmphasized" color="onSecondaryContainer">
-          {name.charAt(0).toUpperCase()}
+          {displayName.charAt(0).toUpperCase()}
         </AppText>
       </CircleMark>
       <View style={styles.texts}>
-        <AppText variant="bodyLarge">{name}</AppText>
+        <AppText variant="bodyLarge">{displayName}</AppText>
         {name !== null ? (
           <AppText variant="bodySmall" color="onSurfaceVariant">
             {email}
