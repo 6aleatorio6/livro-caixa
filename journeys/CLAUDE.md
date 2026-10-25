@@ -67,7 +67,9 @@ only content.
 - **A receipt a scenario writes is a real object in the Storage emulator**, put with
   `OwnerFirestore.putObject` (path, bytes, content type and `uploadedBy`) next to the entry that
   points to it, so the app downloads it as it would in production. The fixture is a file of
-  `data/fixtures/`, never bytes inline. `deleteAll` (the `reset`) also empties the Storage through
-  `environment.clearStorage()`. `test.ts` gives the data server the Storage port (from
+  `data/fixtures/`, never bytes inline. `deleteAll` (the `reset`) deletes the objects under `files/`
+  by listing the folder, because `environment.clearStorage()` lists only the bucket root and
+  would leave a receipt another flow uploaded behind (checked on the emulator).
+  `test.ts` gives the data server the Storage port (from
   `firebase.json`) and the bucket (`storage_bucket` of `google-services.json`).
 - **Nothing new loose at the root.** A new tool or configuration file enters the tree above.
