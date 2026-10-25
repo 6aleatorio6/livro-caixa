@@ -25,6 +25,17 @@ describe('createAsyncAction', () => {
     expect(useToastStore.getState().toast).toEqual({ message: 'Conta salva', kind: 'success' });
   });
 
+  it('Should choose the success message from the params of the call', async () => {
+    const remove = createAsyncAction({
+      run: async (_kind: 'payment' | 'bill') => undefined,
+      successMessage: (kind) => (kind === 'payment' ? 'Pagamento excluído' : 'Conta excluída'),
+    });
+
+    await remove('bill');
+
+    expect(useToastStore.getState().toast).toEqual({ message: 'Conta excluída', kind: 'success' });
+  });
+
   it('Should show the user message of an AppError', async () => {
     const error = new AppError('Payment already registered', 'Essa conta já foi paga neste mês.');
     const pay = createAsyncAction({

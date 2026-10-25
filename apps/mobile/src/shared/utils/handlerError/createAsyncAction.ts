@@ -19,7 +19,9 @@ export function createAsyncAction<TParams = void, TData = void>({
     if (shouldShowLoader) showLoader();
     try {
       const data = await run(params);
-      if (successMessage) showToast(successMessage, 'success');
+      if (successMessage) {
+        showToast(typeof successMessage === 'function' ? successMessage(params) : successMessage, 'success');
+      }
       return { data, error: null };
     } catch (error) {
       showToast(errorUserMessage(error), 'error');
