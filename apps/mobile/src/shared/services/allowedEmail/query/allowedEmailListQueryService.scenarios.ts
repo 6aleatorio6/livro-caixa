@@ -31,6 +31,13 @@ export const allowedEmailListQueryScenarios = {
     input: {},
     result: [ANA_ITEM, BRUNO_ITEM, CLARA_ITEM, ELISA_ITEM],
   },
+  // A Ana mudou o próprio nome: a lista entrega o atual, e as telas o mostram nos lançamentos antigos.
+  familyWithRenamedMember: {
+    signedInAs: ANA,
+    given: { ...FAMILY, ...documentOf({ ...ANA_ITEM, name: 'Ana Paula Souza' }) },
+    input: {},
+    result: [{ ...ANA_ITEM, name: 'Ana Paula Souza' }, BRUNO_ITEM, CLARA_ITEM],
+  },
   personAddedWhileOpen: {
     signedInAs: ANA,
     given: FAMILY,
