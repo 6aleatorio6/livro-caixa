@@ -1,14 +1,12 @@
-import { router, type Href } from 'expo-router';
+import { router } from 'expo-router';
 import { Check, Lock, Pencil, Receipt } from 'lucide-react-native';
 import { View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
-import { doDeleteOneOffBill } from '@/features/entries/utils/actions/doDeleteOneOffBill';
-import { doDeletePayment } from '@/features/entries/utils/actions/doDeletePayment';
+import { DeleteEntryButton } from '@/features/entries/components/DeleteEntryButton/DeleteEntryButton';
 import { AppText } from '@/shared/components/AppText/AppText';
 import { Button } from '@/shared/components/Button/Button';
 import { CircleMark } from '@/shared/components/CircleMark/CircleMark';
-import { DeleteWithConfirm } from '@/shared/components/DeleteWithConfirm/DeleteWithConfirm';
 import { DetailRow } from '@/shared/components/DetailRow/DetailRow';
 import { Notice } from '@/shared/components/Notice/Notice';
 import { ReceiptSummary } from '@/shared/components/ReceiptSummary/ReceiptSummary';
@@ -28,8 +26,6 @@ export interface IEntryDetailsContentProps {
 }
 
 /** O corpo da folha: o cabeçalho, o valor, as linhas, o comprovante e, no fim, as ações do autor ou o aviso de quem pode mudar. */
-// A tela de alterar (`entries/[id]/edit`) ainda não tem arquivo de rota, então as rotas tipadas não a conhecem:
-// o `as unknown as Href` sai com ela.
 export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
   const { theme } = useUnistyles();
   const authState = useAuthState();
@@ -43,11 +39,6 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
   // Uma tag apagada (só pelo SDK) deixa a conta sem a linha da tag.
   const tag = tags?.find((candidate) => candidate.id === entry.tagId);
   const Icon = isPayment ? Check : Receipt;
-
-  async function deleteEntry() {
-    const { error } = await (isPayment ? doDeletePayment : doDeleteOneOffBill)(entry);
-    if (!error) router.back();
-  }
 
   return (
     <>
@@ -99,22 +90,13 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
 
       {isAuthor ? (
         <View style={styles.actions}>
-          <DeleteWithConfirm
-            label="Excluir"
-            dialogTitle={isPayment ? `Excluir o pagamento da ${entry.name}?` : `Excluir a conta avulsa ${entry.name}?`}
-            dialogMessage={
-              isPayment
-                ? `A ${entry.name} de ${monthName(entry.month)} volta a aparecer como a pagar no Início, e o comprovante é apagado.`
-                : 'A conta avulsa sai do mês, e o comprovante é apagado.'
-            }
-            onConfirm={deleteEntry}
-          />
+          <DeleteEntryButton entry={entry} label="Excluir" onDeleted={() => router.back()} />
           <View style={styles.change}>
             <Button
               label="Alterar"
               variant="tonal"
               icon={Pencil}
-              onPress={() => router.push({ pathname: '/entries/[id]/edit', params: { id: entry.id } } as unknown as Href)}
+              onPress={() => router.push({ pathname: '/entries/[id]/edit', params: { id: entry.id } })}
             />
           </View>
         </View>

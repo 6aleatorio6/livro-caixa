@@ -1,57 +1,59 @@
+import { ANA, BOTH_IN_THE_LIST, BRUNO, RECEIPT_FILE_ID } from '@/shared/testing/entryFixtures';
+import { receiptOf } from '@/shared/testing/receiptOf';
 import { testAccountUid } from '@/shared/testing/testAccountUid';
 import type { IReceiptFile } from '@/shared/types/file/ReceiptFile';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 
-// As pessoas são as contas de teste das jornadas: Ana e Bruno estão na lista.
-const ANA = 'ana.souza@exemplo.com';
-const BRUNO = 'bruno.souza@exemplo.com';
-const BOTH_IN_THE_LIST = {
-  [`allowedEmails/${ANA}`]: { name: 'Ana Souza', isAdmin: true, hasEntries: true },
-  [`allowedEmails/${BRUNO}`]: { name: 'Bruno Souza', isAdmin: false, hasEntries: true },
-};
-
 // O registro grava também o `uploadedBy` e o `contentType`, que a tela não lê.
 const IMAGE_FILE = {
   name: 'recibo-conserto.jpg',
-  storagePath: 'files/f-fridge',
+  storagePath: `files/${RECEIPT_FILE_ID}`,
   type: 'image',
   contentType: 'image/jpeg',
   sizeBytes: 120000,
-  uploadedBy: testAccountUid(ANA),
+  uploadedBy: testAccountUid(BRUNO),
 } as const;
 const PDF_FILE = {
   name: 'comprovante-luz.pdf',
-  storagePath: 'files/f-electricity',
+  storagePath: `files/${RECEIPT_FILE_ID}`,
   type: 'pdf',
   contentType: 'application/pdf',
   sizeBytes: 90000,
-  uploadedBy: testAccountUid(ANA),
+  uploadedBy: testAccountUid(BRUNO),
 } as const;
 
-const toReceiptFile = (
-  id: string,
-  { uploadedBy: _uploadedBy, contentType: _contentType, ...file }: Record<string, unknown>,
-) => ({ id, ...file }) as IReceiptFile;
+const toReceiptFile = (id: string, { uploadedBy: _uploadedBy, contentType: _contentType, ...file }: Record<string, unknown>) =>
+  ({ id, ...file }) as IReceiptFile;
+
+// O comprovante que os cenários de alterar e excluir guardam para o Bruno.
+const RECEIPT_TO_CHANGE_FILE = receiptOf(RECEIPT_FILE_ID, BRUNO).fileDocuments[`files/${RECEIPT_FILE_ID}`];
 
 export const receiptFileQueryScenarios = {
-  // O Bruno lê o registro do comprovante que a Ana enviou.
+  // A Ana lê o registro do comprovante que o Bruno enviou.
   imageReceipt: {
-    signedInAs: BRUNO,
-    given: { ...BOTH_IN_THE_LIST, 'files/f-fridge': IMAGE_FILE },
-    input: { id: 'f-fridge' },
-    result: toReceiptFile('f-fridge', IMAGE_FILE),
+    signedInAs: ANA,
+    given: { ...BOTH_IN_THE_LIST, [`files/${RECEIPT_FILE_ID}`]: IMAGE_FILE },
+    input: { id: RECEIPT_FILE_ID },
+    result: toReceiptFile(RECEIPT_FILE_ID, IMAGE_FILE),
   },
   pdfReceipt: {
+    signedInAs: ANA,
+    given: { ...BOTH_IN_THE_LIST, [`files/${RECEIPT_FILE_ID}`]: PDF_FILE },
+    input: { id: RECEIPT_FILE_ID },
+    result: toReceiptFile(RECEIPT_FILE_ID, PDF_FILE),
+  },
+  // O Bruno lê o registro do comprovante dos próprios lançamentos que as telas de alterar abrem.
+  receiptToChange: {
     signedInAs: BRUNO,
-    given: { ...BOTH_IN_THE_LIST, 'files/f-electricity': PDF_FILE },
-    input: { id: 'f-electricity' },
-    result: toReceiptFile('f-electricity', PDF_FILE),
+    given: { ...BOTH_IN_THE_LIST, [`files/${RECEIPT_FILE_ID}`]: RECEIPT_TO_CHANGE_FILE },
+    input: { id: RECEIPT_FILE_ID },
+    result: toReceiptFile(RECEIPT_FILE_ID, RECEIPT_TO_CHANGE_FILE),
   },
   // Sem registro (um lançamento antigo, ou o registro apagado), a leitura entrega `null`.
   missingReceiptFile: {
     signedInAs: BRUNO,
     given: BOTH_IN_THE_LIST,
-    input: { id: 'f-fridge' },
+    input: { id: RECEIPT_FILE_ID },
     result: null,
   },
 } satisfies Record<string, IServiceScenario<{ id: string | null }, IReceiptFile | null>>;

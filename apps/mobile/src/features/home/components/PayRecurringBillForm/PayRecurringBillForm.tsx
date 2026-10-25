@@ -7,13 +7,12 @@ import { MoneyFieldSmart } from '@/shared/components/inputs/MoneyFieldSmart/Mone
 import { ReceiptFieldSmart } from '@/shared/components/inputs/ReceiptFieldSmart/ReceiptFieldSmart';
 import { OwnershipNotice } from '@/shared/components/OwnershipNotice/OwnershipNotice';
 import { TagChip } from '@/shared/components/TagChip/TagChip';
+import { usePayRecurringBillForm } from '@/shared/hooks/usePayRecurringBillForm/usePayRecurringBillForm';
 import type { IRecurringPaymentInput } from '@/shared/types/entry/RecurringPaymentInput';
 import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 import type { ITag } from '@/shared/types/tag/Tag';
 import { monthName } from '@/shared/utils/date/monthName';
 import { formatCents } from '@/shared/utils/format/formatCents';
-
-import { usePayRecurringBillForm } from '@/features/home/hooks/usePayRecurringBillForm/usePayRecurringBillForm';
 
 export interface IPayRecurringBillFormProps {
   bill: IRecurringBill;

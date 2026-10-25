@@ -8,6 +8,7 @@ import {
   ONE_OFF_BILL_WITHOUT_TAG_DOCUMENT,
   PAYMENT,
   PAYMENT_DOCUMENT,
+  RECEIPT_FILE_ID,
 } from '@/shared/testing/entryFixtures';
 import { entryOf } from '@/shared/testing/entryOf';
 import { receiptOf } from '@/shared/testing/receiptOf';
@@ -25,12 +26,12 @@ interface IUpdateEntryExpectation {
 }
 
 const PAYMENT_SETUP = (email = BRUNO) => ({
-  given: { ...BOTH_IN_THE_LIST, 'entries/2026-10_electricity': PAYMENT_DOCUMENT, ...receiptOf('f-payment', email).fileDocuments },
-  storageGiven: receiptOf('f-payment', email).storageObjects,
+  given: { ...BOTH_IN_THE_LIST, 'entries/2026-10_electricity': PAYMENT_DOCUMENT, ...receiptOf(RECEIPT_FILE_ID, email).fileDocuments },
+  storageGiven: receiptOf(RECEIPT_FILE_ID, email).storageObjects,
 });
 const ONE_OFF_BILL_SETUP = (email = BRUNO) => ({
-  given: { ...BOTH_IN_THE_LIST, 'entries/fridge': ONE_OFF_BILL_DOCUMENT, ...receiptOf('f-one-off-bill', email).fileDocuments },
-  storageGiven: receiptOf('f-one-off-bill', email).storageObjects,
+  given: { ...BOTH_IN_THE_LIST, 'entries/fridge': ONE_OFF_BILL_DOCUMENT, ...receiptOf(RECEIPT_FILE_ID, email).fileDocuments },
+  storageGiven: receiptOf(RECEIPT_FILE_ID, email).storageObjects,
 });
 const ONE_OFF_BILL_CHANGES = { name: 'Conserto do freezer', amountCents: 40000, date: '2026-09-28', tagId: null };
 
@@ -42,6 +43,15 @@ export const updateEntryScenarios = {
     input: [{ entry: PAYMENT, changes: { amountCents: 20000 }, receipt: null }],
     result: undefined,
     expectedEntry: { ...PAYMENT_DOCUMENT, amountCents: 20000 },
+    wasReceiptReplaced: false,
+  },
+  // Salvar sem mudar nada: o mesmo valor e o mesmo comprovante, e o serviço grava igual.
+  memberSavesPaymentUnchanged: {
+    signedInAs: BRUNO,
+    ...PAYMENT_SETUP(),
+    input: [{ entry: PAYMENT, changes: { amountCents: 18735 }, receipt: null }],
+    result: undefined,
+    expectedEntry: PAYMENT_DOCUMENT,
     wasReceiptReplaced: false,
   },
   // O mesmo valor com outro arquivo: o registro e o objeto antigos somem no mesmo lote.
@@ -97,9 +107,9 @@ export const updateEntryRejectedScenarios = {
     given: {
       ...BOTH_IN_THE_LIST,
       'entries/fridge': { ...ONE_OFF_BILL_DOCUMENT, paidBy: testAccountUid(ANA) },
-      ...receiptOf('f-one-off-bill', ANA).fileDocuments,
+      ...receiptOf(RECEIPT_FILE_ID, ANA).fileDocuments,
     },
-    storageGiven: receiptOf('f-one-off-bill', ANA).storageObjects,
+    storageGiven: receiptOf(RECEIPT_FILE_ID, ANA).storageObjects,
     input: [
       {
         entry: entryOf('fridge', { ...ONE_OFF_BILL_DOCUMENT, paidBy: testAccountUid(ANA) }),

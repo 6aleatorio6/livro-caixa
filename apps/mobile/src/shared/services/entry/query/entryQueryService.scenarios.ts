@@ -1,78 +1,48 @@
-import { HOME_TAG_ID, UTILITIES_TAG_ID } from '@/shared/testing/tagFixtures';
-import { testAccountUid } from '@/shared/testing/testAccountUid';
+import {
+  BOTH_IN_THE_LIST,
+  BRUNO,
+  ONE_OFF_BILL,
+  ONE_OFF_BILL_DOCUMENT,
+  ONE_OFF_BILL_WITHOUT_TAG_DOCUMENT,
+  PAYMENT,
+  PAYMENT_DOCUMENT,
+} from '@/shared/testing/entryFixtures';
+import { entryOf } from '@/shared/testing/entryOf';
 import type { IEntry } from '@/shared/types/entry/Entry';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 
-// As pessoas são as contas de teste das jornadas: Ana e Bruno estão na lista.
-const ANA = 'ana.souza@exemplo.com';
-const BRUNO = 'bruno.souza@exemplo.com';
-const BOTH_IN_THE_LIST = {
-  [`allowedEmails/${ANA}`]: { name: 'Ana Souza', isAdmin: true, hasEntries: true },
-  [`allowedEmails/${BRUNO}`]: { name: 'Bruno Souza', isAdmin: false, hasEntries: true },
-};
-
-// A Luz de outubro paga pelo Bruno: R$ 187,35 de R$ 210,00 previstos, vencia no dia 10.
-const ELECTRICITY_PAYMENT = {
-  kind: 'recurringPayment',
-  createdAt: new Date('2026-10-10T15:00:00Z'),
-  month: '2026-10',
-  recurringBillId: 'electricity',
-  name: 'Luz',
-  amountCents: 18735,
-  dueDay: 10,
-  expectedAmountCents: 21000,
-  tagId: UTILITIES_TAG_ID,
-  paidBy: testAccountUid(BRUNO),
-  receiptFileId: 'f-electricity',
-};
-// O conserto da geladeira, conta avulsa da Ana; a avulsa sem tag não tem o campo `tagId`.
-const FRIDGE_WITHOUT_TAG = {
-  kind: 'oneOffBill',
-  createdAt: new Date('2026-10-12T15:00:00Z'),
-  month: '2026-10',
-  name: 'Conserto da geladeira',
-  amountCents: 35000,
-  date: '2026-10-12',
-  paidBy: testAccountUid(ANA),
-  receiptFileId: 'f-fridge',
-};
-const FRIDGE = { ...FRIDGE_WITHOUT_TAG, tagId: HOME_TAG_ID };
-
-// O que a tela recebe: os mesmos campos, sem `createdAt`, e `tagId: null` sem tag.
-const toEntry = (id: string, { createdAt: _createdAt, ...entry }: Record<string, unknown>) =>
-  ({ id, tagId: null, ...entry }) as IEntry;
-
 export const entryQueryScenarios = {
-  // O Bruno abre o pagamento dele; o valor pago é corrigido com a folha aberta.
+  // O Bruno abre o pagamento dele (a Luz); o valor pago é corrigido com a folha aberta. As telas de alterar e de
+  // excluir abrem o mesmo lançamento: a leitura entrega exatamente o `entry` com que os serviços são chamados.
   paymentOfTheMember: {
     signedInAs: BRUNO,
-    given: { ...BOTH_IN_THE_LIST, 'entries/2026-10_electricity': ELECTRICITY_PAYMENT },
+    given: { ...BOTH_IN_THE_LIST, 'entries/2026-10_electricity': PAYMENT_DOCUMENT },
     input: { id: '2026-10_electricity' },
-    result: toEntry('2026-10_electricity', { ...ELECTRICITY_PAYMENT, date: null, paidOn: '2026-10-10' }),
+    result: PAYMENT,
     afterChange: {
-      write: { 'entries/2026-10_electricity': { ...ELECTRICITY_PAYMENT, amountCents: 20000 } },
-      result: toEntry('2026-10_electricity', { ...ELECTRICITY_PAYMENT, amountCents: 20000, date: null, paidOn: '2026-10-10' }),
+      write: { 'entries/2026-10_electricity': { ...PAYMENT_DOCUMENT, amountCents: 20000 } },
+      result: { ...PAYMENT, amountCents: 20000 },
     },
   },
-  // Qualquer membro lê o lançamento de outro: o Bruno abre a avulsa da Ana.
-  oneOffBillOfAnotherMember: {
+  // A avulsa do Bruno; quem a lê é qualquer membro, e só o autor a altera ou exclui.
+  oneOffBillOfTheMember: {
     signedInAs: BRUNO,
-    given: { ...BOTH_IN_THE_LIST, 'entries/fridge': FRIDGE },
+    given: { ...BOTH_IN_THE_LIST, 'entries/fridge': ONE_OFF_BILL_DOCUMENT },
     input: { id: 'fridge' },
-    result: toEntry('fridge', FRIDGE),
+    result: ONE_OFF_BILL,
   },
   oneOffBillWithoutTag: {
     signedInAs: BRUNO,
-    given: { ...BOTH_IN_THE_LIST, 'entries/fridge': FRIDGE_WITHOUT_TAG },
+    given: { ...BOTH_IN_THE_LIST, 'entries/fridge': ONE_OFF_BILL_WITHOUT_TAG_DOCUMENT },
     input: { id: 'fridge' },
-    result: toEntry('fridge', FRIDGE_WITHOUT_TAG),
+    result: entryOf('fridge', ONE_OFF_BILL_WITHOUT_TAG_DOCUMENT),
   },
   // O autor exclui o lançamento com a folha aberta em outro aparelho: a leitura passa a entregar `null`.
   deletedEntry: {
     signedInAs: BRUNO,
-    given: { ...BOTH_IN_THE_LIST, 'entries/fridge': FRIDGE },
+    given: { ...BOTH_IN_THE_LIST, 'entries/fridge': ONE_OFF_BILL_DOCUMENT },
     input: { id: 'fridge' },
-    result: toEntry('fridge', FRIDGE),
+    result: ONE_OFF_BILL,
     afterChange: { write: { 'entries/fridge': null }, result: null },
   },
   // Um id que não existe (um link velho) entrega `null` desde o começo.
