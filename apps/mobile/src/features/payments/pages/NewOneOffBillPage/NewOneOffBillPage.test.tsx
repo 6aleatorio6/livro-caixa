@@ -10,7 +10,10 @@ import { allowedEmailQueryService } from '@/shared/services/allowedEmail/query/a
 import { allowedEmailQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailQueryService.scenarios';
 import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
 import { addOneOffBillService } from '@/shared/services/entry/add/addOneOffBillService';
-import { addOneOffBillRejectedScenarios, addOneOffBillScenarios } from '@/shared/services/entry/add/addOneOffBillService.scenarios';
+import {
+  addOneOffBillRejectedScenarios,
+  addOneOffBillScenarios,
+} from '@/shared/services/entry/add/addOneOffBillService.scenarios';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { tagListQueryScenarios } from '@/shared/services/tag/query/tagListQueryService.scenarios';
 import { useSharedReceiptStore } from '@/shared/store/sharedReceipt.store';
@@ -157,7 +160,9 @@ describe('NewOneOffBillPage', () => {
     const user = await renderPage();
     await fillPharmacy(user);
     jest.mocked(pickReceiptFile).mockResolvedValue({ ...pickedFile, name: 'grande.png', sizeBytes: 6 * 1024 * 1024 });
-    jest.mocked(prepareReceipt).mockRejectedValue(new AppError('Receipt is over 5 MB', 'A imagem passa de 5 MB. Escolha outro arquivo.'));
+    jest
+      .mocked(prepareReceipt)
+      .mockRejectedValue(new AppError('Receipt is over 5 MB', 'A imagem passa de 5 MB. Escolha outro arquivo.'));
 
     await user.press(screen.getByRole('button', { name: `Comprovante: ${bill.receipt.name}. Trocar` }));
     await user.press(screen.getByRole('button', { name: SUBMIT }));
@@ -214,7 +219,7 @@ describe('NewOneOffBillPage', () => {
   });
 
   it('Should stay on the screen with the data when the service fails', async () => {
-    const rejected = addOneOffBillRejectedScenarios.receiptRejectedByStorage;
+    const rejected = addOneOffBillRejectedScenarios.receiptUnreadable;
     const [rejectedBill] = rejected.input;
     mockServiceRejection(addOneOffBillService, rejected);
     jest.mocked(prepareReceipt).mockResolvedValue(rejectedBill.receipt);
@@ -268,7 +273,7 @@ describe('NewOneOffBillPage', () => {
     });
 
     it('Should stay on the screen with the shared file and the store when the service refuses', async () => {
-      const rejected = addOneOffBillRejectedScenarios.receiptRejectedByStorage;
+      const rejected = addOneOffBillRejectedScenarios.receiptUnreadable;
       const [rejectedBill] = rejected.input;
       mockServiceRejection(addOneOffBillService, rejected);
       useSharedReceiptStore.setState({ receipt: rejectedBill.receipt });

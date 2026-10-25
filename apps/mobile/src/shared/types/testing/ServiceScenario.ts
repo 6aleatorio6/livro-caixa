@@ -12,6 +12,8 @@ export interface IServiceScenario<TInput, TResult> {
    * autor (`customMetadata.uploadedBy`). O conteúdo é sempre o comprovante PNG dos contratos.
    */
   storageGiven?: Record<string, { contentType: string; uploadedBy: string }>;
+  /** Só quem apaga ou troca o comprovante: os ids de `fileContents` gravados antes, com os bytes do comprovante PNG dos contratos. */
+  fileContentsGiven?: string[];
   /** Os parâmetros da leitura em tempo real, ou os argumentos do serviço, em tupla. */
   input: TInput;
   /** O que o serviço entrega. Num objeto, só os campos que alguma tela usa. */

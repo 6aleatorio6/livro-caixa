@@ -1,10 +1,10 @@
 import { Timestamp } from 'firebase/firestore';
 
 import { AppError } from '@/shared/exceptions/AppError';
-import { uploadReceipt } from '@/shared/services/entry/uploadReceipt';
+import { addReceiptToBatch } from '@/shared/services/entry/addReceiptToBatch';
 import { arrangeScenario } from '@/shared/testing/contract/arrangeScenario';
 import { readCollectionWithoutRules } from '@/shared/testing/contract/readCollectionWithoutRules';
-import { readStorageWithoutRules } from '@/shared/testing/contract/readStorageWithoutRules';
+import { readContentWithoutRules } from '@/shared/testing/contract/readContentWithoutRules';
 import { readWithoutRules } from '@/shared/testing/contract/readWithoutRules';
 import { RECEIPT_FIXTURE } from '@/shared/testing/contract/fixtures/receiptFixture';
 import { scenarioEntries } from '@/shared/testing/contract/scenarioEntries';
@@ -15,10 +15,10 @@ import type { IRecurringPaymentInput } from '@/shared/types/entry/RecurringPayme
 import { payRecurringBillService } from './payRecurringBillService';
 import { payRecurringBillRejectedScenarios, payRecurringBillScenarios } from './payRecurringBillService.scenarios';
 
-// O envio do comprovante é o de verdade; o mock só deixa o teste gravar o pagamento de outro membro durante ele.
-jest.mock('@/shared/services/entry/uploadReceipt', () => {
-  const actual = jest.requireActual('@/shared/services/entry/uploadReceipt');
-  return { uploadReceipt: jest.fn(actual.uploadReceipt) };
+// A leitura do comprovante é a de verdade; o mock só deixa o teste gravar o pagamento de outro membro durante ela.
+jest.mock('@/shared/services/entry/addReceiptToBatch', () => {
+  const actual = jest.requireActual('@/shared/services/entry/addReceiptToBatch');
+  return { addReceiptToBatch: jest.fn(actual.addReceiptToBatch) };
 });
 
 describe('payRecurringBillService', () => {
@@ -35,7 +35,6 @@ describe('payRecurringBillService', () => {
       expect(file0).toEqual({
         id: expect.any(String),
         name: 'comprovante.png',
-        storagePath: `files/${file0.id}`,
         type: 'image',
         contentType: 'image/png',
         sizeBytes: RECEIPT_FIXTURE.sizeBytes,
@@ -59,11 +58,7 @@ describe('payRecurringBillService', () => {
         },
       ]);
       expect(await readWithoutRules(`allowedEmails/${scenario.signedInAs}`)).toMatchObject({ hasEntries: true });
-      expect(await readStorageWithoutRules(`files/${file0.id}`)).toEqual({
-        contentType: 'image/png',
-        size: RECEIPT_FIXTURE.sizeBytes,
-        customMetadata: { uploadedBy: uid },
-      });
+      expect(await readContentWithoutRules(file0.id)).toEqual(RECEIPT_FIXTURE.bytes);
     },
   );
 
@@ -76,25 +71,26 @@ describe('payRecurringBillService', () => {
 
     await expect(refusal).rejects.toBeInstanceOf(AppError);
     await expect(refusal).rejects.toMatchObject(scenario.result);
-    // Nada novo: nenhum arquivo (nem registro, nem objeto no Storage), só os lançamentos que já estavam, e o `hasEntries` segue como estava.
+    // Nada novo: nenhum arquivo (nem registro, nem conteúdo), só os lançamentos que já estavam, e o `hasEntries` segue como estava.
     const alreadyThere = Object.keys(scenario.given)
       .filter((path) => path.startsWith('entries/'))
       .map((path) => path.slice('entries/'.length));
     expect(await readCollectionWithoutRules('files')).toEqual([]);
+    expect(await readCollectionWithoutRules('fileContents')).toEqual([]);
     expect((await readCollectionWithoutRules('entries')).map(({ id }) => id)).toEqual(alreadyThere);
     expect(await readWithoutRules(`allowedEmails/${scenario.signedInAs}`)).toMatchObject({ hasEntries: false });
   });
 
-  // A corrida: o mês estava livre na leitura, e outro membro o paga durante o envio do comprovante. A regra recusa o
+  // A corrida: o mês estava livre na leitura, e outro membro o paga enquanto o comprovante é lido. A regra recusa o
   // lote (o SDK do contrato manda `permission-denied`, sem o prefixo do React Native Firebase).
-  it('Should say the bill was already paid when another member pays it while the receipt is uploading', async () => {
+  it('Should say the bill was already paid when another member pays it while the receipt is read', async () => {
     const scenario = payRecurringBillScenarios.memberPaysBill;
     const paidByAna = payRecurringBillRejectedScenarios.billAlreadyPaidByAnother.given['entries/2026-10_internet'];
     await arrangeScenario(scenario);
-    const actualUpload = jest.mocked(uploadReceipt).getMockImplementation()!;
-    jest.mocked(uploadReceipt).mockImplementationOnce(async (...args) => {
+    const actualRead = jest.mocked(addReceiptToBatch).getMockImplementation()!;
+    jest.mocked(addReceiptToBatch).mockImplementationOnce(async (...args) => {
       await writeWithoutRules({ 'entries/2026-10_internet': paidByAna });
-      return actualUpload(...args);
+      return actualRead(...args);
     });
 
     const refusal = payRecurringBillService(...scenario.input);

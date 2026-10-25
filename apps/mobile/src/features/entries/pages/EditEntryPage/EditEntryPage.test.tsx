@@ -170,8 +170,8 @@ describe('EditEntryPage', () => {
       expect(updateEntryService).not.toHaveBeenCalled();
     });
 
-    it('Should stay on the screen and warn when the storage refuses the new file', async () => {
-      const rejected = updateEntryRejectedScenarios.replacementReceiptRejectedByStorage;
+    it('Should stay on the screen and warn when the new file cannot be read', async () => {
+      const rejected = updateEntryRejectedScenarios.replacementReceiptUnreadable;
       mockServiceRejection(updateEntryService, rejected);
       jest.mocked(prepareReceipt).mockResolvedValue(rejected.input[0].receipt!);
       const user = await renderEdit();

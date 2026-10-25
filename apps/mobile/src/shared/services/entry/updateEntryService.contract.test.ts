@@ -4,7 +4,7 @@ import { AppError } from '@/shared/exceptions/AppError';
 import { arrangeScenario } from '@/shared/testing/contract/arrangeScenario';
 import { RECEIPT_FIXTURE } from '@/shared/testing/contract/fixtures/receiptFixture';
 import { readCollectionWithoutRules } from '@/shared/testing/contract/readCollectionWithoutRules';
-import { readStorageWithoutRules } from '@/shared/testing/contract/readStorageWithoutRules';
+import { readContentWithoutRules } from '@/shared/testing/contract/readContentWithoutRules';
 import { scenarioEntries } from '@/shared/testing/contract/scenarioEntries';
 import { testAccountUid } from '@/shared/testing/testAccountUid';
 import type { IUpdateEntryInput } from '@/shared/types/entry/UpdateEntryInput';
@@ -20,46 +20,44 @@ function filesGiven(given: Record<string, object>) {
 }
 
 describe('updateEntryService', () => {
-  it.each(Object.entries(updateEntryScenarios))('Should change the entry of the scenario %s', async (_name, scenario) => {
-    await arrangeScenario(scenario);
-    const [input] = scenario.input;
-    const { entry } = input;
-    const [oldFile] = filesGiven(scenario.given);
+  it.each(Object.entries(updateEntryScenarios))(
+    'Should change the entry of the scenario %s',
+    async (_name, scenario) => {
+      await arrangeScenario(scenario);
+      const [input] = scenario.input;
+      const { entry } = input;
+      const [oldFile] = filesGiven(scenario.given);
 
-    expect(await updateEntryService(input)).toBe(scenario.result);
+      expect(await updateEntryService(input)).toBe(scenario.result);
 
-    const [entryAfter] = await readCollectionWithoutRules('entries');
-    expect(entryAfter).toEqual({
-      id: entry.id,
-      ...scenario.expectedEntry,
-      createdAt: expect.any(Timestamp),
-      ...(scenario.wasReceiptReplaced && { receiptFileId: expect.any(String) }),
-    });
-    if (!scenario.wasReceiptReplaced) {
-      expect(await readCollectionWithoutRules('files')).toEqual([oldFile]);
-      expect(await readStorageWithoutRules(`files/${oldFile.id}`)).toMatchObject({ contentType: 'image/png' });
-      return;
-    }
-    // Trocado: sobra só o registro novo (com o nome e o autor), e o objeto novo existe com o autor nos metadados; o antigo some dos dois lados.
-    expect(entryAfter.receiptFileId).not.toBe(entry.receiptFileId);
-    expect(await readCollectionWithoutRules('files')).toEqual([
-      {
-        id: entryAfter.receiptFileId,
-        name: 'comprovante-novo.png',
-        storagePath: `files/${entryAfter.receiptFileId}`,
-        type: 'image',
-        contentType: 'image/png',
-        sizeBytes: RECEIPT_FIXTURE.sizeBytes,
-        uploadedBy: testAccountUid(scenario.signedInAs),
-      },
-    ]);
-    expect(await readStorageWithoutRules(`files/${entryAfter.receiptFileId}`)).toEqual({
-      contentType: 'image/png',
-      size: RECEIPT_FIXTURE.sizeBytes,
-      customMetadata: { uploadedBy: testAccountUid(scenario.signedInAs) },
-    });
-    await expect(readStorageWithoutRules(`files/${entry.receiptFileId}`)).rejects.toBeDefined();
-  });
+      const [entryAfter] = await readCollectionWithoutRules('entries');
+      expect(entryAfter).toEqual({
+        id: entry.id,
+        ...scenario.expectedEntry,
+        createdAt: expect.any(Timestamp),
+        ...(scenario.wasReceiptReplaced && { receiptFileId: expect.any(String) }),
+      });
+      if (!scenario.wasReceiptReplaced) {
+        expect(await readCollectionWithoutRules('files')).toEqual([oldFile]);
+        expect(await readContentWithoutRules(oldFile.id)).toEqual(RECEIPT_FIXTURE.bytes);
+        return;
+      }
+      // Trocado: sobram só o registro novo (com o nome e o autor) e o conteúdo novo; o registro e o conteúdo antigos somem.
+      expect(entryAfter.receiptFileId).not.toBe(entry.receiptFileId);
+      expect(await readCollectionWithoutRules('files')).toEqual([
+        {
+          id: entryAfter.receiptFileId,
+          name: 'comprovante-novo.png',
+          type: 'image',
+          contentType: 'image/png',
+          sizeBytes: RECEIPT_FIXTURE.sizeBytes,
+          uploadedBy: testAccountUid(scenario.signedInAs),
+        },
+      ]);
+      expect(await readContentWithoutRules(entryAfter.receiptFileId as string)).toEqual(RECEIPT_FIXTURE.bytes);
+      expect(await readContentWithoutRules(entry.receiptFileId)).toBeNull();
+    },
+  );
 
   it.each(scenarioEntries<[IUpdateEntryInput], { code: string; userMessage: string }>(updateEntryRejectedScenarios))(
     'Should refuse the change of the scenario %s',
@@ -69,15 +67,19 @@ describe('updateEntryService', () => {
 
       await expect(refusal).rejects.toBeInstanceOf(AppError);
       await expect(refusal).rejects.toMatchObject(scenario.result);
-      // Nada muda: os lançamentos, os registros dos comprovantes e os objetos ficam como o cenário os deixou, e nenhum arquivo novo sobra.
+      // Nada muda: os lançamentos, os registros e os conteúdos dos comprovantes ficam como o cenário os deixou, e nenhum arquivo novo sobra.
       const entryPaths = Object.keys(scenario.given).filter((path) => path.startsWith('entries/'));
       expect(await readCollectionWithoutRules('entries')).toEqual(
-        entryPaths.map((path) => ({ id: path.slice('entries/'.length), ...scenario.given[path], createdAt: expect.any(Timestamp) })),
+        entryPaths.map((path) => ({
+          id: path.slice('entries/'.length),
+          ...scenario.given[path],
+          createdAt: expect.any(Timestamp),
+        })),
       );
       expect(await readCollectionWithoutRules('files')).toEqual(filesGiven(scenario.given));
-      for (const path of Object.keys(scenario.storageGiven ?? {})) {
-        expect(await readStorageWithoutRules(path)).toMatchObject({ contentType: 'image/png' });
-      }
+      expect((await readCollectionWithoutRules('fileContents')).map(({ id }) => id)).toEqual(
+        scenario.fileContentsGiven ?? [],
+      );
     },
   );
 });

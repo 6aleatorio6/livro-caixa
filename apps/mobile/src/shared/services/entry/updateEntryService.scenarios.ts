@@ -10,6 +10,7 @@ import {
   PAYMENT_DOCUMENT,
   RECEIPT_FILE_ID,
 } from '@/shared/testing/entryFixtures';
+import { MISSING_RECEIPT_URI } from '@/shared/testing/contract/fixtures/receiptFixture';
 import { entryOf } from '@/shared/testing/entryOf';
 import { receiptOf } from '@/shared/testing/receiptOf';
 import { testAccountUid } from '@/shared/testing/testAccountUid';
@@ -18,7 +19,7 @@ import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 
 /**
  * O que o contrato confere depois do serviço, além da `result`: o documento do lançamento (`createdAt` à parte)
- * e se o comprovante foi trocado (o registro e o objeto antigos somem, o novo existe) ou mantido.
+ * e se o comprovante foi trocado (o registro e o conteúdo antigos somem, os novos existem) ou mantido.
  */
 interface IUpdateEntryExpectation {
   expectedEntry: Record<string, unknown>;
@@ -26,12 +27,20 @@ interface IUpdateEntryExpectation {
 }
 
 const PAYMENT_SETUP = (email = BRUNO) => ({
-  given: { ...BOTH_IN_THE_LIST, 'entries/2026-10_electricity': PAYMENT_DOCUMENT, ...receiptOf(RECEIPT_FILE_ID, email).fileDocuments },
-  storageGiven: receiptOf(RECEIPT_FILE_ID, email).storageObjects,
+  given: {
+    ...BOTH_IN_THE_LIST,
+    'entries/2026-10_electricity': PAYMENT_DOCUMENT,
+    ...receiptOf(RECEIPT_FILE_ID, email).fileDocuments,
+  },
+  fileContentsGiven: receiptOf(RECEIPT_FILE_ID, email).fileContentIds,
 });
 const ONE_OFF_BILL_SETUP = (email = BRUNO) => ({
-  given: { ...BOTH_IN_THE_LIST, 'entries/fridge': ONE_OFF_BILL_DOCUMENT, ...receiptOf(RECEIPT_FILE_ID, email).fileDocuments },
-  storageGiven: receiptOf(RECEIPT_FILE_ID, email).storageObjects,
+  given: {
+    ...BOTH_IN_THE_LIST,
+    'entries/fridge': ONE_OFF_BILL_DOCUMENT,
+    ...receiptOf(RECEIPT_FILE_ID, email).fileDocuments,
+  },
+  fileContentsGiven: receiptOf(RECEIPT_FILE_ID, email).fileContentIds,
 });
 const ONE_OFF_BILL_CHANGES = { name: 'Conserto do freezer', amountCents: 40000, date: '2026-09-28', tagId: null };
 
@@ -54,7 +63,7 @@ export const updateEntryScenarios = {
     expectedEntry: PAYMENT_DOCUMENT,
     wasReceiptReplaced: false,
   },
-  // O mesmo valor com outro arquivo: o registro e o objeto antigos somem no mesmo lote.
+  // O mesmo valor com outro arquivo: o registro e o conteúdo antigos somem no mesmo lote.
   memberReplacesPaymentReceipt: {
     signedInAs: BRUNO,
     ...PAYMENT_SETUP(),
@@ -69,7 +78,12 @@ export const updateEntryScenarios = {
     ...ONE_OFF_BILL_SETUP(),
     input: [{ entry: ONE_OFF_BILL, changes: ONE_OFF_BILL_CHANGES, receipt: null }],
     result: undefined,
-    expectedEntry: { ...ONE_OFF_BILL_WITHOUT_TAG_DOCUMENT, ...ONE_OFF_BILL_CHANGES, month: '2026-09', tagId: undefined },
+    expectedEntry: {
+      ...ONE_OFF_BILL_WITHOUT_TAG_DOCUMENT,
+      ...ONE_OFF_BILL_CHANGES,
+      month: '2026-09',
+      tagId: undefined,
+    },
     wasReceiptReplaced: false,
   },
   memberReplacesOneOffBillReceipt: {
@@ -109,7 +123,7 @@ export const updateEntryRejectedScenarios = {
       'entries/fridge': { ...ONE_OFF_BILL_DOCUMENT, paidBy: testAccountUid(ANA) },
       ...receiptOf(RECEIPT_FILE_ID, ANA).fileDocuments,
     },
-    storageGiven: receiptOf(RECEIPT_FILE_ID, ANA).storageObjects,
+    fileContentsGiven: receiptOf(RECEIPT_FILE_ID, ANA).fileContentIds,
     input: [
       {
         entry: entryOf('fridge', { ...ONE_OFF_BILL_DOCUMENT, paidBy: testAccountUid(ANA) }),
@@ -133,20 +147,21 @@ export const updateEntryRejectedScenarios = {
     ],
     result: DENIED,
   },
-  // O Storage só aceita imagem ou PDF: o envio do arquivo novo falha antes do lote, e o lançamento fica como estava.
-  replacementReceiptRejectedByStorage: {
+  // O arquivo novo sumiu do aparelho antes de salvar (o cache foi limpo): não dá para ler os bytes, e o lançamento fica
+  // como estava.
+  replacementReceiptUnreadable: {
     signedInAs: BRUNO,
     ...PAYMENT_SETUP(),
     input: [
       {
         entry: PAYMENT,
         changes: { amountCents: 20000 },
-        receipt: { ...NEW_RECEIPT, name: 'comprovante.txt', contentType: 'text/plain' },
+        receipt: { ...NEW_RECEIPT, uri: MISSING_RECEIPT_URI },
       },
     ],
     result: {
-      code: 'RECEIPT_UPLOAD_FAILED',
-      userMessage: 'Não deu para enviar o comprovante. Confira a internet e tente de novo.',
+      code: 'RECEIPT_UNREADABLE',
+      userMessage: 'Não deu para ler o arquivo. Escolha outro.',
     },
   },
 } satisfies Record<string, IServiceScenario<[IUpdateEntryInput], { code: string; userMessage: string }>>;
