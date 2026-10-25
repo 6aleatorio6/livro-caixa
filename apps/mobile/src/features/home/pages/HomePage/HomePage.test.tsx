@@ -1,5 +1,6 @@
 import { act, render, screen, userEvent } from '@testing-library/react-native';
 import { router } from 'expo-router';
+import { getSharedPayloads } from 'expo-sharing';
 
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
@@ -24,6 +25,8 @@ jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService',
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({ allowedEmailListQueryService: {} }));
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
+// O compartilhamento que o Android deixou para o app, lido pelo Início ao abrir.
+jest.mock('expo-sharing', () => ({ getSharedPayloads: jest.fn(() => []) }));
 
 const fiveBills = { service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.fiveBills };
 const noBills = { service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.noBills };
@@ -49,6 +52,29 @@ afterEach(() => {
 });
 
 describe('HomePage', () => {
+  describe('A file shared to the app', () => {
+    it('Should open the share screen when a shared file is waiting', async () => {
+      jest.mocked(getSharedPayloads).mockReturnValue([
+        { value: 'content://x/pix.pdf', shareType: 'file', mimeType: 'application/pdf' },
+      ] as never);
+      mockRealtime(fiveBills, threeTags, family, familyMonth);
+
+      await render(<HomePage />);
+
+      expect(router.push).toHaveBeenCalledTimes(1);
+      expect(router.push).toHaveBeenCalledWith('/share-receipt');
+    });
+
+    it('Should not open the share screen when nothing was shared', async () => {
+      jest.mocked(getSharedPayloads).mockReturnValue([]);
+      mockRealtime(fiveBills, threeTags, family, familyMonth);
+
+      await render(<HomePage />);
+
+      expect(router.push).not.toHaveBeenCalled();
+    });
+  });
+
   it('Should show the same numbers to Ana and to Bruno', async () => {
     const numbers = ['R$ 217,90', 'R$ 2.787,35', 'R$ 3.005,25', '2 de 6 contas'];
     const found: string[][] = [];

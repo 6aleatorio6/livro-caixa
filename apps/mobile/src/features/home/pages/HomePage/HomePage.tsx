@@ -7,6 +7,7 @@ import { BillToPayItem } from '@/features/home/components/BillToPayItem/BillToPa
 import { MonthCard } from '@/features/home/components/MonthCard/MonthCard';
 import { MonthListSection } from '@/features/home/components/MonthListSection/MonthListSection';
 import { SplitRow } from '@/features/home/components/SplitRow/SplitRow';
+import { useOpenPendingShare } from '@/features/home/hooks/useOpenPendingShare/useOpenPendingShare';
 import { homeEntrySupportOf } from '@/features/home/utils/homeEntrySupportOf';
 import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 import { monthSummary } from '@/features/home/utils/monthSummary';
@@ -39,6 +40,7 @@ const SPLIT_OPTIONS = [
 
 /** O mês da família: o anel, a divisão por tag ou por membro e a lista com as contas a pagar e as pagas. */
 export function HomePage() {
+  useOpenPendingShare();
   const [month, setMonth] = useState(currentMonth);
   const [splitView, setSplitView] = useState<'tag' | 'member'>('tag');
   const { status: billsStatus, data: bills } = useRealtime(recurringBillListQueryService, {});

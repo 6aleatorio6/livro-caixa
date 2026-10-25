@@ -3,9 +3,11 @@ import { Stack } from 'expo-router';
 import { AppContainer } from '@/core/AppContainer';
 import { SplashScreenController } from '@/core/components/SplashScreenController/SplashScreenController';
 import { useAccess } from '@/features/auth/hooks/useAccess/useAccess';
+import { useDiscardShareWithoutAccess } from '@/features/home/hooks/useDiscardShareWithoutAccess/useDiscardShareWithoutAccess';
 
 export default function RootLayout() {
   const { status: accessStatus, isAdmin } = useAccess();
+  useDiscardShareWithoutAccess(accessStatus);
 
   // Enquanto a sessão carrega, a splash cobre a tela de login, que é a única liberada.
   return (
@@ -27,6 +29,7 @@ export default function RootLayout() {
           <Stack.Screen name="recurring-bills/[id]/index" />
           <Stack.Screen name="recurring-bills/[id]/pay" />
           <Stack.Screen name="one-off-bills/new" />
+          <Stack.Screen name="share-receipt" />
           <Stack.Screen
             name="entries/[id]/index"
             options={{ presentation: 'transparentModal', animation: 'slide_from_bottom' }}
