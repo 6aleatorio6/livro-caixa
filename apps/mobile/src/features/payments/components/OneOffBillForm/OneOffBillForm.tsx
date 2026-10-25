@@ -1,4 +1,3 @@
-import { UserRound } from 'lucide-react-native';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
@@ -9,7 +8,7 @@ import { MoneyFieldSmart } from '@/shared/components/inputs/MoneyFieldSmart/Mone
 import { ReceiptFieldSmart } from '@/shared/components/inputs/ReceiptFieldSmart/ReceiptFieldSmart';
 import { TagChoiceSmart } from '@/shared/components/inputs/TagChoiceSmart/TagChoiceSmart';
 import { TextFieldSmart } from '@/shared/components/inputs/TextFieldSmart/TextFieldSmart';
-import { Notice } from '@/shared/components/Notice/Notice';
+import { OwnershipNotice } from '@/shared/components/OwnershipNotice/OwnershipNotice';
 import type { IOneOffBillInput } from '@/shared/types/entry/OneOffBillInput';
 import type { ITag } from '@/shared/types/tag/Tag';
 import { toIsoDate } from '@/shared/utils/date/toIsoDate';
@@ -22,14 +21,12 @@ export interface IOneOffBillFormProps {
   tags: ITag[];
   /** A leitura das tags falhou: `tags` está vazia por isso. */
   hasTagsError: boolean;
-  /** Como a pessoa que registra é chamada no aviso; `null` enquanto não se sabe. */
-  personName: string | null;
   /** Recebe a entrada já convertida; o formulário fica ocupado até a promessa terminar. */
   onSubmit: (input: IOneOffBillInput) => Promise<void>;
 }
 
 /** O formulário da conta avulsa: já paga, em nome de quem registra, com o comprovante. */
-export function OneOffBillForm({ tags, hasTagsError, personName, onSubmit }: IOneOffBillFormProps) {
+export function OneOffBillForm({ tags, hasTagsError, onSubmit }: IOneOffBillFormProps) {
   const { control, handleSubmit, formState } = useOneOffBillForm(undefined, { date: toIsoDate(new Date()) });
 
   const submit = handleSubmit((values) => onSubmit(oneOffBillInputOf(values)));
@@ -60,10 +57,7 @@ export function OneOffBillForm({ tags, hasTagsError, personName, onSubmit }: IOn
       </View>
 
       <ReceiptFieldSmart control={control} name="receipt" />
-      <Notice
-        icon={UserRound}
-        text={`Fica no seu nome${personName ? `, ${personName}` : ''}. Só você poderá alterar ou excluir esta conta.`}
-      />
+      <OwnershipNotice subject="esta conta" />
 
       <View style={styles.spacer} />
       <Button label="Registrar conta avulsa" onPress={submit} isLoading={formState.isSubmitting} />
