@@ -127,6 +127,7 @@ async function writeOneOffBill(
 async function writeEntryWithReceipt(db: Firestore, id: string, paidByEmail: string, entry: Record<string, unknown>) {
   const paidBy = await uidOf(db, paidByEmail);
   await setDoc(doc(db, 'files', `${id}-receipt`), {
+    name: 'comprovante.jpg',
     storagePath: `files/${id}-receipt`,
     type: 'image',
     contentType: 'image/jpeg',

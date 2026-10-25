@@ -117,6 +117,18 @@ service cloud.firestore {
         && (!('tagId' in entry) || entry.tagId is string);
     }
 
+    // A troca do comprovante de um lançamento, vista no fim do lote: o `files` novo nasce no lote e é de
+    // quem troca, e o `files` antigo some no mesmo lote (`files` fica um para um com os lançamentos).
+    // Sem trocar o `receiptFileId`, não há o que conferir.
+    function isReceiptKeptOrReplacedByAuthor() {
+      let newFile = /databases/$(database)/documents/files/$(request.resource.data.receiptFileId);
+      let oldFile = /databases/$(database)/documents/files/$(resource.data.receiptFileId);
+      return request.resource.data.receiptFileId == resource.data.receiptFileId
+        || (!exists(newFile)
+          && getAfter(newFile).data.uploadedBy == request.auth.uid
+          && !existsAfter(oldFile));
+    }
+
     // O mês `AAAA-MM` (já validado) não passa do mês de `request.time`, em UTC.
     function isUpToCurrentMonth(month) {
       return int(month.split('-')[0]) < request.time.year()
@@ -242,7 +254,10 @@ service cloud.firestore {
     // conta avulsa não usa um id com a forma do pagamento (`AAAA-MM_...`), senão ela ocuparia o id e a
     // conta recorrente ficaria sem poder ser paga. O pagamento exige que a conta recorrente exista e que o
     // mês não seja futuro; a regra NÃO confere que a conta vence naquele mês. O `update` do
-    // pagamento fica para o G6; o `delete` é do autor, como o da conta avulsa.
+    // pagamento muda só o valor pago e o comprovante; a conta avulsa, o nome, o valor, a data (e com
+    // ela o `month`), a tag e o comprovante. Trocar o comprovante é um lote (o `files` novo, o
+    // lançamento e a exclusão do `files` antigo). Excluir é um lote que apaga o lançamento e o `files`
+    // dele; o `hasEntries` não desce (veja `allowedEmails`).
     match /entries/{id} {
       allow get, list: if isInList();
 
@@ -256,21 +271,37 @@ service cloud.firestore {
 
       allow update: if isInList()
         && resource.data.paidBy == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'amountCents', 'date', 'month', 'tagId'])
-        && isValidOneOffBill(request.resource.data);
+        && isReceiptKeptOrReplacedByAuthor()
+        && ((resource.data.kind == 'oneOffBill'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'amountCents', 'date', 'month', 'tagId', 'receiptFileId'])
+            && isValidOneOffBill(request.resource.data))
+          || (resource.data.kind == 'recurringPayment'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['amountCents', 'receiptFileId'])
+            && isValidRecurringPayment(request.resource.data)));
 
       allow delete: if isInList()
-        && resource.data.paidBy == request.auth.uid;
+        && resource.data.paidBy == request.auth.uid
+        && !existsAfter(/databases/$(database)/documents/files/$(resource.data.receiptFileId));
     }
 
-    // O registro de um arquivo (o comprovante): só a criação, no lote do lançamento. Ler e excluir
-    // entram quando o app mostrar e trocar o comprovante (G6). O arquivo mora em `files/{id}` no
-    // Storage. A regra NÃO confere o tamanho nem o tipo reais do objeto enviado: quem os confere é a
+    // O registro de um arquivo (o comprovante): todo membro lê um por id (`get`, nunca `list`), para ver
+    // o comprovante de qualquer lançamento; a criação é no lote do lançamento; só quem enviou
+    // (`uploadedBy`) exclui, no lote que troca o comprovante ou exclui o lançamento; o registro que já não existe
+    // também passa, para o lote do lançamento sem registro não cair por ele. Não há `update`.
+    // O arquivo mora em `files/{id}` no Storage. A regra NÃO confere o tamanho nem o tipo reais do objeto enviado: quem os confere é a
     // regra do Storage, no envio.
     match /files/{id} {
+      allow get: if isInList();
+
+      allow delete: if isInList()
+        && (resource == null || resource.data.uploadedBy == request.auth.uid);
+
       allow create: if isInList()
-        && request.resource.data.keys().hasOnly(['storagePath', 'type', 'contentType', 'sizeBytes', 'uploadedBy'])
-        && request.resource.data.keys().hasAll(['storagePath', 'type', 'contentType', 'sizeBytes', 'uploadedBy'])
+        && request.resource.data.keys().hasOnly(['name', 'storagePath', 'type', 'contentType', 'sizeBytes', 'uploadedBy'])
+        && request.resource.data.keys().hasAll(['name', 'storagePath', 'type', 'contentType', 'sizeBytes', 'uploadedBy'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 1
+        && request.resource.data.name.size() <= 255
         && request.resource.data.storagePath == 'files/' + id
         && request.resource.data.uploadedBy == request.auth.uid
         && ((request.resource.data.type == 'image'

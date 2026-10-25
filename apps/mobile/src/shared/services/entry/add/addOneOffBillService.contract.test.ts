@@ -26,6 +26,7 @@ describe('addOneOffBillService', () => {
       const [file0] = await readCollectionWithoutRules('files');
       expect(file0).toEqual({
         id: expect.any(String),
+        name: 'comprovante.png',
         storagePath: `files/${file0.id}`,
         type: 'image',
         contentType: 'image/png',
@@ -51,6 +52,7 @@ describe('addOneOffBillService', () => {
       expect(await readStorageWithoutRules(`files/${file0.id}`)).toEqual({
         contentType: 'image/png',
         size: RECEIPT_FIXTURE.sizeBytes,
+        customMetadata: { uploadedBy: uid },
       });
     },
   );

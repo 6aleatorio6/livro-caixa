@@ -7,8 +7,8 @@ import { firestoreDb } from '@/shared/services/firebase/firestoreDb';
 import type { IReceipt } from '@/shared/types/file/Receipt';
 
 /**
- * Envia o comprovante ao Storage (`files/{id}`) e devolve a referência do registro em `files` (o `id` dela
- * é o do arquivo) e o documento dele, que quem chama grava no lote do lançamento. Se o envio falha, lança `RECEIPT_UPLOAD_FAILED`
+ * Envia o comprovante ao Storage (`files/{id}`, com o autor em `customMetadata.uploadedBy`, de que a regra de excluir o objeto depende) e devolve a referência do registro em `files` (o `id` dela
+ * é o do arquivo) e o documento dele (com o nome do arquivo), que quem chama grava no lote do lançamento. Se o envio falha, lança `RECEIPT_UPLOAD_FAILED`
  * e nada foi gravado.
  */
 export async function uploadReceipt(receipt: IReceipt, uploadedBy: string) {
@@ -16,7 +16,10 @@ export async function uploadReceipt(receipt: IReceipt, uploadedBy: string) {
   const storagePath = `files/${fileRef.id}`;
 
   try {
-    await putFile(ref(firebaseStorage, storagePath), receipt.uri, { contentType: receipt.contentType });
+    await putFile(ref(firebaseStorage, storagePath), receipt.uri, {
+      contentType: receipt.contentType,
+      customMetadata: { uploadedBy },
+    });
   } catch {
     throw new AppError(
       'Receipt upload failed',
@@ -28,6 +31,7 @@ export async function uploadReceipt(receipt: IReceipt, uploadedBy: string) {
   return {
     fileRef,
     fileData: {
+      name: receipt.name,
       storagePath,
       type: receipt.type,
       contentType: receipt.contentType,

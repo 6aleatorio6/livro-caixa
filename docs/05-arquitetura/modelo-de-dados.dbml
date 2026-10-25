@@ -13,9 +13,9 @@
 // Os arquivos ficam no Cloud Storage, em files/{id}, e cada um tem o seu registro na coleção files:
 // é o único lugar que lista os arquivos do app. O lançamento aponta para o registro do comprovante, e
 // a lista do mês não baixa arquivo nenhum. As regras do Cloud Storage conferem que quem envia está em
-// allowedEmails (firestore.exists), que o arquivo é imagem ou PDF e tem até 5 MB, e que ainda não
+// allowedEmails (firestore.exists), que o autor está nos metadados do objeto (customMetadata.uploadedBy), que o arquivo é imagem ou PDF e tem até 5 MB, e que ainda não
 // existe arquivo nesse caminho. O app envia o arquivo primeiro e grava, num lote só, o registro em
-// files e o lançamento; excluir o lançamento apaga o registro e o arquivo.
+// files e o lançamento; excluir o lançamento apaga, num lote, o lançamento e o registro, e depois o arquivo.
 //
 // Valores em dinheiro em centavos, inteiros. Datas sem hora como texto AAAA-MM-DD, e meses como
 // AAAA-MM, para o fuso do celular não trocar o dia.
@@ -81,16 +81,17 @@ Table entries {
     tagId
   }
 
-  Note: 'Os lançamentos, pagamentos e contas avulsas, numa coleção só: uma consulta traz o mês inteiro.'
+  Note: 'Os lançamentos, pagamentos e contas avulsas, numa coleção só: uma consulta traz o mês inteiro. Só o autor altera: no pagamento, o valor pago e o comprovante; na conta avulsa, o nome, o valor, a data (e o month com ela), a tag e o comprovante. Trocar o comprovante é um lote: cria o files novo, atualiza o lançamento e apaga o files antigo. Excluir é um lote que apaga o lançamento e o files dele, e depois o app apaga o objeto no Storage. Excluir não desfaz o hasEntries.'
 }
 
 Table files {
   id varchar [pk, note: 'Id gerado pelo app antes do envio']
+  name varchar [not null, note: 'O nome do arquivo escolhido (1 a 255 caracteres), que o app mostra nos detalhes e no visualizador']
   storagePath varchar [not null, note: 'files/{id}, no Cloud Storage']
   type FileType [not null]
   contentType varchar [not null, note: 'image/... ou application/pdf']
   sizeBytes int [not null, note: 'Até 5 MB (5.242.880 bytes), conferido pelas regras do Cloud Storage no envio']
-  uploadedBy varchar [not null, note: 'O uid do login de quem enviou. Só ele exclui o registro e o arquivo']
+  uploadedBy varchar [not null, note: 'O uid do login de quem enviou. Só ele exclui o registro e o arquivo. O app grava o mesmo uid em customMetadata.uploadedBy do objeto no Cloud Storage, porque a exclusão do objeto vem depois do lote, quando o registro já não existe para a regra consultar']
 
-  Note: 'Todos os arquivos do app, num lugar só. Hoje só há comprovantes, cada um usado por um lançamento.'
+  Note: 'Todos os arquivos do app, num lugar só. Hoje só há comprovantes, cada um usado por um lançamento. Todo membro lê um registro por id (nunca a lista). Não há update: trocar o comprovante cria um registro novo e apaga o antigo no mesmo lote.'
 }
