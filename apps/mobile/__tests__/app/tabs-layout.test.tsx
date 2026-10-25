@@ -3,7 +3,13 @@ import { router } from 'expo-router';
 import { renderRouter, screen } from 'expo-router/testing-library';
 import { Text } from 'react-native';
 
+import { useEnsureOwnName } from '@/features/auth/hooks/useEnsureOwnName/useEnsureOwnName';
+
 import TabsLayout from '@/app/(tabs)/_layout';
+
+// O nome da primeira entrada tem o teste do próprio hook; aqui só se confere que o layout o chama. Mock
+// com fábrica: o módulo real carregaria o React Native Firebase, que não roda no Jest.
+jest.mock('@/features/auth/hooks/useEnsureOwnName/useEnsureOwnName', () => ({ useEnsureOwnName: jest.fn() }));
 
 async function renderTabs() {
   await renderRouter(
@@ -18,6 +24,12 @@ async function renderTabs() {
 }
 
 describe('TabsLayout', () => {
+  it('Should ensure the name of the person who opens the tabs', async () => {
+    await renderTabs();
+
+    expect(useEnsureOwnName).toHaveBeenCalled();
+  });
+
   it('Should open on Início and keep it when its tab is pressed again', async () => {
     await renderTabs();
     await userEvent.setup().press(screen.getByRole('tab', { name: 'Início' }));

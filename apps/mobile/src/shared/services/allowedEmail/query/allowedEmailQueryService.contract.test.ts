@@ -3,11 +3,13 @@ import { listenTo } from '@/shared/testing/contract/listenTo';
 import { scenarioEntries } from '@/shared/testing/contract/scenarioEntries';
 import { writeWithoutRules } from '@/shared/testing/contract/writeWithoutRules';
 
+import type { IAllowedEmail } from '@/shared/types/allowedEmail/AllowedEmail';
+
 import { allowedEmailQueryService } from './allowedEmailQueryService';
 import { allowedEmailQueryScenarios } from './allowedEmailQueryService.scenarios';
 
 describe('allowedEmailQueryService', () => {
-  it.each(scenarioEntries(allowedEmailQueryScenarios))(
+  it.each(scenarioEntries<{ email: string | null }, IAllowedEmail | null>(allowedEmailQueryScenarios))(
     'Should deliver what the scenario %s says',
     async (_name, scenario) => {
       await arrangeScenario(scenario);

@@ -19,6 +19,8 @@ import RootLayout from '@/app/_layout';
 jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jest.fn() }));
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailQueryService', () => ({ allowedEmailQueryService: {} }));
+// O layout das abas chama o hook do nome, que tem teste próprio e carregaria o serviço de escrita.
+jest.mock('@/features/auth/hooks/useEnsureOwnName/useEnsureOwnName', () => ({ useEnsureOwnName: jest.fn() }));
 
 const SIGNED_OUT: IAuthState = { status: 'signedOut' };
 

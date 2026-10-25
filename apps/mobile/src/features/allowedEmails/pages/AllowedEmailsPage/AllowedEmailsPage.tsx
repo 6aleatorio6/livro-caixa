@@ -18,6 +18,7 @@ import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/que
 import type { IAllowedEmailListItem } from '@/shared/types/allowedEmail/AllowedEmailListItem';
 import { signedInEmail } from '@/shared/utils/auth/signedInEmail';
 import { peopleCount } from '@/shared/utils/format/peopleCount';
+import { displayNameOf } from '@/shared/utils/person/displayNameOf';
 
 /** A lista de e-mails permitidos, só para o admin: quem está na família e o que impede cada um de sair. */
 export function AllowedEmailsPage() {
@@ -25,6 +26,8 @@ export function AllowedEmailsPage() {
   const { status, data: people } = useRealtime(allowedEmailListQueryService, {});
 
   function situationOf(person: IAllowedEmailListItem) {
+    // Sem nome, a pessoa ainda não entrou: o nome vem da conta Google na primeira entrada.
+    if (person.name === null) return 'Ainda não entrou';
     if (person.isAdmin) {
       return email !== null && allowedEmailId(email) === person.email ? 'Admin · você' : 'Admin';
     }
@@ -40,7 +43,7 @@ export function AllowedEmailsPage() {
   // O aviso é da tela, e não da ação: a ação só sabe o e-mail, que é o que o serviço pede.
   async function removePerson(person: IAllowedEmailListItem) {
     const { error } = await doRemoveAllowedEmail({ email: person.email });
-    if (!error) showToast(`${person.name} saiu da lista`, 'success');
+    if (!error) showToast(`${displayNameOf(person)} saiu da lista`, 'success');
   }
 
   return (
@@ -71,14 +74,14 @@ export function AllowedEmailsPage() {
               <PersonItem
                 key={person.email}
                 name={person.name}
-                email={person.email}
+                email={person.name === null ? null : person.email}
                 situation={situationOf(person)}
                 situationColor={person.isAdmin ? 'primary' : 'onSurfaceVariant'}
                 trailing={
                   canRemove(person) ? (
                     <Button
                       label="Remover"
-                      accessibilityLabel={`Remover ${person.name}`}
+                      accessibilityLabel={`Remover ${displayNameOf(person)}`}
                       variant="textDestructive"
                       onPress={() => removePerson(person)}
                     />

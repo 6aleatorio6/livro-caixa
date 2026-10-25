@@ -18,6 +18,13 @@ export const allowedEmailQueryScenarios = {
   // A regra deixa ler o documento do próprio e-mail mesmo quando ele não existe: vem `null`, e não erro.
   emailOutsideList: { signedInAs: CARLA, given: BRUNO_IN_THE_LIST, input: { email: CARLA }, result: null },
   // O id na lista é o e-mail em minúsculas, e o do login pode vir com maiúsculas.
+  // Quem o admin acabou de adicionar: sem nome até a primeira entrada, quando o app grava o da conta Google.
+  emailWithoutName: {
+    signedInAs: CARLA,
+    given: { [`allowedEmails/${CARLA}`]: { isAdmin: false, hasEntries: false } },
+    input: { email: CARLA },
+    result: { name: null, isAdmin: false },
+  },
   emailWithCapitals: {
     signedInAs: 'Bruno.Souza@Exemplo.com',
     given: BRUNO_IN_THE_LIST,

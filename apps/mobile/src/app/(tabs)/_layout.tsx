@@ -1,11 +1,14 @@
 import { TabList, Tabs, TabSlot, TabTrigger } from 'expo-router/ui';
 import { House, Receipt, Settings } from 'lucide-react-native';
 
+import { useEnsureOwnName } from '@/features/auth/hooks/useEnsureOwnName/useEnsureOwnName';
 import { NavigationBar } from '@/shared/components/NavigationBar/NavigationBar';
 import { NavigationBarItem } from '@/shared/components/NavigationBarItem/NavigationBarItem';
 import { AboveNavigationBarContext } from '@/shared/components/Screen/AboveNavigationBarContext';
 
 export default function TabsLayout() {
+  useEnsureOwnName();
+
   return (
     <Tabs>
       <AboveNavigationBarContext value>
