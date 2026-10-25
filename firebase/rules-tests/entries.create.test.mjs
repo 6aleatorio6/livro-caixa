@@ -55,6 +55,7 @@ describe('entries create by a member', () => {
     row('Should not let a member create a one-off bill with a month different from the date', false, { entry: { month: '2026-10' } }),
     row('Should not let a member create a one-off bill with a createdAt that is not the server time', false, { entry: { createdAt: new Date() } }),
     row('Should not let a member create a one-off bill of the kind recurringPayment', false, { entry: { kind: 'recurringPayment' } }),
+    row('Should not let a member create a one-off bill with the id of a recurring payment', false, { batch: { entryId: '2026-10_internet' } }),
     row('Should not let a member create a one-off bill of an unknown kind', false, { entry: { kind: 'other' } }),
     row('Should not let a member create a one-off bill with a key besides the nine', false, { entry: { note: 'a mais' } }),
     ...['kind', 'month', 'name', 'amountCents', 'date', 'paidBy', 'createdAt', 'receiptFileId'].map((key) =>

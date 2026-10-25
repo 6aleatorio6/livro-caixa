@@ -19,7 +19,7 @@ before(async () => {
 
 // Ana (admin) e Bruno (membro) já entraram, então têm o `uid` do login gravado; Davi (membro com
 // lançamentos) está na lista e ainda não entrou, sem `uid`. Carla não está. Os documentos de
-// `settings/tags` (uma tag, Casa) e de `recurringBills/internet` ficam semeados para os casos de
+// `settings/tags` (uma tag, Casa) e de `recurringBills/internet`, `aluguel` e `luz` ficam semeados para os casos de
 // leitura, de mudança e de exclusão.
 beforeEach(async () => {
   await testEnvironment.clearFirestore();
@@ -29,11 +29,19 @@ beforeEach(async () => {
     await setDoc(entryOf(firestore, 'davi@gmail.com'), { name: 'Davi', isAdmin: false, hasEntries: true });
     await setDoc(tagsDocOf(firestore), { items: { t1: { ...SEEDED_TAG } } });
     await setDoc(recurringBillOf(firestore, 'internet'), { ...SEEDED_BILL });
+    await setDoc(recurringBillOf(firestore, 'aluguel'), { ...SEEDED_BILL, name: 'Aluguel' });
+    await setDoc(recurringBillOf(firestore, 'luz'), { ...SEEDED_BILL, name: 'Luz' });
     // Uma conta avulsa de cada um, com o registro do comprovante, para `get`, `update` e `delete`.
     await setDoc(fileOf(firestore, 'fana1'), receiptFileOf('fana1', { uploadedBy: 'uid-ana' }));
     await setDoc(entryDocOf(firestore, 'ana1'), oneOffBillOf({ paidBy: 'uid-ana', receiptFileId: 'fana1' }));
     await setDoc(fileOf(firestore, 'fbruno1'), receiptFileOf('fbruno1'));
     await setDoc(entryDocOf(firestore, 'bruno1'), oneOffBillOf({ paidBy: 'uid-bruno', receiptFileId: 'fbruno1' }));
+    // Um pagamento de conta recorrente de cada um, no mês 2026-10 (o da Ana é do aluguel, o do Bruno da luz;
+    // `internet` fica livre para o pagamento novo), para o segundo pagamento, o `update` e o `delete`.
+    await setDoc(fileOf(firestore, 'fpana'), receiptFileOf('fpana', { uploadedBy: 'uid-ana' }));
+    await setDoc(entryDocOf(firestore, '2026-10_aluguel'), recurringPaymentOf({ recurringBillId: 'aluguel', name: 'Aluguel', paidBy: 'uid-ana', receiptFileId: 'fpana' }));
+    await setDoc(fileOf(firestore, 'fpbruno'), receiptFileOf('fpbruno'));
+    await setDoc(entryDocOf(firestore, '2026-10_luz'), recurringPaymentOf({ recurringBillId: 'luz', name: 'Luz', paidBy: 'uid-bruno', receiptFileId: 'fpbruno' }));
   });
 });
 
@@ -198,10 +206,45 @@ export function receiptFileOf(id, overrides = {}) {
  * O lote como o app grava: o registro do arquivo, o lançamento e o `hasEntries: true` de `email`.
  * `file: null` deixa o registro de fora, e `markHasEntries: false` deixa de fora o `hasEntries`.
  */
-export function addOneOffBillBatch(firestore, { entryId = 'e1', entry = oneOffBillOf(), fileId = entry.receiptFileId, file = receiptFileOf(fileId), email = 'bruno@gmail.com', markHasEntries = true } = {}) {
+export function addEntryBatch(firestore, { entryId, entry, fileId = entry.receiptFileId, file = receiptFileOf(fileId), email = 'bruno@gmail.com', markHasEntries = true }) {
   const batch = writeBatch(firestore);
   if (file !== null) batch.set(fileOf(firestore, fileId), file);
   batch.set(entryDocOf(firestore, entryId), entry);
   if (markHasEntries) batch.update(entryOf(firestore, email), { hasEntries: true });
   return batch.commit();
+}
+
+export function addOneOffBillBatch(firestore, { entryId = 'e1', entry = oneOffBillOf(), ...rest } = {}) {
+  return addEntryBatch(firestore, { entryId, entry, ...rest });
+}
+
+/**
+ * O pagamento de conta recorrente válido do Bruno (a internet de 2026-10), com os campos trocados em
+ * `overrides`. Um campo com `undefined` sai do documento.
+ */
+export function recurringPaymentOf(overrides = {}) {
+  const entry = {
+    kind: 'recurringPayment',
+    month: '2026-10',
+    recurringBillId: 'internet',
+    name: 'Internet',
+    amountCents: 11990,
+    dueDay: 15,
+    expectedAmountCents: 11990,
+    tagId: 't1',
+    paidBy: 'uid-bruno',
+    createdAt: serverTimestamp(),
+    receiptFileId: 'f1',
+    ...overrides,
+  };
+  for (const key of Object.keys(entry)) if (entry[key] === undefined) delete entry[key];
+  return entry;
+}
+
+/**
+ * O lote do pagamento como o app grava: o id do lançamento é `{month}_{recurringBillId}` (o do `entry`, a não
+ * ser que `entryId` o troque). Se o documento já existe, a gravação vira um `update`.
+ */
+export function addPaymentBatch(firestore, { entry = recurringPaymentOf(), entryId = `${entry.month}_${entry.recurringBillId}`, ...rest } = {}) {
+  return addEntryBatch(firestore, { entryId, entry, ...rest });
 }
