@@ -9,6 +9,7 @@ import { allowedEmailQueryService } from '@/shared/services/allowedEmail/query/a
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { signedInEmail } from '@/shared/utils/auth/signedInEmail';
 import { displayNameOf } from '@/shared/utils/person/displayNameOf';
+import { firstNameOf } from '@/shared/utils/person/firstNameOf';
 
 import { OneOffBillForm } from '@/features/payments/components/OneOffBillForm/OneOffBillForm';
 import { doAddOneOffBill } from '@/features/payments/utils/actions/doAddOneOffBill';
@@ -26,7 +27,7 @@ export function NewOneOffBillPage() {
         <OneOffBillForm
           tags={tags ?? []}
           hasTagsError={tagsStatus === 'error'}
-          personName={email ? displayNameOf({ name: person?.name ?? null, email }) : null}
+          personName={email ? firstNameOf(displayNameOf({ name: person?.name ?? null, email })) : null}
           onSubmit={async (input) => {
             const { error } = await doAddOneOffBill(input);
             if (!error) router.back();

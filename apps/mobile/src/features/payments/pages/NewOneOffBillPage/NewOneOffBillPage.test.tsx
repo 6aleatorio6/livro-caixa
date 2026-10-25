@@ -184,7 +184,7 @@ describe('NewOneOffBillPage', () => {
     await renderPage();
 
     expect(
-      screen.getByText('Fica no seu nome, Bruno Souza. Só você poderá alterar ou excluir esta conta.'),
+      screen.getByText('Fica no seu nome, Bruno. Só você poderá alterar ou excluir esta conta.'),
     ).toBeOnTheScreen();
     expect(screen.queryByLabelText('Quem pagou')).not.toBeOnTheScreen();
     expect(screen.queryByText('Quem pagou')).not.toBeOnTheScreen();
