@@ -64,12 +64,11 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
 - **Calendário do Android, com a `@react-native-community/datetimepicker`.** A família já conhece o
   calendário do Android, que vem em português do Brasil e acessível. O plugin dela pinta o calendário
   com as cores do tema claro e escuro do design.
-- **Gráfico do Início com a `react-native-gifted-charts`**
-  ([Início](../03-funcionalidades/01-principal/01-inicio.md)). Ela desenha com o `react-native-svg`,
-  que o app já tem, sem pacote nativo novo: o gradiente nativo, que ela aceita, fica de fora. O anel
-  do que falta pagar é o gráfico de pizza dela em forma de rosca, com o valor no centro. As barras
-  por tag e por membro são componentes simples, porque o gráfico de barras dela traz eixos que o
-  design não tem.
+- **Gráfico do Início desenhado no próprio app, com o `react-native-svg`**
+  ([Início](../03-funcionalidades/01-principal/01-inicio.md)). O `react-native-svg` o app já tem,
+  sem pacote nativo novo. O anel do que falta pagar são dois círculos: o trilho inteiro e, por cima,
+  o arco do que foi pago, com as pontas redondas e o valor no centro. As barras por tag e por membro
+  são componentes simples, porque nenhum gráfico de barras compensa os eixos que o design não tem.
 
 Ficaram de fora:
 
@@ -90,6 +89,10 @@ Ficaram de fora:
   0.x e também embute o PDFium; a segunda não tem versão nova desde agosto de 2025.
 - **`expo-share-intent`:** recebe compartilhamentos com um hook, mas é da comunidade e não tem
   versão confirmada para o SDK 58; o `expo-sharing` faz o mesmo e é atualizado junto com o SDK.
+- **`react-native-gifted-charts`:** desenha com o `react-native-svg`, mas o import da raiz lança
+  "Gradient package was not found" sem o `react-native-linear-gradient` ou o `expo-linear-gradient`,
+  os dois nativos, o que pediria outro build nativo. O miolo do anel é um círculo pintado por cima,
+  que não acompanha o tema claro e escuro, e o arco não tem pontas redondas.
 - **`victory-native`:** mantida e completa, mas desenha com o Skia, um pacote nativo de vários MB,
   para um anel e algumas barras. Só compensaria num gráfico interativo ou com muitos pontos.
 - **`react-native-chart-kit`:** também desenha com o `react-native-svg` e tem um gráfico em anel,

@@ -14,6 +14,8 @@ export interface IButtonProps {
   icon?: LucideIcon;
   isLoading?: boolean;
   disabled?: boolean;
+  /** A medida do "Registrar" numa linha de conta: 40 dp de altura em vez de 48. */
+  isCompact?: boolean;
   /** O que o leitor de tela lê, quando precisa ser mais que o rótulo ("Remover Clara Souza"). */
   accessibilityLabel?: string;
 }
@@ -21,6 +23,7 @@ export interface IButtonProps {
 const CONTAINER_COLOR_BY_VARIANT: Record<IButtonVariant, IColorRole | null> = {
   filled: 'primary',
   tonal: 'secondaryContainer',
+  tertiary: 'tertiary',
   outlined: null,
   text: null,
   textDestructive: null,
@@ -29,6 +32,7 @@ const CONTAINER_COLOR_BY_VARIANT: Record<IButtonVariant, IColorRole | null> = {
 const CONTENT_COLOR_BY_VARIANT: Record<IButtonVariant, IColorRole> = {
   filled: 'onPrimary',
   tonal: 'onSecondaryContainer',
+  tertiary: 'onTertiary',
   outlined: 'primary',
   text: 'primary',
   textDestructive: 'error',
@@ -42,6 +46,7 @@ export function Button({
   icon: Icon,
   isLoading = false,
   disabled = false,
+  isCompact = false,
   accessibilityLabel,
 }: IButtonProps) {
   const { theme } = useUnistyles();
@@ -55,7 +60,7 @@ export function Button({
       accessibilityState={{ disabled: isInactive, busy: isLoading }}
       disabled={isInactive}
       onPress={onPress}
-      style={({ pressed }) => styles.container(variant, pressed, isInactive)}
+      style={({ pressed }) => styles.container(variant, pressed, isInactive, isCompact)}
     >
       <View style={styles.content}>
         {isLoading ? (
@@ -72,10 +77,10 @@ export function Button({
 }
 
 const styles = StyleSheet.create((theme) => ({
-  container: (variant: IButtonVariant, isPressed: boolean, isInactive: boolean) => {
+  container: (variant: IButtonVariant, isPressed: boolean, isInactive: boolean, isCompact: boolean) => {
     const containerColor = CONTAINER_COLOR_BY_VARIANT[variant];
     return {
-      minHeight: 48,
+      minHeight: isCompact ? 40 : 48, // as alturas do design, sem token
       justifyContent: 'center',
       paddingHorizontal: variant === 'text' || variant === 'textDestructive' ? theme.spacing.medium : theme.spacing.largeIncreased,
       borderRadius: theme.radii.full,

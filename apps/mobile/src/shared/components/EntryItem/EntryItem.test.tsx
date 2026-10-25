@@ -3,22 +3,24 @@ import { render, screen } from '@testing-library/react-native';
 import { EntryItem } from './EntryItem';
 
 describe('EntryItem', () => {
-  it('Should show the date, the one-off mark, the tag and the amount', async () => {
-    await render(<EntryItem name="Conserto" amountCents={18735} date="2026-10-12" tagName="Casa" />);
+  it('Should show the name, the support and the amount of a one-off bill', async () => {
+    await render(<EntryItem kind="oneOff" name="Conserto" amountCents={18735} support="12/10 · avulsa · Casa" />);
 
     expect(screen.getByText('Conserto')).toBeOnTheScreen();
     expect(screen.getByText('12/10 · avulsa · Casa')).toBeOnTheScreen();
     expect(screen.getByText('R$ 187,35')).toBeOnTheScreen();
   });
 
-  it('Should leave the tag out when the bill has none', async () => {
-    await render(<EntryItem name="Conserto" amountCents={18735} date="2026-10-12" />);
+  it('Should show the name, the support and the amount of a payment', async () => {
+    await render(<EntryItem kind="payment" name="Aluguel" amountCents={180000} support="dia 5 · Ana · Casa" />);
 
-    expect(screen.getByText('12/10 · avulsa')).toBeOnTheScreen();
+    expect(screen.getByText('Aluguel')).toBeOnTheScreen();
+    expect(screen.getByText('dia 5 · Ana · Casa')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 1.800,00')).toBeOnTheScreen();
   });
 
-  it('Should be read-only', async () => {
-    await render(<EntryItem name="Conserto" amountCents={18735} date="2026-10-12" />);
+  it.each(['oneOff', 'payment'] as const)('Should be read-only as a %s', async (kind) => {
+    await render(<EntryItem kind={kind} name="Aluguel" amountCents={180000} support="dia 5" />);
 
     expect(screen.queryByRole('button')).not.toBeOnTheScreen();
   });
