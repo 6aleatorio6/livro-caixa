@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import { ScrollView } from 'react-native';
-import { StyleSheet } from 'react-native-unistyles';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import type { spacing } from '@/core/theme/spacing';
 
@@ -10,12 +10,21 @@ export interface IScreenContentProps {
   children: ReactNode;
 }
 
-/** O corpo rolável de uma tela, sob a barra de cima: os recuos das laterais e o vão entre os blocos. */
+/**
+ * O corpo rolável de uma tela, sob a barra de cima: os recuos das laterais e o vão entre os blocos. O campo com foco
+ * rola para cima do teclado, com um vão entre o cursor e o teclado.
+ */
 export function ScreenContent({ gap = 'none', children }: IScreenContentProps) {
+  const { theme } = useUnistyles();
+
   return (
-    <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content(gap)}>
+    <KeyboardAwareScrollView
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={styles.content(gap)}
+      bottomOffset={theme.spacing.extraExtraExtraLarge}
+    >
       {children}
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 

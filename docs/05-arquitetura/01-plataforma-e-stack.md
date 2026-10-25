@@ -80,6 +80,11 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   sem pacote nativo novo. O anel do que falta pagar são dois círculos: o trilho inteiro e, por cima,
   o arco do que foi pago, com as pontas redondas e o valor no centro. As barras por tag e por membro
   são componentes simples, porque nenhum gráfico de barras compensa os eixos que o design não tem.
+- **Campo com foco acima do teclado, com a `react-native-keyboard-controller`.** O
+  `KeyboardProvider` fica na raiz, no `AppContainer`, e o `ScreenContent` rola com o
+  `KeyboardAwareScrollView` dela: o campo com foco sobe e deixa um vão entre o cursor e o teclado,
+  para a mensagem de erro do campo continuar visível. É uma biblioteca nativa, sem config plugin: a
+  instalação pede um APK novo.
 
 Ficaram de fora:
 
@@ -113,6 +118,9 @@ Ficaram de fora:
   mas é a que menos deixa ajustar o estilo ao design.
 - **`@react-native-documents/picker`:** faz o mesmo que o `expo-document-picker`, mas é uma
   biblioteca à parte, sem a garantia de sair junto com o SDK.
+- **`KeyboardAvoidingView` e `ScrollView` do React Native:** no Android com edge-to-edge a janela
+  não é redimensionada quando o teclado abre, então nada se move e o campo com foco fica atrás
+  dele.
 - **Calendário próprio:** teria de refazer em JavaScript o que o Android já entrega em português do
   Brasil e com acessibilidade.
 

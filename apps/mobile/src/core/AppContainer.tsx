@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { AppToast } from '@/core/components/AppToast/AppToast';
@@ -9,13 +10,18 @@ export interface IAppContainerProps {
   children: ReactNode;
 }
 
-/** A raiz do app: a raiz dos gestos, as telas e o que fica por cima de todas, montado uma vez. */
+/**
+ * A raiz do app: a raiz dos gestos, o provedor do teclado (que deixa o campo com foco acima dele), as telas e o que
+ * fica por cima de todas, montado uma vez.
+ */
 export function AppContainer({ children }: IAppContainerProps) {
   return (
     <GestureHandlerRootView style={styles.root}>
-      {children}
-      <AppToast />
-      <FullscreenLoaderModal />
+      <KeyboardProvider>
+        {children}
+        <AppToast />
+        <FullscreenLoaderModal />
+      </KeyboardProvider>
     </GestureHandlerRootView>
   );
 }
