@@ -1,4 +1,4 @@
-# O membro não vê a seção do admin, e Sair em Configurações volta ao login.
+# O membro não vê a seção do admin, e Sair da conta em Configurações volta ao login.
 # Coberto por:
 # - Nome, e-mail e a falta da seção do admin: SettingsPage.test.tsx (as a member) e o contrato do
 #   allowedEmailQueryService (emailInList).
@@ -22,7 +22,7 @@ tags:
 - assertNotVisible: Só para o admin
 - assertNotVisible: E-mails permitidos
 - takeScreenshot: settings--member
-- tapOn: Sair
+- tapOn: Sair da conta
 - assertVisible: Entrar com Google
 - assertNotVisible: Início
 - takeScreenshot: sign-in--after-settings-sign-out

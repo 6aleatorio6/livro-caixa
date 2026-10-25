@@ -39,7 +39,7 @@ export function SettingsPage() {
             />
           </View>
           <IconButton icon={Pencil} label="Alterar nome" onPress={() => router.push('/change-name')} />
-          <IconButton icon={LogOut} label="Sair" onPress={() => doSignOut()} />
+          <IconButton icon={LogOut} label="Sair da conta" onPress={() => doSignOut()} />
         </View>
 
         <View style={styles.section}>

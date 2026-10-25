@@ -120,7 +120,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       await render(<SettingsPage />);
 
-      await user.press(screen.getByRole('button', { name: 'Sair' }));
+      await user.press(screen.getByRole('button', { name: 'Sair da conta' }));
 
       // Sem entrada no cenário: o `createAsyncAction` chama o serviço com um `undefined`, que não conta.
       expect(signOutService).toHaveBeenCalledTimes(1);
@@ -135,7 +135,7 @@ describe('SettingsPage', () => {
     it('Should not announce the entries as buttons', async () => {
       await render(<SettingsPage />);
 
-      // Só os dois da pessoa logada: Alterar nome e Sair.
+      // Só os dois da pessoa logada: Alterar nome e Sair da conta.
       expect(screen.getAllByRole('button')).toHaveLength(2);
     });
   });
