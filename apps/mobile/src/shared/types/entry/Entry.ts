@@ -24,7 +24,13 @@ interface IRecurringPaymentEntry extends IEntryBase {
   kind: 'recurringPayment';
   /** O id da conta recorrente; pode apontar para uma conta já excluída. */
   recurringBillId: string;
+  /** O dia (1 a 31) em que a conta vencia naquele mês, copiado no pagamento. */
+  dueDay: number;
+  /** O valor previsto da conta quando foi paga, em centavos, copiado no pagamento. */
+  expectedAmountCents: number;
   date: null;
+  /** `AAAA-MM-DD` em que o pagamento foi registrado (o `createdAt` pelos campos locais; hoje enquanto o servidor não carimba). */
+  paidOn: string;
 }
 
 /** Um lançamento da família: uma conta avulsa já paga ou o pagamento de uma conta recorrente. */

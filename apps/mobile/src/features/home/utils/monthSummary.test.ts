@@ -20,6 +20,7 @@ const payment = (overrides: Partial<Extract<IEntry, { kind: 'recurringPayment' }
   dueDay: 5,
   expectedAmountCents: 100000,
   date: null,
+  paidOn: '2026-10-05',
   month: '2026-10',
   name: 'Aluguel',
   amountCents: 100000,

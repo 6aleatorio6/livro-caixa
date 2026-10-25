@@ -17,6 +17,8 @@ const base = { kind: 'oneOffBill', createdAt: new Date('2026-10-20T12:00:00Z') }
 const PHARMACY = { ...base, createdAt: new Date('2026-10-12T18:00:00Z'), month: '2026-10', name: 'Farmácia', amountCents: 8990, date: '2026-10-12', tagId: HOME_TAG_ID, paidBy: testAccountUid(BRUNO), receiptFileId: 'f1' };
 const MARKET = { ...base, month: '2026-10', name: 'Mercado', amountCents: 25000, date: '2026-10-20', tagId: UTILITIES_TAG_ID, paidBy: testAccountUid(ANA), receiptFileId: 'f2' };
 const GARAGE = { ...base, createdAt: new Date('2026-10-12T09:00:00Z'), month: '2026-10', name: 'Estacionamento', amountCents: 1500, date: '2026-10-12', paidBy: testAccountUid(ANA), receiptFileId: 'f3' };
+// O pagamento da Internet pela Ana, sem `date`.
+const INTERNET_PAYMENT = { kind: 'recurringPayment', createdAt: new Date('2026-10-15T15:00:00Z'), month: '2026-10', recurringBillId: 'internet', name: 'Internet', amountCents: 11990, tagId: HOME_TAG_ID, paidBy: testAccountUid(ANA), receiptFileId: 'f7' };
 const SEPTEMBER = { ...base, month: '2026-09', name: 'Gráfica', amountCents: 3000, date: '2026-09-30', paidBy: testAccountUid(BRUNO), receiptFileId: 'f4' };
 // Para a soma do membro: duas contas do Bruno (R$ 89,90 e R$ 10,10) e uma da Ana de R$ 300,00.
 const BAKERY = { ...base, month: '2026-10', name: 'Padaria', amountCents: 1010, date: '2026-10-25', paidBy: testAccountUid(BRUNO), receiptFileId: 'f6' };
@@ -42,6 +44,17 @@ export const entryMonthQueryScenarios = {
     },
     input: { month: '2026-10' },
     result: OCTOBER_ENTRIES,
+  },
+  // O pagamento não tem `date`: entra na ordem pelo `paidOn`, o dia do `createdAt` (15/10), entre o Mercado e a Farmácia.
+  monthWithPayment: {
+    signedInAs: BRUNO,
+    given: { ...BOTH_IN_THE_LIST, 'entries/pharmacy': PHARMACY, 'entries/market': MARKET, 'entries/2026-10_internet': INTERNET_PAYMENT },
+    input: { month: '2026-10' },
+    result: [
+      toEntry('market', MARKET),
+      toEntry('2026-10_internet', { ...INTERNET_PAYMENT, date: null, paidOn: '2026-10-15' }),
+      toEntry('pharmacy', PHARMACY),
+    ],
   },
   // Duas contas do Bruno e uma da Ana: o total do Bruno é a soma das duas (R$ 100,00) contra os R$ 400,00 da família.
   monthWithTwoEntriesOfTheMember: {

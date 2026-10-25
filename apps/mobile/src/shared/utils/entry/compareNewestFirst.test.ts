@@ -2,7 +2,7 @@ import { compareNewestFirst } from './compareNewestFirst';
 
 const at = (iso: string) => ({ toMillis: () => new Date(iso).getTime() });
 
-function sorted(entries: { name: string; date: string | null; createdAt: ReturnType<typeof at> | null }[]) {
+function sorted(entries: { name: string; date: string | null; paidOn?: string; createdAt: ReturnType<typeof at> | null }[]) {
   return [...entries].sort(compareNewestFirst).map(({ name }) => name);
 }
 
@@ -33,5 +33,15 @@ describe('compareNewestFirst', () => {
 
     expect(sorted(entries)).toEqual(['pending', 'stamped']);
     expect(sorted([...entries].reverse())).toEqual(['pending', 'stamped']);
+  });
+
+  it('Should sort a payment by the day it was registered among the dated bills', () => {
+    const entries = [
+      { name: 'old bill', date: '2026-10-05', createdAt: at('2026-10-05T10:00:00Z') },
+      { name: 'payment', date: null, paidOn: '2026-10-12', createdAt: at('2026-10-12T10:00:00Z') },
+      { name: 'new bill', date: '2026-10-20', createdAt: at('2026-10-20T10:00:00Z') },
+    ];
+
+    expect([...entries].sort(compareNewestFirst).map(({ name }) => name)).toEqual(['new bill', 'payment', 'old bill']);
   });
 });
