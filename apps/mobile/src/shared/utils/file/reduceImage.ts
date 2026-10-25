@@ -8,7 +8,7 @@ const IMAGE_REDUCTION_MAX_DIMENSION = 2560;
 const IMAGE_REDUCTION_QUALITY = 0.82;
 
 // GIF fica de fora: a redução guardaria só o primeiro quadro.
-const REDUCIBLE_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const REDUCIBLE_CONTENT_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 /** Devolve a imagem original sempre que reduzir não valer a pena ou não der certo. */
 export async function reduceImage(image: ILocalFile): Promise<ILocalFile> {

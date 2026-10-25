@@ -41,6 +41,12 @@ describe('reduceImage', () => {
     expect(saveAsync).toHaveBeenCalledWith({ compress: 0.82, format: 'webp' });
   });
 
+  it('Should reduce an image/jpg too', async () => {
+    reducesTo(1024);
+
+    expect(await reduceImage(pickedFile('image/jpg'))).toMatchObject({ contentType: 'image/webp', sizeBytes: 1024 });
+  });
+
   it('Should leave an image of up to 2 MB untouched', async () => {
     const image = pickedFile('image/png', IMAGE_REDUCTION_MIN_BYTES);
 
