@@ -4,11 +4,10 @@ import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
+import { ListItem } from '@/shared/components/ListItem/ListItem';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { peopleCount } from '@/shared/utils/format/peopleCount';
-
-import { SettingsRow } from '../SettingsRow/SettingsRow';
 
 /**
  * O que só o admin vê em Configurações: o caminho para a tela de e-mails permitidos, com quantas pessoas há na
@@ -22,9 +21,9 @@ export function AdminSection() {
       <AppText variant="labelMedium" color="onSurfaceVariant">
         Só para o admin
       </AppText>
-      <SettingsRow
+      <ListItem
         icon={Mail}
-        label="E-mails permitidos"
+        title="E-mails permitidos"
         support={people ? `${peopleCount(people.length)} na família` : undefined}
         onPress={() => router.push('/allowed-emails')}
       />

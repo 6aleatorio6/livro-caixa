@@ -5,6 +5,7 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
 import { IconButton } from '@/shared/components/IconButton/IconButton';
+import { ListItem } from '@/shared/components/ListItem/ListItem';
 import { PersonItem } from '@/shared/components/PersonItem/PersonItem';
 import { Screen } from '@/shared/components/Screen/Screen';
 
@@ -17,7 +18,6 @@ import { doSignOut } from '@/shared/utils/actions/doSignOut';
 import { signedInEmail } from '@/shared/utils/auth/signedInEmail';
 
 import { AdminSection } from './components/AdminSection/AdminSection';
-import { SettingsRow } from './components/SettingsRow/SettingsRow';
 
 /** A terceira aba: quem está logado com a saída, o que se usa pouco e a versão do app. */
 export function SettingsPage() {
@@ -46,8 +46,8 @@ export function SettingsPage() {
           <AppText variant="labelMedium" color="onSurfaceVariant">
             Da família
           </AppText>
-          <SettingsRow icon={Repeat} label="Contas recorrentes" />
-          <SettingsRow icon={Tag} label="Tags" />
+          <ListItem icon={Repeat} title="Contas recorrentes" />
+          <ListItem icon={Tag} title="Tags" />
         </View>
 
         {person?.isAdmin ? <AdminSection /> : null}
