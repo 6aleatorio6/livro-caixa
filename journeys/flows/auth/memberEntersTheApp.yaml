@@ -11,6 +11,6 @@ tags:
     file: ../../steps/startAs.yaml
     env:
       PROFILE: member
-- assertVisible: Livro-Caixa
+- assertVisible: Sem contas
 - assertNotVisible: Aguardando permissão
 - takeScreenshot: home--member

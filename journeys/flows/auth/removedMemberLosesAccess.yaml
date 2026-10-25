@@ -11,7 +11,7 @@ tags:
     file: ../../steps/startAs.yaml
     env:
       PROFILE: member
-- assertVisible: Livro-Caixa
+- assertVisible: Sem contas
 - runScript:
     file: ../../data/request.js
     env:
