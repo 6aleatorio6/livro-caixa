@@ -14,7 +14,7 @@ Qualquer membro cadastra, altera e exclui as contas recorrentes, na aba
 
 | Campo | Regra |
 | --- | --- |
-| Nome | Obrigatório |
+| Nome | Obrigatório, até 60 caracteres |
 | Valor previsto | Obrigatório. Quem paga confirma ou corrige o valor no pagamento |
 | Dia do mês | De 1 a 31 |
 | Vale a partir de | Data, obrigatória. Antes dela, a conta não aparece |

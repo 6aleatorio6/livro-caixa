@@ -27,6 +27,29 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/allowedEmails/$(request.auth.token.email.lower()));
     }
 
+    // Valida o documento inteiro de uma conta recorrente, na criação e na troca: só os cinco campos,
+    // com os quatro obrigatórios. O nome é texto com conteúdo, até 60 caracteres; o valor esperado é
+    // inteiro em centavos, de 1 até 999999999 (R$ 9.999.999,99, o teto do campo de valor); o dia do
+    // mês é inteiro de 1 a 31; o início é uma data `AAAA-MM-DD` em texto, com mês de 01 a 12 e dia de
+    // 01 a 31 (o 30 de fevereiro passa no formato: o app só grava datas do calendário); a tag, se
+    // houver, é o texto da chave dela em `settings/tags`.
+    function isValidRecurringBill(bill) {
+      return bill.keys().hasOnly(['name', 'expectedAmountCents', 'dayOfMonth', 'startsOn', 'tagId'])
+        && bill.keys().hasAll(['name', 'expectedAmountCents', 'dayOfMonth', 'startsOn'])
+        && bill.name is string
+        && bill.name.trim().size() > 0
+        && bill.name.size() <= 60
+        && bill.expectedAmountCents is int
+        && bill.expectedAmountCents > 0
+        && bill.expectedAmountCents <= 999999999
+        && bill.dayOfMonth is int
+        && bill.dayOfMonth >= 1
+        && bill.dayOfMonth <= 31
+        && bill.startsOn is string
+        && bill.startsOn.matches('^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$')
+        && (!('tagId' in bill) || bill.tagId is string);
+    }
+
     // A pessoa lê a entrada do próprio e-mail na lista de e-mails permitidos: é assim que o app
     // sabe, depois do login pelo Google, se ela tem acesso. O id do documento é o e-mail em
     // minúsculas, e o do login pode vir com maiúsculas.
@@ -67,6 +90,45 @@ service cloud.firestore {
       allow delete: if isAdmin()
         && resource.data.hasEntries == false
         && resource.data.isAdmin == false;
+    }
+
+    // As tags da família moram num único documento, `settings/tags`, com o mapa `items` (chave da tag
+    // -> nome, chave do nome e cor). Qualquer outro documento de `settings` continua negado.
+    //
+    // O que estas regras NÃO garantem, e fica com o app: o nome único da tag (sem diferença de
+    // maiúsculas e acentos) e o "tag em uso" (excluir só a tag que nenhuma conta usa). O app confere o
+    // nome numa transação e o uso na leitura das contas. A regra não consegue: ela não tira a chave de
+    // um item do conjunto de chaves do mapa para validar o item que mudou, então não separa o item
+    // alterado dos demais para comparar os nomes, e uma regra não lê as contas ao excluir um item.
+    match /settings/{docId} {
+      // Todo membro lê as tags, que aparecem na escolha das contas e dos lançamentos.
+      allow get: if docId == 'tags' && isInList();
+
+      // Todo membro cria o documento (o primeiro item o cria) e muda os itens: criar, renomear, tirar.
+      // Só a chave `items`, e ela é um mapa. Sem `delete` nem `list`: o documento fica, mesmo vazio.
+      // Cada escrita traz um item só: o app nunca muda dois, e assim quem abusa do SDK não troca nem
+      // esvazia as tags de todos de uma vez.
+      allow create: if docId == 'tags'
+        && isInList()
+        && request.resource.data.keys().hasOnly(['items'])
+        && request.resource.data.keys().hasAll(['items'])
+        && request.resource.data.items is map
+        && request.resource.data.items.size() <= 1;
+
+      allow update: if docId == 'tags'
+        && isInList()
+        && request.resource.data.keys().hasOnly(['items'])
+        && request.resource.data.keys().hasAll(['items'])
+        && request.resource.data.items is map
+        && request.resource.data.items.diff(resource.data.items).affectedKeys().size() <= 1;
+    }
+
+    // As contas recorrentes da família: todo membro lê, cria, altera e exclui, porque a conta é de
+    // todos. A forma do documento é validada na criação e na troca (`isValidRecurringBill`).
+    match /recurringBills/{id} {
+      allow get, list, delete: if isInList();
+
+      allow create, update: if isInList() && isValidRecurringBill(request.resource.data);
     }
   }
 }
