@@ -6,7 +6,7 @@ import { ACCOUNTS, toSignInLink } from './accounts.ts';
 import type { OwnerFirestore } from './firestore.ts';
 
 /** Os parâmetros que o `data/request.js` repassa, com o nome que têm no fluxo. */
-export type ScenarioParams = { EMAIL?: string; NAME?: string };
+export type ScenarioParams = { EMAIL?: string };
 type Scenario = (owner: OwnerFirestore, params: ScenarioParams) => Promise<object | void>;
 
 function getParam(params: ScenarioParams, name: keyof ScenarioParams) {

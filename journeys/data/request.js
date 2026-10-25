@@ -8,7 +8,6 @@ if (typeof MAESTRO_DATA_URL === 'undefined') {
 
 const params = {
   EMAIL: typeof EMAIL === 'undefined' ? undefined : EMAIL,
-  NAME: typeof NAME === 'undefined' ? undefined : NAME,
 };
 const response = http.post(`${MAESTRO_DATA_URL}/${SCENARIO}`, {
   headers: { 'Content-Type': 'application/json' },

@@ -1,0 +1,53 @@
+# O Bruno troca o próprio nome em Configurações; o cartão mostra o novo, e a Ana o vê na lista dos
+# e-mails permitidos, com o nome dela como estava.
+# Coberto por:
+# - O lápis levar a Seu nome, o campo com o nome atual, o Salvar nome e a volta: SettingsPage.test.tsx
+#   (Should open the change name screen when the pencil is pressed) e ChangeNamePage.test.tsx.
+# - O nome gravado só no documento dele, com o resto igual: o contrato do changeOwnNameService
+#   (memberChangesOwnName) e firestore.rules.test.mjs (update do próprio nome).
+# - O nome novo na lista da admin: AllowedEmailsPage.test.tsx e o contrato do allowedEmailListQueryService.
+appId: dev.leonardolf.livrocaixa
+tags:
+  - settings
+env:
+  NEW_NAME: Bruno S.
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: member
+- tapOn: Configurações
+- assertVisible: ${output.accounts.member.name}
+- tapOn: Alterar nome
+- assertVisible: Seu nome
+- assertVisible: Salvar nome
+- tapOn: Nome
+- eraseText: 50
+- inputText: ${NEW_NAME}
+- hideKeyboard
+- takeScreenshot: change-name--filled
+- tapOn: Salvar nome
+# Salvar volta a Configurações, com o nome novo no cartão e o resto do cartão igual.
+- extendedWaitUntil:
+    visible: ${NEW_NAME}
+    timeout: 10000
+- assertNotVisible: Seu nome
+- assertNotVisible: ${output.accounts.member.name}
+- assertVisible: ${output.accounts.member.email}
+- assertNotVisible: Admin · você
+- assertVisible:
+    text: Configurações
+    selected: true
+- takeScreenshot: settings--member-name-changed
+# A Ana entra e vê o nome novo do Bruno na lista; o dela continua igual.
+- runFlow:
+    file: ../../steps/signInAs.yaml
+    env:
+      LINK: ${output.accounts.admin.signInLink}
+- tapOn: Configurações
+- tapOn: E-mails permitidos
+- assertVisible: Adicionar pessoa
+- assertVisible: ${NEW_NAME}
+- assertVisible: ${output.accounts.admin.name}
+- assertNotVisible: ${output.accounts.member.name}
+- takeScreenshot: allowedEmails--member-name-changed
