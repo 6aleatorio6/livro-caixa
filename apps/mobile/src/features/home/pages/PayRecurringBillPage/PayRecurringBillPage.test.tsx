@@ -19,12 +19,14 @@ import { recurringBillListQueryService } from '@/shared/services/recurringBill/q
 import { recurringBillListQueryScenarios } from '@/shared/services/recurringBill/query/recurringBillListQueryService.scenarios';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { tagListQueryScenarios } from '@/shared/services/tag/query/tagListQueryService.scenarios';
+import { useSharedReceiptStore } from '@/shared/store/sharedReceipt.store';
 import { mockRealtime } from '@/shared/testing/mockRealtime';
 import { mockServiceRejection } from '@/shared/testing/mockServiceRejection';
 import { mockServiceScenario } from '@/shared/testing/mockServiceScenario';
 import { signedInAuthState } from '@/shared/testing/signedInAuthState';
 import { pickReceiptFile } from '@/shared/utils/file/pickReceiptFile';
 import { prepareReceipt } from '@/shared/utils/file/prepareReceipt';
+import { clearSharedReceipt } from '@/shared/utils/sharedReceipt/clearSharedReceipt';
 
 import { PayRecurringBillPage } from './PayRecurringBillPage';
 
@@ -42,7 +44,10 @@ jest.mock('@/shared/utils/file/pickReceiptFile', () => ({ pickReceiptFile: jest.
 jest.mock('@/shared/utils/file/prepareReceipt', () => ({ prepareReceipt: jest.fn() }));
 // O aviso se esconde num timer de 4 s, que seguraria o Jest depois do teste.
 jest.mock('@/core/utils/storeActions/showToast', () => ({ showToast: jest.fn() }));
-jest.mock('expo-router', () => ({ router: { back: jest.fn() }, useLocalSearchParams: jest.fn() }));
+jest.mock('expo-router', () => ({
+  router: { back: jest.fn(), dismissTo: jest.fn() },
+  useLocalSearchParams: jest.fn(),
+}));
 
 const scenario = payRecurringBillScenarios.memberPaysBill;
 const [paymentOfScenario] = scenario.input;
@@ -72,12 +77,13 @@ describe('PayRecurringBillPage', () => {
 
   async function renderPage(
     id = paymentOfScenario.bill.id,
-    { month, entriesScenario = entryMonthQueryScenarios.emptyMonth } = { month: paymentOfScenario.month } as {
+    { month, entriesScenario = entryMonthQueryScenarios.emptyMonth, shared } = { month: paymentOfScenario.month } as {
       month?: string;
       entriesScenario?: (typeof entryMonthQueryScenarios)[keyof typeof entryMonthQueryScenarios];
+      shared?: string;
     },
   ) {
-    jest.mocked(useLocalSearchParams).mockReturnValue({ id, month });
+    jest.mocked(useLocalSearchParams).mockReturnValue({ id, month, shared });
     realtime = mockRealtime(
       { service: entryMonthQueryService, scenario: entriesScenario },
       { service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.fiveBills },
@@ -252,5 +258,73 @@ describe('PayRecurringBillPage', () => {
     expect(screen.getByText('Esta conta já foi paga neste mês.')).toBeOnTheScreen();
     expect(screen.queryByRole('button', { name: SUBMIT })).not.toBeOnTheScreen();
     expect(screen.queryByLabelText('Valor pago')).not.toBeOnTheScreen();
+  });
+
+  describe('With the shared receipt in the store', () => {
+    const sharedOpening = { month: paymentOfScenario.month, shared: '1' };
+
+    beforeEach(() => {
+      useSharedReceiptStore.setState({ receipt: paymentOfScenario.receipt });
+    });
+
+    afterEach(async () => {
+      // A tela ainda está montada aqui: a limpeza do store vai dentro do `act`.
+      await act(async () => {
+        clearSharedReceipt();
+      });
+    });
+
+    it('Should show the shared file in the receipt field when the page opens shared', async () => {
+      await renderPage(undefined, sharedOpening);
+
+      expect(screen.getByText(paymentOfScenario.receipt.name)).toBeOnTheScreen();
+      expect(screen.queryByRole('button', { name: RECEIPT_BUTTON })).not.toBeOnTheScreen();
+    });
+
+    it('Should register the payment with the shared receipt and dismiss to the home, leaving the store to the share screen', async () => {
+      mockServiceScenario(payRecurringBillService, scenario);
+      const user = await renderPage(undefined, sharedOpening);
+
+      await user.press(screen.getByRole('button', { name: SUBMIT }));
+
+      expect(payRecurringBillService).toHaveBeenCalledWith(paymentOfScenario);
+      expect(router.dismissTo).toHaveBeenCalledWith('/');
+      expect(router.back).not.toHaveBeenCalled();
+      expect(useSharedReceiptStore.getState().receipt).toEqual(paymentOfScenario.receipt);
+    });
+
+    it('Should stay on the screen with the shared file and the store when the service refuses', async () => {
+      const rejected = payRecurringBillRejectedScenarios.billAlreadyPaidByAnother;
+      mockServiceRejection(payRecurringBillService, rejected);
+      const user = await renderPage(undefined, sharedOpening);
+
+      await user.press(screen.getByRole('button', { name: SUBMIT }));
+
+      expect(showToast).toHaveBeenCalledWith(rejected.result.userMessage, 'error');
+      expect(router.dismissTo).not.toHaveBeenCalled();
+      expect(screen.getByText(paymentOfScenario.receipt.name)).toBeOnTheScreen();
+      expect(useSharedReceiptStore.getState().receipt).toEqual(paymentOfScenario.receipt);
+    });
+
+    it('Should let the person choose the file and leave with dismissTo when the shared store is empty', async () => {
+      mockServiceScenario(payRecurringBillService, scenario);
+      useSharedReceiptStore.setState({ receipt: null });
+      const user = await renderPage(undefined, sharedOpening);
+
+      await user.press(screen.getByRole('button', { name: RECEIPT_BUTTON }));
+      await user.press(screen.getByRole('button', { name: SUBMIT }));
+
+      expect(payRecurringBillService).toHaveBeenCalledWith(paymentOfScenario);
+      expect(router.dismissTo).toHaveBeenCalledWith('/');
+      expect(router.back).not.toHaveBeenCalled();
+    });
+
+    it('Should keep the store and start the receipt field empty when the page opens without the shared param', async () => {
+      await renderPage();
+
+      expect(screen.getByRole('button', { name: RECEIPT_BUTTON })).toBeOnTheScreen();
+      expect(screen.queryByText(paymentOfScenario.receipt.name)).not.toBeOnTheScreen();
+      expect(useSharedReceiptStore.getState().receipt).toEqual(paymentOfScenario.receipt);
+    });
   });
 });

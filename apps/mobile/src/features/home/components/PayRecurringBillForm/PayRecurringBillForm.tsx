@@ -9,6 +9,7 @@ import { OwnershipNotice } from '@/shared/components/OwnershipNotice/OwnershipNo
 import { TagChip } from '@/shared/components/TagChip/TagChip';
 import { usePayRecurringBillForm } from '@/shared/hooks/usePayRecurringBillForm/usePayRecurringBillForm';
 import type { IRecurringPaymentInput } from '@/shared/types/entry/RecurringPaymentInput';
+import type { IPayRecurringBillFormValues } from '@/shared/types/entry/PayRecurringBillFormValues';
 import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 import type { ITag } from '@/shared/types/tag/Tag';
 import { monthName } from '@/shared/utils/date/monthName';
@@ -20,14 +21,18 @@ export interface IPayRecurringBillFormProps {
   month: string;
   /** A tag da conta, se ela ainda existe; sem ela o chip some. */
   tag?: ITag;
+  /** Os valores com que o formulário abre além do previsto: o comprovante compartilhado do Android, por exemplo. */
+  initialValues?: Partial<Pick<IPayRecurringBillFormValues, 'receipt'>>;
   /** Recebe a entrada pronta; o formulário fica ocupado até a promessa terminar. */
   onSubmit: (input: IRecurringPaymentInput) => Promise<void>;
 }
 
 /** O pagamento de uma conta num mês: quem está sendo paga, o valor (do previsto, corrigível), o comprovante e o aviso. */
-export function PayRecurringBillForm({ bill, month, tag, onSubmit }: IPayRecurringBillFormProps) {
+export function PayRecurringBillForm({ bill, month, tag, initialValues, onSubmit }: IPayRecurringBillFormProps) {
   const { control, handleSubmit, formState } = usePayRecurringBillForm(undefined, {
     amountCents: bill.expectedAmountCents,
+    receipt: null,
+    ...initialValues,
   });
 
   // O schema já recusou o valor e o comprovante vazios.

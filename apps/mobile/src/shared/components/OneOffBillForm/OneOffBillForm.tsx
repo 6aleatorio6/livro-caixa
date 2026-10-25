@@ -29,7 +29,7 @@ export interface IOneOffBillFormProps<TCurrentReceipt extends IReceiptFile | und
   /** A leitura das tags falhou: `tags` está vazia por isso. */
   hasTagsError: boolean;
   /** Os valores com que o formulário abre; sem eles, a data é hoje e o resto fica vazio (o registro). */
-  initialValues?: Partial<Pick<IOneOffBillFormValues, 'name' | 'amountCents' | 'date' | 'tagId'>>;
+  initialValues?: Partial<Pick<IOneOffBillFormValues, 'name' | 'amountCents' | 'date' | 'tagId' | 'receipt'>>;
   /** O comprovante já salvo (a alteração): enquanto nenhum arquivo novo for escolhido, ele fica e o campo não é obrigatório. */
   currentReceipt?: TCurrentReceipt;
   /** O rótulo do botão; o padrão é o do registro. */
@@ -58,7 +58,7 @@ export function OneOffBillForm<TCurrentReceipt extends IReceiptFile | undefined 
 }: IOneOffBillFormProps<TCurrentReceipt>) {
   const { control, handleSubmit, formState } = useOneOffBillForm(
     { hasCurrentReceipt: Boolean(currentReceipt) },
-    initialValues ?? { date: toIsoDate(new Date()) },
+    { date: toIsoDate(new Date()), ...initialValues },
   );
   // O schema já recusou o valor vazio, e o comprovante vazio quando não há um salvo.
   const submit = handleSubmit((values) =>

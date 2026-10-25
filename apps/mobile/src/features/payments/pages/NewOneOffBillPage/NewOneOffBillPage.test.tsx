@@ -1,6 +1,6 @@
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { act, render, screen, userEvent } from '@testing-library/react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import { showToast } from '@/core/utils/storeActions/showToast';
 
@@ -13,12 +13,14 @@ import { addOneOffBillService } from '@/shared/services/entry/add/addOneOffBillS
 import { addOneOffBillRejectedScenarios, addOneOffBillScenarios } from '@/shared/services/entry/add/addOneOffBillService.scenarios';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { tagListQueryScenarios } from '@/shared/services/tag/query/tagListQueryService.scenarios';
+import { useSharedReceiptStore } from '@/shared/store/sharedReceipt.store';
 import { mockRealtime } from '@/shared/testing/mockRealtime';
 import { mockServiceRejection } from '@/shared/testing/mockServiceRejection';
 import { mockServiceScenario } from '@/shared/testing/mockServiceScenario';
 import { signedInAuthState } from '@/shared/testing/signedInAuthState';
 import { pickReceiptFile } from '@/shared/utils/file/pickReceiptFile';
 import { prepareReceipt } from '@/shared/utils/file/prepareReceipt';
+import { clearSharedReceipt } from '@/shared/utils/sharedReceipt/clearSharedReceipt';
 
 import { NewOneOffBillPage } from './NewOneOffBillPage';
 
@@ -32,7 +34,10 @@ jest.mock('@/shared/utils/file/pickReceiptFile', () => ({ pickReceiptFile: jest.
 jest.mock('@/shared/utils/file/prepareReceipt', () => ({ prepareReceipt: jest.fn() }));
 // O aviso se esconde num timer de 4 s, que seguraria o Jest depois do teste.
 jest.mock('@/core/utils/storeActions/showToast', () => ({ showToast: jest.fn() }));
-jest.mock('expo-router', () => ({ router: { back: jest.fn() } }));
+jest.mock('expo-router', () => ({
+  router: { back: jest.fn(), dismissTo: jest.fn() },
+  useLocalSearchParams: jest.fn(),
+}));
 jest.mock('@react-native-community/datetimepicker', () => ({ DateTimePickerAndroid: { open: jest.fn() } }));
 
 type IUser = ReturnType<typeof userEvent.setup>;
@@ -62,7 +67,8 @@ afterEach(() => {
 });
 
 describe('NewOneOffBillPage', () => {
-  async function renderPage() {
+  async function renderPage({ shared }: { shared?: string } = {}) {
+    jest.mocked(useLocalSearchParams).mockReturnValue({ shared });
     mockRealtime(
       { service: tagListQueryService, scenario: tagListQueryScenarios.threeTags },
       { service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailInList },
@@ -224,5 +230,82 @@ describe('NewOneOffBillPage', () => {
     expect(screen.getByDisplayValue('Farmácia')).toBeOnTheScreen();
     expect(screen.getByDisplayValue('R$ 89,90')).toBeOnTheScreen();
     expect(screen.getByText(rejectedBill.receipt.name)).toBeOnTheScreen();
+  });
+
+  describe('With the shared receipt in the store', () => {
+    beforeEach(() => {
+      useSharedReceiptStore.setState({ receipt: bill.receipt });
+    });
+
+    afterEach(async () => {
+      // A tela ainda está montada aqui: a limpeza do store vai dentro do `act`.
+      await act(async () => {
+        clearSharedReceipt();
+      });
+    });
+
+    it('Should show the shared file in the receipt field when the page opens shared', async () => {
+      await renderPage({ shared: '1' });
+
+      expect(screen.getByText(bill.receipt.name)).toBeOnTheScreen();
+      expect(screen.queryByRole('button', { name: RECEIPT_BUTTON })).not.toBeOnTheScreen();
+    });
+
+    it('Should register the bill with the shared receipt and dismiss to the home, leaving the store to the share screen', async () => {
+      mockServiceScenario(addOneOffBillService, scenario);
+      const user = await renderPage({ shared: '1' });
+
+      await user.type(screen.getByLabelText('Nome da conta'), bill.name);
+      await user.type(screen.getByLabelText('Valor pago'), String(bill.amountCents));
+      await pickDate(user, new Date(2026, 9, 12));
+      await user.press(screen.getByRole('button', { name: 'Casa' }));
+      await user.press(screen.getByRole('button', { name: SUBMIT }));
+
+      expect(addOneOffBillService).toHaveBeenCalledWith(...scenario.input);
+      expect(router.dismissTo).toHaveBeenCalledWith('/');
+      expect(router.back).not.toHaveBeenCalled();
+      expect(useSharedReceiptStore.getState().receipt).toEqual(bill.receipt);
+    });
+
+    it('Should stay on the screen with the shared file and the store when the service refuses', async () => {
+      const rejected = addOneOffBillRejectedScenarios.receiptRejectedByStorage;
+      const [rejectedBill] = rejected.input;
+      mockServiceRejection(addOneOffBillService, rejected);
+      useSharedReceiptStore.setState({ receipt: rejectedBill.receipt });
+      const user = await renderPage({ shared: '1' });
+
+      await user.type(screen.getByLabelText('Nome da conta'), rejectedBill.name);
+      await user.type(screen.getByLabelText('Valor pago'), String(rejectedBill.amountCents));
+      await pickDate(user, new Date(2026, 9, 12));
+      await user.press(screen.getByRole('button', { name: 'Casa' }));
+      await user.press(screen.getByRole('button', { name: SUBMIT }));
+
+      expect(showToast).toHaveBeenCalledWith(rejected.result.userMessage, 'error');
+      expect(router.dismissTo).not.toHaveBeenCalled();
+      expect(screen.getByText(rejectedBill.receipt.name)).toBeOnTheScreen();
+      expect(useSharedReceiptStore.getState().receipt).toEqual(rejectedBill.receipt);
+    });
+
+    it('Should let the person choose the file and leave with dismissTo when the shared store is empty', async () => {
+      mockServiceScenario(addOneOffBillService, scenario);
+      useSharedReceiptStore.setState({ receipt: null });
+      const user = await renderPage({ shared: '1' });
+
+      await fillPharmacy(user);
+      await user.press(screen.getByRole('button', { name: 'Casa' }));
+      await user.press(screen.getByRole('button', { name: SUBMIT }));
+
+      expect(addOneOffBillService).toHaveBeenCalledWith(...scenario.input);
+      expect(router.dismissTo).toHaveBeenCalledWith('/');
+      expect(router.back).not.toHaveBeenCalled();
+    });
+
+    it('Should start the receipt field empty when the page opens without the shared param', async () => {
+      await renderPage();
+
+      expect(screen.getByRole('button', { name: RECEIPT_BUTTON })).toBeOnTheScreen();
+      expect(screen.queryByText(bill.receipt.name)).not.toBeOnTheScreen();
+      expect(useSharedReceiptStore.getState().receipt).toEqual(bill.receipt);
+    });
   });
 });

@@ -1,10 +1,11 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 
 import { AppText } from '@/shared/components/AppText/AppText';
 import { Screen } from '@/shared/components/Screen/Screen';
 import { ScreenContent } from '@/shared/components/Screen/ScreenContent';
 import { TopBar } from '@/shared/components/TopBar/TopBar';
+import { useSharedReceiptOpening } from '@/shared/hooks/useSharedReceiptOpening/useSharedReceiptOpening';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { recurringBillListQueryService } from '@/shared/services/recurringBill/query/recurringBillListQueryService';
@@ -18,6 +19,7 @@ import { doPayRecurringBill } from '@/features/home/utils/actions/doPayRecurring
 /** Onde qualquer membro registra o pagamento de uma conta recorrente no mês que o Início abriu. */
 export function PayRecurringBillPage() {
   const { id, month } = useLocalSearchParams<{ id: string; month: string }>();
+  const { initialReceipt, finish } = useSharedReceiptOpening();
   const { status, data: bills } = useRealtime(recurringBillListQueryService, {});
   const { data: tags } = useRealtime(tagListQueryService, {});
   // Do envio até a tela voltar: o próprio pagamento chega pela leitura do mês, e a tela não o toma por outro.
@@ -49,11 +51,12 @@ export function PayRecurringBillPage() {
             bill={bill}
             month={month}
             tag={tags?.find((candidate) => candidate.id === bill.tagId)}
+            initialValues={{ receipt: initialReceipt }}
             onSubmit={async (input) => {
               setIsSubmitted(true);
               const { error } = await doPayRecurringBill(input);
               if (error) setIsSubmitted(false);
-              else router.back();
+              else finish();
             }}
           />
         ) : null}
