@@ -5,20 +5,22 @@ import { Screen } from '@/shared/components/Screen/Screen';
 import { ScreenContent } from '@/shared/components/Screen/ScreenContent';
 import { TopBar } from '@/shared/components/TopBar/TopBar';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
+import { oneOffBillTagIdsQueryService } from '@/shared/services/entry/query/oneOffBillTagIdsQueryService';
 import { recurringBillListQueryService } from '@/shared/services/recurringBill/query/recurringBillListQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 
 import { TagForm } from '@/features/tags/components/TagForm/TagForm';
 import { doUpdateTag } from '@/features/tags/utils/actions/doUpdateTag';
-import { countRecurringBillsOfTag } from '@/features/tags/utils/countRecurringBillsOfTag';
+import { tagUsageParts } from '@/features/tags/utils/tagUsageParts';
 
 import { DeleteTagSection } from './components/DeleteTagSection/DeleteTagSection';
 
-/** Onde qualquer membro troca o nome e a cor de uma tag, ou a exclui quando nenhuma conta a usa. */
+/** Onde qualquer membro troca o nome e a cor de uma tag, ou a exclui quando nenhuma conta, recorrente ou avulsa, a usa. */
 export function EditTagPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { status, data: tags } = useRealtime(tagListQueryService, {});
   const { data: bills } = useRealtime(recurringBillListQueryService, {});
+  const { data: oneOffTagIds } = useRealtime(oneOffBillTagIdsQueryService, {});
   const tag = tags?.find((candidate) => candidate.id === id);
 
   return (
@@ -38,9 +40,9 @@ export function EditTagPage() {
               if (!error) router.back();
             }}
           >
-            {/* Sem a lista de contas lida, não dá para saber se a tag está em uso: a exclusão espera. */}
-            {bills ? (
-              <DeleteTagSection tag={tag} usedByCount={countRecurringBillsOfTag(bills, tag.id)} onDeleted={() => router.back()} />
+            {/* Sem as duas listas de contas lidas, não dá para saber se a tag está em uso: a exclusão espera. */}
+            {bills && oneOffTagIds ? (
+              <DeleteTagSection tag={tag} parts={tagUsageParts(bills, oneOffTagIds, tag.id)} onDeleted={() => router.back()} />
             ) : null}
           </TagForm>
         ) : null}

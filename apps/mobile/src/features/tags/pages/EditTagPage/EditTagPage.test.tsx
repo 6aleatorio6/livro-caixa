@@ -3,6 +3,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 
 import { showToast } from '@/core/utils/storeActions/showToast';
 
+import { oneOffBillTagIdsQueryService } from '@/shared/services/entry/query/oneOffBillTagIdsQueryService';
+import { oneOffBillTagIdsQueryScenarios } from '@/shared/services/entry/query/oneOffBillTagIdsQueryService.scenarios';
 import { recurringBillListQueryService } from '@/shared/services/recurringBill/query/recurringBillListQueryService';
 import { recurringBillListQueryScenarios } from '@/shared/services/recurringBill/query/recurringBillListQueryService.scenarios';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
@@ -22,6 +24,7 @@ import { EditTagPage } from './EditTagPage';
 // Mocks com fábrica: o módulo real carregaria o React Native Firebase, que não roda no Jest.
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
+jest.mock('@/shared/services/entry/query/oneOffBillTagIdsQueryService', () => ({ oneOffBillTagIdsQueryService: {} }));
 jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService', () => ({
   recurringBillListQueryService: {},
 }));
@@ -36,12 +39,20 @@ beforeEach(() => {
 });
 
 const fiveBills = { service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.fiveBills };
+const oneOffBills = {
+  service: oneOffBillTagIdsQueryService,
+  scenario: oneOffBillTagIdsQueryScenarios.oneOffBillsWithTags,
+};
+const noOneOffBills = {
+  service: oneOffBillTagIdsQueryService,
+  scenario: oneOffBillTagIdsQueryScenarios.noOneOffBills,
+};
 const threeTags = { service: tagListQueryService, scenario: tagListQueryScenarios.threeTags };
 
 describe('EditTagPage', () => {
   async function renderPage(id: string, ...mocks: Parameters<typeof mockRealtime>) {
     jest.mocked(useLocalSearchParams).mockReturnValue({ id });
-    const realtime = mockRealtime(...(mocks.length > 0 ? mocks : [threeTags, fiveBills]));
+    const realtime = mockRealtime(...(mocks.length > 0 ? mocks : [threeTags, fiveBills, noOneOffBills]));
     await render(<EditTagPage />);
     return { user: userEvent.setup(), realtime };
   }
@@ -168,10 +179,58 @@ describe('EditTagPage', () => {
     });
 
     it('Should not offer to delete before the recurring bills are read', async () => {
-      await renderPage(HEALTH_TAG_ID, threeTags, { service: recurringBillListQueryService, status: 'loading' });
+      await renderPage(
+        HEALTH_TAG_ID,
+        threeTags,
+        { service: recurringBillListQueryService, status: 'loading' },
+        noOneOffBills,
+      );
 
       expect(screen.getByLabelText('Nome da tag')).toBeOnTheScreen();
       expect(screen.queryByRole('button', { name: 'Excluir tag' })).not.toBeOnTheScreen();
+    });
+
+    it('Should not offer to delete before the one-off bills are read', async () => {
+      await renderPage(HEALTH_TAG_ID, threeTags, fiveBills, { service: oneOffBillTagIdsQueryService, status: 'loading' });
+
+      expect(screen.getByLabelText('Nome da tag')).toBeOnTheScreen();
+      expect(screen.queryByRole('button', { name: 'Excluir tag' })).not.toBeOnTheScreen();
+    });
+
+    it.each([
+      {
+        name: 'Casa, used by both kinds',
+        id: HOME_TAG_ID,
+        recurring: fiveBills,
+        reason: 'A tag Casa está em 2 contas recorrentes e 2 contas avulsas. Para excluir, tire a tag delas.',
+      },
+      {
+        name: 'Serviços, used by a one-off bill and recurring ones',
+        id: UTILITIES_TAG_ID,
+        recurring: fiveBills,
+        reason: 'A tag Serviços está em 3 contas recorrentes e 1 conta avulsa. Para excluir, tire a tag delas.',
+      },
+      {
+        name: 'Casa, used by one-off bills alone',
+        id: HOME_TAG_ID,
+        recurring: { service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.noBills },
+        reason: 'A tag Casa está em 2 contas avulsas. Para excluir, tire a tag delas.',
+      },
+      {
+        name: 'Serviços, used by a single one-off bill alone',
+        id: UTILITIES_TAG_ID,
+        recurring: { service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.noBills },
+        reason: 'A tag Serviços está em 1 conta avulsa. Para excluir, tire a tag dela.',
+      },
+    ])('Should not let $name be deleted, and say why', async ({ id, recurring, reason }) => {
+      const { user } = await renderPage(id, threeTags, recurring, oneOffBills);
+
+      expect(screen.getByRole('button', { name: 'Excluir tag' })).toBeDisabled();
+      expect(screen.getByText(reason)).toBeOnTheScreen();
+
+      await user.press(screen.getByRole('button', { name: 'Excluir tag' }));
+
+      expect(removeTagService).not.toHaveBeenCalled();
     });
   });
 
@@ -181,6 +240,7 @@ describe('EditTagPage', () => {
         HEALTH_TAG_ID,
         { service: tagListQueryService, scenario: tagListQueryScenarios.tagDeletedWhileOpen },
         fiveBills,
+        noOneOffBills,
       );
       expect(screen.getByLabelText('Nome da tag')).toBeOnTheScreen();
 
@@ -198,14 +258,14 @@ describe('EditTagPage', () => {
     });
 
     it('Should show nothing while the tags are loading', async () => {
-      await renderPage(HEALTH_TAG_ID, { service: tagListQueryService, status: 'loading' }, fiveBills);
+      await renderPage(HEALTH_TAG_ID, { service: tagListQueryService, status: 'loading' }, fiveBills, noOneOffBills);
 
       expect(screen.queryByText('Esta tag foi excluída.')).not.toBeOnTheScreen();
       expect(screen.queryByLabelText('Nome da tag')).not.toBeOnTheScreen();
     });
 
     it('Should say the tag could not be loaded when the read fails', async () => {
-      await renderPage(HEALTH_TAG_ID, { service: tagListQueryService, status: 'error' }, fiveBills);
+      await renderPage(HEALTH_TAG_ID, { service: tagListQueryService, status: 'error' }, fiveBills, noOneOffBills);
 
       expect(screen.getByText('Não deu para carregar a tag.')).toBeOnTheScreen();
     });
