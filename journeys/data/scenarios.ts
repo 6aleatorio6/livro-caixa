@@ -1,6 +1,6 @@
 // Os cenários que um fluxo pede pelo nome, pelo `data/request.js`. Cada um mexe nos dados como
 // alguém de fora do app faria, inclusive com o app aberto.
-import { deleteDoc, doc, getDoc, setDoc, Timestamp, updateDoc, type Firestore } from 'firebase/firestore';
+import { deleteDoc, doc, setDoc, Timestamp, updateDoc, type Firestore } from 'firebase/firestore';
 
 import { ACCOUNTS, toSignInLink } from './accounts.ts';
 import type { OwnerFirestore } from './firestore.ts';
@@ -21,7 +21,7 @@ function allowedEmail(db: Firestore, email: string) {
 
 /**
  * Põe a pessoa na lista como o `addAllowedEmailService` do app: sem lançamentos. O nome só entra para
- * quem já entrou no app; o `uid` o app grava na primeira entrada, então os cenários não o dão.
+ * quem já entrou no app; o `uid` vem do emulador do Auth (`uidOf`), então os cenários não o dão.
  */
 function addPerson(db: Firestore, email: string, { name, isAdmin = false }: { name?: string; isAdmin?: boolean } = {}) {
   const nameField = name === undefined ? {} : { name };
@@ -74,29 +74,50 @@ function toDateText(date: Date) {
 }
 
 /**
- * O uid que o app gravou na primeira entrada da pessoa; os lançamentos o citam em `paidBy`. Sem ele a
- * pessoa ainda não entrou no app, e o cenário não tem como inventá-lo.
+ * O uid do login da pessoa, lido do emulador do Auth pelo e-mail. O app só grava o `uid` em `allowedEmails`
+ * de quem não tem nome (`useEnsureOwnName`), e as contas de teste já nascem com nome: o Firestore não o tem.
+ * Quem ainda não entrou no app ganha a conta no Auth com o uid `uid-<e-mail>`, como o contrato do app
+ * (`createAuthAccount`): a entrada que vem depois cai nela.
  */
 async function uidOf(db: Firestore, email: string) {
-  const person = await getDoc(allowedEmail(db, email));
-  const uid = person.data()?.uid;
-  if (typeof uid !== 'string') throw new Error(`${email} ainda não entrou no app: entre com a conta antes deste cenário.`);
+  const authUrl = `http://localhost:9099/identitytoolkit.googleapis.com/v1/projects/${db.app.options.projectId}`;
+  // `Bearer owner` é o acesso de administrador do emulador.
+  const headers = { 'Content-Type': 'application/json', Authorization: 'Bearer owner' };
+  const listing = await fetch(`${authUrl}/accounts:batchGet?maxResults=100`, { headers });
+  if (!listing.ok) throw new Error(`Ler as contas do emulador do Auth falhou (${listing.status}): ele está de pé?`);
+  const { users = [] } = (await listing.json()) as { users?: { localId: string; email?: string }[] };
+  const existing = users.find((user) => user.email === email)?.localId;
+  if (existing) return existing;
+
+  const account = Object.values(ACCOUNTS).find((candidate) => candidate.email === email);
+  if (!account) throw new Error(`${email} não é uma conta de teste e não entrou no app: não há uid para ele.`);
+  const uid = `uid-${email}`;
+  const creation = await fetch(`${authUrl}/accounts`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ localId: uid, email, emailVerified: true, displayName: account.name }),
+  });
+  if (!creation.ok) throw new Error(`Criar a conta de ${email} no emulador do Auth falhou (${creation.status}).`);
   return uid;
 }
 
-/** Grava a conta avulsa e o registro do comprovante (sem arquivo no Storage), como o `addOneOffBillService`. */
+/**
+ * Grava a conta avulsa, o registro do comprovante (sem arquivo no Storage) e o `hasEntries` de quem pagou, como
+ * o `addOneOffBillService`.
+ */
 async function writeOneOffBill(
   db: Firestore,
   id: string,
-  bill: { name: string; amountCents: number; date: Date; tagId?: string; paidBy: string },
+  bill: { name: string; amountCents: number; date: Date; tagId?: string; paidByEmail: string },
 ) {
+  const paidBy = await uidOf(db, bill.paidByEmail);
   const date = toDateText(bill.date);
   await setDoc(doc(db, 'files', `${id}-receipt`), {
     storagePath: `files/${id}-receipt`,
     type: 'image',
     contentType: 'image/jpeg',
     sizeBytes: 120000,
-    uploadedBy: bill.paidBy,
+    uploadedBy: paidBy,
   });
   await setDoc(doc(db, 'entries', id), {
     kind: 'oneOffBill',
@@ -105,10 +126,11 @@ async function writeOneOffBill(
     amountCents: bill.amountCents,
     date,
     ...(bill.tagId && { tagId: bill.tagId }),
-    paidBy: bill.paidBy,
+    paidBy,
     createdAt: Timestamp.now(),
     receiptFileId: `${id}-receipt`,
   });
+  await updateDoc(allowedEmail(db, bill.paidByEmail), { hasEntries: true });
 }
 
 export const scenariosByName: Record<string, Scenario> = {
@@ -148,7 +170,7 @@ export const scenariosByName: Record<string, Scenario> = {
    */
   seedRecurringBills: ({ db }) => writeTagsAndBills(db),
   /**
-   * A tela Meus pagamentos do design, sobre o que o `reset` deixou e depois da entrada do Bruno no app: as
+   * A tela Meus pagamentos do design, sobre o que o `reset` deixou: as
    * tags, duas contas avulsas dele neste mês (Conserto da geladeira no dia 12 ou hoje, o que vier antes,
    * e Farmácia hoje, sem tag), uma no mês anterior (Mercado) e uma da Ana neste mês (Padaria). Os
    * registros de `files` existem, os arquivos no Storage não (nada lê o comprovante ainda). O Bruno e a
@@ -156,9 +178,6 @@ export const scenariosByName: Record<string, Scenario> = {
    */
   async seedMyPayments({ db }) {
     const today = new Date();
-    const brunoUid = await uidOf(db, ACCOUNTS.member.email);
-    // A Ana pode não ter entrado: o `paidBy` dela só precisa ser diferente do Bruno.
-    const anaUid = (await getDoc(allowedEmail(db, ACCOUNTS.admin.email))).data()?.uid ?? 'uid-ana';
     const fridgeDay = Math.min(12, today.getDate());
     await writeTags(db);
     await writeOneOffBill(db, 'fridge', {
@@ -166,17 +185,15 @@ export const scenariosByName: Record<string, Scenario> = {
       amountCents: 35000,
       date: new Date(today.getFullYear(), today.getMonth(), fridgeDay),
       tagId: 'casa',
-      paidBy: brunoUid,
+      paidByEmail: ACCOUNTS.member.email,
     });
-    await writeOneOffBill(db, 'pharmacy', { name: 'Farmácia', amountCents: 8735, date: today, paidBy: brunoUid });
+    await writeOneOffBill(db, 'pharmacy', { name: 'Farmácia', amountCents: 8735, date: today, paidByEmail: ACCOUNTS.member.email });
     await writeOneOffBill(db, 'market', {
       name: 'Mercado',
       amountCents: 15000,
       date: new Date(today.getFullYear(), today.getMonth() - 1, 15),
-      paidBy: brunoUid,
+      paidByEmail: ACCOUNTS.member.email,
     });
-    await writeOneOffBill(db, 'bakery', { name: 'Padaria', amountCents: 4200, date: today, paidBy: anaUid });
-    await updateDoc(allowedEmail(db, ACCOUNTS.member.email), { hasEntries: true });
-    await updateDoc(allowedEmail(db, ACCOUNTS.admin.email), { hasEntries: true });
+    await writeOneOffBill(db, 'bakery', { name: 'Padaria', amountCents: 4200, date: today, paidByEmail: ACCOUNTS.admin.email });
   },
 };
