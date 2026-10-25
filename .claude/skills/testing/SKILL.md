@@ -124,6 +124,10 @@ mock would leave the test green. A service with no input (`input: []`) is checke
 `toHaveBeenCalledTimes(1)`: `createAsyncAction` calls it with one `undefined` argument, which
 `toHaveBeenCalledWith()` doesn't match.
 
+A service that refuses (`AppError`) is mocked with its rejected scenario, the one the contract saw
+the service throw: `mockServiceRejection(createTagService, createTagRejectedScenarios.nameOfAnotherTag)`.
+Never an `AppError` built by hand in the test.
+
 ### The session
 
 `useAuthState` is mocked too, and `signedInAuthState` builds the session from a sign-in scenario,
