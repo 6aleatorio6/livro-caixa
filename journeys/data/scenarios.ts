@@ -1,6 +1,6 @@
 // Os cenários que um fluxo pede pelo nome, pelo `data/request.js`. Cada um mexe nos dados como
 // alguém de fora do app faria, inclusive com o app aberto.
-import { deleteDoc, doc, setDoc, updateDoc, type Firestore } from 'firebase/firestore';
+import { deleteDoc, doc, getDoc, setDoc, Timestamp, updateDoc, type Firestore } from 'firebase/firestore';
 
 import { ACCOUNTS, toSignInLink } from './accounts.ts';
 import type { OwnerFirestore } from './firestore.ts';
@@ -55,12 +55,60 @@ const BILLS_IN_USE = {
   water: { name: 'Água', expectedAmountCents: 9800, dayOfMonth: 20, startsOn: '2026-01-01', tagId: 'servicos' },
 };
 
+async function writeTags(db: Firestore) {
+  await setDoc(doc(db, 'settings', 'tags'), { items: TAGS });
+}
+
 /** Grava as três tags e as cinco contas recorrentes, como o app as grava. */
 async function writeTagsAndBills(db: Firestore) {
-  await setDoc(doc(db, 'settings', 'tags'), { items: TAGS });
+  await writeTags(db);
   for (const [id, bill] of Object.entries(BILLS_IN_USE)) {
     await setDoc(doc(db, 'recurringBills', id), bill);
   }
+}
+
+/** 'AAAA-MM-DD' pelos campos locais, como o app grava a data. */
+function toDateText(date: Date) {
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/**
+ * O uid que o app gravou na primeira entrada da pessoa; os lançamentos o citam em `paidBy`. Sem ele a
+ * pessoa ainda não entrou no app, e o cenário não tem como inventá-lo.
+ */
+async function uidOf(db: Firestore, email: string) {
+  const person = await getDoc(allowedEmail(db, email));
+  const uid = person.data()?.uid;
+  if (typeof uid !== 'string') throw new Error(`${email} ainda não entrou no app: entre com a conta antes deste cenário.`);
+  return uid;
+}
+
+/** Grava a conta avulsa e o registro do comprovante (sem arquivo no Storage), como o `addOneOffBillService`. */
+async function writeOneOffBill(
+  db: Firestore,
+  id: string,
+  bill: { name: string; amountCents: number; date: Date; tagId?: string; paidBy: string },
+) {
+  const date = toDateText(bill.date);
+  await setDoc(doc(db, 'files', `${id}-receipt`), {
+    storagePath: `files/${id}-receipt`,
+    type: 'image',
+    contentType: 'image/jpeg',
+    sizeBytes: 120000,
+    uploadedBy: bill.paidBy,
+  });
+  await setDoc(doc(db, 'entries', id), {
+    kind: 'oneOffBill',
+    month: date.slice(0, 7),
+    name: bill.name,
+    amountCents: bill.amountCents,
+    date,
+    ...(bill.tagId && { tagId: bill.tagId }),
+    paidBy: bill.paidBy,
+    createdAt: Timestamp.now(),
+    receiptFileId: `${id}-receipt`,
+  });
 }
 
 export const scenariosByName: Record<string, Scenario> = {
@@ -99,4 +147,36 @@ export const scenariosByName: Record<string, Scenario> = {
    * tags: os mesmos dados do `seedTags`, que já são os do design.
    */
   seedRecurringBills: ({ db }) => writeTagsAndBills(db),
+  /**
+   * A tela Meus pagamentos do design, sobre o que o `reset` deixou e depois da entrada do Bruno no app: as
+   * tags, duas contas avulsas dele neste mês (Conserto da geladeira no dia 12 ou hoje, o que vier antes,
+   * e Farmácia hoje, sem tag), uma no mês anterior (Mercado) e uma da Ana neste mês (Padaria). Os
+   * registros de `files` existem, os arquivos no Storage não (nada lê o comprovante ainda). O Bruno e a
+   * Ana ficam com `hasEntries: true`; as datas saem de hoje.
+   */
+  async seedMyPayments({ db }) {
+    const today = new Date();
+    const brunoUid = await uidOf(db, ACCOUNTS.member.email);
+    // A Ana pode não ter entrado: o `paidBy` dela só precisa ser diferente do Bruno.
+    const anaUid = (await getDoc(allowedEmail(db, ACCOUNTS.admin.email))).data()?.uid ?? 'uid-ana';
+    const fridgeDay = Math.min(12, today.getDate());
+    await writeTags(db);
+    await writeOneOffBill(db, 'fridge', {
+      name: 'Conserto da geladeira',
+      amountCents: 35000,
+      date: new Date(today.getFullYear(), today.getMonth(), fridgeDay),
+      tagId: 'casa',
+      paidBy: brunoUid,
+    });
+    await writeOneOffBill(db, 'pharmacy', { name: 'Farmácia', amountCents: 8735, date: today, paidBy: brunoUid });
+    await writeOneOffBill(db, 'market', {
+      name: 'Mercado',
+      amountCents: 15000,
+      date: new Date(today.getFullYear(), today.getMonth() - 1, 15),
+      paidBy: brunoUid,
+    });
+    await writeOneOffBill(db, 'bakery', { name: 'Padaria', amountCents: 4200, date: today, paidBy: anaUid });
+    await updateDoc(allowedEmail(db, ACCOUNTS.member.email), { hasEntries: true });
+    await updateDoc(allowedEmail(db, ACCOUNTS.admin.email), { hasEntries: true });
+  },
 };

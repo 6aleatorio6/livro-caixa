@@ -13,20 +13,24 @@ const BOTH_IN_THE_LIST = {
 
 // O que o documento grava (sem o id); a conta sem tag não tem o campo `tagId`.
 const base = { kind: 'oneOffBill', createdAt: new Date('2026-10-20T12:00:00Z') } as const;
-const PHARMACY = { ...base, month: '2026-10', name: 'Farmácia', amountCents: 8990, date: '2026-10-12', tagId: HOME_TAG_ID, paidBy: testAccountUid(BRUNO), receiptFileId: 'f1' };
+// A Farmácia foi lançada depois do Estacionamento, no mesmo dia: o desempate é a hora do lançamento, não o nome.
+const PHARMACY = { ...base, createdAt: new Date('2026-10-12T18:00:00Z'), month: '2026-10', name: 'Farmácia', amountCents: 8990, date: '2026-10-12', tagId: HOME_TAG_ID, paidBy: testAccountUid(BRUNO), receiptFileId: 'f1' };
 const MARKET = { ...base, month: '2026-10', name: 'Mercado', amountCents: 25000, date: '2026-10-20', tagId: UTILITIES_TAG_ID, paidBy: testAccountUid(ANA), receiptFileId: 'f2' };
-const GARAGE = { ...base, month: '2026-10', name: 'Estacionamento', amountCents: 1500, date: '2026-10-12', paidBy: testAccountUid(ANA), receiptFileId: 'f3' };
+const GARAGE = { ...base, createdAt: new Date('2026-10-12T09:00:00Z'), month: '2026-10', name: 'Estacionamento', amountCents: 1500, date: '2026-10-12', paidBy: testAccountUid(ANA), receiptFileId: 'f3' };
 const SEPTEMBER = { ...base, month: '2026-09', name: 'Gráfica', amountCents: 3000, date: '2026-09-30', paidBy: testAccountUid(BRUNO), receiptFileId: 'f4' };
+// Para a soma do membro: duas contas do Bruno (R$ 89,90 e R$ 10,10) e uma da Ana de R$ 300,00.
+const BAKERY = { ...base, month: '2026-10', name: 'Padaria', amountCents: 1010, date: '2026-10-25', paidBy: testAccountUid(BRUNO), receiptFileId: 'f6' };
+const BIG_MARKET = { ...MARKET, amountCents: 30000 };
 const NEW_ONE = { ...base, month: '2026-10', name: 'Padaria', amountCents: 1200, date: '2026-10-25', paidBy: testAccountUid(BRUNO), receiptFileId: 'f5' };
 
 // O que a tela recebe: os mesmos campos, sem `createdAt` e `receiptFileId`, e `tagId: null` sem tag.
 const toEntry = (id: string, { createdAt: _createdAt, receiptFileId: _receiptFileId, ...entry }: Record<string, unknown>) =>
   ({ id, tagId: null, ...entry }) as IEntry;
 
-const OCTOBER_ENTRIES: IEntry[] = [toEntry('market', MARKET), toEntry('garage', GARAGE), toEntry('pharmacy', PHARMACY)];
+const OCTOBER_ENTRIES: IEntry[] = [toEntry('market', MARKET), toEntry('pharmacy', PHARMACY), toEntry('garage', GARAGE)];
 
 export const entryMonthQueryScenarios = {
-  // Outubro vem do mais recente ao mais antigo; no mesmo dia, por nome ("Estacionamento" antes de "Farmácia"). O de setembro fica de fora.
+  // Outubro vem do mais recente ao mais antigo; no mesmo dia, o lançado por último primeiro ("Farmácia" antes de "Estacionamento"). O de setembro fica de fora.
   monthWithEntries: {
     signedInAs: BRUNO,
     given: {
@@ -38,6 +42,20 @@ export const entryMonthQueryScenarios = {
     },
     input: { month: '2026-10' },
     result: OCTOBER_ENTRIES,
+  },
+  // Duas contas do Bruno e uma da Ana: o total do Bruno é a soma das duas (R$ 100,00) contra os R$ 400,00 da família.
+  monthWithTwoEntriesOfTheMember: {
+    signedInAs: BRUNO,
+    given: { ...BOTH_IN_THE_LIST, 'entries/pharmacy': PHARMACY, 'entries/bakery': BAKERY, 'entries/market': BIG_MARKET },
+    input: { month: '2026-10' },
+    result: [toEntry('bakery', BAKERY), toEntry('market', BIG_MARKET), toEntry('pharmacy', PHARMACY)],
+  },
+  // O mês anterior de quem troca de mês: só o de setembro, com o de outubro (e o da Ana) de fora.
+  previousMonthWithEntries: {
+    signedInAs: BRUNO,
+    given: { ...BOTH_IN_THE_LIST, 'entries/pharmacy': PHARMACY, 'entries/market': MARKET, 'entries/september': SEPTEMBER },
+    input: { month: '2026-09' },
+    result: [toEntry('september', SEPTEMBER)],
   },
   emptyMonth: {
     signedInAs: BRUNO,
