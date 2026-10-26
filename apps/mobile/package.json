@@ -1,6 +1,6 @@
 {
   "name": "livro-caixa-mobile",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "main": "index.ts",
   "dependencies": {
     "@dariyd/react-native-pdf-page-image": "2.1.0",
