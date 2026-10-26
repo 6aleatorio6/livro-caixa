@@ -1,10 +1,12 @@
 # O Bruno compartilha o PDF do Pix de outro app (o SEND que o Android manda ao escolher o Livro-Caixa, pelo adb)
 # com o app aberto no Início, escolhe a Água, registra o pagamento e volta ao Início com a Água paga e a Internet
-# ainda a pagar; os detalhes da Água mostram o PDF compartilhado.
+# ainda a pagar; os detalhes da Água mostram o comprovante compartilhado, com o nome do PDF.
 # Coberto por:
 # - O app receber o arquivo do Android (o filtro do expo-sharing, a permissão de leitura do content://, a cópia
 #   para o cache, o redirecionamento do +native-intent): só no aparelho; o Jest não roda a parte nativa.
 #   useSharedReceipt.test.ts cobre o que o hook faz com o arquivo resolvido.
+# - O PDF compartilhado virar imagem: só no aparelho (a biblioteca de PDF é nativa); pdfToImage.test.ts cobre a URI
+#   que ela recebe, `file:///` no lugar do `file:/` de uma barra que o expo-sharing entrega.
 # - A lista do mês com o comprovante e "Conta avulsa" por último, e o toque em "Registrar": ShareReceiptPage.test.tsx.
 # - O comprovante já no campo e o retorno ao Início depois de registrar: PayRecurringBillPage.test.tsx e
 #   sharedReceipt.test.ts.

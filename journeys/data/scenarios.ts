@@ -3,17 +3,20 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { deleteDoc, doc, setDoc, Timestamp, updateDoc, type Firestore } from 'firebase/firestore';
+import { Bytes, deleteDoc, doc, setDoc, Timestamp, updateDoc, type Firestore } from 'firebase/firestore';
 
 import { ACCOUNTS, toSignInLink } from './accounts.ts';
 import type { OwnerFirestore } from './firestore.ts';
 import { shareFixture } from './share.ts';
 
-/** Um comprovante de verdade: o arquivo de `data/fixtures/` que vai para o Storage com o nome que a tela mostra. */
-type ReceiptFixture = { name: string; type: 'image' | 'pdf'; contentType: string };
+/**
+ * Um comprovante de verdade: o arquivo de `data/fixtures/` (`file`) que vai para `fileContents` com o nome que a tela
+ * mostra. O PDF chega ao banco como a imagem da página, com o nome original: o da Luz é o PNG de um PDF de uma página.
+ */
+type ReceiptFixture = { name: string; file: string; contentType: string };
 
-const COMPROVANTE_LUZ: ReceiptFixture = { name: 'comprovante-luz.pdf', type: 'pdf', contentType: 'application/pdf' };
-const RECIBO_CONSERTO: ReceiptFixture = { name: 'recibo-conserto.jpg', type: 'image', contentType: 'image/jpeg' };
+const COMPROVANTE_LUZ: ReceiptFixture = { name: 'comprovante-luz.pdf', file: 'comprovante-luz.png', contentType: 'image/png' };
+const RECIBO_CONSERTO: ReceiptFixture = { name: 'recibo-conserto.jpg', file: 'recibo-conserto.jpg', contentType: 'image/jpeg' };
 
 function readFixture(name: string) {
   return readFileSync(fileURLToPath(new URL(`fixtures/${name}`, import.meta.url)));
@@ -122,7 +125,7 @@ async function writeOneOffBill(
   db: Firestore,
   id: string,
   bill: { name: string; amountCents: number; date: Date; tagId?: string; paidByEmail: string },
-  storedReceipt?: StoredReceipt,
+  receipt?: ReceiptFixture,
 ) {
   const date = toDateText(bill.date);
   await writeEntryWithReceipt(
@@ -137,39 +140,30 @@ async function writeOneOffBill(
       date,
       ...(bill.tagId && { tagId: bill.tagId }),
     },
-    storedReceipt,
+    receipt,
   );
 }
 
-/** Um comprovante com o objeto de verdade no Storage: o arquivo e como gravá-lo no emulador. */
-type StoredReceipt = { fixture: ReceiptFixture; putObject: OwnerFirestore['putObject'] };
-
 /**
  * Grava um lançamento como os serviços do app: o registro do comprovante, o lançamento com o `paidBy`, o
- * `createdAt` e o `receiptFileId`, e o `hasEntries` de quem pagou. Sem `storedReceipt`, o registro é de uma imagem
- * que não existe no Storage; com ele, o objeto é gravado com o autor em `customMetadata.uploadedBy`.
+ * `createdAt` e o `receiptFileId`, e o `hasEntries` de quem pagou. Sem `receipt`, o registro é de uma imagem sem
+ * conteúdo em `fileContents`; com ele, o conteúdo é o arquivo de `data/fixtures/`.
  */
 async function writeEntryWithReceipt(
   db: Firestore,
   id: string,
   paidByEmail: string,
   entry: Record<string, unknown>,
-  storedReceipt?: StoredReceipt,
+  receipt?: ReceiptFixture,
 ) {
   const paidBy = await uidOf(db, paidByEmail);
   const fileId = `${id}-receipt`;
-  const bytes = storedReceipt ? readFixture(storedReceipt.fixture.name) : null;
-  if (storedReceipt && bytes) {
-    await storedReceipt.putObject(`files/${fileId}`, bytes, {
-      contentType: storedReceipt.fixture.contentType,
-      uploadedBy: paidBy,
-    });
-  }
+  const bytes = receipt ? readFixture(receipt.file) : null;
+  if (bytes) await setDoc(doc(db, 'fileContents', fileId), { content: Bytes.fromUint8Array(bytes) });
   await setDoc(doc(db, 'files', fileId), {
-    name: storedReceipt?.fixture.name ?? 'comprovante.jpg',
-    storagePath: `files/${fileId}`,
-    type: storedReceipt?.fixture.type ?? 'image',
-    contentType: storedReceipt?.fixture.contentType ?? 'image/jpeg',
+    name: receipt?.name ?? 'comprovante.jpg',
+    type: 'image',
+    contentType: receipt?.contentType ?? 'image/jpeg',
     sizeBytes: bytes?.length ?? 120000,
     uploadedBy: paidBy,
   });
@@ -190,7 +184,7 @@ function lastDayOf(month: string) {
 async function writePayment(
   db: Firestore,
   payment: { month: string; billId: string; amountCents: number; paidByEmail: string },
-  storedReceipt?: StoredReceipt,
+  receipt?: ReceiptFixture,
 ) {
   const { month, billId, amountCents, paidByEmail } = payment;
   const bill = BILLS_IN_USE[billId as keyof typeof BILLS_IN_USE];
@@ -208,7 +202,7 @@ async function writePayment(
       expectedAmountCents: bill.expectedAmountCents,
       tagId: bill.tagId,
     },
-    storedReceipt,
+    receipt,
   );
 }
 
@@ -252,7 +246,7 @@ export const scenariosByName: Record<string, Scenario> = {
    * A tela Meus pagamentos do design, sobre o que o `reset` deixou: as
    * tags, duas contas avulsas dele neste mês (Conserto da geladeira no dia 12 ou hoje, o que vier antes,
    * e Farmácia hoje, sem tag), uma no mês anterior (Mercado) e uma da Ana neste mês (Padaria). Os
-   * registros de `files` existem, os arquivos no Storage não (nada lê o comprovante ainda). O Bruno e a
+   * registros de `files` existem, os conteúdos em `fileContents` não (nada lê o comprovante ainda). O Bruno e a
    * Ana ficam com `hasEntries: true`; as datas saem de hoje.
    */
   async seedMyPayments({ db }) {
@@ -298,7 +292,7 @@ export const scenariosByName: Record<string, Scenario> = {
   },
   /**
    * A tela de compartilhar do design: as contas do `seedHome` (a Internet e a Água ficam a pagar). O arquivo
-   * `pix-agua-outubro.pdf` de `data/fixtures/` não entra no Storage: a jornada o põe no aparelho e o compartilha.
+   * `pix-agua-outubro.pdf` de `data/fixtures/` não entra no banco: a jornada o põe no aparelho e o compartilha.
    */
   async seedShareReceipt(owner, params) {
     await scenariosByName.seedHome(owner, params);
@@ -313,18 +307,18 @@ export const scenariosByName: Record<string, Scenario> = {
   },
   /**
    * Os detalhes do lançamento do design, sobre o que o `reset` deixou, no mês atual: as tags e as cinco contas, a
-   * Luz paga pela Ana (R$ 187,35, previsto R$ 210,00, dia 10, Serviços) com o `comprovante-luz.pdf` de duas
-   * páginas e a avulsa Conserto da geladeira do Bruno (R$ 350,00, Casa) com o `recibo-conserto.jpg`. Os objetos
-   * existem de verdade no Storage, com o autor nos metadados.
+   * Luz paga pela Ana (R$ 187,35, previsto R$ 210,00, dia 10, Serviços) com o `comprovante-luz.pdf` já convertido
+   * em imagem e a avulsa Conserto da geladeira do Bruno (R$ 350,00, Casa) com o `recibo-conserto.jpg`. Os conteúdos
+   * existem de verdade em `fileContents`.
    */
-  async seedEntryDetails({ db, putObject }) {
+  async seedEntryDetails({ db }) {
     const today = new Date();
     const month = toDateText(today).slice(0, 7);
     await writeTagsAndBills(db);
     await writePayment(
       db,
       { month, billId: 'electricity', amountCents: 18735, paidByEmail: ACCOUNTS.admin.email },
-      { fixture: COMPROVANTE_LUZ, putObject },
+      COMPROVANTE_LUZ,
     );
     await writeOneOffBill(
       db,
@@ -336,7 +330,7 @@ export const scenariosByName: Record<string, Scenario> = {
         tagId: 'casa',
         paidByEmail: ACCOUNTS.member.email,
       },
-      { fixture: RECIBO_CONSERTO, putObject },
+      RECIBO_CONSERTO,
     );
   },
 };

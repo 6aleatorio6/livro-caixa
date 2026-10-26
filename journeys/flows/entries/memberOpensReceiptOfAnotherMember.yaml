@@ -1,12 +1,12 @@
-# O Bruno abre, no Início, a Luz que a Ana pagou: a folha mostra os detalhes sem Alterar nem Excluir, "Ver" abre o
-# PDF de duas páginas no próprio app, a rolagem chega à segunda ("2 de 2") e o x volta para a folha.
+# O Bruno abre, no Início, a Luz que a Ana pagou: a folha mostra os detalhes sem Alterar nem Excluir, "Ver" abre a
+# imagem do PDF (convertido ao anexar) no próprio app, lida do Firestore, e o x volta para a folha.
 # Coberto por:
 # - Sem Alterar nem Excluir para quem não registrou, com o aviso "Só Ana…": EntryDetailsPage.test.tsx
 #   ("Should offer neither to another member and say who can, for a payment") e as regras de entries
 #   (entries.update.test.mjs e entries.delete.test.mjs).
-# - O PDF abrir, rolar até a segunda página e o indicador "N de M": só no aparelho (a biblioteca de PDF é nativa e o
-#   Jest não a roda); ReceiptViewerPage.test.tsx ("Should download the PDF checking the certificates") e
-#   PdfPages.test.tsx cobrem só o que a página manda para ela.
+# - A imagem montada do conteúdo de `fileContents` (a `uri` `data:`): só no aparelho, pelo `Image` nativo;
+#   ReceiptViewerPage.test.tsx ("Should open a PDF as the image of its page, with the name chosen in the title") e o
+#   contrato do getReceiptContentService cobrem o que a página manda para ela.
 # - O x volta para a folha: ReceiptViewerPage.test.tsx ("Should close with the x").
 appId: dev.leonardolf.livrocaixa
 tags:
@@ -38,13 +38,9 @@ tags:
 - takeScreenshot: entry-details--other-member
 - tapOn: "Comprovante: comprovante-luz.pdf. Ver"
 - extendedWaitUntil:
-    visible: "1 de 2"
+    visible: Comprovante
     timeout: 30000
-- scrollUntilVisible:
-    element: "2 de 2"
-    direction: DOWN
-- takeScreenshot: receipt-viewer--pdf-second-page
+- assertVisible: "comprovante-luz.pdf"
+- takeScreenshot: receipt-viewer--converted-pdf
 - tapOn: Fechar
 - assertVisible: "Só Ana pode alterar ou excluir este pagamento."
-- assertNotVisible: "1 de 2"
-- assertNotVisible: "2 de 2"

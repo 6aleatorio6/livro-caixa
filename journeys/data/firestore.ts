@@ -1,4 +1,4 @@
-// O Firestore e o Storage do emulador como dono do projeto, pela mesma biblioteca do `firebase/rules-tests/`:
+// O Firestore do emulador como dono do projeto, pela mesma biblioteca do `firebase/rules-tests/`:
 // o `withSecurityRulesDisabled` passa por cima das regras, como quem administra pelo console.
 import { initializeTestEnvironment } from '@firebase/rules-unit-testing';
 import type { Firestore } from 'firebase/firestore';
@@ -24,32 +24,14 @@ async function clearWithRetry(clear: () => Promise<void>, warn: (message: string
   }
 }
 
-/** Um objeto do Storage como o envio do app o deixa: o tipo e o autor em `customMetadata.uploadedBy`. */
-export type StorageObject = { contentType: string; uploadedBy: string };
+/** O que um cenário recebe: o banco, já sem as regras, e como apagá-lo inteiro. */
+export type OwnerFirestore = { db: Firestore; deleteAll: () => Promise<void> };
 
-/** O que um cenário recebe: o banco, já sem as regras, como apagá-lo inteiro (com o Storage) e como gravar um objeto. */
-export type OwnerFirestore = {
-  db: Firestore;
-  deleteAll: () => Promise<void>;
-  putObject: (path: string, bytes: Uint8Array, metadata: StorageObject) => Promise<void>;
-};
-
-export type EmulatorPorts = { firestore: number; storage: number };
-
-/**
- * `bucket` é o do app (`storage_bucket` do `google-services.json`). `warn` recebe os avisos do banco (hoje, o
- * apagar repetido): o `test.ts` os junta no resumo da rodada.
- */
-export async function openEmulatorFirestore(
-  projectId: string,
-  ports: EmulatorPorts,
-  bucket: string,
-  warn: (message: string) => void,
-) {
+/** `warn` recebe os avisos do banco (hoje, o apagar repetido): o `test.ts` os junta no resumo da rodada. */
+export async function openEmulatorFirestore(projectId: string, firestorePort: number, warn: (message: string) => void) {
   const environment = await initializeTestEnvironment({
     projectId,
-    firestore: { host: 'localhost', port: ports.firestore },
-    storage: { host: 'localhost', port: ports.storage },
+    firestore: { host: 'localhost', port: firestorePort },
   });
   return {
     async asOwner<Result>(write: (owner: OwnerFirestore) => Promise<Result>) {
@@ -59,16 +41,7 @@ export async function openEmulatorFirestore(
         const db = context.firestore() as unknown as Firestore;
         result = await write({
           db,
-          deleteAll: async () => {
-            await clearWithRetry(() => environment.clearFirestore(), warn);
-            // O `clearStorage` do ambiente só lista a raiz do bucket, e os comprovantes ficam planos em `files/`.
-            const { items } = await context.storage(`gs://${bucket}`).ref('files').listAll();
-            await Promise.all(items.map((item) => item.delete()));
-            await environment.clearStorage();
-          },
-          async putObject(path, bytes, { contentType, uploadedBy }) {
-            await context.storage(`gs://${bucket}`).ref(path).put(bytes, { contentType, customMetadata: { uploadedBy } });
-          },
+          deleteAll: () => clearWithRetry(() => environment.clearFirestore(), warn),
         });
       });
       return result as Result;

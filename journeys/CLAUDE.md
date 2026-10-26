@@ -21,16 +21,17 @@ journeys/
     signInAs.yaml          only signs in, with a LINK: switching accounts mid-flow
   data/                    the test data in the emulator's Firestore
     server.ts              the HTTP server test.ts runs during the round, on port 4020; it receives the
-                           Storage emulator's port and the app's bucket from test.ts
+                           Firestore emulator's port from test.ts
     scenarios.ts           the scenarios a flow asks for by name: reset, allowEmail, removeEmail…
     accounts.ts            the test accounts (Ana, Bruno, Carla) and their sign-in link
-    firestore.ts           the emulator's Firestore and Storage as the project owner
-                           (@firebase/rules-unit-testing): deleteAll, putObject
+    firestore.ts           the emulator's Firestore as the project owner
+                           (@firebase/rules-unit-testing): deleteAll
     share.ts               shareFixture: pushes a fixture to the phone's Downloads and shares it with the
                            app through adb (the shareReceipt scenario)
-    fixtures/              the small committed files scenarios read: the ones a scenario puts in the
-                           Storage emulator (comprovante-luz.pdf, recibo-conserto.jpg) and the ones
-                           shareFixture pushes to the phone (pix-agua-outubro.pdf)
+    fixtures/              the small committed files scenarios read: the receipt contents a scenario
+                           writes to fileContents (comprovante-luz.png, recibo-conserto.jpg) and the
+                           files shareFixture pushes to the phone (pix-agua-outubro.pdf, one page;
+                           comprovante-luz.pdf, two pages, the one the app refuses)
     request.js             the Maestro side (runScript): asks for a scenario, copies the answer to output
   .local/                  (outside Git)
     explore/               throwaway flows, run like any other
@@ -46,7 +47,7 @@ journeys/
 | A sequence of screen steps that two or more flows repeat and that must change together in all of them | `steps/<what it does>.yaml` |
 | A navigation shortcut (open a screen) | written in the flow, not a step |
 | Data a flow needs: a reset, a change mid-flow, a screen's seed | a scenario in `data/scenarios.ts`; a new parameter also in `data/request.js` |
-| A file a scenario needs in the Storage (a receipt) | `data/fixtures/`; the scenario writes it with `putObject` |
+| A receipt's content a scenario needs in `fileContents` | `data/fixtures/`; the scenario writes its bytes next to the `files` record |
 | A file a flow shares with the app, as another Android app would | `data/fixtures/`; the `shareReceipt` scenario (`data/share.ts`) pushes it to the phone and runs the `SEND` through adb, because Maestro has no shell |
 | A tool run from the terminal | a `.ts` at the root with its `pnpm journeys:*` script |
 | A throwaway flow | `.local/explore/` |
@@ -68,12 +69,9 @@ only content.
 - **No loose `.js` for data.** A new kind of data is a scenario, typed, written with the Firebase
   SDK (`setDoc`, `updateDoc`…) on the database the scenario receives; the only JavaScript Maestro
   runs is `data/request.js`.
-- **A receipt a scenario writes is a real object in the Storage emulator**, put with
-  `OwnerFirestore.putObject` (path, bytes, content type and `uploadedBy`) next to the entry that
-  points to it, so the app downloads it as it would in production. The fixture is a file of
-  `data/fixtures/`, never bytes inline. `deleteAll` (the `reset`) deletes the objects under `files/`
-  by listing the folder, because `environment.clearStorage()` lists only the bucket root and
-  would leave a receipt another flow uploaded behind (checked on the emulator).
-  `test.ts` gives the data server the Storage port (from
-  `firebase.json`) and the bucket (`storage_bucket` of `google-services.json`).
+- **A receipt a scenario writes has real bytes in `fileContents/{id}`**, next to the `files/{id}`
+  record and the entry that points to it, so the viewer reads it as it would in production. The
+  bytes come from a file of `data/fixtures/`, never inline. A PDF is stored as the image of its
+  page with the PDF's name, as the app converts it: the fixture is that image
+  (`comprovante-luz.png` for `comprovante-luz.pdf`).
 - **Nothing new loose at the root.** A new tool or configuration file enters the tree above.
