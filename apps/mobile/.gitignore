@@ -30,6 +30,9 @@ yarn-error.*
 .DS_Store
 *.pem
 
+# A chave que assina o APK de release e os APKs gerados (pnpm apk)
+/release
+
 # local env files: só o exemplo vai para o Git
 .env*
 !.env.example

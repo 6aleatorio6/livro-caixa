@@ -19,7 +19,9 @@ other stack decision is made without being written there.
   the journeys' stack needs.
 - `pnpm apk`, also on the developer's PC, builds the release APK with the JavaScript bundled and the
   real Firebase (no emulators), to install on a phone without Metro:
-  `apps/mobile/android/app/build/outputs/apk/release/app-release.apk`.
+  `apps/mobile/release/livro-caixa-<version>.apk`. It signs with the app's own key,
+  `apps/mobile/release/livro-caixa.keystore`, whose password is `RELEASE_KEYSTORE_PASSWORD` in
+  `apps/mobile/.env`; both stay out of Git, and losing them means the installed app can't be updated.
 - `pnpm firebase:emulators` starts the Firebase emulators (Auth and Firestore; their UI on
   port 4001, since the portal holds 4000), and `pnpm test:rules` tests `firebase/firestore.rules`.
   Both need Java, which the claude-box lends this container from the PC, so they run here too.

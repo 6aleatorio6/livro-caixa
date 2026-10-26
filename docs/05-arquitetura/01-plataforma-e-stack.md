@@ -13,6 +13,11 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   fecham no centavo.
 - **Instalado por APK**, direto nos celulares da família, fora da Play Store
   ([Publicação na Play Store](../04-escopo-excluido/06-publicacao-na-play-store.md)).
+  O APK de release assina com uma chave própria, guardada fora do Git com a senha no `.env` do app, e
+  não com a chave de debug do modelo do Expo, que é a mesma em todo projeto e deixaria qualquer um
+  gerar um APK que o celular aceitaria como atualização. O login pelo Google confere a impressão
+  SHA-1 dessa chave, cadastrada no app Android do Firebase. Perder a chave impede atualizar o app
+  instalado: só desinstalando e instalando de novo.
 - **Expo SDK 58 + React Native 0.88 + TypeScript** no app, com o expo-router e o React Compiler do
   template padrão do SDK.
 - **Estilo no Unistyles 3.** O tema do app (papéis de cor do Material 3, claro e escuro, papéis de
