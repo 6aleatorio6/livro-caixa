@@ -34,7 +34,7 @@ const savedReceipt: IReceiptFile = {
   name: 'comprovante-luz.pdf',
   type: 'pdf',
   sizeBytes: 182 * 1024,
-  storagePath: 'receipts/file-1',
+  contentType: 'application/pdf',
 };
 const pickedFile = { uri: 'file:///x', name: 'x.pdf', contentType: 'application/pdf', sizeBytes: 10 };
 

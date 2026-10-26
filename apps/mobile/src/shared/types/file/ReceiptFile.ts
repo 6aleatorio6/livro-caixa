@@ -4,5 +4,6 @@ export interface IReceiptFile {
   name: string;
   type: 'image' | 'pdf';
   sizeBytes: number;
-  storagePath: string;
+  /** O tipo da imagem guardada, o da `uri` `data:` que abre o comprovante. */
+  contentType: string;
 }

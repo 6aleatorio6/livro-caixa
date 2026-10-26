@@ -12,23 +12,22 @@ import { entryQueryService } from '@/shared/services/entry/query/entryQueryServi
 import { receiptFileQueryService } from '@/shared/services/file/query/receiptFileQueryService';
 import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 
-import { PdfPages } from './components/PdfPages/PdfPages';
 import { ReceiptEntryStrip } from './components/ReceiptEntryStrip/ReceiptEntryStrip';
 import { ReceiptProblem } from './components/ReceiptProblem/ReceiptProblem';
 import { ZoomableImage } from './components/ZoomableImage/ZoomableImage';
-import { useReceiptUrl } from './hooks/useReceiptUrl/useReceiptUrl';
+import { useReceiptContent } from './hooks/useReceiptContent/useReceiptContent';
 
 const CANNOT_OPEN = 'Não deu para abrir o comprovante.';
 const NOT_FOUND = 'O comprovante não foi encontrado.';
 
-/** O comprovante de um lançamento em tela cheia, no tema escuro: a imagem com zoom ou as páginas do PDF, e os dados do lançamento embaixo. Qualquer membro abre. */
+/** O comprovante de um lançamento em tela cheia, no tema escuro: a imagem com zoom (o PDF chega como a imagem da página) e os dados do lançamento embaixo. Qualquer membro abre. */
 export function ReceiptViewerPage() {
   const { theme } = useUnistyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { status: entryStatus, data: entry } = useRealtime(entryQueryService, { id });
   const { status: fileStatus, data: file } = useRealtime(receiptFileQueryService, { id: entry?.receiptFileId ?? null });
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
-  const receipt = useReceiptUrl(file?.storagePath ?? null);
+  const receipt = useReceiptContent(file ?? null);
 
   function body() {
     if (entryStatus === 'error' || fileStatus === 'error') return <ReceiptProblem message={CANNOT_OPEN} />;
@@ -37,13 +36,9 @@ export function ReceiptViewerPage() {
     if (fileStatus === 'success' && !file) return <ReceiptProblem message={NOT_FOUND} />;
     if (receipt.status === 'notFound') return <ReceiptProblem message={NOT_FOUND} />;
     if (receipt.status === 'error') return <ReceiptProblem message={CANNOT_OPEN} onRetry={receipt.retry} />;
-    if (!file || !receipt.url) return <ActivityIndicator style={styles.loader} color={theme.colors.primary} />;
+    if (!file || !receipt.uri) return <ActivityIndicator style={styles.loader} color={theme.colors.primary} />;
 
-    return file.type === 'pdf' ? (
-      <PdfPages key={receipt.attempt} uri={receipt.url} fileId={file.id} onError={receipt.fail} />
-    ) : (
-      <ZoomableImage key={receipt.attempt} uri={receipt.url} onError={receipt.fail} />
-    );
+    return <ZoomableImage key={receipt.attempt} uri={receipt.uri} onError={receipt.fail} />;
   }
 
   return (

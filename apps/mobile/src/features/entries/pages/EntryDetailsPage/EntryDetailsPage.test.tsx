@@ -40,7 +40,7 @@ jest.mock('expo-router', () => ({ router: { back: jest.fn(), push: jest.fn() }, 
 
 const family = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyList };
 const threeTags = { service: tagListQueryService, scenario: tagListQueryScenarios.threeTags };
-const pdfReceipt = { service: receiptFileQueryService, scenario: receiptFileQueryScenarios.pdfReceipt };
+const convertedPdfReceipt = { service: receiptFileQueryService, scenario: receiptFileQueryScenarios.convertedPdfReceipt };
 const imageReceipt = { service: receiptFileQueryService, scenario: receiptFileQueryScenarios.imageReceipt };
 const payment = { service: entryQueryService, scenario: entryQueryScenarios.paymentOfTheMember };
 const oneOffBill = { service: entryQueryService, scenario: entryQueryScenarios.oneOffBillOfTheMember };
@@ -71,7 +71,7 @@ describe('EntryDetailsPage', () => {
 
   describe('The payment', () => {
     it('Should show the bill, the month, the paid and the expected amount, who paid, when, the due day and the tag', async () => {
-      await renderDetails(payment, pdfReceipt, family, threeTags);
+      await renderDetails(payment, convertedPdfReceipt, family, threeTags);
 
       expect(screen.getByText('Luz')).toBeOnTheScreen();
       expect(screen.getByText('Pagamento de outubro de 2026')).toBeOnTheScreen();
@@ -86,9 +86,9 @@ describe('EntryDetailsPage', () => {
 
     it('Should show the receipt of another member and let anyone open it', async () => {
       jest.mocked(useAuthState).mockReturnValue(signedInAuthState(ana));
-      const { user } = await renderDetails(payment, pdfReceipt, family, threeTags);
+      const { user } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
 
-      expect(screen.getByText('PDF · 88 KB')).toBeOnTheScreen();
+      expect(screen.getByText('Imagem · 88 KB')).toBeOnTheScreen();
       expect(screen.getByText('comprovante-luz.pdf')).toBeOnTheScreen();
       await user.press(screen.getByRole('button', { name: /^Comprovante: comprovante-luz.pdf/ }));
 
@@ -96,7 +96,7 @@ describe('EntryDetailsPage', () => {
     });
 
     it('Should update the amount when the payment is corrected with the sheet open', async () => {
-      const { realtime } = await renderDetails(payment, pdfReceipt, family, threeTags);
+      const { realtime } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
       expect(screen.getByText('R$ 187,35')).toBeOnTheScreen();
 
       await act(async () => realtime.applyChange(entryQueryService));
@@ -149,7 +149,7 @@ describe('EntryDetailsPage', () => {
 
   describe('Who may change it', () => {
     it('Should offer Alterar and Excluir to whoever registered the payment', async () => {
-      await renderDetails(payment, pdfReceipt, family, threeTags);
+      await renderDetails(payment, convertedPdfReceipt, family, threeTags);
 
       expect(screen.getByRole('button', { name: 'Alterar' })).toBeOnTheScreen();
       expect(screen.getByRole('button', { name: 'Excluir' })).toBeOnTheScreen();
@@ -158,7 +158,7 @@ describe('EntryDetailsPage', () => {
 
     it('Should offer neither to another member and say who can, for a payment', async () => {
       jest.mocked(useAuthState).mockReturnValue(signedInAuthState(ana));
-      await renderDetails(payment, pdfReceipt, family, threeTags);
+      await renderDetails(payment, convertedPdfReceipt, family, threeTags);
 
       expect(screen.queryByRole('button', { name: 'Alterar' })).not.toBeOnTheScreen();
       expect(screen.queryByRole('button', { name: 'Excluir' })).not.toBeOnTheScreen();
@@ -175,7 +175,7 @@ describe('EntryDetailsPage', () => {
     });
 
     it('Should open the edit screen when Alterar is pressed', async () => {
-      const { user } = await renderDetails(payment, pdfReceipt, family, threeTags);
+      const { user } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
 
       await user.press(screen.getByRole('button', { name: 'Alterar' }));
 
@@ -187,7 +187,7 @@ describe('EntryDetailsPage', () => {
     it('Should ask first and call the service only after the dialog is confirmed', async () => {
       const scenario = deleteEntryScenarios.memberDeletesPayment;
       mockServiceScenario(deleteEntryService, scenario);
-      const { user } = await renderDetails(payment, pdfReceipt, family, threeTags);
+      const { user } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
 
       await user.press(screen.getByRole('button', { name: 'Excluir' }));
 
@@ -203,7 +203,7 @@ describe('EntryDetailsPage', () => {
     });
 
     it('Should not delete when the dialog is cancelled', async () => {
-      const { user } = await renderDetails(payment, pdfReceipt, family, threeTags);
+      const { user } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
 
       await user.press(screen.getByRole('button', { name: 'Excluir' }));
       await user.press(screen.getByRole('button', { name: 'Cancelar' }));
@@ -214,7 +214,7 @@ describe('EntryDetailsPage', () => {
 
     it('Should close the sheet and say the payment was deleted', async () => {
       mockServiceScenario(deleteEntryService, deleteEntryScenarios.memberDeletesPayment);
-      const { user } = await renderDetails(payment, pdfReceipt, family, threeTags);
+      const { user } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
 
       await confirmDeletion(user);
 
@@ -240,7 +240,7 @@ describe('EntryDetailsPage', () => {
     it('Should keep the sheet open and warn when the deletion is refused', async () => {
       const refusal = deleteEntryRejectedScenarios.memberDeletesEntryDeletedMeanwhile;
       mockServiceRejection(deleteEntryService, refusal);
-      const { user } = await renderDetails(payment, pdfReceipt, family, threeTags);
+      const { user } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
 
       await confirmDeletion(user);
 
@@ -292,7 +292,7 @@ describe('EntryDetailsPage', () => {
   });
 
   it('Should close the sheet when the scrim is pressed', async () => {
-    const { user } = await renderDetails(payment, pdfReceipt, family, threeTags);
+    const { user } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
 
     await user.press(screen.getByRole('button', { name: 'Fechar' }));
 

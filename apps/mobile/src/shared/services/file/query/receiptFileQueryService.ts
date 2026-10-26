@@ -17,7 +17,7 @@ export const receiptFileQueryService = createRealtimeService({
           name: file.name,
           type: file.type,
           sizeBytes: file.sizeBytes,
-          storagePath: file.storagePath,
+          contentType: file.contentType,
         }
       : null,
 });
