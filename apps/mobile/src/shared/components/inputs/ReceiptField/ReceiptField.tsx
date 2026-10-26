@@ -8,6 +8,7 @@ import type { IReceiptFile } from '@/shared/types/file/ReceiptFile';
 import type { IInputMinimalProps } from '@/shared/types/form/InputMinimalProps';
 
 import { ReceiptSummary } from '@/shared/components/ReceiptSummary/ReceiptSummary';
+import { createReceiptUnreadableError } from '@/shared/utils/file/createReceiptUnreadableError';
 import { pickReceiptFile } from '@/shared/utils/file/pickReceiptFile';
 import { prepareReceipt } from '@/shared/utils/file/prepareReceipt';
 
@@ -16,7 +17,7 @@ export type IReceiptFieldProps = IInputMinimalProps<IReceipt | null> & {
   currentReceipt?: IReceiptFile;
 };
 
-const UNREADABLE_MESSAGE = 'Não deu para ler o arquivo. Escolha outro.';
+const UNREADABLE_MESSAGE = createReceiptUnreadableError().userMessage;
 
 interface IRejection {
   message: string;
