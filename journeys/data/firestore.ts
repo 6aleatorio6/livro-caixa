@@ -7,16 +7,19 @@ import type { Firestore } from 'firebase/firestore';
 // hora (o app derruba a conexão ao primeiro erro de uma escuta, e a tela de tags tem três), o aviso seguinte
 // vai para uma chamada cancelada, e o emulador responde 500 com o código 499, "call already cancelled",
 // embora o app não faça parte do pedido. Apagar de novo não custa nada: o que a primeira vez apagou fica
-// apagado, e a escuta fechada já não está na lista. O aviso evita que a repetição passe em silêncio.
+// apagado, e a escuta fechada já não está na lista. O aviso evita que a repetição passe em silêncio. Quando o aviso
+// chega a uma escuta cujo fluxo já terminou ("Stream is already completed" no `firestore-debug.log`), a mesma corrida
+// volta como 500 com o status UNKNOWN, sem mensagem.
 const CLEAR_ATTEMPTS = 3;
+const CLOSED_LISTENER_ERRORS = ['call already cancelled', '"status":"UNKNOWN"'];
 
 async function clearWithRetry(clear: () => Promise<void>, warn: (message: string) => void) {
   for (let attempt = 1; ; attempt++) {
     try {
       return await clear();
     } catch (error) {
-      const isCancelledCall = String(error).includes('call already cancelled');
-      if (!isCancelledCall || attempt === CLEAR_ATTEMPTS) throw error;
+      const isClosedListener = CLOSED_LISTENER_ERRORS.some((text) => String(error).includes(text));
+      if (!isClosedListener || attempt === CLEAR_ATTEMPTS) throw error;
       warn(
         `O emulador falhou ao apagar o Firestore (escuta já cancelada); tentativa ${attempt + 1} de ${CLEAR_ATTEMPTS}.`,
       );
