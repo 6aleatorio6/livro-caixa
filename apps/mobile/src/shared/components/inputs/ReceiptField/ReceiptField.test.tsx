@@ -142,25 +142,25 @@ describe('ReceiptField', () => {
       .mockResolvedValueOnce(pickedFile);
     jest
       .mocked(prepareReceipt)
-      .mockRejectedValueOnce(new AppError('Receipt is over 5 MB', 'O PDF passa de 5 MB. Escolha outro arquivo.'))
+      .mockRejectedValueOnce(new AppError('Receipt PDF has more than one page', 'O PDF tem mais de uma página. Por enquanto, só dá para anexar PDF de uma página.'))
       .mockResolvedValueOnce(pdf);
     const { user } = await renderField();
 
     await user.press(screen.getByRole('button'));
 
-    expect(await screen.findByText('O PDF passa de 5 MB. Escolha outro arquivo.')).toBeOnTheScreen();
+    expect(await screen.findByText('O PDF tem mais de uma página. Por enquanto, só dá para anexar PDF de uma página.')).toBeOnTheScreen();
     expect(screen.getByText('extrato-setembro.pdf')).toBeOnTheScreen();
     expect(screen.getByText('Escolher outro')).toBeOnTheScreen();
 
     await user.press(screen.getByRole('button'));
 
     expect(await screen.findByText('PDF · 182 KB')).toBeOnTheScreen();
-    expect(screen.queryByText('O PDF passa de 5 MB. Escolha outro arquivo.')).toBeNull();
+    expect(screen.queryByText('O PDF tem mais de uma página. Por enquanto, só dá para anexar PDF de uma página.')).toBeNull();
   });
 
   it('Should show the rejected file instead of the previous one', async () => {
     jest.mocked(pickReceiptFile).mockResolvedValue({ ...pickedFile, name: 'grande.pdf' });
-    jest.mocked(prepareReceipt).mockRejectedValue(new AppError('Receipt is over 5 MB', 'O PDF passa de 5 MB. Escolha outro arquivo.'));
+    jest.mocked(prepareReceipt).mockRejectedValue(new AppError('Receipt PDF has more than one page', 'O PDF tem mais de uma página. Por enquanto, só dá para anexar PDF de uma página.'));
     const { user } = await renderField({ initial: jpg });
 
     await user.press(screen.getByRole('button'));
@@ -171,12 +171,12 @@ describe('ReceiptField', () => {
 
   it('Should clear the form value when the new file is rejected, so the previous file is not sent', async () => {
     jest.mocked(pickReceiptFile).mockResolvedValue({ ...pickedFile, name: 'grande.pdf' });
-    jest.mocked(prepareReceipt).mockRejectedValue(new AppError('Receipt is over 5 MB', 'O PDF passa de 5 MB. Escolha outro arquivo.'));
+    jest.mocked(prepareReceipt).mockRejectedValue(new AppError('Receipt PDF has more than one page', 'O PDF tem mais de uma página. Por enquanto, só dá para anexar PDF de uma página.'));
     const { user, onValueChange } = await renderField({ initial: jpg });
 
     await user.press(screen.getByRole('button'));
 
-    await screen.findByText('O PDF passa de 5 MB. Escolha outro arquivo.');
+    await screen.findByText('O PDF tem mais de uma página. Por enquanto, só dá para anexar PDF de uma página.');
     expect(onValueChange).toHaveBeenCalledWith(null);
   });
 
@@ -233,7 +233,7 @@ describe('ReceiptField', () => {
 
   it('Should hide the loader when the file is rejected', async () => {
     jest.mocked(pickReceiptFile).mockResolvedValue(pickedFile);
-    jest.mocked(prepareReceipt).mockRejectedValue(new AppError('Receipt is over 5 MB', 'O PDF passa de 5 MB. Escolha outro arquivo.'));
+    jest.mocked(prepareReceipt).mockRejectedValue(new AppError('Receipt PDF has more than one page', 'O PDF tem mais de uma página. Por enquanto, só dá para anexar PDF de uma página.'));
     const { user } = await renderField();
 
     await user.press(screen.getByRole('button'));

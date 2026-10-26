@@ -162,12 +162,16 @@ describe('NewOneOffBillPage', () => {
     jest.mocked(pickReceiptFile).mockResolvedValue({ ...pickedFile, name: 'grande.png', sizeBytes: 6 * 1024 * 1024 });
     jest
       .mocked(prepareReceipt)
-      .mockRejectedValue(new AppError('Receipt is over 5 MB', 'A imagem passa de 5 MB. Escolha outro arquivo.'));
+      .mockRejectedValue(
+        new AppError('Receipt is over 900 KiB', 'Mesmo comprimida, a imagem passa de 900 KB. Escolha outro arquivo.'),
+      );
 
     await user.press(screen.getByRole('button', { name: `Comprovante: ${bill.receipt.name}. Trocar` }));
     await user.press(screen.getByRole('button', { name: SUBMIT }));
 
-    expect(await screen.findByText('A imagem passa de 5 MB. Escolha outro arquivo.')).toBeOnTheScreen();
+    expect(
+      await screen.findByText('Mesmo comprimida, a imagem passa de 900 KB. Escolha outro arquivo.'),
+    ).toBeOnTheScreen();
     expect(screen.getByText('grande.png')).toBeOnTheScreen();
     expect(addOneOffBillService).not.toHaveBeenCalled();
     expect(router.back).not.toHaveBeenCalled();

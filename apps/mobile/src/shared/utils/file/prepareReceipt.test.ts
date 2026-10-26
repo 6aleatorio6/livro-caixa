@@ -1,10 +1,12 @@
 import { AppError } from '@/shared/exceptions/AppError';
 import type { ILocalFile } from '@/shared/types/file/LocalFile';
+import { pdfToImage } from './pdfToImage';
 import { prepareReceipt } from './prepareReceipt';
 import { RECEIPT_MAX_BYTES } from './receiptMaxBytes';
 import { reduceImage } from './reduceImage';
 
 jest.mock('./reduceImage', () => ({ reduceImage: jest.fn() }));
+jest.mock('./pdfToImage', () => ({ pdfToImage: jest.fn() }));
 
 const MB = 1024 * 1024;
 
@@ -49,25 +51,39 @@ describe('prepareReceipt', () => {
     expect(await prepareReceipt(original)).toEqual({ ...original, type: 'image', wasReduced: false });
   });
 
-  it('Should never send a PDF to the reduction', async () => {
-    const original = file('application/pdf', 800 * 1024);
+  it('Should turn a PDF into the image of its page and send it to the reduction', async () => {
+    const page = {
+      uri: 'file:///cache/pagina.png',
+      name: 'boleto.pdf',
+      contentType: 'image/png',
+      sizeBytes: 1_400_000,
+    };
+    const reduced = { ...page, uri: 'file:///cache/pagina.webp', contentType: 'image/webp', sizeBytes: 600_000 };
+    jest.mocked(pdfToImage).mockResolvedValue(page);
+    jest.mocked(reduceImage).mockResolvedValue(reduced);
+    const original = file('application/pdf', 300_000);
 
-    expect(await prepareReceipt(original)).toEqual({ ...original, type: 'pdf', wasReduced: false });
+    expect(await prepareReceipt(original)).toEqual({ ...reduced, type: 'image', wasReduced: true });
+    expect(pdfToImage).toHaveBeenCalledWith(original);
+    expect(reduceImage).toHaveBeenCalledWith(page);
+  });
+
+  it('Should pass on the refusal of a PDF of more than one page', async () => {
+    const multipage = new AppError(
+      'Receipt PDF has more than one page',
+      'O PDF tem mais de uma página.',
+      'RECEIPT_PDF_MULTIPAGE',
+    );
+    jest.mocked(pdfToImage).mockRejectedValue(multipage);
+
+    expect(await rejection(prepareReceipt(file('application/pdf', 300_000)))).toBe(multipage);
     expect(reduceImage).not.toHaveBeenCalled();
   });
 
-  it('Should accept a PDF of exactly 900 KiB', async () => {
-    expect(await prepareReceipt(file('application/pdf', RECEIPT_MAX_BYTES))).toMatchObject({ type: 'pdf' });
-  });
+  it('Should never send an image to the PDF conversion', async () => {
+    await prepareReceipt(file('image/jpeg', 800 * 1024));
 
-  it('Should refuse a PDF of one byte over 900 KiB', async () => {
-    const error = await rejection(prepareReceipt(file('application/pdf', RECEIPT_MAX_BYTES + 1)));
-
-    expect(error).toBeInstanceOf(AppError);
-    expect(error).toMatchObject({
-      code: 'RECEIPT_TOO_LARGE',
-      userMessage: 'O PDF passa de 900 KB. Escolha outro arquivo.',
-    });
+    expect(pdfToImage).not.toHaveBeenCalled();
   });
 
   it('Should accept an image of exactly 900 KiB after the reduction', async () => {

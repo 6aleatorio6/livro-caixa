@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "main": "index.ts",
   "dependencies": {
+    "@dariyd/react-native-pdf-page-image": "2.1.0",
     "@hookform/resolvers": "^6.0.0",
     "@react-native-community/datetimepicker": "9.2.1",
     "@react-native-firebase/app": "27.1.0",
