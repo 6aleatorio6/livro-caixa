@@ -20,7 +20,7 @@ other stack decision is made without being written there.
 - `pnpm apk`, also on the developer's PC, builds the release APK with the JavaScript bundled and the
   real Firebase (no emulators), to install on a phone without Metro:
   `apps/mobile/android/app/build/outputs/apk/release/app-release.apk`.
-- `pnpm firebase:emulators` starts the Firebase emulators (Auth, Firestore, Storage; their UI on
+- `pnpm firebase:emulators` starts the Firebase emulators (Auth and Firestore; their UI on
   port 4001, since the portal holds 4000), and `pnpm test:rules` tests `firebase/firestore.rules`.
   Both need Java, which the claude-box lends this container from the PC, so they run here too.
   `pnpm firebase:emulators` takes the journeys' ports, so it doesn't run while their stack is up.

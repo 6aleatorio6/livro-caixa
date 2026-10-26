@@ -2,14 +2,14 @@
 name: firestore-services
 description: >-
   How apps/mobile reads and writes Firebase: the React Native Firebase 27 modular API only
-  (getAuth/getFirestore/getStorage instances in src/shared/services/firebase), the emulator switch,
+  (getAuth/getFirestore instances in src/shared/services/firebase), the emulator switch,
   one service per operation, realtime reads with createRealtimeService + useRealtime
   (subscribeToRefs waits for every ref), the find/get/ensure naming, every service's scenarios and
   contract test against the Firebase emulators (pnpm test:contract), the security rules in firebase/
   and how they are tested. Use whenever adding or changing a read, a write, a listener, a Firestore
-  ref, a scenario, a contract test, a security rule or a Storage access in apps/mobile. Triggers:
+  ref, a scenario, a contract test, a security rule or a receipt's bytes in apps/mobile. Triggers:
   "Firestore", "Firebase", "lê do banco", "grava no banco", "tempo real", "onSnapshot", "cenário",
-  "teste de contrato", "test:contract", "regra de segurança", "firestore.rules", "Storage",
+  "teste de contrato", "test:contract", "regra de segurança", "firestore.rules", "comprovante", "fileContents",
   "emulador".
 ---
 
@@ -21,8 +21,11 @@ from there.
 ## The instances
 
 `src/shared/services/firebase/` holds one instance per product, built with the **modular API**:
-`firebaseAuth` (`getAuth()`), `firestoreDb` (`getFirestore()`), `firebaseStorage` (`getStorage()`).
-React Native Firebase 27 has no namespaced API (`firebase.firestore()`): never write it.
+`firebaseAuth` (`getAuth()`) and `firestoreDb` (`getFirestore()`). React Native Firebase 27 has no
+namespaced API (`firebase.firestore()`): never write it. There is no Cloud Storage: it needs the Blaze
+plan, so a receipt's bytes live in Firestore, in `fileContents/{id}` (a `Bytes` field, up to 900 KiB),
+next to its `files/{id}` record and written in the entry's batch (`addReceiptToBatch`,
+`deleteReceiptFromBatch`). The record is read in realtime; the bytes only by the viewer, once.
 
 With `EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true`, each instance connects to its emulator on the PC
 (`EMULATOR_HOST`, `10.0.2.2` from the Android emulator). The emulators run with
@@ -124,6 +127,9 @@ export const allowedEmailQueryScenarios = {
 - **`signedInAs`**: the account that calls, signed in through `signInWithFakeGoogleService`; `null`
   for no session.
 - **`given`**: the documents written before, by path, with the rules off.
+- **`fileContentsGiven`**, receipt services only: the ids of the `fileContents` written before, with
+  the contract's PNG bytes. The bytes stay out of `given` because a page test, which imports the
+  scenario, can't load the native `Bytes`.
 - **`input`**: a realtime read's params; a one-shot service's arguments, as a tuple (`[]` when it
   takes none), so a page test checks the call with `toHaveBeenCalledWith(...scenario.input)`.
 - **`result`**: what the service delivers. An object keeps only the fields some screen reads, and the
@@ -193,15 +199,14 @@ project, the journeys' one. Running `pnpm mobile test:contract` alone refuses: w
   (`firestore/permission-denied`), and the JavaScript SDK doesn't (`permission-denied`); Auth codes
   are `auth/…` in both. The device cache and when the native SDK flags data as cached. The Auth
   emulator stores the e-mail in lower case, even when the account signs in with capitals.
-- **A new product** (Storage, for the receipts) gets its mapping and its contract instance with the
-  first service that uses it.
-- **Storage's `putFile` is a shim.** The contract maps `@react-native-firebase/storage` to a `putFile` that
-  reads the file from disk and sends it with the JavaScript SDK's `uploadBytes`: it proves the rules and
-  the batch, not the native upload (RNFB's own `putFile` and its retries), which only the device proves.
+- **A new product** gets its mapping and its contract instance with the first service that uses it.
+- **Expo's `File` is a shim.** The contract maps `expo-file-system` to a `File` that reads the
+  receipt from disk (`base64()`, `size`): it proves the rules and the batch, not the native file read,
+  which only the device proves.
 
 ## Security rules
 
-`firebase/firestore.rules` and `firebase/storage.rules` deny everything not opened explicitly. Each
+`firebase/firestore.rules` denies everything not opened explicitly. Each
 rule carries a pt-BR comment with the business reason.
 
 - **What a service does** is proven by its contract, which runs with the rules on: a rule change

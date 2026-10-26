@@ -37,8 +37,8 @@ flowchart TD
 
 - **No PC, só o emulador Android, com o app.** O container não roda um emulador, porque não tem
   aceleração de hardware.
-- **No container, o Maestro, o Metro e os emuladores do Firebase** (Auth na porta 9099, Firestore
-  na 8080 e Storage na 9199). O Java, o Maestro e o adb são os do PC, emprestados ao container.
+- **No container, o Maestro, o Metro e os emuladores do Firebase** (Auth na porta 9099 e Firestore
+  na 8080). O Java, o Maestro e o adb são os do PC, emprestados ao container.
 - **O servidor de dados existe só durante a rodada**, na porta 4020. O Maestro roda os scripts dos
   fluxos num motor próprio, sem Node e sem TypeScript, e só consegue falar HTTP para fora do fluxo.
   Por isso a lógica dos dados fica num servidor em TypeScript, e o fluxo só diz o nome do cenário

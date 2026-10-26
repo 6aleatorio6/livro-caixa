@@ -12,7 +12,7 @@ tema aparece na documentação.
 | D-04 | Quem cadastra, altera e exclui contas recorrentes, e o que acontece com os meses já pagos? | 🟢 Respondido — qualquer membro; os meses pagos não mudam |
 | D-05 | Em que mês um lançamento conta? | 🟢 Respondido — o pagamento no mês da conta; a conta avulsa no mês da data dela |
 | D-06 | Uma conta recorrente pode ter mais de um pagamento no mesmo mês? | 🟢 Respondido — não: o mês fica com o primeiro que pagar |
-| D-07 | O que é o processamento de imagens acima de 5 MB, e o que acontece com um PDF grande? | 🟢 Respondido — a imagem acima de 2 MB é reduzida antes de salvar; o PDF acima de 5 MB é recusado |
+| D-07 | O que é o processamento de imagens acima de 5 MB, e o que acontece com um PDF grande? | 🟢 Respondido — o limite é 900 KB; a imagem é comprimida em degraus até caber, e o PDF de uma página vira imagem |
 | D-08 | O que o app mostra depois de receber um arquivo compartilhado pelo Android? | 🟢 Respondido — a lista das contas a pagar do mês, com "Conta avulsa" por último |
 | D-09 | De onde o membro anexa o comprovante dentro do app? | 🟢 Respondido — só dos arquivos do celular |
 | D-10 | O que o Início mostra, além do gráfico do mês? | 🟢 Respondido — lista do mês, separação por tag e por membro, meses anteriores |
@@ -28,7 +28,8 @@ tema aparece na documentação.
 | D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🟢 Respondido — por um comando do adb, antes do fluxo |
 | D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🟢 Respondido — Meus pagamentos, um mês por vez, com a troca de mês |
 | D-22 | O app lê o valor no comprovante? | 🟢 Respondido — fica para depois, com a leitura no celular |
-| D-23 | O comprovante em PDF abre dentro do app ou no leitor do celular? | 🟢 Respondido — dentro do app, como a imagem |
+| D-23 | O comprovante em PDF abre dentro do app ou no leitor do celular? | 🟢 Respondido — dentro do app, já convertido em imagem |
+| D-24 | O app aceita PDF de mais de uma página? | 🟡 Parcial — por enquanto, não; falta decidir se e como volta |
 
 <!-- Status: 🔴 Em aberto · 🟡 Parcial — o que falta · 🟢 Respondido — a resposta -->
 
@@ -85,12 +86,16 @@ recusado (modelo do projeto-c).
 
 ## D-07 — Imagens e PDFs grandes
 
-**Resposta:** uma imagem acima de 2 MB é reduzida no app antes de salvar: o lado maior cai para
-2560 pixels, e ela é salva em WebP. Um PDF acima de 5 MB é recusado. Antes, só a imagem acima de
-5 MB era comprimida, até ficar abaixo do limite; o corte caiu para 2 MB para que a foto comum
-também suba numa fração do tamanho.
+**Resposta:** o comprovante tem até 900 KB, porque passou a morar num documento do Firestore, que
+tem no máximo 1 MiB. A imagem acima de 900 KB é comprimida em degraus: primeiro a qualidade, com o
+lado maior em 2560 pixels, depois o lado maior, até o piso de 1600 pixels com qualidade de 50%, e
+sai em WebP. O que não cabe nem no piso é recusado. O PDF de uma página vira a imagem dela e desce os
+mesmos degraus. Antes, o limite era de 5 MB no Cloud Storage: a imagem acima de 2 MB era reduzida
+para 2560 pixels, e o PDF ia como estava, recusado acima de 5 MB. O Cloud Storage saiu porque só
+funciona no plano Blaze, cuja ativação pedia um pagamento antecipado.
 
-**Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).
+**Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md),
+[Plataforma e Stack](../05-arquitetura/01-plataforma-e-stack.md).
 
 ## D-08 — Depois de compartilhar pelo Android
 
@@ -229,11 +234,20 @@ ML Kit funciona na nova arquitetura do React Native 0.88.
 
 ## D-23 — O PDF dentro do app
 
-**Resposta:** o PDF abre dentro do app, na primeira versão, como a imagem: em tela cheia, sobre
-fundo escuro, com zoom e, embaixo, de que lançamento ele é. Antes, a página dizia que o app mostrava
-o nome e o tamanho do arquivo e o abria no leitor de PDF do celular. A rolagem entre as páginas foi
-escolha da sessão. O PDF é desenhado pela `react-native-pdf`, que era o plano B: a
-`react-native-better-pdf`, a primeira escolha, não compila no Kotlin 2.4.
+**Resposta:** o PDF abre dentro do app como a imagem, porque já é guardado como a imagem da sua
+página: em tela cheia, sobre fundo escuro, com zoom e, embaixo, de que lançamento ele é. A conversão
+é da `@dariyd/react-native-pdf-page-image`, quando o membro anexa o arquivo. Antes, o PDF era guardado
+como PDF e desenhado pela `react-native-pdf`, com rolagem entre as páginas; e, antes disso, a página
+dizia que o app o abria no leitor de PDF do celular.
 
 **Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md),
 [Plataforma e Stack](../05-arquitetura/01-plataforma-e-stack.md).
+
+## D-24 — O PDF de mais de uma página
+
+**Resposta parcial:** por enquanto, o app recusa o PDF de mais de uma página, e o membro anexa a foto
+ou o print da página que tem o pagamento. Juntar as páginas numa imagem comprida esbarra no limite de
+bitmap do Android (uns 100 MB) e num zoom borrado, e guardar o PDF inteiro não caberia nos 900 KB do
+documento. Falta decidir se o PDF de várias páginas volta, e de que jeito.
+
+**Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).

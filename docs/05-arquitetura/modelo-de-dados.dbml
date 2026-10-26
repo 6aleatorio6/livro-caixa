@@ -10,12 +10,12 @@
 // Sem servidor próprio: as regras de segurança do Firestore garantem o acesso, a autoria, o
 // pagamento único por mês e a trava de remoção do e-mail.
 //
-// Os arquivos ficam no Cloud Storage, em files/{id}, e cada um tem o seu registro na coleção files:
-// é o único lugar que lista os arquivos do app. O lançamento aponta para o registro do comprovante, e
-// a lista do mês não baixa arquivo nenhum. As regras do Cloud Storage conferem que quem envia está em
-// allowedEmails (firestore.exists), que o autor está nos metadados do objeto (customMetadata.uploadedBy), que o arquivo é imagem ou PDF e tem até 5 MB, e que ainda não
-// existe arquivo nesse caminho. O app envia o arquivo primeiro e grava, num lote só, o registro em
-// files e o lançamento; excluir o lançamento apaga, num lote, o lançamento e o registro, e depois o arquivo.
+// Os arquivos ficam no próprio Firestore, sem o Cloud Storage: cada um tem o registro em files/{id} e
+// os bytes em fileContents/{id}, com o mesmo id. O lançamento aponta para o registro do comprovante, e
+// os detalhes leem o registro em tempo real sem baixar os bytes, que só o visualizador lê. O lançamento,
+// o registro e os bytes entram e saem num lote só. As regras conferem que quem salva está em
+// allowedEmails, que é o autor do registro, que o arquivo é imagem de até 900 KB e que os bytes têm o
+// tamanho que o registro diz.
 //
 // Valores em dinheiro em centavos, inteiros. Datas sem hora como texto AAAA-MM-DD, e meses como
 // AAAA-MM, para o fuso do celular não trocar o dia.
@@ -26,8 +26,7 @@ Enum EntryKind {
 }
 
 Enum FileType {
-  image [note: 'Imagem de até 5 MB; acima de 2 MB, reduzida no app e salva em WebP']
-  pdf [note: 'PDF de até 5 MB; acima disso, recusado']
+  image [note: 'Imagem de até 900 KB; acima disso, comprimida no app e salva em WebP. O PDF de uma página chega como a imagem dela']
 }
 
 Table allowedEmails {
@@ -81,17 +80,23 @@ Table entries {
     tagId
   }
 
-  Note: 'Os lançamentos, pagamentos e contas avulsas, numa coleção só: uma consulta traz o mês inteiro. Só o autor altera: no pagamento, o valor pago e o comprovante; na conta avulsa, o nome, o valor, a data (e o month com ela), a tag e o comprovante. Trocar o comprovante é um lote: cria o files novo, atualiza o lançamento e apaga o files antigo. Excluir é um lote que apaga o lançamento e o files dele, e depois o app apaga o objeto no Storage. Excluir não desfaz o hasEntries.'
+  Note: 'Os lançamentos, pagamentos e contas avulsas, numa coleção só: uma consulta traz o mês inteiro. Só o autor altera: no pagamento, o valor pago e o comprovante; na conta avulsa, o nome, o valor, a data (e o month com ela), a tag e o comprovante. Trocar o comprovante é um lote: cria o files e o fileContents novos, atualiza o lançamento e apaga os antigos. Excluir é um lote que apaga o lançamento, o files e o fileContents dele. Excluir não desfaz o hasEntries.'
 }
 
 Table files {
-  id varchar [pk, note: 'Id gerado pelo app antes do envio']
+  id varchar [pk, note: 'Id gerado pelo app antes do lote']
   name varchar [not null, note: 'O nome do arquivo escolhido (1 a 255 caracteres), que o app mostra nos detalhes e no visualizador']
-  storagePath varchar [not null, note: 'files/{id}, no Cloud Storage']
   type FileType [not null]
-  contentType varchar [not null, note: 'image/... ou application/pdf']
-  sizeBytes int [not null, note: 'Até 5 MB (5.242.880 bytes), conferido pelas regras do Cloud Storage no envio']
-  uploadedBy varchar [not null, note: 'O uid do login de quem enviou. Só ele exclui o registro e o arquivo. O app grava o mesmo uid em customMetadata.uploadedBy do objeto no Cloud Storage, porque a exclusão do objeto vem depois do lote, quando o registro já não existe para a regra consultar']
+  contentType varchar [not null, note: 'image/...; o PDF convertido fica image/png, ou image/webp quando comprimido']
+  sizeBytes int [not null, note: 'Até 900 KB (921.600 bytes), o tamanho de fileContents.content, conferido pelas regras']
+  uploadedBy varchar [not null, note: 'O uid do login de quem salvou. Só ele exclui o registro e os bytes']
 
   Note: 'Todos os arquivos do app, num lugar só. Hoje só há comprovantes, cada um usado por um lançamento. Todo membro lê um registro por id (nunca a lista). Não há update: trocar o comprovante cria um registro novo e apaga o antigo no mesmo lote.'
+}
+
+Table fileContents {
+  id varchar [pk, ref: - files.id, note: 'O mesmo id do registro em files']
+  content bytes [not null, note: 'Os bytes da imagem, até 900 KB: um documento do Firestore tem no máximo 1 MiB']
+
+  Note: 'Os bytes de cada arquivo, separados do registro para os detalhes, que leem files em tempo real, não baixarem a imagem. Todo membro lê um por id (nunca a lista). Só quem salvou o registro cria, no mesmo lote dele, e exclui, no lote que apaga o registro. Não há update.'
 }

@@ -21,15 +21,27 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   perguntando se ele ainda é mantido.
 - **Firebase** como back-end, com o login pelo Google
   ([Acesso](../03-funcionalidades/02-suporte/01-acesso.md)). O app usa o React Native Firebase 27,
-  só pela API modular (`getAuth`, `getFirestore`, `getStorage`), e as regras de segurança ficam em
+  só pela API modular (`getAuth`, `getFirestore`), e as regras de segurança ficam em
   `firebase/`, na raiz. Para testar sem tocar no projeto real, os emuladores do Firebase rodam no
   container da IA, com o Java emprestado do PC de quem desenvolve.
-- **Os comprovantes ficam no Cloud Storage**, o serviço de arquivos do Firebase, e os dados no
-  Firestore. Cada arquivo tem um registro numa coleção própria, que reúne todos os arquivos do app.
-  As regras do Cloud Storage conferem o tipo e o tamanho de cada arquivo: imagem ou PDF, de até 5 MB.
-- **Imagens reduzidas com o `expo-image-manipulator`**, do próprio Expo, no celular e antes do
-  envio ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#formatos-e-tamanho)).
-  As regras do Cloud Storage aplicam o limite de 5 MB do mesmo jeito, sem saber se houve redução.
+- **Os comprovantes ficam no próprio Firestore**, sem o Cloud Storage. Desde 3 de fevereiro de
+  2026, o Cloud Storage só funciona no plano Blaze, o pago conforme o uso, e ativá-lo pedia um
+  pagamento antecipado; o Firestore funciona no plano gratuito. Cada comprovante tem dois documentos
+  com o mesmo id: o registro, em `files`, que os detalhes leem em tempo real, e os bytes, em
+  `fileContents`, que só o visualizador lê, uma vez. Os dois entram e saem no mesmo lote do
+  lançamento, então não sobra arquivo sem lançamento nem lançamento sem arquivo. Um documento tem no
+  máximo 1 MiB, e o comprovante fica em até 900 KB (921.600 bytes), com o resto de folga. As regras
+  do Firestore conferem o autor, o tipo (só imagem) e que o tamanho dos bytes é o do registro.
+- **Imagens comprimidas com o `expo-image-manipulator`**, do próprio Expo, no celular e antes de
+  salvar ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#formatos-e-tamanho)).
+  A imagem acima de 900 KB desce uma escada: primeiro a qualidade, depois o lado maior, até um piso
+  de 1600 px com qualidade 0,5, que ainda deixa ler uma nota. O que não cabe nem no piso é recusado.
+- **PDF de uma página convertido em imagem com a `@dariyd/react-native-pdf-page-image`**, antes de
+  salvar. Ela desenha a página com o `PdfRenderer` do próprio Android, sem motor embutido, e diz
+  quantas páginas o PDF tem, o que serve para recusar o de mais de uma. É um módulo nativo em Kotlin
+  escrito à mão, sem código gerado, então compila com o Kotlin 2.4. A página sai com o lado maior em
+  2560 px e passa pela mesma escada das fotos. Defeitos: ela trabalha na thread do módulo e não
+  captura falta de memória, o que o lado maior de 2560 px limita a uns 37 MB de bitmap.
 - **Jornadas de teste com o Maestro**, no emulador Android do PC de quem desenvolve, contra os
   emuladores do Firebase ([Jornadas de Teste](02-jornadas-de-teste.md)).
 - **Testes de página com mocks conferidos por testes de contrato:** o teste de página mocka a
@@ -47,13 +59,6 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   traço, sem versão preenchida: o item ativo da navegação se destaca pela cor e pelo fundo, não por
   um ícone cheio. O ícone do app e as ilustrações não são ícones de pacote: são desenhados para a
   marca.
-- **PDFs mostrados com a `react-native-pdf`**, dentro do app, com zoom e rolagem entre as páginas
-  ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md)). É a biblioteca de PDF
-  mais usada no React Native. Ela embute o PDFium, um motor de PDF, que pesa cerca de 5 MB no APK, e
-  pede o `react-native-blob-util`, que baixa o arquivo quando ele vem de um endereço. Os config
-  plugins que a documentação dela indica ficam de fora: o do `blob-util` só prepara o gerenciador de
-  downloads do Android, que o app não usa, e o dela só põe no APK uma cópia da `libc++_shared.so`,
-  o que o `expo-build-properties` já faz.
 - **Zoom da imagem do comprovante escrito à mão, com o `react-native-gesture-handler` 3 e a
   Reanimated 4**, que o app já tem ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md)).
   A pinça aproxima de 1× a 4×, dois toques alternam 1× e 2×, e só com zoom a imagem se arrasta; são
@@ -99,13 +104,23 @@ Ficaram de fora:
 - **Bibliotecas de zoom de imagem:** o `maximumZoomScale` do `ScrollView` é só do iOS; a
   `react-native-zoom-toolkit` não foi testada com o `react-native-gesture-handler` 3; e a
   `@likashefqet/react-native-image-zoom` está parada desde 2024.
-- **`react-native-better-pdf`:** desenha o PDF com o `PdfRenderer` do próprio Android, sem motor
-  embutido (cerca de 2 MB contra 5 MB), e gera a imagem de cada página. Mas o código que o
-  `nitrogen` 0.37.1 gera para ela não compila no Kotlin 2.4, que o React Native Firebase 27 pede: o
-  Kotlin 2.4 transformou em erro um teste de tipo que sempre dá falso, e o código gerado faz um. Ela
-  volta a ser opção quando sair uma versão gerada por um `nitrogen` que corrija isso.
+- **Cloud Storage no plano Blaze:** guarda arquivos de qualquer tamanho, mas pede uma conta de
+  faturamento, e a ativação pedia um pagamento antecipado.
+- **Cloudinary:** sem um servidor, o celular só envia por um *preset* sem assinatura, que qualquer
+  um que abra o APK pode usar; a leitura privada e a exclusão pedem uma chave secreta, que não pode
+  ficar no app. A função que assinaria os pedidos, se fosse uma Cloud Function, também pediria o
+  Blaze.
+- **`react-native-pdf`:** mostrava o PDF dentro do app, com zoom e rolagem entre as páginas. Saiu
+  porque nenhum comprovante novo é PDF, e com ela saem o PDFium (cerca de 5 MB no APK) e o
+  `react-native-blob-util`.
+- **`react-native-better-pdf`:** desenha o PDF com o `PdfRenderer` do próprio Android e gera a
+  imagem de cada página. Mas o código que o `nitrogen` 0.37.1 gera para ela não compila no Kotlin
+  2.4, que o React Native Firebase 27 pede: o Kotlin 2.4 transformou em erro um teste de tipo que
+  sempre dá falso, e o código gerado faz um. A versão 1.1.0 ainda é a que falha.
+- **`react-native-pdf-thumbnail`, `expo-pdf-to-image` e `react-native-pdf-to-image`:** geram a
+  página com 1 pixel por ponto do PDF, então uma folha A4 vira 595 × 842 px, ilegível no zoom.
 - **`@kishannareshpal/expo-pdf` e `react-native-pdf-renderer`:** a primeira ainda está na versão
-  0.x e também embute o PDFium; a segunda não tem versão nova desde agosto de 2025.
+  0.x e embute o PDFium; a segunda não tem versão nova desde agosto de 2025.
 - **`expo-share-intent`:** recebe compartilhamentos com um hook, mas é da comunidade e não tem
   versão confirmada para o SDK 58; o `expo-sharing` faz o mesmo e é atualizado junto com o SDK.
 - **`react-native-gifted-charts`:** desenha com o `react-native-svg`, mas o import da raiz lança
@@ -124,10 +139,10 @@ Ficaram de fora:
 - **Calendário próprio:** teria de refazer em JavaScript o que o Android já entrega em português do
   Brasil e com acessibilidade.
 
-## Ponto de atenção: o plano Blaze
+## Ponto de atenção: o espaço do plano gratuito
 
-Desde 3 de fevereiro de 2026, o Cloud Storage só funciona no plano Blaze, o pago conforme o uso do
-Firebase: no plano gratuito, os buckets ficam inacessíveis. O Blaze pede uma conta de faturamento,
-mas tem uma faixa de uso sem custo. Num projeto novo, essa faixa é a do Google Cloud, que só vale
-para buckets nas regiões `us-central1`, `us-east1` e `us-west1`, então o bucket do app nasce numa
-delas. Um alerta de orçamento na conta de faturamento avisa se o uso sair da faixa.
+O plano gratuito do Firestore guarda até 1 GiB, e os comprovantes ocupam quase todo ele: com 900 KB
+cada, no pior caso, cabem uns mil; comprimidos para uns 300 KB, uns três mil. Os 50 mil documentos
+lidos por dia não preocupam, porque a lista do mês lê só o registro, e os bytes só são lidos quando
+alguém abre o comprovante. Quando o espaço apertar, as saídas são apagar os comprovantes antigos ou
+passar ao plano Blaze, com o Cloud Storage.
