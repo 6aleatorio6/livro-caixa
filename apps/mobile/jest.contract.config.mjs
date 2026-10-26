@@ -12,11 +12,8 @@ export default {
   maxWorkers: 1,
   testTimeout: 15000,
   moduleNameMapper: {
-    '^@/shared/services/firebase/(firestoreDb|firebaseAuth|firebaseStorage)$':
-      '<rootDir>/src/shared/testing/contract/firebase/$1.ts',
+    '^@/shared/services/firebase/(firestoreDb|firebaseAuth)$': '<rootDir>/src/shared/testing/contract/firebase/$1.ts',
     '^@react-native-firebase/(firestore|auth)$': 'firebase/$1',
-    // O `putFile` do RNFB não existe no SDK JavaScript: o módulo de teste o implementa.
-    '^@react-native-firebase/storage$': '<rootDir>/src/shared/testing/contract/firebase/storage.ts',
     // O `File` do Expo lê o arquivo pelo módulo nativo: o módulo de teste o lê do disco.
     '^expo-file-system$': '<rootDir>/src/shared/testing/contract/expoFileSystem.ts',
     '^@/(.*)$': '<rootDir>/src/$1',

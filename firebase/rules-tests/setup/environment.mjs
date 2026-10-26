@@ -8,7 +8,7 @@ import { SEEDED_BILL, SEEDED_TAG, oneOffBillOf, receiptContentOf, receiptFileOf,
 import { entryDocOf, entryOf, fileContentOf, fileOf, recurringBillOf, tagsDocOf } from './refs.mjs';
 
 // O ambiente dos testes das regras: cada arquivo `*.test.mjs` importa o `setup/`, que liga os emuladores
-// do Firestore e do Storage (`pnpm test:rules`, no PC, que tem o Java) e semeia a lista antes de cada caso. Os
+// do Firestore (`pnpm test:rules`, no PC, que tem o Java) e semeia a lista antes de cada caso. Os
 // arquivos limpam o mesmo emulador a cada caso, então não rodam em paralelo (`--test-concurrency=1`).
 export let testEnvironment;
 
@@ -16,7 +16,6 @@ before(async () => {
   testEnvironment = await initializeTestEnvironment({
     projectId: 'demo-livro-caixa',
     firestore: { rules: readFileSync('firebase/firestore.rules', 'utf8') },
-    storage: { rules: readFileSync('firebase/storage.rules', 'utf8') },
   });
 });
 
@@ -59,10 +58,4 @@ function seedReceipt(firestore, id, overrides = {}) {
 /** Grava ou muda a lista por fora das regras, como quem administra pelo console. */
 export function asOwner(write) {
   return testEnvironment.withSecurityRulesDisabled((context) => write(context.firestore()));
-}
-
-/** Grava um arquivo no Storage por fora das regras, para os casos de leitura, exclusão e sobrescrita. */
-export function seedStorageFile(path, bytes, contentType, customMetadata = undefined) {
-  const metadata = customMetadata === undefined ? { contentType } : { contentType, customMetadata };
-  return testEnvironment.withSecurityRulesDisabled((context) => context.storage().ref(path).put(bytes, metadata));
 }

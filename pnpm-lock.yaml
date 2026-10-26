@@ -87,9 +87,6 @@ importers:
       '@react-native-firebase/firestore':
         specifier: 27.1.0
         version: 27.1.0(@react-native-firebase/app@27.1.0(expo@58.0.19)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.88.0(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.88.0(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))
-      '@react-native-firebase/storage':
-        specifier: 27.1.0
-        version: 27.1.0(@react-native-firebase/app@27.1.0(expo@58.0.19)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.88.0(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))
       '@react-native-google-signin/google-signin':
         specifier: ^16.1.5
         version: 16.1.5(expo@58.0.19)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.88.0(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -3498,11 +3495,6 @@ packages:
 
   '@react-native-firebase/firestore@27.1.0':
     resolution: {integrity: sha512-9Uu95Nmo9hsKghIEs55ZvBUthz70pnDnilQzdlVEezfZGU/+84q6KWqELX9srVZwfvpOD3/cClIShCwPgVveZg==}
-    peerDependencies:
-      '@react-native-firebase/app': 27.1.0
-
-  '@react-native-firebase/storage@27.1.0':
-    resolution: {integrity: sha512-tIVbwFGU8nMzu/Pc1ir8l0BYKY/+I3Zth3ynxmVJ23Y9qOB/jchKHgRW3VgGy24l/GH6/CpRS3s5CCERkAn5Ng==}
     peerDependencies:
       '@react-native-firebase/app': 27.1.0
 
@@ -16457,10 +16449,6 @@ snapshots:
       react-native-url-polyfill: 4.0.0(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.88.0(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))
     transitivePeerDependencies:
       - react-native
-
-  '@react-native-firebase/storage@27.1.0(@react-native-firebase/app@27.1.0(expo@58.0.19)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.88.0(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))':
-    dependencies:
-      '@react-native-firebase/app': 27.1.0(expo@58.0.19)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.88.0(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
 
   '@react-native-google-signin/google-signin@16.1.5(expo@58.0.19)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.88.0(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
     dependencies:

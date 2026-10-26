@@ -7,12 +7,7 @@ export interface IServiceScenario<TInput, TResult> {
   signedInAs: string | null;
   /** Os documentos gravados antes, por caminho (`allowedEmails/bruno.souza@exemplo.com`). */
   given: Record<string, object>;
-  /**
-   * Só quem lê ou apaga o arquivo: os objetos gravados antes no Storage, por caminho (`files/f1`), com o tipo e o
-   * autor (`customMetadata.uploadedBy`). O conteúdo é sempre o comprovante PNG dos contratos.
-   */
-  storageGiven?: Record<string, { contentType: string; uploadedBy: string }>;
-  /** Só quem apaga ou troca o comprovante: os ids de `fileContents` gravados antes, com os bytes do comprovante PNG dos contratos. */
+  /** Só quem lê, apaga ou troca o comprovante: os ids de `fileContents` gravados antes, com os bytes do comprovante PNG dos contratos. */
   fileContentsGiven?: string[];
   /** Os parâmetros da leitura em tempo real, ou os argumentos do serviço, em tupla. */
   input: TInput;

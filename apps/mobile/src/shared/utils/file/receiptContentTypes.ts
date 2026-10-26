@@ -1,5 +1,5 @@
 /**
- * Os tipos de imagem que o comprovante aceita, os mesmos das regras do Firestore (`files`) e do Storage:
+ * Os tipos de imagem que o comprovante aceita, os mesmos das regras do Firestore (`files`):
  * o SVG fica de fora, que pode carregar script.
  */
 export const RECEIPT_IMAGE_CONTENT_TYPES = [
