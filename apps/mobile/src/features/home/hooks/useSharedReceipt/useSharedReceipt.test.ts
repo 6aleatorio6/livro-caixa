@@ -69,13 +69,13 @@ describe('useSharedReceipt', () => {
     expect(result.current).toMatchObject({ receipt: { type: 'image' } });
   });
 
-  it('Should reject a PDF over 5 MB with the message of the rule', async () => {
+  it('Should reject a PDF over 900 KB with the message of the rule', async () => {
     shareOf({ name: 'grande.pdf', type: 'application/pdf', size: 6 * 1024 * 1024 });
 
     const { result } = await renderHook(() => useSharedReceipt());
 
     await waitFor(() => expect(result.current.status).toBe('rejected'));
-    expect(result.current).toMatchObject({ message: 'O PDF passa de 5 MB. Escolha outro arquivo.' });
+    expect(result.current).toMatchObject({ message: 'O PDF passa de 900 KB. Escolha outro arquivo.' });
     expect(useSharedReceiptStore.getState().receipt).toBeNull();
   });
 
