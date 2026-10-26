@@ -2,7 +2,7 @@ import { describe } from 'node:test';
 
 import { setDoc } from 'firebase/firestore';
 
-import { assertAccess, entryOf, itEach, signedInAs, signedInWithUnverifiedEmail, signedOut } from './setup.mjs';
+import { assertAccess, entryOf, itEach, signedInAs, signedInWithUnverifiedEmail, signedOut } from './setup/index.mjs';
 
 const NEW_PERSON = { isAdmin: false, hasEntries: false };
 

@@ -2,7 +2,7 @@ import { describe } from 'node:test';
 
 import { getDoc, getDocs, query, where } from 'firebase/firestore';
 
-import { MEMBERS, OUTSIDERS, assertAccess, entriesOf, entryDocOf, itEach, rowsFor } from './setup.mjs';
+import { MEMBERS, OUTSIDERS, assertAccess, entriesOf, entryDocOf, itEach, rowsFor } from './setup/index.mjs';
 
 describe('entries get', () => {
   const cases = [

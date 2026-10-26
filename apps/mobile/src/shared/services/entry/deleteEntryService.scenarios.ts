@@ -15,26 +15,38 @@ import type { IEntry } from '@/shared/types/entry/Entry';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 
 export const deleteEntryScenarios = {
-  // O pagamento, o registro do comprovante e o objeto somem, e o mês deixa de trazê-lo. As telas excluem o lançamento
+  // O pagamento, o registro e o conteúdo do comprovante somem, e o mês deixa de trazê-lo. As telas excluem o lançamento
   // que a leitura por id entregou, que é este `entry`.
   memberDeletesPayment: {
     signedInAs: BRUNO,
-    given: { ...BOTH_IN_THE_LIST, 'entries/2026-10_electricity': PAYMENT_DOCUMENT, ...receiptOf(RECEIPT_FILE_ID, BRUNO).fileDocuments },
-    storageGiven: receiptOf(RECEIPT_FILE_ID, BRUNO).storageObjects,
+    given: {
+      ...BOTH_IN_THE_LIST,
+      'entries/2026-10_electricity': PAYMENT_DOCUMENT,
+      ...receiptOf(RECEIPT_FILE_ID, BRUNO).fileDocuments,
+    },
+    fileContentsGiven: receiptOf(RECEIPT_FILE_ID, BRUNO).fileContentIds,
     input: [PAYMENT],
     result: undefined,
   },
   memberDeletesOneOffBill: {
     signedInAs: BRUNO,
-    given: { ...BOTH_IN_THE_LIST, 'entries/fridge': ONE_OFF_BILL_DOCUMENT, ...receiptOf(RECEIPT_FILE_ID, BRUNO).fileDocuments },
-    storageGiven: receiptOf(RECEIPT_FILE_ID, BRUNO).storageObjects,
+    given: {
+      ...BOTH_IN_THE_LIST,
+      'entries/fridge': ONE_OFF_BILL_DOCUMENT,
+      ...receiptOf(RECEIPT_FILE_ID, BRUNO).fileDocuments,
+    },
+    fileContentsGiven: receiptOf(RECEIPT_FILE_ID, BRUNO).fileContentIds,
     input: [ONE_OFF_BILL],
     result: undefined,
   },
-  // O objeto não está no Storage (um envio antigo que sobrou sem arquivo): a exclusão termina sem erro.
-  memberDeletesEntryWithMissingObject: {
+  // O conteúdo do comprovante não existe (um registro sem os bytes): a exclusão termina sem erro.
+  memberDeletesEntryWithMissingContent: {
     signedInAs: BRUNO,
-    given: { ...BOTH_IN_THE_LIST, 'entries/fridge': ONE_OFF_BILL_DOCUMENT, ...receiptOf(RECEIPT_FILE_ID, BRUNO).fileDocuments },
+    given: {
+      ...BOTH_IN_THE_LIST,
+      'entries/fridge': ONE_OFF_BILL_DOCUMENT,
+      ...receiptOf(RECEIPT_FILE_ID, BRUNO).fileDocuments,
+    },
     input: [ONE_OFF_BILL],
     result: undefined,
   },
@@ -49,7 +61,7 @@ export const deleteEntryScenarios = {
 
 /** Os casos recusados: o serviço lança `AppError`, a `result` é o que o erro carrega e nada muda. */
 export const deleteEntryRejectedScenarios = {
-  // A avulsa é da Ana: o lote do Bruno é recusado, e o lançamento, o registro e o objeto ficam.
+  // A avulsa é da Ana: o lote do Bruno é recusado, e o lançamento, o registro e o conteúdo ficam.
   memberDeletesEntryOfAnother: {
     signedInAs: BRUNO,
     given: {
@@ -57,7 +69,7 @@ export const deleteEntryRejectedScenarios = {
       'entries/fridge': { ...ONE_OFF_BILL_DOCUMENT, paidBy: testAccountUid(ANA) },
       ...receiptOf(RECEIPT_FILE_ID, ANA).fileDocuments,
     },
-    storageGiven: receiptOf(RECEIPT_FILE_ID, ANA).storageObjects,
+    fileContentsGiven: receiptOf(RECEIPT_FILE_ID, ANA).fileContentIds,
     input: [entryOf('fridge', { ...ONE_OFF_BILL_DOCUMENT, paidBy: testAccountUid(ANA) })],
     result: { code: 'ENTRY_DELETE_DENIED', userMessage: 'Não deu para excluir o lançamento.' },
   },

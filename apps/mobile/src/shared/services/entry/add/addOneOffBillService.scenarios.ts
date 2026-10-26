@@ -1,4 +1,4 @@
-import { RECEIPT_FIXTURE } from '@/shared/testing/contract/fixtures/receiptFixture';
+import { MISSING_RECEIPT_URI, RECEIPT_FIXTURE } from '@/shared/testing/contract/fixtures/receiptFixture';
 import { HOME_TAG_ID } from '@/shared/testing/tagFixtures';
 import type { IOneOffBillInput } from '@/shared/types/entry/OneOffBillInput';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
@@ -9,7 +9,7 @@ const BRUNO_WITHOUT_ENTRIES = {
   [`allowedEmails/${BRUNO}`]: { name: 'Bruno Souza', isAdmin: false, hasEntries: false },
 };
 
-// O comprovante é o PNG guardado em `fixtures/`: a `uri` e o tamanho são os dele, e o contrato o envia ao Storage.
+// O comprovante é o PNG guardado em `fixtures/`: a `uri` e o tamanho são os dele, e o contrato grava os bytes dele.
 const RECEIPT: IOneOffBillInput['receipt'] = {
   uri: RECEIPT_FIXTURE.uri,
   name: 'comprovante.png',
@@ -52,14 +52,14 @@ export const addOneOffBillScenarios = {
 
 /** Os casos recusados: o serviço lança `AppError`, e a `result` é o que o erro carrega. */
 export const addOneOffBillRejectedScenarios = {
-  // O Storage só aceita imagem ou PDF: com outro tipo ele recusa o envio, e nada é gravado no Firestore.
-  receiptRejectedByStorage: {
+  // O arquivo escolhido sumiu do aparelho antes de salvar (o cache foi limpo): não dá para ler os bytes, e nada é gravado.
+  receiptUnreadable: {
     signedInAs: BRUNO,
     given: BRUNO_WITHOUT_ENTRIES,
-    input: [{ ...FARMACIA, receipt: { ...RECEIPT, name: 'comprovante.txt', contentType: 'text/plain' } }],
+    input: [{ ...FARMACIA, receipt: { ...RECEIPT, uri: MISSING_RECEIPT_URI } }],
     result: {
-      code: 'RECEIPT_UPLOAD_FAILED',
-      userMessage: 'Não deu para enviar o comprovante. Confira a internet e tente de novo.',
+      code: 'RECEIPT_UNREADABLE',
+      userMessage: 'Não deu para ler o arquivo. Escolha outro.',
     },
   },
 } satisfies Record<string, IServiceScenario<[IOneOffBillInput], { code: string; userMessage: string }>>;

@@ -24,16 +24,16 @@ const KEPT_SCREEN_CAPTURES = 20;
 const ROUND_NAME = /^\d{4}-\d{2}-\d{2}-\d{6}$/;
 const ANIMATION_SETTINGS = ['window_animation_scale', 'transition_animation_scale', 'animator_duration_scale'];
 
-function readProjectInfo(): { project_id: string; storage_bucket: string } {
+function readProjectInfo(): { project_id: string } {
   if (!existsSync(GOOGLE_SERVICES)) {
     throw new Error(`Falta o ${GOOGLE_SERVICES}: os emuladores e as jornadas usam o projeto do app.`);
   }
   return JSON.parse(readFileSync(GOOGLE_SERVICES, 'utf8')).project_info;
 }
 
-function readEmulatorPorts() {
+function readFirestorePort() {
   const { emulators } = JSON.parse(readFileSync(FIREBASE_CONFIG, 'utf8'));
-  return { firestore: emulators.firestore.port as number, storage: emulators.storage.port as number };
+  return emulators.firestore.port as number;
 }
 
 /** O nome da pasta da rodada, como `2026-10-24-210255`: o Node daqui vem sem os dados de locale. */
@@ -91,8 +91,7 @@ async function runRound(target: string | undefined) {
   const dataServer = await startDataServer({
     port: DATA_PORT,
     firebaseProject: projectInfo.project_id,
-    ports: readEmulatorPorts(),
-    storageBucket: projectInfo.storage_bucket,
+    firestorePort: readFirestorePort(),
   });
   try {
     // Os fluxos descartáveis da exploração rodam à parte, sem empurrar para fora as rodadas que contam.

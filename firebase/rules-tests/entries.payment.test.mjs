@@ -1,13 +1,13 @@
 import { describe } from 'node:test';
 
-import { OUTSIDERS, addPaymentBatch, asOwner, assertAccess, itEach, receiptFileOf, recurringPaymentOf, signedInAs } from './setup.mjs';
+import { OUTSIDERS, addPaymentBatch, asOwner, assertAccess, itEach, receiptFileOf, recurringPaymentOf, signedInAs } from './setup/index.mjs';
 
 const bruno = () => signedInAs('bruno@gmail.com');
 const ana = () => signedInAs('ana@gmail.com');
 
 /** Uma linha: `entry` e `file` trocam campos do pagamento e do registro; `batch` troca o resto do lote. */
 function row(title, isAllowed, { entry = {}, file = {}, batch = {}, as = bruno, arrange } = {}) {
-  return { title, isAllowed, as, arrange, batch: { entry: recurringPaymentOf(entry), file: receiptFileOf(entry.receiptFileId ?? 'f1', file), ...batch } };
+  return { title, isAllowed, as, arrange, batch: { entry: recurringPaymentOf(entry), file: receiptFileOf(file), ...batch } };
 }
 
 async function run({ as, arrange, batch, isAllowed }) {
@@ -41,7 +41,7 @@ describe('recurringPayment create by a member', () => {
     row('Should not let a member create a recurring payment with a file record uploaded by another person', false, { file: { uploadedBy: 'uid-ana' } }),
     row('Should not let a member create a recurring payment pointing to a file that already existed', false, {
       entry: { receiptFileId: 'fbruno1' },
-      file: { storagePath: 'files/fbruno1' },
+      batch: { file: null },
     }),
     row('Should not let a member create a recurring payment without marking hasEntries at the end of the batch', false, { batch: { markHasEntries: false } }),
     row('Should not let a member create a recurring payment with a createdAt that is not the server time', false, { entry: { createdAt: new Date() } }),

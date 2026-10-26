@@ -1,21 +1,27 @@
+import { Bytes } from 'firebase/firestore';
+
 import { signInWithFakeGoogleService } from '@/shared/services/auth/signInWithFakeGoogleService';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 
 import { createAuthAccount } from './createAuthAccount';
-import { writeStorageWithoutRules } from './writeStorageWithoutRules';
+import { RECEIPT_FIXTURE } from './fixtures/receiptFixture';
 import { writeWithoutRules } from './writeWithoutRules';
 
 /**
- * Deixa o banco, o Storage e a sessão como o cenário diz, pelo mesmo login de teste das jornadas, numa conta
- * que já nasce com o uid fixo da pessoa.
+ * Deixa o banco e a sessão como o cenário diz, pelo mesmo login de teste das jornadas, numa conta que já nasce
+ * com o uid fixo da pessoa.
  */
-export async function arrangeScenario(scenario: Pick<IServiceScenario<unknown, unknown>, 'signedInAs' | 'given' | 'storageGiven'>) {
+export async function arrangeScenario(
+  scenario: Pick<IServiceScenario<unknown, unknown>, 'signedInAs' | 'given' | 'fileContentsGiven'>,
+) {
   const { signedInAs } = scenario;
-  await Promise.all([
-    writeWithoutRules(scenario.given),
-    writeStorageWithoutRules(scenario.storageGiven ?? {}),
-    signedInAs && signInAs(signedInAs),
-  ]);
+  const contents = Object.fromEntries(
+    (scenario.fileContentsGiven ?? []).map((id) => [
+      `fileContents/${id}`,
+      { content: Bytes.fromUint8Array(RECEIPT_FIXTURE.bytes) },
+    ]),
+  );
+  await Promise.all([writeWithoutRules({ ...scenario.given, ...contents }), signedInAs && signInAs(signedInAs)]);
 }
 
 async function signInAs(email: string) {

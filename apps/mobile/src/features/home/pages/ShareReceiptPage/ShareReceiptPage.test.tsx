@@ -130,11 +130,11 @@ describe('ShareReceiptPage', () => {
   });
 
   it('Should show the reason of a refused file and no list of bills', async () => {
-    shareIs({ status: 'rejected', message: 'O PDF passa de 5 MB.' });
+    shareIs({ status: 'rejected', message: 'O PDF tem mais de uma página.' });
     mockRealtime(fiveBills, threeTags, familyMonth);
     await render(<ShareReceiptPage />);
 
-    expect(screen.getByText('O PDF passa de 5 MB.')).toBeOnTheScreen();
+    expect(screen.getByText('O PDF tem mais de uma página.')).toBeOnTheScreen();
     expect(screen.getByText('Compartilhe outro arquivo.')).toBeOnTheScreen();
     expect(screen.queryByText('A pagar em outubro')).toBeNull();
     expect(screen.queryByRole('button', { name: 'Conta avulsa' })).toBeNull();
@@ -152,7 +152,7 @@ describe('ShareReceiptPage', () => {
 
   it.each([
     ['being read', { status: 'resolving' }],
-    ['refused', { status: 'rejected', message: 'O PDF passa de 5 MB.' }],
+    ['refused', { status: 'rejected', message: 'O PDF tem mais de uma página.' }],
   ] as const)('Should not read the month while the file is %s', async (_state, result) => {
     shareIs(result);
     mockRealtime(fiveBills, threeTags, familyMonth);

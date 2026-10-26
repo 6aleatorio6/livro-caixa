@@ -4,7 +4,7 @@ import { AppError } from '@/shared/exceptions/AppError';
 import { arrangeScenario } from '@/shared/testing/contract/arrangeScenario';
 import { listenTo } from '@/shared/testing/contract/listenTo';
 import { readCollectionWithoutRules } from '@/shared/testing/contract/readCollectionWithoutRules';
-import { readStorageWithoutRules } from '@/shared/testing/contract/readStorageWithoutRules';
+import { readContentWithoutRules } from '@/shared/testing/contract/readContentWithoutRules';
 import { scenarioEntries } from '@/shared/testing/contract/scenarioEntries';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import type { IEntry } from '@/shared/types/entry/Entry';
@@ -21,10 +21,10 @@ describe('deleteEntryService', () => {
 
       expect(await deleteEntryService(...scenario.input)).toBe(scenario.result);
 
-      // Somem o lançamento, o registro do comprovante e o objeto, e o mês deixa de trazer o lançamento.
+      // Somem o lançamento, o registro e o conteúdo do comprovante, e o mês deixa de trazer o lançamento.
       expect(await readCollectionWithoutRules('entries')).toEqual([]);
       expect(await readCollectionWithoutRules('files')).toEqual([]);
-      await expect(readStorageWithoutRules(`files/${entry.receiptFileId}`)).rejects.toBeDefined();
+      expect(await readContentWithoutRules(entry.receiptFileId)).toBeNull();
       expect(await listenTo(entryMonthQueryService, { month: entry.month }).next()).toEqual([]);
     },
   );
@@ -41,12 +41,16 @@ describe('deleteEntryService', () => {
       const entryPaths = Object.keys(scenario.given).filter((path) => path.startsWith('entries/'));
       const filePaths = Object.keys(scenario.given).filter((path) => path.startsWith('files/'));
       expect(await readCollectionWithoutRules('entries')).toEqual(
-        entryPaths.map((path) => ({ id: path.slice('entries/'.length), ...scenario.given[path], createdAt: expect.any(Timestamp) })),
+        entryPaths.map((path) => ({
+          id: path.slice('entries/'.length),
+          ...scenario.given[path],
+          createdAt: expect.any(Timestamp),
+        })),
       );
       expect(await readCollectionWithoutRules('files')).toHaveLength(filePaths.length);
-      for (const path of Object.keys(scenario.storageGiven ?? {})) {
-        expect(await readStorageWithoutRules(path)).toMatchObject({ contentType: 'image/png' });
-      }
+      expect((await readCollectionWithoutRules('fileContents')).map(({ id }) => id)).toEqual(
+        scenario.fileContentsGiven ?? [],
+      );
     },
   );
 });

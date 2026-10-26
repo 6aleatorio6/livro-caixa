@@ -3,7 +3,7 @@ import { Timestamp } from 'firebase/firestore';
 import { AppError } from '@/shared/exceptions/AppError';
 import { arrangeScenario } from '@/shared/testing/contract/arrangeScenario';
 import { readCollectionWithoutRules } from '@/shared/testing/contract/readCollectionWithoutRules';
-import { readStorageWithoutRules } from '@/shared/testing/contract/readStorageWithoutRules';
+import { readContentWithoutRules } from '@/shared/testing/contract/readContentWithoutRules';
 import { readWithoutRules } from '@/shared/testing/contract/readWithoutRules';
 import { RECEIPT_FIXTURE } from '@/shared/testing/contract/fixtures/receiptFixture';
 import { scenarioEntries } from '@/shared/testing/contract/scenarioEntries';
@@ -27,7 +27,6 @@ describe('addOneOffBillService', () => {
       expect(file0).toEqual({
         id: expect.any(String),
         name: 'comprovante.png',
-        storagePath: `files/${file0.id}`,
         type: 'image',
         contentType: 'image/png',
         sizeBytes: RECEIPT_FIXTURE.sizeBytes,
@@ -49,11 +48,7 @@ describe('addOneOffBillService', () => {
         },
       ]);
       expect(await readWithoutRules(`allowedEmails/${scenario.signedInAs}`)).toMatchObject({ hasEntries: true });
-      expect(await readStorageWithoutRules(`files/${file0.id}`)).toEqual({
-        contentType: 'image/png',
-        size: RECEIPT_FIXTURE.sizeBytes,
-        customMetadata: { uploadedBy: uid },
-      });
+      expect(await readContentWithoutRules(file0.id)).toEqual(RECEIPT_FIXTURE.bytes);
     },
   );
 
@@ -66,8 +61,9 @@ describe('addOneOffBillService', () => {
 
       await expect(refusal).rejects.toBeInstanceOf(AppError);
       await expect(refusal).rejects.toMatchObject(scenario.result);
-      // Nada é gravado: nem o arquivo, nem o lançamento, e o `hasEntries` segue como estava.
+      // Nada é gravado: nem o registro, nem o conteúdo, nem o lançamento, e o `hasEntries` segue como estava.
       expect(await readCollectionWithoutRules('files')).toEqual([]);
+      expect(await readCollectionWithoutRules('fileContents')).toEqual([]);
       expect(await readCollectionWithoutRules('entries')).toEqual([]);
       expect(await readWithoutRules(`allowedEmails/${scenario.signedInAs}`)).toMatchObject({ hasEntries: false });
     },

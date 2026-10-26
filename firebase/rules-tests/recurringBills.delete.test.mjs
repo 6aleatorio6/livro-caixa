@@ -2,7 +2,7 @@ import { describe } from 'node:test';
 
 import { deleteDoc } from 'firebase/firestore';
 
-import { MEMBERS, OUTSIDERS, assertAccess, itEach, recurringBillOf, rowsFor } from './setup.mjs';
+import { MEMBERS, OUTSIDERS, assertAccess, itEach, recurringBillOf, rowsFor } from './setup/index.mjs';
 
 describe('recurringBills delete', () => {
   const cases = [

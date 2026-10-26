@@ -244,9 +244,9 @@ service cloud.firestore {
     // `getAfter`, então exige o arquivo novo (um comprovante por lançamento, enviado por quem lança)
     // e o `hasEntries` em `true` no fim.
     //
-    // O que NÃO garante: que o arquivo exista no Storage (o envio vem antes do lote, e um arquivo
-    // pode ficar no Storage sem registro) e que o `hasEntries` suba só com lançamento (veja
-    // `allowedEmails`). O `paidBy` e o `receiptFileId` não mudam depois de criados.
+    // O que NÃO garante: que o `hasEntries` suba só com lançamento (veja `allowedEmails`). O registro
+    // do arquivo exige o conteúdo no mesmo lote (veja `files`). O `paidBy` e o `receiptFileId` não
+    // mudam depois de criados.
     //
     // O lançamento é a conta avulsa (`oneOffBill`) ou o pagamento de conta recorrente
     // (`recurringPayment`), cujo id é `{month}_{recurringBillId}`. O pagamento único por mês vem do
@@ -286,33 +286,53 @@ service cloud.firestore {
     }
 
     // O registro de um arquivo (o comprovante): todo membro lê um por id (`get`, nunca `list`), para ver
-    // o comprovante de qualquer lançamento; a criação é no lote do lançamento; só quem enviou
-    // (`uploadedBy`) exclui, no lote que troca o comprovante ou exclui o lançamento; o registro que já não existe
-    // também passa, para o lote do lançamento sem registro não cair por ele. Não há `update`.
-    // O arquivo mora em `files/{id}` no Storage. A regra NÃO confere o tamanho nem o tipo reais do objeto enviado: quem os confere é a
-    // regra do Storage, no envio.
+    // o comprovante de qualquer lançamento; a criação é no lote do lançamento, junto do conteúdo
+    // (`fileContents/{id}`); só quem enviou (`uploadedBy`) exclui, no lote que troca o comprovante ou exclui o
+    // lançamento, e o conteúdo sai no mesmo lote; o registro que já não existe também passa, para o lote do
+    // lançamento sem registro não cair por ele. Não há `update`. O PDF chega convertido em imagem.
     match /files/{id} {
       allow get: if isInList();
 
       allow delete: if isInList()
-        && (resource == null || resource.data.uploadedBy == request.auth.uid);
+        && (resource == null || resource.data.uploadedBy == request.auth.uid)
+        && !existsAfter(/databases/$(database)/documents/fileContents/$(id));
 
       allow create: if isInList()
-        && request.resource.data.keys().hasOnly(['name', 'storagePath', 'type', 'contentType', 'sizeBytes', 'uploadedBy'])
-        && request.resource.data.keys().hasAll(['name', 'storagePath', 'type', 'contentType', 'sizeBytes', 'uploadedBy'])
+        && request.resource.data.keys().hasOnly(['name', 'type', 'contentType', 'sizeBytes', 'uploadedBy'])
+        && request.resource.data.keys().hasAll(['name', 'type', 'contentType', 'sizeBytes', 'uploadedBy'])
         && request.resource.data.name is string
         && request.resource.data.name.size() >= 1
         && request.resource.data.name.size() <= 255
-        && request.resource.data.storagePath == 'files/' + id
         && request.resource.data.uploadedBy == request.auth.uid
-        && ((request.resource.data.type == 'image'
-            && request.resource.data.contentType is string
-            && request.resource.data.contentType.matches('image/(jpeg|jpg|png|webp|gif|heic|heif)'))
-          || (request.resource.data.type == 'pdf'
-            && request.resource.data.contentType == 'application/pdf'))
+        && request.resource.data.type == 'image'
+        && request.resource.data.contentType is string
+        && request.resource.data.contentType.matches('image/(jpeg|jpg|png|webp|gif|heic|heif)')
         && request.resource.data.sizeBytes is int
         && request.resource.data.sizeBytes >= 1
-        && request.resource.data.sizeBytes <= 5242880;
+        && request.resource.data.sizeBytes <= 921600
+        && existsAfter(/databases/$(database)/documents/fileContents/$(id));
+    }
+
+    // Os bytes do comprovante, ao lado do registro e com o mesmo id: o Firestore guarda até 1 MiB por documento,
+    // e o app comprime a imagem até 900 KiB. Ficam fora de `files` porque o registro é lido em tempo real nos
+    // detalhes, e o conteúdo só quando o comprovante abre. Nascem no lote do registro, do tamanho que ele diz (e
+    // é o registro que limita o tamanho), e são de quem o enviou; saem só com ele, que já confere o dono. Não há
+    // `update` nem `list`. A regra NÃO confere que os bytes são de uma imagem do tipo do registro: isso fica com o app.
+    match /fileContents/{id} {
+      function receiptFile() {
+        return /databases/$(database)/documents/files/$(id);
+      }
+
+      allow get: if isInList();
+
+      allow create: if isInList()
+        && request.resource.data.keys().hasOnly(['content'])
+        && request.resource.data.content is bytes
+        && getAfter(receiptFile()).data.uploadedBy == request.auth.uid
+        && request.resource.data.content.size() == getAfter(receiptFile()).data.sizeBytes;
+
+      allow delete: if isInList()
+        && (resource == null || !existsAfter(receiptFile()));
     }
   }
 }

@@ -2,7 +2,7 @@ import { describe } from 'node:test';
 
 import { setDoc } from 'firebase/firestore';
 
-import { MEMBERS, OUTSIDERS, assertAccess, itEach, recurringBillOf, rowsFor, signedInAs } from './setup.mjs';
+import { MEMBERS, OUTSIDERS, assertAccess, itEach, recurringBillOf, rowsFor, signedInAs } from './setup/index.mjs';
 
 // A conta nova nasce com o id `water`: `internet` já existe, e gravar sobre ela seria um update.
 const WATER = { name: 'Água', expectedAmountCents: 8000, dayOfMonth: 10, startsOn: '2026-01-01' };

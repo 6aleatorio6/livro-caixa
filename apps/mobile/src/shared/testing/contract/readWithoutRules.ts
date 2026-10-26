@@ -5,7 +5,8 @@ import { rulesTestEnvironment } from './rulesTestEnvironment';
 /** Lê um documento pelo caminho, como administrador; `null` se não existe. */
 export async function readWithoutRules(path: string) {
   const environment = await rulesTestEnvironment;
-  let data: DocumentData | null = null;
+  // O dado é preenchido dentro do callback: sem o `as`, o TypeScript o estreita para `null` e o vê sempre assim.
+  let data = null as DocumentData | null;
   await environment.withSecurityRulesDisabled(async (context) => {
     // O `firestore()` do contexto tem o tipo da API antiga, mas aceita as funções modulares.
     const snapshot = await getDoc(doc(context.firestore() as unknown as Firestore, path));

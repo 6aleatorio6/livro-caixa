@@ -1,13 +1,13 @@
 import { describe } from 'node:test';
 
-import { OUTSIDERS, addOneOffBillBatch, asOwner, assertAccess, entryOf, itEach, oneOffBillOf, receiptFileOf, signedInAs } from './setup.mjs';
+import { OUTSIDERS, addOneOffBillBatch, asOwner, assertAccess, entryOf, itEach, oneOffBillOf, receiptFileOf, signedInAs } from './setup/index.mjs';
 import { setDoc } from 'firebase/firestore';
 
 const bruno = () => signedInAs('bruno@gmail.com');
 
 /** Uma linha: `entry` e `file` trocam campos da conta e do registro; `batch` troca o resto do lote. */
 function row(title, isAllowed, { entry = {}, file = {}, batch = {}, as = bruno, arrange } = {}) {
-  return { title, isAllowed, as, arrange, batch: { entry: oneOffBillOf(entry), file: receiptFileOf(entry.receiptFileId ?? 'f1', file), ...batch } };
+  return { title, isAllowed, as, arrange, batch: { entry: oneOffBillOf(entry), file: receiptFileOf(file), ...batch } };
 }
 
 async function run({ as, arrange, batch, isAllowed }) {
@@ -46,7 +46,7 @@ describe('entries create by a member', () => {
     row('Should not let a member create a one-off bill with a file record uploaded by another person', false, { file: { uploadedBy: 'uid-ana' } }),
     row('Should not let a member create a one-off bill pointing to a file that already existed', false, {
       entry: { receiptFileId: 'fbruno1' },
-      file: { storagePath: 'files/fbruno1' },
+      batch: { file: null },
     }),
     row('Should not let a member create a one-off bill without marking hasEntries at the end of the batch', false, { batch: { markHasEntries: false } }),
     row('Should let a member who already has hasEntries create a one-off bill with the update in the batch', true, {

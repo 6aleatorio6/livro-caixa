@@ -2,7 +2,7 @@ import { describe } from 'node:test';
 
 import { getDoc, getDocs } from 'firebase/firestore';
 
-import { MEMBERS, OUTSIDERS, assertAccess, itEach, recurringBillOf, recurringBillsOf, rowsFor } from './setup.mjs';
+import { MEMBERS, OUTSIDERS, assertAccess, itEach, recurringBillOf, recurringBillsOf, rowsFor } from './setup/index.mjs';
 
 describe('recurringBills get', () => {
   const cases = [

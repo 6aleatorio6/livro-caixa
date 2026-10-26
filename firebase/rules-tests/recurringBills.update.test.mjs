@@ -2,7 +2,7 @@ import { describe } from 'node:test';
 
 import { deleteField, setDoc, updateDoc } from 'firebase/firestore';
 
-import { MEMBERS, OUTSIDERS, SEEDED_BILL, assertAccess, itEach, recurringBillOf, rowsFor, signedInAs } from './setup.mjs';
+import { MEMBERS, OUTSIDERS, SEEDED_BILL, assertAccess, itEach, recurringBillOf, rowsFor, signedInAs } from './setup/index.mjs';
 
 // `internet` já existe (semeada com tagId `t1`), então `setDoc` sobre ela é um update.
 

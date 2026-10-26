@@ -15,7 +15,7 @@ FIREBASE_PROJECT=$(node -p "require('./$GOOGLE_SERVICES').project_info.project_i
 
 isPortTaken() { (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null; }
 
-for port in 4001 8080 8081 9099 9199; do
+for port in 4001 8080 8081 9099; do
   if isPortTaken "$port"; then
     echo "A porta $port já está ocupada: outra pilha ou outro Metro está de pé." >&2
     exit 1
@@ -31,7 +31,7 @@ emulators=$!
 EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true pnpm mobile start --clear &
 metro=$!
 
-for port in 8080 8081 9099 9199; do
+for port in 8080 8081 9099; do
   until isPortTaken "$port"; do
     # Sem isto, um emulador ou um Metro que morre na subida (sem Java, por exemplo) deixa o loop eterno.
     # Um kill -0 por processo: com os dois juntos, ele dá certo se um só estiver vivo.

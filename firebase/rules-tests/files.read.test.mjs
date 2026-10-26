@@ -2,7 +2,7 @@ import { describe } from 'node:test';
 
 import { collection, getDoc, getDocs } from 'firebase/firestore';
 
-import { MEMBERS, OUTSIDERS, assertAccess, fileOf, itEach, rowsFor } from './setup.mjs';
+import { MEMBERS, OUTSIDERS, assertAccess, fileOf, itEach, rowsFor } from './setup/index.mjs';
 
 // Todo membro vê o registro de qualquer comprovante (o dono, outro membro e o admin), mas ninguém lista os registros.
 describe('files get', () => {

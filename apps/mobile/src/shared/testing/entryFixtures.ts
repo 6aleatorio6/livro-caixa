@@ -16,7 +16,7 @@ export const BOTH_IN_THE_LIST = {
 /** O registro do comprovante dos lançamentos daqui: os cenários que guardam um comprovante o guardam com este id. */
 export const RECEIPT_FILE_ID = 'f-receipt';
 
-/** O comprovante novo: o PNG guardado em `fixtures/`, que o contrato envia ao Storage. */
+/** O comprovante novo: o PNG guardado em `fixtures/`, que o contrato grava em `fileContents`. */
 export const NEW_RECEIPT: IReceipt = {
   uri: RECEIPT_FIXTURE.uri,
   name: 'comprovante-novo.png',

@@ -2,7 +2,7 @@ import { beforeEach, describe } from 'node:test';
 
 import { deleteDoc, deleteField, setDoc, updateDoc } from 'firebase/firestore';
 
-import { MEMBERS, OUTSIDERS, SEEDED_TAG, asOwner, assertAccess, itEach, rowsFor, settingsDocOf, tagsDocOf } from './setup.mjs';
+import { MEMBERS, OUTSIDERS, SEEDED_TAG, asOwner, assertAccess, itEach, rowsFor, settingsDocOf, tagsDocOf } from './setup/index.mjs';
 
 const VALID_ITEMS = { t1: SEEDED_TAG };
 const ALL = [...MEMBERS, ...OUTSIDERS];

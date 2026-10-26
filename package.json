@@ -1,6 +1,6 @@
 {
   "name": "livro-caixa",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "App de celular para controlar o financeiro de uma família",
   "private": true,
   "packageManager": "pnpm@10.33.0",
@@ -20,8 +20,8 @@
     "journeys:test": "node journeys/test.ts",
     "journeys:inspect": "node journeys/inspect.ts",
     "typecheck:journeys": "tsc -p journeys",
-    "test:rules": "firebase -c firebase/firebase.test.json emulators:exec --only firestore,storage --project demo-livro-caixa \"node --test --test-concurrency=1 firebase/rules-tests/*.test.mjs\"",
-    "test:contract": "firebase -c firebase/firebase.test.json emulators:exec --only auth,firestore,storage --project demo-livro-caixa \"pnpm mobile test:contract\"",
+    "test:rules": "firebase -c firebase/firebase.test.json emulators:exec --only firestore --project demo-livro-caixa \"node --test --test-concurrency=1 firebase/rules-tests/*.test.mjs\"",
+    "test:contract": "firebase -c firebase/firebase.test.json emulators:exec --only auth,firestore --project demo-livro-caixa \"pnpm mobile test:contract\"",
     "build": "pnpm --recursive build",
     "verify": "pnpm docusaurus test && pnpm docusaurus build",
     "local:trash": "dest=docs/local/__trash/$(date +%Y-%m-%d-%H%M%S) && mkdir -p \"$dest\" && find docs/local -mindepth 1 -maxdepth 1 ! -name __trash -exec mv -t \"$dest\" {} +"

@@ -2,7 +2,7 @@ import { beforeEach, describe } from 'node:test';
 
 import { getDoc, setDoc } from 'firebase/firestore';
 
-import { MEMBERS, OUTSIDERS, asOwner, assertAccess, itEach, rowsFor, settingsDocOf, tagsDocOf } from './setup.mjs';
+import { MEMBERS, OUTSIDERS, asOwner, assertAccess, itEach, rowsFor, settingsDocOf, tagsDocOf } from './setup/index.mjs';
 
 describe('settings get of the tags', () => {
   const cases = [
