@@ -15,6 +15,7 @@
     "apk": "bash scripts/apk.sh",
     "typecheck:mobile": "pnpm mobile typecheck",
     "test:mobile": "pnpm mobile test",
+    "add-admin": "node scripts/add-admin.mjs",
     "firebase:emulators": "firebase emulators:start",
     "journeys:stack": "bash journeys/stack.sh",
     "journeys:test": "node journeys/test.ts",
