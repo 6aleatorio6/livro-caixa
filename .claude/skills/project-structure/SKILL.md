@@ -1,7 +1,7 @@
 ---
 name: project-structure
 description: >-
-  Where each file of apps/mobile lives and how it is named, following app-base's structure: the
+  Where each file of apps/mobile lives and how it is named, following the earlier app's structure: the
   four layers of src/ (app, features, shared, core) and what each may import, the folder of a
   feature and of a page, the file names (PascalCase for components, pages and types, camelCase for
   hooks, functions and services), and what apps/mobile/eslint.config.mjs already enforces. Use
@@ -13,7 +13,7 @@ description: >-
 
 # Project structure of apps/mobile
 
-The structure follows app-base's. All paths below are relative to `apps/mobile/`. Imports use the
+The structure follows the earlier app's. All paths below are relative to `apps/mobile/`. Imports use the
 `@/` alias for `src/`.
 
 ## The four layers
@@ -87,7 +87,7 @@ When a second user appears, move the piece up one level in the same commit.
 When some pages of a feature share a layout (a details shell with tabs over the same bill, a header
 with data they all read) and other pages of the same feature stay outside it, the covered pages go
 into a **route group**: a folder named `(GroupName)` inside `pages/`, holding the layout and what
-the group shares. The convention comes from projeto-c (its web's `dev-scaffolding` skill).
+the group shares. The convention comes from an earlier project.
 
 ```
 features/recurringBills/pages/

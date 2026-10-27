@@ -7,8 +7,8 @@ paths:
 
 Before commenting or extracting a function, find out **why** the passage is hard to read.
 Extracting only hides the passage behind a name: if the confusion comes from the code's shape, it is
-still in there. From the most frequent cause to the rarest (the examples come from projeto-a, where the
-rule was born):
+still in there. From the most frequent cause to the rarest (the examples come from an earlier project, where
+the rule was born):
 
 - **The same rule in more than one place → one place**, called by all. E.g. "an active
   Administrator always remains", checked on role change, deactivation and user deletion.
@@ -71,7 +71,7 @@ rule stays, even with one caller: it is the unit the domain test covers.
   (`// monta o payload`), one that repeats the line below and a docblock that restates the name in
   other words become a variable, function or type name, per the list at the top.
 
-**Why:** in projeto-a, finished use cases were rewritten just to get the names they lacked; writing this
+**Why:** in an earlier project, finished use cases were rewritten just to get the names they lacked; writing this
 way the first time saves the refactor. Research on code reading points the same way: descriptive
 names speed up understanding, misleading names cancel the gain, and extracting a simple passage
 makes reading slower. There the decision is ADR-0054.

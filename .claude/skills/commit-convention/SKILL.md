@@ -14,9 +14,9 @@ description: >-
 
 # Commit convention
 
-Nothing here enforces it — no commitlint, no `commit-msg` hook. The convention comes from projeto-a's
-history, where this repository's template was born; the examples below are projeto-a commits. Follow it
-anyway.
+Nothing here enforces it — no commitlint, no `commit-msg` hook. The convention comes from the
+history of an earlier project, where this repository's template was born; the examples below are
+commits from it. Follow it anyway.
 
 ## 1 — Format
 
@@ -32,7 +32,7 @@ Co-Authored-By: ...
 changes for whoever uses the code — one thing. If it needs an "and" to fit, name the whole instead
 of listing its parts, or split the commit (§3).
 
-**Type** — the ones projeto-a's history uses:
+**Type** — the ones that history uses:
 
 | Type | For |
 |---|---|
@@ -44,9 +44,9 @@ of listing its parts, or split the commit (§3).
 | `build` | the pnpm workspace, the lockfile, `scripts/` that build or copy the code |
 | `chore` | tooling: `package.json` scripts, `.gitignore`, `.claude/skills/**`, an app's config |
 
-**Scope** — the app whose code changes: `mobile` or `docusaurus` (`back` and `web` are projeto-a's). No
+**Scope** — the app whose code changes: `mobile` or `docusaurus` (`back` and `web` belong to that project). No
 scope when the code changes in more than one app (`feat: entrada pelo Microsoft Entra ID` touched
-back and web in projeto-a) or in none (`docs:`, `chore:` on root tooling). What follows the code doesn't
+back and web there) or in none (`docs:`, `chore:` on root tooling). What follows the code doesn't
 count for the scope: a `refactor(back)` that also updates an ADR and a `.claude/rules` file is
 still `(back)`.
 
@@ -72,7 +72,7 @@ O nome diz de onde o e-mail vem: de um texto qualquer, que o método
 normaliza (tira os espaços das pontas e baixa a caixa).
 ```
 
-The commit in projeto-a's history went on with the call sites that followed the new name, the ADR that
+The commit in that history went on with the call sites that followed the new name, the ADR that
 cites it and "os 38 testes de users/domain passando" — the diff and the test run already say all of
 it.
 
@@ -112,7 +112,7 @@ commit with everything that moves with it — usually **reading** (the tables an
 (`PUT`/`PATCH`, rules, errors, DTOs, dialogs, Salvar, the edit permission). The reading files are
 the final ones minus the writing parts, so the editing diff shows only what editing adds. A
 migration never splits: it goes whole in the first commit that needs it. Decide the cut when
-planning, one plan section per commit: in projeto-a, commits of 1,700 to 2,900 lines came out of plan
+planning, one plan section per commit: in that project, commits of 1,700 to 2,900 lines came out of plan
 sections sized by feature, and that branch had to be redone.
 
 **Split into separate commits:** an unrelated fix or refactor noticed along the way; a feature and

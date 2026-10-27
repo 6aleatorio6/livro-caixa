@@ -10,7 +10,7 @@ function emptyValueOf(value: unknown) {
 /**
  * Um campo é obrigatório quando o schema recusa o valor vazio dele com os valores atuais do
  * formulário: vale para `.required()`, para um `.test()` próprio e para um `.when()` que depende de
- * outro campo, também dentro de objetos e listas. A forma vem do projeto-b.
+ * outro campo, também dentro de objetos e listas. A forma vem de um app anterior.
  */
 export function isFieldRequired(schema: AnyObjectSchema, values: object, name: string) {
   let resolved: ReturnType<typeof getIn>;

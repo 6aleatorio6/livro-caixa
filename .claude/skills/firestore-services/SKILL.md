@@ -34,7 +34,7 @@ With `EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true`, each instance connects to its emu
 ## One service per operation
 
 A service is one file, one Firebase operation, named after it with the `Service` suffix, in
-`src/shared/services/<domain>/`, as in app-base:
+`src/shared/services/<domain>/`, as in the earlier app:
 
 ```ts
 // src/shared/services/recurringBill/deleteRecurringBillService.ts

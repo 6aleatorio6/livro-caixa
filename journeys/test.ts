@@ -17,7 +17,7 @@ const SCREEN_CAPTURES = join(CAPTURES, 'screen');
 const GOOGLE_SERVICES = fileURLToPath(new URL('../apps/mobile/google-services.json', import.meta.url));
 const FIREBASE_CONFIG = fileURLToPath(new URL('../firebase.json', import.meta.url));
 const DATA_PORT = 4020;
-// Como no projeto-a: as últimas rodadas bastam para comparar com a anterior, e o resto só ocupa disco. A
+// Como em um projeto anterior: as últimas rodadas bastam para comparar com a anterior, e o resto só ocupa disco. A
 // conta é por pasta, e só pega nomes de rodada: o que a conferência guarda com outro nome fica.
 const KEPT_ROUNDS = 5;
 const KEPT_SCREEN_CAPTURES = 20;

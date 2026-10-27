@@ -46,7 +46,7 @@ documentation, the text people read, commit messages and branch names —
 ## Branches
 
 `main` triggers the CI (not configured yet). Work happens on `#NN-subject` branches: a two-digit
-sequential number and a kebab-case subject in pt-BR, as in projeto-a (`#01-inicio`,
+sequential number and a kebab-case subject in pt-BR (`#01-inicio`,
 `#02-banco-real-nos-endpoints`). Each one merges into `main` when it is done. After the
 installation commit nothing is committed straight to `main`, and `main` is the `<base>` of the
 "Revisão da branch". The first branch, `#01-brainstorm`, is where the brainstorm writes the

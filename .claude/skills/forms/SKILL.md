@@ -3,7 +3,7 @@ name: forms
 description: >-
   How a form works in apps/mobile: react-hook-form + Yup through useAppForm/createFormHook
   (validation on leaving a field), the required mark computed from the schema with the current
-  values (isFieldRequired, projeto-b's way: .required(), .test(), .when()), the pt-BR Yup
+  values (isFieldRequired, the earlier app's way: .required(), .test(), .when()), the pt-BR Yup
   messages, and screen fields bound by control + name through createInputSmartWrapper
   (TextFieldSmart) and SmartRequiredMark instead of Controller. Use whenever building or changing a form, a field, a validation rule or a submit in
   apps/mobile. Triggers: "formulário", "campo", "validação", "schema", "Yup", "react-hook-form",
@@ -42,7 +42,7 @@ through the `control`.
 ## Required
 
 A field is required when **the schema refuses its empty value with the form's current values**
-(`isFieldRequired`, `src/shared/utils/form/isFieldRequired.ts`, the way projeto-b does it). So
+(`isFieldRequired`, `src/shared/utils/form/isFieldRequired.ts`, the way the earlier app does it). So
 the mark follows every rule, not only `.required()`:
 
 - a `.test()` that refuses the empty value counts;

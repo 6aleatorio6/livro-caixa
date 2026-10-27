@@ -52,7 +52,7 @@ seção sobre o problema.
 
 ## D-03 — Os dados de uma conta recorrente
 
-**Resposta:** segue o modelo das despesas recorrentes do projeto-c. A conta tem nome, valor
+**Resposta:** segue o modelo das despesas recorrentes de um projeto anterior. A conta tem nome, valor
 previsto, dia do mês (de 1 a 31, no último dia nos meses mais curtos), a data a partir da qual vale
 e a tag, que é opcional. Não tem fim: vale até ser excluída. Quem paga confirma ou corrige o valor
 previsto.
@@ -64,7 +64,7 @@ previsto.
 
 **Resposta:** qualquer membro cadastra, altera e exclui. Alterar muda os meses ainda sem
 pagamento, passados ou futuros; excluir tira esses meses e mantém os pagamentos já feitos (modelo
-do projeto-c). "Qualquer membro pode definir" foi lido como cadastrar, alterar e excluir.
+de um projeto anterior). "Qualquer membro pode definir" foi lido como cadastrar, alterar e excluir.
 
 **Onde aparece:** [Contas Recorrentes](../03-funcionalidades/01-principal/02-contas-recorrentes.md),
 [Público e Perfis](../01-visao-geral/03-publico-e-perfis.md).
@@ -80,7 +80,7 @@ avulsa entra no mês da data dela, que vem preenchida com a data de hoje e pode 
 ## D-06 — Mais de um pagamento no mês
 
 **Resposta:** não. O mês da conta fica com o primeiro membro que pagar, e um segundo pagamento é
-recusado (modelo do projeto-c).
+recusado (modelo de um projeto anterior).
 
 **Onde aparece:** [Pagamento de Conta Recorrente](../03-funcionalidades/01-principal/03-pagamento-de-conta-recorrente.md).
 

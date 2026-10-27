@@ -32,8 +32,8 @@
 
 **Why:** what is read as code stays in one language, the same as the libraries, the database and
 the contract — with no "project in Portuguese, library in English" border for review to watch. What
-is read as text stays in the language of the people who use the platform. The rule comes from projeto-a
-(its ADR-0041); keeping skills, rules and `CLAUDE.md` in English too is this repository's
+is read as text stays in the language of the people who use the platform. The rule comes from an earlier
+project (its ADR-0041); keeping skills, rules and `CLAUDE.md` in English too is this repository's
 decision.
 
 **How to apply:**

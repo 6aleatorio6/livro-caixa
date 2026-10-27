@@ -10,12 +10,12 @@ import tseslint from 'typescript-eslint';
 
 /*
  * As convenções do código moram aqui, e não só em Markdown: cada regra abaixo vem do ESLint do
- * web do projeto-a, ajustada ao React Native e ao expo-router. O porquê de cada uma está nas regras do
+ * web de um projeto anterior, ajustada ao React Native e ao expo-router. O porquê de cada uma está nas regras do
  * repositório (.claude/rules/) e na skill project-structure.
  */
 
 // ---------------------------------------------------------------------------
-// Camadas, como no app-base: src/app (rotas) → src/features → src/shared → src/core.
+// Camadas, como no app anterior: src/app (rotas) → src/features → src/shared → src/core.
 // ---------------------------------------------------------------------------
 
 const elements = [
@@ -82,7 +82,7 @@ const NO_LITERAL_COLOR = [
 //
 // Conta função, classe, interface, tipo, enum e a constante que guarda função (hook, componente).
 // Constante de valor não conta, e o que não é exportado também não. A mesma regra está no ESLint
-// do projeto-a.
+// de um projeto anterior.
 // ---------------------------------------------------------------------------
 
 /** A constante guarda uma função — `const useToastStore = create(…)`, `const Screen = memo(…)`. */
@@ -177,7 +177,7 @@ export default defineConfig([
       'no-restricted-syntax': ['error', ...NO_DEFAULT_EXPORT, ...NO_LITERAL_COLOR],
     },
   },
-  // Arquivos e pastas como no app-base: o arquivo leva o nome do que exporta, sem hífen. Componente,
+  // Arquivos e pastas como no app anterior: o arquivo leva o nome do que exporta, sem hífen. Componente,
   // página e tipo em PascalCase (`Button.tsx`, `SignInPage.tsx`, `RealtimeState.ts`); hook, função e
   // serviço em camelCase (`useRealtime.ts`, `createAsyncAction.ts`). As rotas seguem os nomes do
   // expo-router (`_layout`, `[id]`, `(auth)`, `+not-found`).
