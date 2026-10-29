@@ -46,6 +46,7 @@ const ROUTES = {
     'recurring-bills/[id]/pay': () => <Text>Página de registrar pagamento</Text>,
     'entries/[id]/index': () => <Text>Página dos detalhes do lançamento</Text>,
     'share-receipt': () => <Text>Página de compartilhar</Text>,
+    'receipt-preview': () => <Text>Página do comprovante anexado</Text>,
     'tags/index': () => <Text>Página das tags</Text>,
     'tags/new': () => <Text>Página da nova tag</Text>,
     'tags/[id]': () => <Text>Página de alterar tag</Text>,
@@ -143,6 +144,7 @@ describe('RootLayout', () => {
     const SCREENS = [
       { url: '/entries/fridge', page: 'Página dos detalhes do lançamento' },
       { url: '/share-receipt', page: 'Página de compartilhar' },
+      { url: '/receipt-preview?uri=file%3A%2F%2F%2Frecibo.jpg&name=recibo.jpg', page: 'Página do comprovante anexado' },
       { url: '/tags', page: 'Página das tags' },
       { url: '/tags/new', page: 'Página da nova tag' },
       { url: '/tags/casa', page: 'Página de alterar tag' },

@@ -4,6 +4,8 @@ import { ActivityIndicator, View } from 'react-native';
 import { ScopedTheme, StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { EntryProblem } from '@/features/entries/components/EntryProblem/EntryProblem';
+import { ReceiptProblem } from '@/features/entries/components/ReceiptProblem/ReceiptProblem';
+import { ZoomableImage } from '@/features/entries/components/ZoomableImage/ZoomableImage';
 import { Screen } from '@/shared/components/Screen/Screen';
 import { TopBar } from '@/shared/components/TopBar/TopBar';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
@@ -13,8 +15,6 @@ import { receiptFileQueryService } from '@/shared/services/file/query/receiptFil
 import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 
 import { ReceiptEntryStrip } from './components/ReceiptEntryStrip/ReceiptEntryStrip';
-import { ReceiptProblem } from './components/ReceiptProblem/ReceiptProblem';
-import { ZoomableImage } from './components/ZoomableImage/ZoomableImage';
 import { useReceiptContent } from './hooks/useReceiptContent/useReceiptContent';
 
 const CANNOT_OPEN = 'Não deu para abrir o comprovante.';

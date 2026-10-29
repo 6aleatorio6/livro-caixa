@@ -86,7 +86,18 @@ describe('ShareReceiptPage', () => {
 
     expect(screen.queryByText('Trocar')).toBeNull();
     expect(screen.queryByText('Escolher')).toBeNull();
-    expect(screen.queryByRole('button', { name: /^Comprovante/ })).toBeNull();
+  });
+
+  it('Should open the shared receipt full screen on a tap, to check the amount', async () => {
+    mockRealtime(fiveBills, threeTags, familyMonth);
+    await render(<ShareReceiptPage />);
+
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Comprovante: pix-agua-outubro.pdf. Ver' }));
+
+    expect(router.push).toHaveBeenCalledWith({
+      pathname: '/receipt-preview',
+      params: { uri: 'file:///cache/pix-agua-outubro.pdf', name: 'pix-agua-outubro.pdf' },
+    });
   });
 
   it('Should open the payment of the bill with the month and the shared flag', async () => {

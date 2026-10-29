@@ -1,6 +1,7 @@
 # O Bruno compartilha o PDF do Pix de outro app (o SEND que o Android manda ao escolher o Livro-Caixa, pelo adb)
-# com o app aberto no Início, escolhe a Água, registra o pagamento e volta ao Início com a Água paga e a Internet
-# ainda a pagar; os detalhes da Água mostram o comprovante compartilhado, com o nome do PDF.
+# com o app aberto no Início, escolhe a Água, abre o comprovante em tela cheia para conferir o valor, registra o
+# pagamento e volta ao Início com a Água paga e a Internet ainda a pagar; os detalhes da Água mostram o comprovante
+# compartilhado, com o nome do PDF.
 # Coberto por:
 # - O app receber o arquivo do Android (o filtro do expo-sharing, a permissão de leitura do content://, a cópia
 #   para o cache, o redirecionamento do +native-intent): só no aparelho; o Jest não roda a parte nativa.
@@ -10,6 +11,8 @@
 # - A lista do mês com o comprovante e "Conta avulsa" por último, e o toque em "Registrar": ShareReceiptPage.test.tsx.
 # - O comprovante já no campo e o retorno ao Início depois de registrar: PayRecurringBillPage.test.tsx e
 #   sharedReceipt.test.ts.
+# - O toque no comprovante abrir o arquivo do cache em tela cheia: a imagem carregada só no aparelho;
+#   ReceiptField.test.tsx cobre a rota e os parâmetros, e ReceiptPreviewPage.test.tsx o que a tela faz com eles.
 # - A Água paga e a Internet a pagar no Início: HomePage.test.tsx e monthSummary.test.ts.
 # - O comprovante nos detalhes: EntryDetailsPage.test.tsx e o contrato do payRecurringBillService.
 appId: dev.leonardolf.livrocaixa
@@ -50,6 +53,16 @@ tags:
     timeout: 10000
 - assertVisible: "Comprovante: pix-agua-outubro.pdf. Trocar"
 - takeScreenshot: pay-recurring-bill--shared-receipt
+# A dica de zoom só aparece depois que a imagem carregou.
+- tapOn: "Comprovante: pix-agua-outubro.pdf. Ver"
+- extendedWaitUntil:
+    visible: "Abra os dedos ou toque duas vezes para aproximar."
+    timeout: 10000
+- takeScreenshot: receipt-preview--shared-receipt
+- tapOn: "Fechar"
+- extendedWaitUntil:
+    visible: "Valor pago"
+    timeout: 10000
 # O título da tela também diz "Registrar pagamento": o botão é o que fica abaixo do aviso.
 - tapOn:
     text: "Registrar pagamento"

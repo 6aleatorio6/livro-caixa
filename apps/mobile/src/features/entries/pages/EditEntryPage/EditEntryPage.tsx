@@ -61,6 +61,7 @@ export function EditEntryPage() {
             hasTagsError={tagsStatus === 'error'}
             initialValues={{ name: entry.name, amountCents: entry.amountCents, date: entry.date, tagId: entry.tagId }}
             currentReceipt={file ?? undefined}
+            entryId={entry.id}
             submitLabel="Salvar alterações"
             dateSupportText="A data define o mês em que a conta entra."
             footer={

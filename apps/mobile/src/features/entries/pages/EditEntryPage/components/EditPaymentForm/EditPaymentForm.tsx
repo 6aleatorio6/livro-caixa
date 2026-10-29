@@ -63,7 +63,7 @@ export function EditPaymentForm({ entry, tag, currentReceipt, onSubmit, onDelete
         label="Valor pago"
         supportText="Corrija se pagou outro valor."
       />
-      <ReceiptFieldSmart control={control} name="receipt" currentReceipt={currentReceipt} />
+      <ReceiptFieldSmart control={control} name="receipt" currentReceipt={currentReceipt} entryId={entry.id} />
       <Notice
         icon={UserRound}
         text={`Registrado por você em ${formatIsoDate(entry.paidOn)}. Só você pode alterar ou excluir.`}

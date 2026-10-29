@@ -1,6 +1,7 @@
 import { act, render, screen, userEvent } from '@testing-library/react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
+import { ZoomableImage } from '@/features/entries/components/ZoomableImage/ZoomableImage';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService.scenarios';
 import { entryQueryService } from '@/shared/services/entry/query/entryQueryService';
@@ -17,7 +18,6 @@ import { mockServiceRejection } from '@/shared/testing/mockServiceRejection';
 import { mockServiceScenario } from '@/shared/testing/mockServiceScenario';
 import type { IRealtimeMock } from '@/shared/types/testing/RealtimeMock';
 
-import { ZoomableImage } from './components/ZoomableImage/ZoomableImage';
 import { ReceiptViewerPage } from './ReceiptViewerPage';
 
 // Mocks com fábrica: o módulo real carregaria o React Native Firebase, que não roda no Jest.
@@ -30,7 +30,7 @@ jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', (
 jest.mock('@/shared/services/file/getReceiptContentService', () => ({ getReceiptContentService: jest.fn() }));
 jest.mock('expo-router', () => ({ router: { back: jest.fn() }, useLocalSearchParams: jest.fn() }));
 // O zoom é dos gestos nativos e se confere no aparelho; o teste lê as props que a tela passa.
-jest.mock('./components/ZoomableImage/ZoomableImage', () => ({ ZoomableImage: jest.fn(() => null) }));
+jest.mock('@/features/entries/components/ZoomableImage/ZoomableImage', () => ({ ZoomableImage: jest.fn(() => null) }));
 
 const family = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyList };
 const oneOffBill = { service: entryQueryService, scenario: entryQueryScenarios.oneOffBillOfTheMember };

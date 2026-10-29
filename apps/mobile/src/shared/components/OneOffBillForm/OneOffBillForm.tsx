@@ -32,6 +32,8 @@ export interface IOneOffBillFormProps<TCurrentReceipt extends IReceiptFile | und
   initialValues?: Partial<Pick<IOneOffBillFormValues, 'name' | 'amountCents' | 'date' | 'tagId' | 'receipt'>>;
   /** O comprovante já salvo (a alteração): enquanto nenhum arquivo novo for escolhido, ele fica e o campo não é obrigatório. */
   currentReceipt?: TCurrentReceipt;
+  /** O lançamento alterado: o toque no comprovante salvo o abre no visualizador dele. */
+  entryId?: string;
   /** O rótulo do botão; o padrão é o do registro. */
   submitLabel?: string;
   /** O apoio da data; o padrão é o do registro, que diz "Hoje, por padrão". */
@@ -50,6 +52,7 @@ export function OneOffBillForm<TCurrentReceipt extends IReceiptFile | undefined 
   hasTagsError,
   initialValues,
   currentReceipt,
+  entryId,
   submitLabel = 'Registrar conta avulsa',
   dateSupportText = 'Hoje, por padrão. A data define o mês em que a conta entra.',
   notice,
@@ -90,7 +93,7 @@ export function OneOffBillForm<TCurrentReceipt extends IReceiptFile | undefined 
         )}
       </View>
 
-      <ReceiptFieldSmart control={control} name="receipt" currentReceipt={currentReceipt} />
+      <ReceiptFieldSmart control={control} name="receipt" currentReceipt={currentReceipt} entryId={entryId} />
       {notice}
 
       <View style={styles.spacer} />

@@ -8,6 +8,7 @@ import { ReceiptSummary } from '@/shared/components/ReceiptSummary/ReceiptSummar
 import { Screen } from '@/shared/components/Screen/Screen';
 import { ScreenContent } from '@/shared/components/Screen/ScreenContent';
 import { TopBar } from '@/shared/components/TopBar/TopBar';
+import { openReceiptPreview } from '@/shared/utils/file/openReceiptPreview';
 import { clearSharedReceipt } from '@/shared/utils/sharedReceipt/clearSharedReceipt';
 
 import { SharedBillChoices } from './components/SharedBillChoices/SharedBillChoices';
@@ -40,7 +41,10 @@ export function ShareReceiptPage() {
         {shared.status === 'rejected' ? (
           <ReceiptSummary file={null} errorMessage={shared.message} rejectedFileName="Compartilhe outro arquivo." />
         ) : null}
-        {shared.status === 'ready' ? <ReceiptSummary file={shared.receipt} isShared /> : null}
+        {/* Aqui o arquivo não se troca: o toque só o abre, para conferir antes de escolher a conta. */}
+        {shared.status === 'ready' ? (
+          <ReceiptSummary file={shared.receipt} isShared onOpen={() => openReceiptPreview(shared.receipt)} />
+        ) : null}
         {shared.status === 'ready' ? <SharedBillChoices /> : null}
       </ScreenContent>
     </Screen>

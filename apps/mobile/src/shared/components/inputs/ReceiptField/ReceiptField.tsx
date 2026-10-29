@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 
 import { hideLoader } from '@/core/utils/storeActions/hideLoader';
@@ -9,12 +10,15 @@ import type { IInputMinimalProps } from '@/shared/types/form/InputMinimalProps';
 
 import { ReceiptSummary } from '@/shared/components/ReceiptSummary/ReceiptSummary';
 import { createReceiptUnreadableError } from '@/shared/utils/file/createReceiptUnreadableError';
+import { openReceiptPreview } from '@/shared/utils/file/openReceiptPreview';
 import { pickReceiptFile } from '@/shared/utils/file/pickReceiptFile';
 import { prepareReceipt } from '@/shared/utils/file/prepareReceipt';
 
 export type IReceiptFieldProps = IInputMinimalProps<IReceipt | null> & {
   /** O comprovante já salvo do lançamento: aparece enquanto nenhum arquivo novo foi escolhido. */
   currentReceipt?: IReceiptFile;
+  /** O lançamento do `currentReceipt`: com ele, o comprovante salvo abre no visualizador do lançamento. */
+  entryId?: string;
 };
 
 const UNREADABLE_MESSAGE = createReceiptUnreadableError().userMessage;
@@ -25,10 +29,11 @@ interface IRejection {
 }
 
 /**
- * O comprovante da conta: uma linha em que o toque, em qualquer parte, abre o seletor de arquivos. O arquivo
- * escolhido passa por `prepareReceipt` (a imagem grande é reduzida, com o carregamento cobrindo a tela); se for
- * recusado (ou se o seletor falha), o campo mostra o motivo e o nome do arquivo e zera o valor, para o formulário
- * não enviar o arquivo de antes. Cancelar o seletor não muda nada.
+ * O comprovante da conta: uma linha que, com um arquivo anexado, o abre em tela cheia ao toque, para conferir o valor,
+ * e deixa a escolha de outro para o "Trocar"; vazia ou com um arquivo recusado, o toque em qualquer parte abre o
+ * seletor de arquivos. O arquivo escolhido passa por `prepareReceipt` (a imagem grande é reduzida, com o carregamento
+ * cobrindo a tela); se for recusado (ou se o seletor falha), o campo mostra o motivo e o nome do arquivo e zera o
+ * valor, para o formulário não enviar o arquivo de antes. Cancelar o seletor não muda nada.
  */
 export function ReceiptField({
   value,
@@ -36,6 +41,7 @@ export function ReceiptField({
   onBlur,
   errorMessage,
   currentReceipt,
+  entryId,
   disabled = false,
 }: IReceiptFieldProps) {
   const [rejection, setRejection] = useState<IRejection | null>(null);
@@ -78,7 +84,15 @@ export function ReceiptField({
       errorMessage={errorText}
       rejectedFileName={rejection?.fileName}
       action={{ label: action, onPress: choose }}
+      onOpen={rejection ? undefined : openerOf(value, currentReceipt && entryId)}
       disabled={disabled}
     />
   );
+}
+
+/** O arquivo novo abre do celular; sem ele, o salvo abre no visualizador do lançamento `savedEntryId`, se houver. */
+function openerOf(value: IReceipt | null, savedEntryId: string | undefined) {
+  if (value) return () => openReceiptPreview(value);
+  if (savedEntryId) return () => router.push({ pathname: '/entries/[id]/receipt', params: { id: savedEntryId } });
+  return undefined;
 }

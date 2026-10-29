@@ -53,6 +53,13 @@ O comprovante abre em tela cheia dentro do app, sobre fundo escuro, com zoom. Em
 lançamento ele é. O que veio de um PDF abre do mesmo jeito, como a imagem da página, sem sair para o
 leitor de PDF do celular.
 
+Antes de salvar, o membro também abre o comprovante anexado, para conferir o valor enquanto o digita:
+
+- **No pagamento, na conta avulsa e na alteração**, tocar no comprovante anexado o abre em tela cheia,
+  do mesmo jeito, sem a faixa do lançamento, que ainda não existe. Só o Trocar escolhe outro arquivo.
+  Na alteração, o comprovante já salvo abre como pelo Ver dos detalhes.
+- **Na lista do compartilhamento**, tocar no comprovante o abre do mesmo jeito. Ali ele não se troca.
+
 ## Critérios de aceite
 
 - [ ] Ao compartilhar uma imagem ou um PDF em outro app do Android, este app aparece entre os
@@ -69,3 +76,6 @@ leitor de PDF do celular.
 - [ ] Dentro do app, o comprovante só vem dos arquivos do celular.
 - [ ] Qualquer membro abre o comprovante de um lançamento de outro membro.
 - [ ] O comprovante abre em tela cheia dentro do app, com zoom, inclusive o que veio de um PDF.
+- [ ] No pagamento, tocar no comprovante compartilhado o abre em tela cheia, sem abrir a escolha de
+      arquivo; o Trocar abre a escolha.
+- [ ] Na lista do compartilhamento, tocar no comprovante o abre em tela cheia.
