@@ -21,9 +21,15 @@ describe('files create by profile', () => {
 describe('files create by a member', () => {
   const bruno = () => signedInAs('bruno@gmail.com');
   const cases = [
-    // O PDF chega convertido em imagem: o registro de PDF não existe mais.
-    { title: 'Should not let a member create a PDF file record', data: receiptFileOf({ type: 'pdf', contentType: 'application/pdf' }), isAllowed: false },
+    // O PDF é guardado como está, até o mesmo limite da imagem; o tipo e o `contentType` andam juntos.
+    { title: 'Should let a member create a PDF file record', data: receiptFileOf({ type: 'pdf', contentType: 'application/pdf' }), isAllowed: true },
     { title: 'Should not let a member create an image file record with the PDF contentType', data: receiptFileOf({ contentType: 'application/pdf' }), isAllowed: false },
+    { title: 'Should not let a member create a PDF file record with an image contentType', data: receiptFileOf({ type: 'pdf', contentType: 'image/png' }), isAllowed: false },
+    {
+      title: 'Should not let a member create a PDF file record with sizeBytes above 900 KiB',
+      data: receiptFileOf({ type: 'pdf', contentType: 'application/pdf', sizeBytes: RECEIPT_MAX_BYTES + 1 }),
+      isAllowed: false,
+    },
     { title: 'Should not let a member create a file record with the contentType text/plain', data: receiptFileOf({ contentType: 'text/plain' }), isAllowed: false },
     { title: 'Should not let a member create an image file record with the contentType image/svg+xml', data: receiptFileOf({ contentType: 'image/svg+xml' }), isAllowed: false },
     ...['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif'].map((contentType) => ({
