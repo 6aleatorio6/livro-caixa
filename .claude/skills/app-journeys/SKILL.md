@@ -85,7 +85,9 @@ stack or another Metro is up: never take it down. It needs:
    selector, every node with a text, label or id.
 5. Only when color or composition matter:
    `adb exec-out screencap -p > journeys/.local/captures/screen/<name>.png`. Every image read goes
-   linked in the answer.
+   linked in the answer. For the dark theme, `adb shell cmd uimode night yes` before the capture
+   and `adb shell cmd uimode night no` after: the app follows the phone's scheme when it comes back
+   to the front, with no new build.
 
 Selectors in a flow, in this order: the visible text or the accessibility label (`text` also
 matches the Android content description, so a `Button`'s `label` works), then a `testID` (`id:`)
