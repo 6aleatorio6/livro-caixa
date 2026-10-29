@@ -22,7 +22,7 @@ tema aparece na documentação.
 | D-14 | Como funciona a saída de um membro da lista de e-mails permitidos? | 🟢 Respondido — só sai quem não tem lançamento; um admin, sem verificação |
 | D-15 | O app é só em português e só em reais? | 🟢 Respondido — sim |
 | D-16 | Um mês que passou sem pagamento continua a pagar? | 🟢 Respondido — sim, só no próprio mês |
-| D-17 | Onde o easter egg do "Paia" aparece no app? | 🟢 Respondido — na arte da splash screen |
+| D-17 | Onde o easter egg do "Paia" aparece no app? | 🟢 Respondido — na logo, em todo lugar: splash, tela de entrada e ícone |
 | D-18 | Como o Maestro alcança o emulador do PC? | 🟢 Respondido — pela rede do PC, que o container divide |
 | D-19 | O JSON do Google falso leva o nome da pessoa? | 🟢 Respondido — sim, no campo `name` |
 | D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🟢 Respondido — por um comando do adb, antes do fluxo |
@@ -172,8 +172,10 @@ mês mostra só as próprias contas.
 
 ## D-17 — O easter egg do "Paia"
 
-**Resposta:** o "Paia" aparece escondido na arte da splash screen, a tela de abertura do app. Como
-ele se esconde na arte fica para o design.
+**Resposta:** o "Paia" aparece escrito à mão na página da esquerda da logo, em todo lugar: na splash
+screen, na tela de entrada e no ícone do app. No ícone do launcher ele é maior e sem as duas pautas,
+para se ler a 48 dp; no ícone temático do Android 13, fica recortado na página. Antes ficava só na
+splash; Leonardo pediu a logo da splash em todo lugar (29/10/2026).
 
 **Onde aparece:** [Contexto](../01-visao-geral/01-contexto.md).
 
