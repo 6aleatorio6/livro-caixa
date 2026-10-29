@@ -60,9 +60,9 @@ In the shell, quote the name: a `#` at the start of a word begins a comment —
 The rules for writing the documentation are in [docs/CLAUDE.md](docs/CLAUDE.md). Working drafts
 (plans, notes, PR descriptions) live in `docs/local/`, outside Git.
 
-The design is made in Pencil, in `design/livro-caixa.pen`, following the `design-from-scratch`
-skill. A `.pen` file can only be read and edited through the `pencil` MCP, which acts on the file
-active in the editor: check it with `get_app_state` before writing.
+The design is made in Pencil, in `design/livro-caixa.pen`. Its rules are in
+[design/CLAUDE.md](design/CLAUDE.md): read it before touching the design, since the `.pen` is never
+opened with `Read` and so never loads that file by itself.
 
 The data model is drawn in dbdiagram.io, in
 [docs/05-arquitetura/modelo-de-dados.dbml](docs/05-arquitetura/modelo-de-dados.dbml), and serves
