@@ -139,11 +139,10 @@ describe('MyPaymentsPage', () => {
     expect(screen.queryByText('Você registrou em outubro')).not.toBeOnTheScreen();
   });
 
-  it('Should read the previous month and enable the next one when the previous month is pressed', async () => {
+  it('Should read the previous month when the previous month is pressed', async () => {
     mockRealtime(october, threeTags);
     await render(<MyPaymentsPage />);
     const user = userEvent.setup();
-    expect(screen.getByRole('button', { name: 'Próximo mês' })).toBeDisabled();
 
     mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.previousMonthWithEntries }, threeTags);
     await user.press(screen.getByRole('button', { name: 'Mês anterior' }));
@@ -152,7 +151,21 @@ describe('MyPaymentsPage', () => {
     expect(screen.getByText('Gráfica')).toBeOnTheScreen();
     expect(screen.getByText('Você registrou em setembro')).toBeOnTheScreen();
     expect(screen.queryByText('Farmácia')).not.toBeOnTheScreen();
-    expect(screen.getByRole('button', { name: 'Próximo mês' })).toBeEnabled();
+  });
+
+  // O pagamento do próximo mês feito antes de o mês começar aparece lá, não no mês em que foi feito.
+  it('Should go to the next month and stop there', async () => {
+    mockRealtime(october, threeTags);
+    await render(<MyPaymentsPage />);
+    const user = userEvent.setup();
+
+    mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.nextMonthPaidEarly }, threeTags);
+    await user.press(screen.getByRole('button', { name: 'Próximo mês' }));
+
+    expect(screen.getByText('Novembro de 2026')).toBeOnTheScreen();
+    expect(screen.getByText('Condomínio')).toBeOnTheScreen();
+    expect(screen.getByText('pago em 28/10 · Casa')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Próximo mês' })).toBeDisabled();
   });
 
   it('Should show the loading state while the list loads', async () => {

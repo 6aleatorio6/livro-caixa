@@ -178,6 +178,24 @@ describe('HomePage', () => {
     expect(screen.getByText('1 conta · R$ 30,00')).toBeOnTheScreen();
   });
 
+  it('Should show the bills to pay of the next month, and no month after it', async () => {
+    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    await render(<HomePage />);
+    mockRealtime(fiveBills, threeTags, family, {
+      service: entryMonthQueryService,
+      scenario: entryMonthQueryScenarios.nextMonthPaidEarly,
+    });
+
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Próximo mês' }));
+
+    // O Condomínio, pago em outubro, conta em novembro; as outras quatro contas estão a pagar.
+    expect(screen.getByText('Novembro de 2026')).toBeOnTheScreen();
+    expect(screen.getByText('4 de 5 contas')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 1.800,00 · vence dia 5 · Casa')).toBeOnTheScreen();
+    expect(screen.getByText('dia 8 · Bruno · Casa')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Próximo mês' })).toBeDisabled();
+  });
+
   it('Should show all bills to pay and a zero paid when the month has no entries', async () => {
     mockRealtime(fiveBills, threeTags, family, emptyMonth);
     await render(<HomePage />);

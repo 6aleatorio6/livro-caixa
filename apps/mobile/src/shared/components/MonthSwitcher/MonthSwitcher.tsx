@@ -4,8 +4,8 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
 import { IconButton } from '@/shared/components/IconButton/IconButton';
-import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { formatMonthTitle } from '@/shared/utils/date/formatMonthTitle';
+import { nextMonth } from '@/shared/utils/date/nextMonth';
 import { shiftMonth } from '@/shared/utils/date/shiftMonth';
 
 export interface IMonthSwitcherProps {
@@ -16,7 +16,7 @@ export interface IMonthSwitcherProps {
   onMonthChange: (month: string) => void;
 }
 
-/** O cabeçalho de uma aba por mês: o rótulo (opcional), o mês por extenso e os botões de mês anterior e próximo. Não há próximo depois do mês atual. */
+/** O cabeçalho de uma aba por mês: o rótulo (opcional), o mês por extenso e os botões de mês anterior e próximo. Não há próximo depois do próximo mês. */
 export function MonthSwitcher({ label, month, onMonthChange }: IMonthSwitcherProps) {
   return (
     <View style={styles.container}>
@@ -33,7 +33,7 @@ export function MonthSwitcher({ label, month, onMonthChange }: IMonthSwitcherPro
         <IconButton
           icon={ChevronRight}
           label="Próximo mês"
-          disabled={month === currentMonth()}
+          disabled={month === nextMonth()}
           onPress={() => onMonthChange(shiftMonth(month, 1))}
         />
       </View>

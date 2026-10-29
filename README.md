@@ -18,7 +18,7 @@ back-end, sem servidor próprio.
 - **Acesso:** login com a conta Google, restrito a uma lista de e-mails que o administrador mantém
   no próprio app. Quem sai da lista perde o acesso na hora, mesmo com o app aberto.
 - **Início:** o mês em tempo real, com o que falta pagar, o que já foi pago, a divisão por tag e por
-  membro, e a navegação pelos meses anteriores.
+  membro, e a navegação pelos meses anteriores e pelo próximo, que já pode ser pago.
 - **Contas recorrentes:** cadastradas uma vez, com valor previsto e dia de vencimento, aparecem a
   pagar todo mês. Dia 31 vira o último dia nos meses mais curtos.
 - **Pagamento:** o valor vem do previsto e pode ser corrigido, com o comprovante (foto ou PDF)

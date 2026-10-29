@@ -9,7 +9,7 @@ Qualquer membro, depois de pagar uma conta da família.
 
 ## Fluxo
 
-1. O membro escolhe a conta recorrente e o mês que ela ainda tem a pagar.
+1. O membro escolhe a conta recorrente e o mês que ela ainda tem a pagar, até o próximo mês.
 2. Confirma o valor previsto da conta ou o corrige para o valor que pagou.
 3. Anexa o [comprovante](05-comprovantes.md). Quando o membro chega pelo compartilhamento do
    Android, o comprovante já vem anexado.
@@ -20,6 +20,9 @@ Qualquer membro, depois de pagar uma conta da família.
 - O pagamento é de uma conta num mês. O mês fica com o primeiro membro que registrar o pagamento:
   cada conta tem no máximo um pagamento por mês, e um segundo pagamento para o mesmo mês é
   recusado.
+- O próximo mês já pode ser pago, antes de começar: pagar em outubro uma conta que vence no começo
+  de novembro. O pagamento conta no mês da conta, não no dia em que foi feito, e o mês continua pago
+  quando começa. Um mês depois do próximo é recusado.
 - O valor começa preenchido com o valor previsto da conta, e o membro pode corrigi-lo.
 - O pagamento é sempre de quem está logado. Não há como registrá-lo em nome de outro membro.
 - O comprovante é obrigatório.
@@ -33,5 +36,7 @@ Qualquer membro, depois de pagar uma conta da família.
 - [ ] O valor vem preenchido com o valor previsto e pode ser corrigido.
 - [ ] O pagamento fica no nome do membro logado, sem opção de escolher outro.
 - [ ] Um segundo pagamento da mesma conta para o mesmo mês é recusado.
+- [ ] Em outubro, uma conta de novembro pode ser paga, e uma de dezembro é recusada.
+- [ ] Paga em outubro, a conta de novembro aparece paga quando novembro começa.
 - [ ] Depois do pagamento, a conta deixa de aparecer como a pagar naquele mês.
 - [ ] Um membro não consegue alterar nem excluir o pagamento de outro.

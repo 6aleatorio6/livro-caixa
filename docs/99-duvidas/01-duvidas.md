@@ -15,7 +15,7 @@ tema aparece na documentação.
 | D-07 | O que é o processamento de imagens acima de 5 MB, e o que acontece com um PDF grande? | 🟢 Respondido — o limite é 900 KB; a imagem é comprimida em degraus até caber, e o PDF de uma página vira imagem |
 | D-08 | O que o app mostra depois de receber um arquivo compartilhado pelo Android? | 🟢 Respondido — a lista das contas a pagar do mês, com "Conta avulsa" por último |
 | D-09 | De onde o membro anexa o comprovante dentro do app? | 🟢 Respondido — só dos arquivos do celular |
-| D-10 | O que o Início mostra, além do gráfico do mês? | 🟢 Respondido — lista do mês, separação por tag e por membro, meses anteriores |
+| D-10 | O que o Início mostra, além do gráfico do mês? | 🟢 Respondido — lista do mês, separação por tag e por membro, meses anteriores e o próximo |
 | D-11 | Quem pode alterar ou excluir um pagamento ou uma conta avulsa? | 🟢 Respondido — só quem registrou |
 | D-12 | Quais são os campos de uma conta avulsa, e a tag é obrigatória? | 🟢 Respondido — nome, valor, data e comprovante; tag opcional |
 | D-13 | Uma tag pode ser alterada ou excluída? | 🟢 Respondido — qualquer membro altera; só se exclui sem uso; nome único |
@@ -30,6 +30,7 @@ tema aparece na documentação.
 | D-22 | O app lê o valor no comprovante? | 🟢 Respondido — fica para depois, com a leitura no celular |
 | D-23 | O comprovante em PDF abre dentro do app ou no leitor do celular? | 🟢 Respondido — dentro do app, já convertido em imagem |
 | D-24 | O app aceita PDF de mais de uma página? | 🟡 Parcial — por enquanto, não; falta decidir se e como volta |
+| D-25 | Dá para pagar uma conta antes de o mês dela começar? | 🟢 Respondido — sim, só o próximo mês |
 
 <!-- Status: 🔴 Em aberto · 🟡 Parcial — o que falta · 🟢 Respondido — a resposta -->
 
@@ -114,8 +115,8 @@ faz o login e precisa compartilhar o arquivo de novo.
 ## D-10 — O que o Início mostra
 
 **Resposta:** além do gráfico do mês, a lista dos lançamentos e das contas a pagar do mês, a
-separação por tag e por membro, e a troca para os meses anteriores. O formato do gráfico fica para
-o design.
+separação por tag e por membro, e a troca para os meses anteriores e para o próximo mês (D-25). O
+formato do gráfico fica para o design.
 
 **Onde aparece:** [Início](../03-funcionalidades/01-principal/01-inicio.md).
 
@@ -255,3 +256,17 @@ bitmap do Android (uns 100 MB) e num zoom borrado, e guardar o PDF inteiro não 
 documento. Falta decidir se o PDF de várias páginas volta, e de que jeito.
 
 **Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).
+
+## D-25 — Pagar o próximo mês
+
+**Resposta:** sim, só o próximo mês: pagar em outubro uma conta que vence no começo de novembro. A
+troca de mês do Início e de Meus pagamentos vai até o próximo mês, que mostra as contas recorrentes
+dele a pagar, e o compartilhamento do Android lista também as contas a pagar do próximo mês. O
+pagamento conta no mês da conta, e o mês continua pago quando começa. A conta avulsa não muda: ela
+nasce paga, com a data de até hoje. Qualquer mês futuro foi descartado, porque o pedido era o do
+começo do mês seguinte.
+
+**Onde aparece:** [Início](../03-funcionalidades/01-principal/01-inicio.md),
+[Pagamento de Conta Recorrente](../03-funcionalidades/01-principal/03-pagamento-de-conta-recorrente.md),
+[Meus Pagamentos](../03-funcionalidades/01-principal/06-meus-pagamentos.md),
+[Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).

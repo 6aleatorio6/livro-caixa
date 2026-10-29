@@ -28,6 +28,8 @@ const ELECTRICITY_PAYMENT = { ...RENT_PAYMENT, createdAt: new Date('2026-10-10T1
 // A Luz do Bruno foi paga com o dia 3 e o previsto de R$ 250,00; a conta de hoje (dia 10, R$ 210,00) mudou depois.
 const ALTERED_BILL_PAYMENT = { ...ELECTRICITY_PAYMENT, dueDay: 3, expectedAmountCents: 25000, paidBy: testAccountUid(BRUNO) };
 const FRIDGE = { ...base, createdAt: new Date('2026-10-12T15:00:00Z'), month: '2026-10', name: 'Conserto da geladeira', amountCents: 35000, date: '2026-10-12', tagId: HOME_TAG_ID, paidBy: testAccountUid(BRUNO), receiptFileId: 'f11' };
+// O Condomínio de novembro, pago pelo Bruno em 28 de outubro: conta em novembro, o mês da conta, e não no mês em que foi pago.
+const EARLY_CONDO_PAYMENT = { ...CONDO_PAYMENT, createdAt: new Date('2026-10-28T15:00:00Z'), month: '2026-11', receiptFileId: 'f12' };
 // Para a soma do membro: duas contas do Bruno (R$ 89,90 e R$ 10,10) e uma da Ana de R$ 300,00.
 const BAKERY = { ...base, month: '2026-10', name: 'Padaria', amountCents: 1010, date: '2026-10-25', paidBy: testAccountUid(BRUNO), receiptFileId: 'f6' };
 const BIG_MARKET = { ...MARKET, amountCents: 30000 };
@@ -113,6 +115,13 @@ export const entryMonthQueryScenarios = {
     given: { ...BOTH_IN_THE_LIST, 'entries/pharmacy': PHARMACY, 'entries/market': MARKET, 'entries/september': SEPTEMBER },
     input: { month: '2026-09' },
     result: [toEntry('september', SEPTEMBER)],
+  },
+  // O próximo mês, pago antes de começar: só o Condomínio de novembro, com o dia em que foi pago; a Farmácia, de outubro, fica de fora.
+  nextMonthPaidEarly: {
+    signedInAs: BRUNO,
+    given: { ...BOTH_IN_THE_LIST, 'entries/pharmacy': PHARMACY, 'entries/2026-11_condo': EARLY_CONDO_PAYMENT },
+    input: { month: '2026-11' },
+    result: [toEntry('2026-11_condo', { ...EARLY_CONDO_PAYMENT, date: null, paidOn: '2026-10-28' })],
   },
   emptyMonth: {
     signedInAs: BRUNO,

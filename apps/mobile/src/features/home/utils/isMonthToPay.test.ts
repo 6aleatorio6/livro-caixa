@@ -22,6 +22,7 @@ describe('isMonthToPay', () => {
 
   it.each([
     ['the current month', '2026-10'],
+    ['the next month', '2026-11'],
     ['a past month', '2026-05'],
     ['the month the bill starts, when it already fell due', '2026-03'],
   ])('Should accept %s', (_case, month) => {
@@ -29,7 +30,7 @@ describe('isMonthToPay', () => {
   });
 
   it.each([
-    ['a future month', '2026-11'],
+    ['the month after the next', '2026-12'],
     ['the month before the bill starts', '2026-02'],
     ['a month 13', '2026-13'],
     ['a month without the zero', '2026-9'],
@@ -42,5 +43,12 @@ describe('isMonthToPay', () => {
 
   it('Should refuse the month the bill starts when the due day is before the start', () => {
     expect(isMonthToPay({ ...bill, dayOfMonth: 5 }, '2026-03')).toBe(false);
+  });
+
+  it('Should accept January of the next year in December, and not February', () => {
+    jest.setSystemTime(new Date(2026, 11, 10));
+
+    expect(isMonthToPay(bill, '2027-01')).toBe(true);
+    expect(isMonthToPay(bill, '2027-02')).toBe(false);
   });
 });

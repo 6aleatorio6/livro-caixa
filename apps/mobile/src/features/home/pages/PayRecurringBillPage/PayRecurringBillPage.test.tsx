@@ -233,8 +233,19 @@ describe('PayRecurringBillPage', () => {
     expect(screen.queryByLabelText('Valor pago')).not.toBeOnTheScreen();
   });
 
+  it('Should show the form for the next month, which can be paid before it starts', async () => {
+    await renderPage(paymentOfScenario.bill.id, {
+      month: '2026-11',
+      entriesScenario: entryMonthQueryScenarios.nextMonthPaidEarly,
+    });
+
+    expect(screen.getByText('Conta de novembro')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: SUBMIT })).toBeOnTheScreen();
+    expect(screen.queryByText('Esta conta não está a pagar neste mês.')).not.toBeOnTheScreen();
+  });
+
   describe.each([
-    ['a future month', '2026-11'],
+    ['the month after the next', '2026-12'],
     ['a month far in the future', '2027-01'],
     ['a text that is not a month', 'outubro'],
     ['no month', undefined],

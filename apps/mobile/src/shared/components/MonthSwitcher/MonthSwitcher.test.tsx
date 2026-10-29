@@ -35,15 +35,24 @@ describe('MonthSwitcher', () => {
     expect(onMonthChange).toHaveBeenCalledWith('2025-12');
   });
 
-  it('Should disable the next month on the current month', async () => {
+  it('Should disable the next month on the month after the current one', async () => {
     const onMonthChange = jest.fn();
-    await render(<MonthSwitcher label="Meus pagamentos" month="2026-10" onMonthChange={onMonthChange} />);
+    await render(<MonthSwitcher label="Meus pagamentos" month="2026-11" onMonthChange={onMonthChange} />);
 
     const next = screen.getByRole('button', { name: 'Próximo mês' });
     await userEvent.setup().press(next);
 
     expect(next).toBeDisabled();
     expect(onMonthChange).not.toHaveBeenCalled();
+  });
+
+  it('Should ask for the next month on the current month, so it can be paid before it starts', async () => {
+    const onMonthChange = jest.fn();
+    await render(<MonthSwitcher label="Meus pagamentos" month="2026-10" onMonthChange={onMonthChange} />);
+
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Próximo mês' }));
+
+    expect(onMonthChange).toHaveBeenCalledWith('2026-11');
   });
 
   it('Should ask for the next month on an earlier month', async () => {

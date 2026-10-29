@@ -20,7 +20,9 @@ Todo membro, ao abrir o app.
   cada membro pagou.
 - **A lista do mês**, abaixo do gráfico: os lançamentos e as contas a pagar. Tocar num lançamento
   abre os [detalhes](07-detalhes-do-lancamento.md) dele, para qualquer membro.
-- **A troca de mês**, para ver os meses anteriores.
+- **A troca de mês**, para ver os meses anteriores e o próximo mês. O Início abre no mês atual, e a
+  troca para no próximo mês, que mostra as contas recorrentes dele a pagar e os pagamentos já
+  feitos para ele.
 
 Sem nenhuma conta recorrente cadastrada, o Início mostra o gráfico vazio e o botão para cadastrar as
 [contas recorrentes](02-contas-recorrentes.md).
@@ -33,6 +35,8 @@ O formato do gráfico fica para o design.
 - Cada mês mostra só as próprias contas. Uma conta de setembro que não foi paga continua a pagar
   em setembro e não aparece em outubro.
 - O pagamento de uma conta recorrente conta no mês da conta que ele paga, e no nome de quem pagou.
+  Ex.: Ana paga o Aluguel de novembro em 28 de outubro; o Início de outubro não muda, e o de
+  novembro mostra o Aluguel pago, no nome de Ana.
 - A conta avulsa entra no mês da data dela.
 - Um lançamento sem tag entra no total do mês, mas em nenhuma tag.
 
@@ -44,5 +48,8 @@ O formato do gráfico fica para o design.
       previsto.
 - [ ] O Início mostra quanto foi em cada tag e quanto cada membro pagou.
 - [ ] Dá para trocar para um mês anterior e ver os números dele.
+- [ ] Dá para avançar até o próximo mês, que mostra as contas recorrentes dele a pagar; nele, o
+      Próximo mês fica desabilitado.
+- [ ] Um pagamento de novembro registrado em outubro aparece pago em novembro e não muda outubro.
 - [ ] Uma conta de setembro sem pagamento não aparece no Início de outubro.
 - [ ] Uma conta avulsa com data de 30 de setembro, registrada em 2 de outubro, entra em setembro.

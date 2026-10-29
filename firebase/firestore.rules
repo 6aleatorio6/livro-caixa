@@ -75,8 +75,8 @@ service cloud.firestore {
     // inteiro em centavos, de 1 até 999999999; a data é `AAAA-MM-DD` (mesmo padrão do início da conta
     // recorrente) e o `month` é o ano e o mês dela, para o lançamento cair no mês certo. `kind` só
     // aceita `oneOffBill`: o pagamento de conta recorrente é validado à parte
-    // (`isValidRecurringPayment`). O mês não passa do mês de `request.time` (`isUpToCurrentMonth`, como no pagamento);
-    // a regra NÃO confere o dia dentro do mês nem que a `tagId` existe em `settings/tags`: isso fica com o app.
+    // (`isValidRecurringPayment`). O mês não passa do mês de `request.time` (`isUpToCurrentMonth`): a conta avulsa
+    // nasce paga, com a data de até hoje, e só o pagamento vai até o próximo mês. A regra NÃO confere o dia dentro do mês nem que a `tagId` existe em `settings/tags`: isso fica com o app.
     function isValidOneOffBill(entry) {
       return entry.keys().hasOnly(['kind', 'month', 'name', 'amountCents', 'date', 'tagId', 'paidBy', 'createdAt', 'receiptFileId'])
         && entry.keys().hasAll(['kind', 'month', 'name', 'amountCents', 'date', 'paidBy', 'createdAt', 'receiptFileId'])
@@ -134,6 +134,12 @@ service cloud.firestore {
     function isUpToCurrentMonth(month) {
       return int(month.split('-')[0]) < request.time.year()
         || (int(month.split('-')[0]) == request.time.year() && int(month.split('-')[1]) <= request.time.month());
+    }
+
+    // O mês `AAAA-MM` (já validado) não passa do mês seguinte ao de `request.time`, em UTC: o próximo mês já se
+    // paga. Os meses contados desde o ano zero levam dezembro a janeiro sem caso à parte.
+    function isUpToNextMonth(month) {
+      return int(month.split('-')[0]) * 12 + int(month.split('-')[1]) <= request.time.year() * 12 + request.time.month() + 1;
     }
 
     // O que a criação de qualquer lançamento exige, da conta avulsa e do pagamento: quem lança é o
@@ -254,7 +260,7 @@ service cloud.firestore {
     // regra recusa para qualquer pessoa (o `createdAt` muda e o `update` é só da conta avulsa). A
     // conta avulsa não usa um id com a forma do pagamento (`AAAA-MM_...`), senão ela ocuparia o id e a
     // conta recorrente ficaria sem poder ser paga. O pagamento exige que a conta recorrente exista e que o
-    // mês não seja futuro; a regra NÃO confere que a conta vence naquele mês. O `update` do
+    // mês não passe do próximo (`isUpToNextMonth`); a regra NÃO confere que a conta vence naquele mês. O `update` do
     // pagamento muda só o valor pago e o comprovante; a conta avulsa, o nome, o valor, a data (e com
     // ela o `month`), a tag e o comprovante. Trocar o comprovante é um lote (o `files` novo, o
     // lançamento e a exclusão do `files` antigo). Excluir é um lote que apaga o lançamento e o `files`
@@ -266,7 +272,7 @@ service cloud.firestore {
         && ((isValidOneOffBill(request.resource.data) && !id.matches('^\\d{4}-\\d{2}_.*'))
           || (isValidRecurringPayment(request.resource.data)
             && id == request.resource.data.month + '_' + request.resource.data.recurringBillId
-            && isUpToCurrentMonth(request.resource.data.month)
+            && isUpToNextMonth(request.resource.data.month)
             && exists(/databases/$(database)/documents/recurringBills/$(request.resource.data.recurringBillId))))
         && isNewEntryOfAuthor(request.resource.data);
 
