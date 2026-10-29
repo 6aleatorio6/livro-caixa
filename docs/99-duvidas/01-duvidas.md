@@ -13,7 +13,7 @@ tema aparece na documentação.
 | D-05 | Em que mês um lançamento conta? | 🟢 Respondido — o pagamento no mês da conta; a conta avulsa no mês da data dela |
 | D-06 | Uma conta recorrente pode ter mais de um pagamento no mesmo mês? | 🟢 Respondido — não: o mês fica com o primeiro que pagar |
 | D-07 | O que é o processamento de imagens acima de 5 MB, e o que acontece com um PDF grande? | 🟢 Respondido — o limite é 900 KB; a imagem é comprimida em degraus até caber, e o PDF de uma página vira imagem |
-| D-08 | O que o app mostra depois de receber um arquivo compartilhado pelo Android? | 🟢 Respondido — a lista das contas a pagar do mês, com "Conta avulsa" por último |
+| D-08 | O que o app mostra depois de receber um arquivo compartilhado pelo Android? | 🟢 Respondido — "Conta avulsa" e as contas a pagar do mês atual e do próximo |
 | D-09 | De onde o membro anexa o comprovante dentro do app? | 🟢 Respondido — só dos arquivos do celular |
 | D-10 | O que o Início mostra, além do gráfico do mês? | 🟢 Respondido — lista do mês, separação por tag e por membro, meses anteriores e o próximo |
 | D-11 | Quem pode alterar ou excluir um pagamento ou uma conta avulsa? | 🟢 Respondido — só quem registrou |
@@ -100,9 +100,11 @@ funciona no plano Blaze, cuja ativação pedia um pagamento antecipado.
 
 ## D-08 — Depois de compartilhar pelo Android
 
-**Resposta:** o app abre a lista das contas a pagar do mês, com o comprovante anexado. O membro
-escolhe a conta que está pagando; a última opção da lista é "Conta avulsa". Quem não está logado
-faz o login e precisa compartilhar o arquivo de novo.
+**Resposta:** o app abre a escolha da conta, com o comprovante anexado: primeiro "Conta avulsa",
+depois as contas a pagar do mês atual e as do próximo mês (D-25). O membro escolhe a conta que está
+pagando. Quem não está logado faz o login e precisa compartilhar o arquivo de novo. A "Conta avulsa"
+era a última opção e subiu para o topo, a pedido de Leonardo (29/10/2026), quando a lista ganhou o
+próximo mês.
 
 **Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).
 

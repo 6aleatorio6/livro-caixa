@@ -36,10 +36,11 @@ câmera nem a galeria.
 
 1. Ao compartilhar uma imagem ou um PDF em outro app do celular, este app aparece na lista de
    destinos.
-2. Escolhido o app, ele abre a lista das contas a pagar do mês, com o comprovante já anexado.
+2. Escolhido o app, ele abre a escolha da conta, com o comprovante já anexado: primeiro "Conta
+   avulsa", que leva à [conta avulsa](04-conta-avulsa.md), depois as contas a pagar do mês atual e,
+   abaixo, as do próximo mês, que já pode ser pago.
 3. O membro escolhe a conta que está pagando e segue no
-   [pagamento](03-pagamento-de-conta-recorrente.md). A última opção da lista é "Conta avulsa", que
-   leva à [conta avulsa](04-conta-avulsa.md).
+   [pagamento](03-pagamento-de-conta-recorrente.md) daquele mês.
 
 Quem compartilha sem estar logado faz o login pelo Google e perde o arquivo: precisa
 compartilhá-lo de novo depois de entrar.
@@ -64,8 +65,9 @@ Antes de salvar, o membro também abre o comprovante anexado, para conferir o va
 
 - [ ] Ao compartilhar uma imagem ou um PDF em outro app do Android, este app aparece entre os
       destinos.
-- [ ] O app abre a lista das contas a pagar do mês, com o comprovante anexado e "Conta avulsa" como
-      última opção.
+- [ ] O app abre a escolha da conta com o comprovante anexado: "Conta avulsa" primeiro, depois as
+      contas a pagar do mês atual e as do próximo mês.
+- [ ] Escolhida uma conta da lista do próximo mês, o pagamento é desse mês.
 - [ ] Uma imagem de até 900 KB é salva como está.
 - [ ] Uma imagem acima de 900 KB é salva em WebP, no primeiro degrau que cabe, baixando a qualidade
       antes do lado maior.
