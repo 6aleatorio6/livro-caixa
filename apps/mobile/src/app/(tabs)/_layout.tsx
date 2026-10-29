@@ -20,7 +20,7 @@ export default function TabsLayout() {
             <NavigationBarItem icon={House} label="Início" />
           </TabTrigger>
           <TabTrigger name="my-payments" href="/my-payments" asChild>
-            <NavigationBarItem icon={Receipt} label="Meus pagamentos" />
+            <NavigationBarItem icon={Receipt} label="Pagamentos" />
           </TabTrigger>
           <TabTrigger name="settings" href="/settings" asChild>
             <NavigationBarItem icon={Settings} label="Configurações" />

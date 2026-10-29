@@ -20,7 +20,7 @@ tags:
     file: ../../data/request.js
     env:
       SCENARIO: seedTags
-- tapOn: Meus pagamentos
+- tapOn: Pagamentos
 - assertVisible: Nenhum pagamento seu em outubro
 - takeScreenshot: my-payments--empty
 - tapOn: Nova conta avulsa

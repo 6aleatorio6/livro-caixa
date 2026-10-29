@@ -1,6 +1,6 @@
 # O Bruno paga a Internet de outubro com o valor corrigido (R$ 125,00) e um PDF escolhido no seletor de
 # arquivos do Android; o Início passa a Internet de "A pagar" para "Pagas" e o anel muda; o pagamento aparece
-# em Meus pagamentos com o previsto; a Ana, abrindo a mesma conta pela rota do mês, vê o aviso de que já foi paga, sem o formulário.
+# em Pagamentos com o previsto; a Ana, abrindo a mesma conta pela rota do mês, vê o aviso de que já foi paga, sem o formulário.
 # Coberto por:
 # - O PDF escolhido no seletor do Android, convertido em imagem e gravado em `fileContents`: só esta jornada prova a
 #   conversão pela biblioteca nativa (@dariyd/react-native-pdf-page-image) e o lote pelo React Native Firebase no
@@ -65,8 +65,8 @@ tags:
 - scrollUntilVisible:
     element: "R\\$ 125,00"
 - assertVisible: "R\\$ 125,00"
-# Meus pagamentos: o pagamento com o previsto, no nome dele.
-- tapOn: Meus pagamentos
+# Pagamentos: o pagamento com o previsto, no nome dele.
+- tapOn: Pagamentos
 - assertVisible: "pago em ../.. · previsto R\\$ 119,90"
 - assertVisible: "R\\$ 125,00"
 - takeScreenshot: my-payments--recurring-payment
