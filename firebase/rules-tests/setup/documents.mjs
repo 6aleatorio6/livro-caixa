@@ -49,6 +49,13 @@ export function recurringPaymentOf(overrides = {}) {
   });
 }
 
+/** O mês `AAAA-MM` a `offset` meses do mês atual, em UTC: o relógio do `request.time` da regra. */
+export function monthFromNow(offset) {
+  const now = new Date();
+  const index = now.getUTCFullYear() * 12 + now.getUTCMonth() + offset;
+  return `${Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, '0')}`;
+}
+
 /** O tamanho do comprovante dos casos: pequeno, para o emulador não carregar quase 1 MiB a cada lote. */
 export const RECEIPT_SIZE_BYTES = 1234;
 
