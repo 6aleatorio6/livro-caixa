@@ -222,7 +222,13 @@ throwaway flow before the round counts as passing.
 - **Metro serves an old bundle after a rebase** (the rebase rewrites the app's files one commit at a
   time, and Metro bundles one of the intermediate states: "Unable to resolve …" in the stack log, a
   Render Error on the device that the code at `HEAD` can't produce). Restart the stack after every
-  rebase, before a round.
+  rebase, before a round. The Firestore emulator can keep the rules of an intermediate commit the
+  same way: a write the current `firebase/firestore.rules` accepts fails with `PERMISSION_DENIED`
+  in the logcat (`Firestore` tag), and the screen only flashes an error toast. On 2026-10-30 the
+  #17 rebase left the #16 rules, which refuse a PDF receipt. When the stack is another session's,
+  reload the rules without taking it down: `PUT
+  http://localhost:8080/emulator/v1/projects/<project id>:securityRules` with the body
+  `{"rules":{"files":[{"name":"firestore.rules","content":"<the file>"}]}}`.
 - **The emulator loses its network** (`wlan0` NO-CARRIER, `ping 10.0.2.2` says "Network is
   unreachable"; Firestore fails with ENETUNREACH; twice in G4). Toggling wifi or airplane
   mode doesn't bring the virtual AP back; `adb reboot` does, without the person. Wait for
