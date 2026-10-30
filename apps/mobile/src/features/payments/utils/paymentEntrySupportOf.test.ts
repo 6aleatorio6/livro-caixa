@@ -31,21 +31,18 @@ const oneOff: IEntry = {
 };
 
 describe('paymentEntrySupportOf', () => {
-  it('Should write the payment date and the tag of a payment', () => {
-    expect(paymentEntrySupportOf(payment, 'Casa')).toBe('pago em 25/10 · Casa');
+  // A tag está no cabeçalho do grupo: a linha não a repete.
+  it('Should write only the payment date of a payment, without the tag', () => {
+    expect(paymentEntrySupportOf(payment)).toBe('pago em 25/10');
   });
 
-  it('Should write the expected amount instead of the tag when the paid amount differs', () => {
-    expect(paymentEntrySupportOf({ ...payment, amountCents: 18735, expectedAmountCents: 11990 }, 'Casa')).toBe(
+  it('Should add the expected amount when the paid amount differs', () => {
+    expect(paymentEntrySupportOf({ ...payment, amountCents: 18735, expectedAmountCents: 11990 })).toBe(
       'pago em 25/10 · previsto R$ 119,90',
     );
   });
 
-  it('Should write the date, the one-off mark and the tag of a one-off bill', () => {
-    expect(paymentEntrySupportOf(oneOff, 'Casa')).toBe('12/10 · avulsa · Casa');
-  });
-
-  it('Should leave the tag out when there is none', () => {
+  it('Should write the date and the one-off mark of a one-off bill, without the tag', () => {
     expect(paymentEntrySupportOf(oneOff)).toBe('12/10 · avulsa');
   });
 });

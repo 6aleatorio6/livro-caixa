@@ -7,6 +7,8 @@ import { formatCents } from '@/shared/utils/format/formatCents';
 import { pluralize } from '@/shared/utils/format/pluralize';
 
 export interface IMonthTotalCardProps {
+  /** Quem registrou: "Você", ou o primeiro nome de outro membro. */
+  ownerName: string;
   /** O mês do total, 'AAAA-MM'. */
   month: string;
   /** Quanto a pessoa registrou no mês, em centavos. */
@@ -16,14 +18,14 @@ export interface IMonthTotalCardProps {
   familyAmountCents: number;
 }
 
-/** O total que a pessoa registrou no mês: o valor grande e "2 lançamentos · 71% do que a família pagou". */
-export function MonthTotalCard({ month, amountCents, entryCount, familyAmountCents }: IMonthTotalCardProps) {
+/** O total que uma pessoa registrou no mês: o valor grande e "2 lançamentos · 71% do que a família pagou". */
+export function MonthTotalCard({ ownerName, month, amountCents, entryCount, familyAmountCents }: IMonthTotalCardProps) {
   const percent = familyAmountCents > 0 ? Math.floor((amountCents / familyAmountCents) * 100) : 0;
 
   return (
     <View style={styles.card}>
       <AppText variant="labelLarge" color="onSurfaceVariant">
-        Você registrou em {monthName(month)}
+        {ownerName} registrou em {monthName(month)}
       </AppText>
       <AppText variant="headlineLargeEmphasized" color="primary">
         {formatCents(amountCents)}

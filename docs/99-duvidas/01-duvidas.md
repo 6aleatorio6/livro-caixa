@@ -26,7 +26,7 @@ tema aparece na documentação.
 | D-18 | Como o Maestro alcança o emulador do PC? | 🟢 Respondido — pela rede do PC, que o container divide |
 | D-19 | O JSON do Google falso leva o nome da pessoa? | 🟢 Respondido — sim, no campo `name` |
 | D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🟢 Respondido — por um comando do adb, antes do fluxo |
-| D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🟢 Respondido — Meus pagamentos, um mês por vez, com a troca de mês |
+| D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🟢 Respondido — Pagamentos, um mês e uma pessoa por vez, agrupado por tag |
 | D-22 | O app lê o valor no comprovante? | 🟢 Respondido — fica para depois, com a leitura no celular |
 | D-23 | O comprovante em PDF abre dentro do app ou no leitor do celular? | 🟢 Respondido — dentro do app, já convertido em imagem |
 | D-24 | O app aceita PDF de mais de uma página? | 🟡 Parcial — por enquanto, não; falta decidir se e como volta |
@@ -223,9 +223,12 @@ Início. A sessão de design tinha usado "Meus lançamentos", pelo glossário (a
 que é de cada um são os lançamentos); Leonardo escolheu "Meus pagamentos", porque a conta avulsa
 também é um pagamento: não tem valor previsto e só é registrada junto com o comprovante. Na barra
 de abas o rótulo passou a "Pagamentos" (29/10/2026): "Meus pagamentos" quebrava a linha em tela
-pequena.
+pequena. No mesmo dia, Leonardo pediu que a aba mostrasse também os lançamentos dos outros membros, e
+o nome da tela virou "Pagamentos": chips com os membros, abertos em "Você", e a lista agrupada por
+tag, com as tags em ordem alfabética e Sem tag por último. Sem chip "Todos", porque o Início já lista
+todos os lançamentos do mês com quem pagou.
 
-**Onde aparece:** [Meus Pagamentos](../03-funcionalidades/01-principal/06-meus-pagamentos.md).
+**Onde aparece:** [Pagamentos](../03-funcionalidades/01-principal/06-pagamentos.md).
 
 ## D-22 — Ler o valor no comprovante
 
@@ -262,7 +265,7 @@ documento. Falta decidir se o PDF de várias páginas volta, e de que jeito.
 ## D-25 — Pagar o próximo mês
 
 **Resposta:** sim, só o próximo mês: pagar em outubro uma conta que vence no começo de novembro. A
-troca de mês do Início e de Meus pagamentos vai até o próximo mês, que mostra as contas recorrentes
+troca de mês do Início e de Pagamentos vai até o próximo mês, que mostra as contas recorrentes
 dele a pagar, e o compartilhamento do Android lista também as contas a pagar do próximo mês. O
 pagamento conta no mês da conta, e o mês continua pago quando começa. A conta avulsa não muda: ela
 nasce paga, com a data de até hoje. Qualquer mês futuro foi descartado, porque o pedido era o do
@@ -270,5 +273,5 @@ começo do mês seguinte.
 
 **Onde aparece:** [Início](../03-funcionalidades/01-principal/01-inicio.md),
 [Pagamento de Conta Recorrente](../03-funcionalidades/01-principal/03-pagamento-de-conta-recorrente.md),
-[Meus Pagamentos](../03-funcionalidades/01-principal/06-meus-pagamentos.md),
+[Pagamentos](../03-funcionalidades/01-principal/06-pagamentos.md),
 [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).

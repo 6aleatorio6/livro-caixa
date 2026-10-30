@@ -6,10 +6,11 @@ import { AppText } from '@/shared/components/AppText/AppText';
 export interface IEmptyStateProps {
   image: ImageSourcePropType;
   title: string;
-  text: string;
+  /** O que fará algo aparecer; sem ela, só o título. */
+  text?: string;
 }
 
-/** O que a tela mostra quando não há nada para listar: a ilustração, o título e uma frase que diz o que fará algo aparecer. */
+/** O que a tela mostra quando não há nada para listar: a ilustração, o título e, quando há, a frase que diz o que fará algo aparecer. */
 export function EmptyState({ image, title, text }: IEmptyStateProps) {
   return (
     <View style={styles.container}>
@@ -17,9 +18,11 @@ export function EmptyState({ image, title, text }: IEmptyStateProps) {
       <AppText variant="titleMediumEmphasized" style={styles.centered}>
         {title}
       </AppText>
-      <AppText variant="bodyMedium" color="onSurfaceVariant" style={styles.centered}>
-        {text}
-      </AppText>
+      {text ? (
+        <AppText variant="bodyMedium" color="onSurfaceVariant" style={styles.centered}>
+          {text}
+        </AppText>
+      ) : null}
     </View>
   );
 }

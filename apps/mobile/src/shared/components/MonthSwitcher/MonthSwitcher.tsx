@@ -9,7 +9,7 @@ import { nextMonth } from '@/shared/utils/date/nextMonth';
 import { shiftMonth } from '@/shared/utils/date/shiftMonth';
 
 export interface IMonthSwitcherProps {
-  /** O rótulo da aba, em cima do mês: "Meus pagamentos". Sem ele, só o mês aparece e o cabeçalho tem 48 de altura. */
+  /** O rótulo da aba, em cima do mês: "Pagamentos". Sem ele, só o mês aparece e o cabeçalho tem 48 de altura. */
   label?: string;
   /** O mês mostrado, 'AAAA-MM'. */
   month: string;

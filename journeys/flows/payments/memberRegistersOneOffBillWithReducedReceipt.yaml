@@ -54,7 +54,9 @@ tags:
 - assertNotVisible: Conserto da geladeira
 - tapOn: Mês anterior
 - assertVisible: Conserto da geladeira
-- assertVisible: "15/.. · avulsa · Casa"
+# A tag fica no cabeçalho do grupo, não na linha.
+- assertVisible: Casa
+- assertVisible: "15/.. · avulsa"
 - assertVisible: "R$ 350,00"
 - assertVisible: "1 lançamento.*"
 - takeScreenshot: my-payments--previous-month

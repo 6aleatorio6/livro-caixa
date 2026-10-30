@@ -1,9 +1,7 @@
-import { Check } from 'lucide-react-native';
-import { Pressable, View } from 'react-native';
-import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { StyleSheet } from 'react-native-unistyles';
 
-import { AppText } from '@/shared/components/AppText/AppText';
 import { Decorative } from '@/shared/components/Decorative/Decorative';
+import { FilterChip } from '@/shared/components/FilterChip/FilterChip';
 import type { ITagColor } from '@/shared/types/tag/TagColor';
 import { tagColorRoles } from '@/shared/utils/tag/tagColorRoles';
 
@@ -17,51 +15,18 @@ export interface ITagChipProps {
 }
 
 /** O nome de uma tag com a bolinha da sua cor. Com `onPress` é um botão que anuncia se está escolhido. */
-export function TagChip({ name, color, isSelected = false, onPress }: ITagChipProps) {
-  const { theme } = useUnistyles();
-
-  const content = (
-    <>
-      {isSelected ? (
-        <Decorative>
-          <Check size={16} color={theme.colors.onSecondaryContainer} />
-        </Decorative>
-      ) : null}
-      <Decorative style={styles.dot(color)} />
-      <AppText variant="labelLarge" color={isSelected ? 'onSecondaryContainer' : 'onSurfaceVariant'}>
-        {name}
-      </AppText>
-    </>
-  );
-
-  if (!onPress) return <View style={styles.chip(isSelected, false)}>{content}</View>;
+export function TagChip({ name, color, isSelected, onPress }: ITagChipProps) {
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={name}
-      accessibilityState={{ selected: isSelected }}
+    <FilterChip
+      label={name}
+      isSelected={isSelected}
+      leading={<Decorative style={styles.dot(color)} />}
       onPress={onPress}
-      style={({ pressed }) => styles.chip(isSelected, pressed)}
-    >
-      {content}
-    </Pressable>
+    />
   );
 }
 
 const styles = StyleSheet.create((theme) => ({
-  chip: (isSelected: boolean, isPressed: boolean) => ({
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    gap: theme.spacing.small,
-    height: 32, // a altura do design, sem token
-    paddingHorizontal: theme.spacing.medium,
-    borderRadius: theme.radii.small,
-    borderWidth: 1,
-    borderColor: isSelected ? theme.colors.secondaryContainer : theme.colors.outlineVariant,
-    backgroundColor: isSelected ? theme.colors.secondaryContainer : 'transparent',
-    opacity: isPressed ? theme.opacity.pressed : 1,
-  }),
   dot: (color: ITagColor) => ({
     width: 10, // a bolinha do design, sem token
     height: 10,
