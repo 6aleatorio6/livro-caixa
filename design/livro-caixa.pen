@@ -17759,7 +17759,7 @@
                   "fill": "#1C1C1A",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Obrigatório em todo lançamento. Escolhe imagem ou PDF dos arquivos do celular, ou chega anexado pelo compartilhamento do Android. Todo comprovante é guardado como imagem de até 900 KB: a imagem maior é comprimida, e o PDF de uma página vira a imagem dela, com o nome do PDF. O PDF de várias páginas é recusado, por enquanto.",
+                  "content": "Obrigatório em todo lançamento. Escolhe imagem ou PDF dos arquivos do celular, ou chega anexado pelo compartilhamento do Android. Cada comprovante tem até 900 KB: a imagem maior é comprimida, e o PDF vai como está, com qualquer número de páginas; o PDF maior é recusado.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -17924,17 +17924,17 @@
                           "id": "kEeQk",
                           "type": "ref",
                           "ref": "mDfYD",
-                          "name": "Anexado",
+                          "name": "Anexado, PDF",
                           "descendants": {
                             "Rsmc9": {
                               "fill": "$primary-container"
                             },
                             "sLrD8": {
-                              "icon": "image",
+                              "icon": "file-check",
                               "fill": "$on-primary-container"
                             },
                             "JqtR3": {
-                              "content": "Imagem · 182 KB"
+                              "content": "PDF · 182 KB"
                             },
                             "u0fr1G": {
                               "content": "comprovante-luz.pdf"
@@ -17949,7 +17949,7 @@
                           "id": "Rpd8a",
                           "name": "Estado",
                           "fill": "$on-surface-variant",
-                          "content": "Anexado",
+                          "content": "Anexado: PDF",
                           "lineHeight": "$label-small-line-height",
                           "fontFamily": "$font-family",
                           "fontSize": "$label-small-size",
@@ -17994,7 +17994,7 @@
                           "id": "WH2X3",
                           "name": "Estado",
                           "fill": "$on-surface-variant",
-                          "content": "Imagem comprimida (ou PDF convertido)",
+                          "content": "Imagem comprimida",
                           "lineHeight": "$label-small-line-height",
                           "fontFamily": "$font-family",
                           "fontSize": "$label-small-size",
@@ -18022,7 +18022,7 @@
                           "id": "jEDAw",
                           "type": "ref",
                           "ref": "mDfYD",
-                          "name": "Erro",
+                          "name": "Erro, PDF grande",
                           "stroke": "$error",
                           "strokeWidth": 2,
                           "descendants": {
@@ -18034,7 +18034,7 @@
                               "fill": "$on-error-container"
                             },
                             "JqtR3": {
-                              "content": "O PDF tem mais de uma página. Por enquanto, só dá para anexar PDF de uma página.",
+                              "content": "O PDF passa de 900 KB. Escolha outro arquivo.",
                               "fill": "$error"
                             },
                             "u0fr1G": {
@@ -18050,7 +18050,7 @@
                           "id": "T7Ymx",
                           "name": "Estado",
                           "fill": "$on-surface-variant",
-                          "content": "Erro: PDF de várias páginas",
+                          "content": "Erro: PDF acima de 900 KB",
                           "lineHeight": "$label-small-line-height",
                           "fontFamily": "$font-family",
                           "fontSize": "$label-small-size",
@@ -22536,7 +22536,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "O Ver dos detalhes abre a imagem em tela cheia, sobre fundo escuro, para qualquer membro. Pinça ou toque duplo aproximam. Embaixo, de que lançamento é.",
+                  "content": "O Ver dos detalhes abre a imagem em tela cheia, sobre fundo escuro, para qualquer membro: na largura da tela, com a altura da proporção dela, e um print longo rola até o fim. Sem zoom. Embaixo, de que lançamento é.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -22579,7 +22579,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "O PDF chega ao app como a imagem da página, com o nome do PDF, e abre igual à imagem: tela cheia, fundo escuro e zoom. O PDF de várias páginas não é aceito, por enquanto.",
+                  "content": "O PDF é guardado como está e abre no leitor do app, em tela cheia e fundo escuro: as páginas na largura da tela, uma embaixo da outra, rolando, com o zoom de pinça do leitor e o \"1 de 2\" quando há mais de uma.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -23677,7 +23677,7 @@
                   "fill": "#1C1C1A",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Em 29/10/2026 as telas foram conferidas contra o app construído (as jornadas no emulador, os commits e as conferências da construção) e passaram a mostrar o que ele faz: o comprovante é sempre imagem de até 900 KB, com o PDF de uma página convertido e o de várias recusado, e o visualizador do PDF virou o da imagem; o * de obrigatório nos rótulos; o aviso de erro em error-container, sem ação; as tags em ordem alfabética; o motivo de não excluir uma tag em uso começa com “A tag”; o título do diálogo quebra linha. No mesmo dia, toda tela passou a ter 412 × 915, com o Início rolado num frame à parte, e saíram a 10 Validação e os esboços das direções criativas, já registrados nas Decisões. Feito pela IA, a pedido de Leonardo.",
+                  "content": "Em 29/10/2026 as telas foram conferidas contra o app construído (as jornadas no emulador, os commits e as conferências da construção) e passaram a mostrar o que ele faz: o comprovante é sempre imagem de até 900 KB, com o PDF de uma página convertido e o de várias recusado, e o visualizador do PDF virou o da imagem; o * de obrigatório nos rótulos; o aviso de erro em error-container, sem ação; as tags em ordem alfabética; o motivo de não excluir uma tag em uso começa com “A tag”; o título do diálogo quebra linha. No mesmo dia, toda tela passou a ter 412 × 915, com o Início rolado num frame à parte, e saíram a 10 Validação e os esboços das direções criativas, já registrados nas Decisões. Feito pela IA, a pedido de Leonardo. Ainda em 29/10/2026, a pedido de Leonardo, o PDF voltou a ser guardado como PDF, até 900 KB e com qualquer número de páginas, e a imagem passou a abrir na largura da tela, rolando, sem zoom. Feito pela IA.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 16,
@@ -27404,11 +27404,11 @@
                   "fill": "$primary-container"
                 },
                 "sLrD8": {
-                  "icon": "image",
+                  "icon": "file-check",
                   "fill": "$on-primary-container"
                 },
                 "JqtR3": {
-                  "content": "Imagem · comprimida para 96 KB"
+                  "content": "PDF · 48 KB"
                 },
                 "u0fr1G": {
                   "content": "comprovante-internet.pdf"
@@ -27615,11 +27615,11 @@
                   "fill": "$primary-container"
                 },
                 "sLrD8": {
-                  "icon": "image",
+                  "icon": "file-check",
                   "fill": "$on-primary-container"
                 },
                 "JqtR3": {
-                  "content": "Veio do compartilhamento · Imagem · comprimida para 64 KB"
+                  "content": "Veio do compartilhamento · PDF · 64 KB"
                 },
                 "u0fr1G": {
                   "content": "pix-agua-outubro.pdf"
@@ -29451,11 +29451,6 @@
           "width": "fill_container",
           "height": "fill_container",
           "layout": "vertical",
-          "padding": [
-            8,
-            0
-          ],
-          "justifyContent": "center",
           "alignItems": "center",
           "children": [
             {
@@ -29711,18 +29706,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "type": "text",
-              "id": "xbm9v",
-              "name": "Dica",
-              "fill": "$on-surface-variant",
-              "content": "Abra os dedos ou toque duas vezes para aproximar.",
-              "lineHeight": "$label-small-line-height",
-              "fontFamily": "$font-family",
-              "fontSize": "$label-small-size",
-              "fontWeight": "$label-small-weight",
-              "letterSpacing": "$label-small-tracking"
             }
           ]
         },
@@ -29883,49 +29866,30 @@
         {
           "type": "frame",
           "id": "J4MGdw",
-          "name": "Imagem",
+          "name": "PDF",
           "width": "fill_container",
           "height": "fill_container",
+          "fill": "#3A3B37",
           "layout": "vertical",
-          "padding": [
-            8,
-            0
-          ],
-          "justifyContent": "center",
           "alignItems": "center",
           "children": [
             {
               "type": "frame",
               "id": "y4wfp",
-              "name": "Imagem da página",
+              "name": "Páginas",
               "clip": true,
               "width": "fill_container",
-              "height": 560,
-              "fill": "#3A3B37",
+              "height": "fill_container",
               "layout": "vertical",
-              "padding": [
-                0,
-                24
-              ],
-              "justifyContent": "center",
+              "gap": 10,
               "children": [
                 {
                   "type": "frame",
                   "id": "JjvbU",
                   "name": "Página 1",
                   "width": "fill_container",
-                  "height": 515,
+                  "height": 583,
                   "fill": "#FFFFFF",
-                  "effect": {
-                    "type": "shadow",
-                    "shadowType": "outer",
-                    "color": "#00000040",
-                    "offset": {
-                      "x": 0,
-                      "y": 2
-                    },
-                    "blur": 8
-                  },
                   "layout": "vertical",
                   "gap": 10,
                   "padding": [
@@ -30273,20 +30237,115 @@
                       "height": 6
                     }
                   ]
+                },
+                {
+                  "type": "frame",
+                  "id": "vZkZ0",
+                  "name": "Página 2",
+                  "width": "fill_container",
+                  "height": 583,
+                  "fill": "#FFFFFF",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "padding": [
+                    28,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 3,
+                      "id": "FnKWY",
+                      "name": "Texto corrido",
+                      "fill": "#ECEBE6",
+                      "width": 316,
+                      "height": 6
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 3,
+                      "id": "toH6n",
+                      "name": "Texto corrido",
+                      "fill": "#ECEBE6",
+                      "width": 220,
+                      "height": 6
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 3,
+                      "id": "zokTH",
+                      "name": "Texto corrido",
+                      "fill": "#ECEBE6",
+                      "width": 316,
+                      "height": 6
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 3,
+                      "id": "bHpCk",
+                      "name": "Texto corrido",
+                      "fill": "#ECEBE6",
+                      "width": 316,
+                      "height": 6
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 3,
+                      "id": "B7hwr",
+                      "name": "Texto corrido",
+                      "fill": "#ECEBE6",
+                      "width": 220,
+                      "height": 6
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 3,
+                      "id": "u6p6O",
+                      "name": "Texto corrido",
+                      "fill": "#ECEBE6",
+                      "width": 316,
+                      "height": 6
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 3,
+                      "id": "C7EOyw",
+                      "name": "Texto corrido",
+                      "fill": "#ECEBE6",
+                      "width": 280,
+                      "height": 6
+                    }
+                  ]
                 }
               ]
             },
             {
-              "type": "text",
-              "id": "NzDKp",
-              "name": "Dica",
-              "fill": "$on-surface-variant",
-              "content": "Abra os dedos ou toque duas vezes para aproximar.",
-              "lineHeight": "$label-small-line-height",
-              "fontFamily": "$font-family",
-              "fontSize": "$label-small-size",
-              "fontWeight": "$label-small-weight",
-              "letterSpacing": "$label-small-tracking"
+              "type": "frame",
+              "id": "wjjZl",
+              "layoutPosition": "absolute",
+              "x": 174,
+              "y": 663,
+              "name": "Indicador de página",
+              "fill": "$inverse-surface",
+              "cornerRadius": 999,
+              "padding": [
+                6,
+                14
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "yx7AU",
+                  "name": "Página de total",
+                  "fill": "$inverse-on-surface",
+                  "content": "1 de 2",
+                  "lineHeight": "$label-medium-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$label-medium-size",
+                  "fontWeight": "$label-medium-weight",
+                  "letterSpacing": "$label-medium-tracking"
+                }
+              ]
             }
           ]
         },
