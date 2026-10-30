@@ -2,7 +2,7 @@ import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
-import { Decorative } from '@/shared/components/Decorative/Decorative';
+import { ColorDot } from '@/shared/components/ColorDot/ColorDot';
 import type { ITagColor } from '@/shared/types/tag/TagColor';
 import { tagColorRoles } from '@/shared/utils/tag/tagColorRoles';
 
@@ -21,7 +21,7 @@ export function DetailRow({ label, value, tagColor }: IDetailRowProps) {
         {label}
       </AppText>
       <View style={styles.value}>
-        {tagColor ? <Decorative style={styles.dot(tagColor)} /> : null}
+        {tagColor ? <ColorDot color={tagColorRoles(tagColor).mainRole} /> : null}
         <AppText variant="bodyLarge" numberOfLines={1} style={styles.text}>
           {value}
         </AppText>
@@ -42,10 +42,4 @@ const styles = StyleSheet.create((theme) => ({
   },
   value: { flexShrink: 1, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.small },
   text: { flexShrink: 1 },
-  dot: (color: ITagColor) => ({
-    width: 10, // a bolinha do design, sem token
-    height: 10,
-    borderRadius: theme.radii.full,
-    backgroundColor: theme.colors[tagColorRoles(color).mainRole],
-  }),
 }));

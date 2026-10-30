@@ -5,7 +5,7 @@ import { StyleSheet } from 'react-native-unistyles';
 import type { IColorRole } from '@/core/types/ColorRole';
 
 import { AppText } from '@/shared/components/AppText/AppText';
-import { Decorative } from '@/shared/components/Decorative/Decorative';
+import { ColorDot } from '@/shared/components/ColorDot/ColorDot';
 import { formatCents } from '@/shared/utils/format/formatCents';
 
 export interface IEntryTagGroupProps {
@@ -24,7 +24,7 @@ export function EntryTagGroup({ name, color, totalCents, children }: IEntryTagGr
     <View style={styles.group}>
       <View style={styles.header}>
         <View style={styles.tag}>
-          <Decorative style={styles.dot(color)} />
+          <ColorDot color={color} />
           <AppText variant="labelLarge" color="onSurfaceVariant" accessibilityRole="header">
             {name}
           </AppText>
@@ -47,10 +47,4 @@ const styles = StyleSheet.create((theme) => ({
     paddingBottom: theme.spacing.extraSmall,
   },
   tag: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.small },
-  dot: (color: IColorRole) => ({
-    width: 10, // a bolinha do design, sem token
-    height: 10,
-    borderRadius: theme.radii.full,
-    backgroundColor: theme.colors[color],
-  }),
 }));

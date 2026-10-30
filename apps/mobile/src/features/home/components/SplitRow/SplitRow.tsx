@@ -5,7 +5,7 @@ import type { IColorRole } from '@/core/types/ColorRole';
 
 import { AppText } from '@/shared/components/AppText/AppText';
 import { CircleMark } from '@/shared/components/CircleMark/CircleMark';
-import { Decorative } from '@/shared/components/Decorative/Decorative';
+import { ColorDot } from '@/shared/components/ColorDot/ColorDot';
 import { formatCents } from '@/shared/utils/format/formatCents';
 
 import { SplitBar } from '@/features/home/components/SplitBar/SplitBar';
@@ -31,7 +31,7 @@ export function SplitRow({ mark, name, paidCents, monthPaidCents, color, detail 
       <View style={styles.line}>
         <View style={styles.name}>
           {mark === 'dot' ? (
-            <Decorative style={styles.dot(color)} />
+            <ColorDot color={color} />
           ) : (
             <CircleMark size={28} color="secondaryContainer">
               <AppText variant="labelMediumEmphasized" color="onSecondaryContainer">
@@ -59,10 +59,4 @@ const styles = StyleSheet.create((theme) => ({
   split: { gap: theme.spacing.small },
   line: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   name: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.small },
-  dot: (role: IColorRole) => ({
-    width: 10, // a bolinha do design, sem token
-    height: 10,
-    borderRadius: theme.radii.full,
-    backgroundColor: theme.colors[role],
-  }),
 }));

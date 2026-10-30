@@ -1,6 +1,4 @@
-import { StyleSheet } from 'react-native-unistyles';
-
-import { Decorative } from '@/shared/components/Decorative/Decorative';
+import { ColorDot } from '@/shared/components/ColorDot/ColorDot';
 import { FilterChip } from '@/shared/components/FilterChip/FilterChip';
 import type { ITagColor } from '@/shared/types/tag/TagColor';
 import { tagColorRoles } from '@/shared/utils/tag/tagColorRoles';
@@ -20,17 +18,8 @@ export function TagChip({ name, color, isSelected, onPress }: ITagChipProps) {
     <FilterChip
       label={name}
       isSelected={isSelected}
-      leading={<Decorative style={styles.dot(color)} />}
+      leading={<ColorDot color={tagColorRoles(color).mainRole} />}
       onPress={onPress}
     />
   );
 }
-
-const styles = StyleSheet.create((theme) => ({
-  dot: (color: ITagColor) => ({
-    width: 10, // a bolinha do design, sem token
-    height: 10,
-    borderRadius: theme.radii.full,
-    backgroundColor: theme.colors[tagColorRoles(color).mainRole],
-  }),
-}));
