@@ -20,4 +20,16 @@ describe('findReceiptAmount', () => {
 
     expect(findReceiptAmount(lines)).toBeNull();
   });
+
+  it('Should not count a zeroed fee as a second amount', () => {
+    const lines = ocrLinesOf('Comprovante de Pix', 'Valor', 'R$ 30,00', 'Tarifa', 'R$ 0,00');
+
+    expect(findReceiptAmount(lines)).toBe(3000);
+  });
+
+  it('Should read nothing when the only amount is zero', () => {
+    const lines = ocrLinesOf('Comprovante de Pix', 'Valor 30,00', 'Tarifa', 'R$ 0,00');
+
+    expect(findReceiptAmount(lines)).toBeNull();
+  });
 });
