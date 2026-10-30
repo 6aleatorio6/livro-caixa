@@ -54,6 +54,8 @@ const [paymentOfScenario] = scenario.input;
 const pickedFile = { uri: 'file:///x', name: 'x.png', contentType: 'image/png', sizeBytes: 10 };
 const RECEIPT_BUTTON = 'Comprovante: Nenhum arquivo anexado. Escolher';
 const SUBMIT = 'Registrar pagamento';
+const EXPECTED_NOTE = 'Veio do valor previsto. Corrija se pagou outro valor.';
+const RECEIPT_NOTE = 'Veio do comprovante. Corrija se pagou outro valor.';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -271,6 +273,71 @@ describe('PayRecurringBillPage', () => {
     expect(screen.queryByLabelText('Valor pago')).not.toBeOnTheScreen();
   });
 
+  describe('The amount read from the receipt', () => {
+    const fromReceipt = payRecurringBillScenarios.memberPaysWithAmountReadFromReceipt;
+    const [paymentFromReceipt] = fromReceipt.input;
+
+    beforeEach(() => {
+      jest.mocked(prepareReceipt).mockResolvedValue(paymentFromReceipt.receipt);
+    });
+
+    it('Should fill the amount paid with the one read from the receipt and say where it came from', async () => {
+      const user = await renderPage();
+
+      await user.press(screen.getByRole('button', { name: RECEIPT_BUTTON }));
+
+      expect(screen.getByDisplayValue('R$ 125,50')).toBeOnTheScreen();
+      expect(screen.getByText(RECEIPT_NOTE)).toBeOnTheScreen();
+      expect(screen.queryByText(EXPECTED_NOTE)).not.toBeOnTheScreen();
+    });
+
+    it('Should register the payment with the amount read from the receipt', async () => {
+      mockServiceScenario(payRecurringBillService, fromReceipt);
+      const user = await renderPage();
+
+      await user.press(screen.getByRole('button', { name: RECEIPT_BUTTON }));
+      await user.press(screen.getByRole('button', { name: SUBMIT }));
+
+      expect(payRecurringBillService).toHaveBeenCalledWith(paymentFromReceipt);
+    });
+
+    it('Should keep the amount the member typed when a receipt is attached', async () => {
+      const user = await renderPage();
+      const field = screen.getByLabelText('Valor pago');
+      await user.clear(field);
+      await user.type(field, '13000');
+
+      await user.press(screen.getByRole('button', { name: RECEIPT_BUTTON }));
+
+      expect(screen.getByDisplayValue('R$ 130,00')).toBeOnTheScreen();
+      expect(screen.queryByText(RECEIPT_NOTE)).not.toBeOnTheScreen();
+    });
+
+    it('Should drop the receipt note once the member types in the amount', async () => {
+      const user = await renderPage();
+      await user.press(screen.getByRole('button', { name: RECEIPT_BUTTON }));
+
+      const field = screen.getByLabelText('Valor pago');
+      await user.clear(field);
+      await user.type(field, '13000');
+
+      expect(screen.getByDisplayValue('R$ 130,00')).toBeOnTheScreen();
+      expect(screen.queryByText(RECEIPT_NOTE)).not.toBeOnTheScreen();
+      expect(screen.getByText(EXPECTED_NOTE)).toBeOnTheScreen();
+    });
+
+    it('Should go back to the expected amount when the new receipt reads nothing', async () => {
+      const user = await renderPage();
+      await user.press(screen.getByRole('button', { name: RECEIPT_BUTTON }));
+      jest.mocked(prepareReceipt).mockResolvedValue(paymentOfScenario.receipt);
+
+      await user.press(screen.getByRole('button', { name: `Comprovante: ${paymentFromReceipt.receipt.name}. Trocar` }));
+
+      expect(screen.getByDisplayValue('R$ 119,90')).toBeOnTheScreen();
+      expect(screen.getByText(EXPECTED_NOTE)).toBeOnTheScreen();
+    });
+  });
+
   describe('With the shared receipt in the store', () => {
     const sharedOpening = { month: paymentOfScenario.month, shared: '1' };
 
@@ -290,6 +357,16 @@ describe('PayRecurringBillPage', () => {
 
       expect(screen.getByText(paymentOfScenario.receipt.name)).toBeOnTheScreen();
       expect(screen.queryByRole('button', { name: RECEIPT_BUTTON })).not.toBeOnTheScreen();
+    });
+
+    it('Should open with the amount read from the shared receipt', async () => {
+      const [paymentFromReceipt] = payRecurringBillScenarios.memberPaysWithAmountReadFromReceipt.input;
+      useSharedReceiptStore.setState({ receipt: paymentFromReceipt.receipt });
+
+      await renderPage(undefined, sharedOpening);
+
+      expect(screen.getByDisplayValue('R$ 125,50')).toBeOnTheScreen();
+      expect(screen.getByText(RECEIPT_NOTE)).toBeOnTheScreen();
     });
 
     it('Should register the payment with the shared receipt and dismiss to the home, leaving the store to the share screen', async () => {

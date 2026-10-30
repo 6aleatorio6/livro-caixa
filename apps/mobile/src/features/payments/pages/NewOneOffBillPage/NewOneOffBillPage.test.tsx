@@ -177,6 +177,16 @@ describe('NewOneOffBillPage', () => {
     expect(router.back).not.toHaveBeenCalled();
   });
 
+  it('Should fill the amount paid with the one read from the receipt and say where it came from', async () => {
+    jest.mocked(prepareReceipt).mockResolvedValue({ ...bill.receipt, readAmountCents: 8990 });
+    const user = await renderPage();
+
+    await user.press(screen.getByRole('button', { name: RECEIPT_BUTTON }));
+
+    expect(screen.getByDisplayValue('R$ 89,90')).toBeOnTheScreen();
+    expect(screen.getByText('Veio do comprovante. Corrija se pagou outro valor.')).toBeOnTheScreen();
+  });
+
   it('Should refuse the empty name and amount', async () => {
     const user = await renderPage();
 

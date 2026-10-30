@@ -3,6 +3,7 @@ import { act, render, screen, userEvent, within } from '@testing-library/react-n
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { showToast } from '@/core/utils/storeActions/showToast';
+import { AppError } from '@/shared/exceptions/AppError';
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService.scenarios';
@@ -131,6 +132,32 @@ describe('EditEntryPage', () => {
       await user.press(screen.getByRole('button', { name: SAVE }));
 
       expect(updateEntryService).toHaveBeenCalledWith(...scenario.input);
+    });
+
+    it('Should fill the amount paid with the one read from the new receipt and say where it came from', async () => {
+      jest.mocked(prepareReceipt).mockResolvedValue({ ...NEW_RECEIPT, readAmountCents: 19990 });
+      const user = await renderEdit();
+
+      await user.press(screen.getByRole('button', { name: 'Comprovante: comprovante-antigo.png. Trocar' }));
+
+      expect(screen.getByDisplayValue('R$ 199,90')).toBeOnTheScreen();
+      expect(screen.getByText('Veio do comprovante. Corrija se pagou outro valor.')).toBeOnTheScreen();
+    });
+
+    it('Should go back to the saved amount when the new receipt is refused', async () => {
+      jest.mocked(prepareReceipt).mockResolvedValue({ ...NEW_RECEIPT, readAmountCents: 19990 });
+      const user = await renderEdit();
+      await user.press(screen.getByRole('button', { name: 'Comprovante: comprovante-antigo.png. Trocar' }));
+      jest
+        .mocked(prepareReceipt)
+        .mockRejectedValue(
+          new AppError('Receipt is over 900 KiB', 'Mesmo comprimida, a imagem passa de 900 KB. Escolha outro arquivo.'),
+        );
+
+      await user.press(screen.getByRole('button', { name: `Comprovante: ${NEW_RECEIPT.name}. Trocar` }));
+
+      expect(screen.getByDisplayValue('R$ 187,35')).toBeOnTheScreen();
+      expect(screen.getByText('Corrija se pagou outro valor.')).toBeOnTheScreen();
     });
 
     it('Should call the service and go back even when nothing was changed', async () => {

@@ -57,6 +57,13 @@ export const payRecurringBillScenarios = {
     input: [{ ...INTERNET, amountCents: 12550 }],
     result: undefined,
   },
+  // O OCR leu R$ 125,50 no comprovante, e o valor pago é o lido; o valor lido não vai para o Firestore.
+  memberPaysWithAmountReadFromReceipt: {
+    signedInAs: BRUNO,
+    given: BRUNO_WITHOUT_ENTRIES,
+    input: [{ ...INTERNET, amountCents: 12550, receipt: { ...RECEIPT, readAmountCents: 12550 } }],
+    result: undefined,
+  },
 } satisfies Record<string, IServiceScenario<[IRecurringPaymentInput], void>>;
 
 /** Os casos recusados: o serviço lança `AppError`, e a `result` é o que o erro carrega. */
