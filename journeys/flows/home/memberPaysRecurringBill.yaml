@@ -8,7 +8,7 @@
 # - O valor vem do previsto e a correção vale: PayRecurringBillPage.test.tsx e o contrato do
 #   payRecurringBillService (memberPaysWithCorrectedAmount).
 # - A conta sai do "A pagar", entra nas "Pagas" e o anel muda: HomePage.test.tsx e monthSummary.test.ts.
-# - "pago em … · previsto R$ 119,90" em Meus pagamentos: MyPaymentsPage.test.tsx.
+# - "pago em … · previsto R$ 119,90" em Meus pagamentos: PaymentsPage.test.tsx.
 # - Mês já pago: a tela mostra o aviso e não oferece o formulário: PayRecurringBillPage.test.tsx; a
 #   corrida do segundo lote, no contrato (billAlreadyPaidByAnother) e nas regras do pagamento
 #   (entries.payment.test.mjs).

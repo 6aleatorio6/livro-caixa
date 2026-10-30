@@ -18,13 +18,13 @@ import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
-import { myEntrySupportOf } from '@/features/payments/utils/myEntrySupportOf';
+import { paymentEntrySupportOf } from '@/features/payments/utils/paymentEntrySupportOf';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { monthName } from '@/shared/utils/date/monthName';
 import { tagNameOf } from '@/shared/utils/tag/tagNameOf';
 
 /** Os lançamentos de quem está logado, mês a mês, com o total do mês; o botão registra uma conta avulsa. */
-export function MyPaymentsPage() {
+export function PaymentsPage() {
   const authState = useAuthState();
   const uid = authState.status === 'signedIn' ? authState.user.uid : null;
   const [month, setMonth] = useState(currentMonth);
@@ -66,7 +66,7 @@ export function MyPaymentsPage() {
                   amountCents={entry.amountCents}
                   onPress={() => router.push({ pathname: '/entries/[id]', params: { id: entry.id } })}
                   // Uma conta com a tag apagada (só pelo SDK) fica sem a tag no detalhe.
-                  support={myEntrySupportOf(entry, tagNameOf(entry.tagId, tags))}
+                  support={paymentEntrySupportOf(entry, tagNameOf(entry.tagId, tags))}
                 />
               ))}
             </View>

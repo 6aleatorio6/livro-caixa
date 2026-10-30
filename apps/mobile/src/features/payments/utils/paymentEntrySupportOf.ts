@@ -6,7 +6,7 @@ import { formatDayMonth } from '@/shared/utils/date/formatDayMonth';
  * O detalhe da linha de um lançamento em Meus pagamentos, sem o nome de quem pagou (é sempre a pessoa
  * logada): o pagamento, "pago em 05/10 · Casa" (ou o previsto no lugar da tag); a conta avulsa, "12/10 · avulsa · Casa".
  */
-export function myEntrySupportOf(entry: IEntry, tagName?: string) {
+export function paymentEntrySupportOf(entry: IEntry, tagName?: string) {
   const parts =
     entry.kind === 'recurringPayment'
       ? [`pago em ${formatDayMonth(entry.paidOn)}`, paymentTailOf(entry, tagName)]

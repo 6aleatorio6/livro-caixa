@@ -1,6 +1,6 @@
 import type { IEntry } from '@/shared/types/entry/Entry';
 
-import { myEntrySupportOf } from './myEntrySupportOf';
+import { paymentEntrySupportOf } from './paymentEntrySupportOf';
 
 const payment: IEntry = {
   id: '2026-10_aluguel',
@@ -30,22 +30,22 @@ const oneOff: IEntry = {
   date: '2026-10-12',
 };
 
-describe('myEntrySupportOf', () => {
+describe('paymentEntrySupportOf', () => {
   it('Should write the payment date and the tag of a payment', () => {
-    expect(myEntrySupportOf(payment, 'Casa')).toBe('pago em 25/10 · Casa');
+    expect(paymentEntrySupportOf(payment, 'Casa')).toBe('pago em 25/10 · Casa');
   });
 
   it('Should write the expected amount instead of the tag when the paid amount differs', () => {
-    expect(myEntrySupportOf({ ...payment, amountCents: 18735, expectedAmountCents: 11990 }, 'Casa')).toBe(
+    expect(paymentEntrySupportOf({ ...payment, amountCents: 18735, expectedAmountCents: 11990 }, 'Casa')).toBe(
       'pago em 25/10 · previsto R$ 119,90',
     );
   });
 
   it('Should write the date, the one-off mark and the tag of a one-off bill', () => {
-    expect(myEntrySupportOf(oneOff, 'Casa')).toBe('12/10 · avulsa · Casa');
+    expect(paymentEntrySupportOf(oneOff, 'Casa')).toBe('12/10 · avulsa · Casa');
   });
 
   it('Should leave the tag out when there is none', () => {
-    expect(myEntrySupportOf(oneOff)).toBe('12/10 · avulsa');
+    expect(paymentEntrySupportOf(oneOff)).toBe('12/10 · avulsa');
   });
 });

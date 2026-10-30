@@ -10,7 +10,7 @@ import { tagListQueryScenarios } from '@/shared/services/tag/query/tagListQueryS
 import { mockRealtime } from '@/shared/testing/mockRealtime';
 import { signedInAuthState } from '@/shared/testing/signedInAuthState';
 
-import { MyPaymentsPage } from './MyPaymentsPage';
+import { PaymentsPage } from './PaymentsPage';
 
 // Mocks com fábrica: o módulo real carregaria o React Native Firebase, que não roda no Jest.
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
@@ -37,10 +37,10 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
-describe('MyPaymentsPage', () => {
+describe('PaymentsPage', () => {
   it('Should list only the entries of the signed-in member, with the date and the tag', async () => {
     mockRealtime(october, threeTags);
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
 
     expect(screen.getByText('Farmácia')).toBeOnTheScreen();
     expect(screen.getByText('12/10 · avulsa · Casa')).toBeOnTheScreen();
@@ -50,7 +50,7 @@ describe('MyPaymentsPage', () => {
 
   it('Should open the details of an entry when its row is pressed', async () => {
     mockRealtime(october, threeTags);
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
 
     await userEvent.setup().press(screen.getByRole('button', { name: 'Farmácia' }));
 
@@ -59,19 +59,19 @@ describe('MyPaymentsPage', () => {
 
   it('Should hint that a row can be pressed only when the month has entries', async () => {
     mockRealtime(october, threeTags);
-    const { unmount } = await render(<MyPaymentsPage />);
+    const { unmount } = await render(<PaymentsPage />);
     expect(screen.getByText('Toque num lançamento para ver os detalhes e o comprovante.')).toBeOnTheScreen();
     await unmount();
 
     mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth }, threeTags);
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
 
     expect(screen.queryByText('Toque num lançamento para ver os detalhes e o comprovante.')).not.toBeOnTheScreen();
   });
 
   it('Should show the sum of the member entries and their share of the family month', async () => {
     mockRealtime(october, threeTags);
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
 
     expect(screen.getByText('Você registrou em outubro')).toBeOnTheScreen();
     // Bruno: R$ 89,90 de R$ 354,90 da família.
@@ -84,7 +84,7 @@ describe('MyPaymentsPage', () => {
       { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithTwoEntriesOfTheMember },
       threeTags
     );
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
 
     // Bruno: R$ 89,90 + R$ 10,10 de R$ 400,00 da família (a Ana pagou R$ 300,00).
     expect(screen.getByText('R$ 100,00')).toBeOnTheScreen();
@@ -99,7 +99,7 @@ describe('MyPaymentsPage', () => {
       { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithPaymentOfTheMember },
       threeTags
     );
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
 
     expect(screen.getByText('Internet')).toBeOnTheScreen();
     expect(screen.getByText('pago em 15/10 · previsto R$ 119,90')).toBeOnTheScreen();
@@ -114,7 +114,7 @@ describe('MyPaymentsPage', () => {
       { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithPaymentOfAlteredBill },
       threeTags
     );
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
 
     expect(screen.getByText('pago em 10/10 · previsto R$ 250,00')).toBeOnTheScreen();
   });
@@ -125,14 +125,14 @@ describe('MyPaymentsPage', () => {
       threeTags
     );
     jest.setSystemTime(new Date(2026, 8, 15));
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
 
     expect(screen.getByText('30/09 · avulsa')).toBeOnTheScreen();
   });
 
   it('Should show the empty state without the total card when the member has no entry in the month', async () => {
     mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth }, threeTags);
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
 
     expect(screen.getByText('Nenhum pagamento seu em outubro')).toBeOnTheScreen();
     expect(screen.getByText('Quando você registrar um pagamento ou uma conta avulsa, ele aparece aqui.')).toBeOnTheScreen();
@@ -141,7 +141,7 @@ describe('MyPaymentsPage', () => {
 
   it('Should read the previous month when the previous month is pressed', async () => {
     mockRealtime(october, threeTags);
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
     const user = userEvent.setup();
 
     mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.previousMonthWithEntries }, threeTags);
@@ -156,7 +156,7 @@ describe('MyPaymentsPage', () => {
   // O pagamento do próximo mês feito antes de o mês começar aparece lá, não no mês em que foi feito.
   it('Should go to the next month and stop there', async () => {
     mockRealtime(october, threeTags);
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
     const user = userEvent.setup();
 
     mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.nextMonthPaidEarly }, threeTags);
@@ -170,26 +170,26 @@ describe('MyPaymentsPage', () => {
 
   it('Should show the loading state while the list loads', async () => {
     mockRealtime({ service: entryMonthQueryService, status: 'loading' }, threeTags);
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
 
     expect(screen.getByLabelText('Carregando')).toBeOnTheScreen();
   });
 
   it('Should not show the loading state once the month arrives or when the read fails', async () => {
     mockRealtime(october, threeTags);
-    const { unmount } = await render(<MyPaymentsPage />);
+    const { unmount } = await render(<PaymentsPage />);
     expect(screen.queryByLabelText('Carregando')).not.toBeOnTheScreen();
     await unmount();
 
     mockRealtime({ service: entryMonthQueryService, status: 'error' }, threeTags);
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
 
     expect(screen.queryByLabelText('Carregando')).not.toBeOnTheScreen();
   });
 
   it('Should show neither the list nor the empty state while the month loads', async () => {
     mockRealtime({ service: entryMonthQueryService, status: 'loading' }, threeTags);
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
 
     expect(screen.queryByText('Você registrou em outubro')).not.toBeOnTheScreen();
     expect(screen.queryByText('Nenhum pagamento seu em outubro')).not.toBeOnTheScreen();
@@ -198,7 +198,7 @@ describe('MyPaymentsPage', () => {
 
   it('Should say the list could not be loaded when the read fails', async () => {
     mockRealtime({ service: entryMonthQueryService, status: 'error' }, threeTags);
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
 
     expect(screen.getByText('Não deu para carregar a lista.')).toBeOnTheScreen();
     expect(screen.queryByText('Nenhum pagamento seu em outubro')).not.toBeOnTheScreen();
@@ -206,7 +206,7 @@ describe('MyPaymentsPage', () => {
 
   it('Should open the new one-off bill screen when Nova conta avulsa is pressed', async () => {
     mockRealtime(october, threeTags);
-    await render(<MyPaymentsPage />);
+    await render(<PaymentsPage />);
 
     await userEvent.setup().press(screen.getByRole('button', { name: 'Nova conta avulsa' }));
 

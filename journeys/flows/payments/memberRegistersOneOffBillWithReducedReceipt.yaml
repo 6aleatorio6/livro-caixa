@@ -5,7 +5,7 @@
 #   esta jornada prova o `expo-image-manipulator` no aparelho, pelo seletor de arquivos do Android, que o Jest não
 #   roda; reduceImage.test.ts cobre a escada.
 # - A imagem que nem o piso faz caber, recusada: prepareReceipt.test.ts e ReceiptField.test.tsx.
-# - A conta no mês anterior, o total e o mês atual vazio: MyPaymentsPage.test.tsx e o contrato do
+# - A conta no mês anterior, o total e o mês atual vazio: PaymentsPage.test.tsx e o contrato do
 #   entryMonthQueryService.
 # - O registro da conta com o comprovante: doAddOneOffBill e o contrato do addOneOffBillService.
 appId: dev.leonardolf.livrocaixa
