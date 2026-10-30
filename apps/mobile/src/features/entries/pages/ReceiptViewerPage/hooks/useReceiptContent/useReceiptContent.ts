@@ -15,7 +15,7 @@ interface IState {
 
 /**
  * A `uri` para abrir o comprovante `file`, pedida uma vez (e de novo no `retry`). O `fail` marca como erro uma `uri`
- * que não abriu a imagem; o `attempt` muda a cada nova tentativa, para a tela remontar o visualizador. Sem `file` (o
+ * que não abriu a imagem ou o PDF; o `attempt` muda a cada nova tentativa, para a tela remontar o visualizador. Sem `file` (o
  * registro ainda não chegou), fica carregando.
  */
 export function useReceiptContent(file: Pick<IReceiptFile, 'id' | 'contentType'> | null) {
