@@ -4,6 +4,7 @@ import { ActivityIndicator, View } from 'react-native';
 import { ScopedTheme, StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { EntryProblem } from '@/features/entries/components/EntryProblem/EntryProblem';
+import { PdfPages } from '@/features/entries/components/PdfPages/PdfPages';
 import { ReceiptProblem } from '@/features/entries/components/ReceiptProblem/ReceiptProblem';
 import { ZoomableImage } from '@/features/entries/components/ZoomableImage/ZoomableImage';
 import { Screen } from '@/shared/components/Screen/Screen';
@@ -20,7 +21,7 @@ import { useReceiptContent } from './hooks/useReceiptContent/useReceiptContent';
 const CANNOT_OPEN = 'Não deu para abrir o comprovante.';
 const NOT_FOUND = 'O comprovante não foi encontrado.';
 
-/** O comprovante de um lançamento em tela cheia, no tema escuro: a imagem com zoom (o PDF chega como a imagem da página) e os dados do lançamento embaixo. Qualquer membro abre. */
+/** O comprovante de um lançamento em tela cheia, no tema escuro: a imagem com zoom ou as páginas do PDF, e os dados do lançamento embaixo. Qualquer membro abre. */
 export function ReceiptViewerPage() {
   const { theme } = useUnistyles();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -38,7 +39,11 @@ export function ReceiptViewerPage() {
     if (receipt.status === 'error') return <ReceiptProblem message={CANNOT_OPEN} onRetry={receipt.retry} />;
     if (!file || !receipt.uri) return <ActivityIndicator style={styles.loader} color={theme.colors.primary} />;
 
-    return <ZoomableImage key={receipt.attempt} uri={receipt.uri} onError={receipt.fail} />;
+    return file.type === 'pdf' ? (
+      <PdfPages key={receipt.attempt} uri={receipt.uri} cacheFileName={file.id} onError={receipt.fail} />
+    ) : (
+      <ZoomableImage key={receipt.attempt} uri={receipt.uri} onError={receipt.fail} />
+    );
   }
 
   return (

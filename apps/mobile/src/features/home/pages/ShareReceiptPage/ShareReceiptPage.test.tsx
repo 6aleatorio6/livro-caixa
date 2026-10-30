@@ -107,7 +107,7 @@ describe('ShareReceiptPage', () => {
 
     expect(router.push).toHaveBeenCalledWith({
       pathname: '/receipt-preview',
-      params: { uri: 'file:///cache/pix-agua-outubro.pdf', name: 'pix-agua-outubro.pdf' },
+      params: { uri: 'file:///cache/pix-agua-outubro.pdf', name: 'pix-agua-outubro.pdf', type: 'pdf' },
     });
   });
 

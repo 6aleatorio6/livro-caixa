@@ -125,7 +125,7 @@ describe('ReceiptField', () => {
 
       expect(router.push).toHaveBeenCalledWith({
         pathname: '/receipt-preview',
-        params: { uri: 'file:///recibo.jpg', name: 'recibo-conserto.jpg' },
+        params: { uri: 'file:///recibo.jpg', name: 'recibo-conserto.jpg', type: 'image' },
       });
       expect(pickReceiptFile).not.toHaveBeenCalled();
     });
@@ -148,7 +148,7 @@ describe('ReceiptField', () => {
 
       expect(router.push).toHaveBeenCalledWith({
         pathname: '/receipt-preview',
-        params: { uri: 'file:///recibo.jpg', name: 'recibo-conserto.jpg' },
+        params: { uri: 'file:///recibo.jpg', name: 'recibo-conserto.jpg', type: 'image' },
       });
     });
 

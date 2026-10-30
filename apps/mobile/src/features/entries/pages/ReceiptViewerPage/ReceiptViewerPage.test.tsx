@@ -1,6 +1,7 @@
 import { act, render, screen, userEvent } from '@testing-library/react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
+import { PdfPages } from '@/features/entries/components/PdfPages/PdfPages';
 import { ZoomableImage } from '@/features/entries/components/ZoomableImage/ZoomableImage';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService.scenarios';
@@ -31,6 +32,8 @@ jest.mock('@/shared/services/file/getReceiptContentService', () => ({ getReceipt
 jest.mock('expo-router', () => ({ router: { back: jest.fn() }, useLocalSearchParams: jest.fn() }));
 // O zoom é dos gestos nativos e se confere no aparelho; o teste lê as props que a tela passa.
 jest.mock('@/features/entries/components/ZoomableImage/ZoomableImage', () => ({ ZoomableImage: jest.fn(() => null) }));
+// As páginas são desenhadas pelo módulo nativo da `react-native-pdf`; o teste lê as props que a tela passa.
+jest.mock('@/features/entries/components/PdfPages/PdfPages', () => ({ PdfPages: jest.fn(() => null) }));
 
 const family = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyList };
 const oneOffBill = { service: entryQueryService, scenario: entryQueryScenarios.oneOffBillOfTheMember };
@@ -42,8 +45,10 @@ const pdfReceipt = {
 };
 
 const imageContent = getReceiptContentScenarios.receiptOfAnotherMember;
+const pdfContent = getReceiptContentScenarios.pdfOfAnotherMember;
 
 const imageProps = () => jest.mocked(ZoomableImage).mock.calls.at(-1)![0];
+const pdfProps = () => jest.mocked(PdfPages).mock.calls.at(-1)![0];
 
 // O mock do lançamento lido pelo id: o `id` do cenário é o da rota.
 type IEntryMock = IRealtimeMock & { scenario: { input: { id: string } } };
@@ -88,18 +93,32 @@ describe('ReceiptViewerPage', () => {
   });
 
   describe('The PDF', () => {
-    it('Should open a PDF as the image of its page, with the name chosen in the title', async () => {
-      mockServiceScenario(getReceiptContentService, imageContent);
+    it('Should open a PDF in its pages, with the content from Firestore written under the file id', async () => {
+      mockServiceScenario(getReceiptContentService, pdfContent);
 
       await renderViewer(payment, pdfReceipt, family);
 
       expect(getReceiptContentService).toHaveBeenCalledWith(pdfReceipt.scenario.result.id, 'application/pdf');
-      expect(imageProps().uri).toBe(imageContent.result);
+      expect(pdfProps()).toMatchObject({ uri: pdfContent.result, cacheFileName: pdfReceipt.scenario.result.id });
+      expect(ZoomableImage).not.toHaveBeenCalled();
       expect(screen.getByText('comprovante-luz.pdf')).toBeOnTheScreen();
     });
 
-    it('Should show the payment below the image: the bill, the amount, the month, who registered it and when', async () => {
-      mockServiceScenario(getReceiptContentService, imageContent);
+    it('Should say it could not open the PDF and read it again on Tentar de novo', async () => {
+      mockServiceScenario(getReceiptContentService, pdfContent);
+      const user = await renderViewer(payment, pdfReceipt, family);
+
+      await act(async () => pdfProps().onError());
+      expect(screen.getByText('Não deu para abrir o comprovante.')).toBeOnTheScreen();
+      await user.press(screen.getByRole('button', { name: 'Tentar de novo' }));
+
+      expect(getReceiptContentService).toHaveBeenCalledTimes(2);
+      expect(screen.queryByText('Não deu para abrir o comprovante.')).not.toBeOnTheScreen();
+      expect(pdfProps().uri).toBe(pdfContent.result);
+    });
+
+    it('Should show the payment below the PDF: the bill, the amount, the month, who registered it and when', async () => {
+      mockServiceScenario(getReceiptContentService, pdfContent);
 
       await renderViewer(payment, pdfReceipt, family);
 
