@@ -1,0 +1,52 @@
+# O Bruno compartilha o PDF do Pix da Internet, de R$ 125,50, com o app aberto no Início, escolhe a Internet, e o
+# valor pago já vem com o valor lido no comprovante, com o aviso embaixo do campo; registra o pagamento e volta ao
+# Início com a Internet paga.
+# Coberto por:
+# - O OCR ler o valor no PDF (a página desenhada pelo PdfRenderer e lida pelo ML Kit, no módulo receipt-ocr): só no
+#   aparelho; recognizeReceiptText.test.ts cobre a ponte, e findReceiptAmount.test.ts o valor que as linhas lidas
+#   pelo ML Kit em comprovantes reais dão.
+# - O valor lido no campo, com o aviso, e o pagamento registrado com ele: PayRecurringBillPage.test.tsx, com o
+#   cenário memberPaysWithAmountReadFromReceipt do payRecurringBillService.
+# - A Internet paga no Início: HomePage.test.tsx e monthSummary.test.ts.
+appId: dev.leonardolf.livrocaixa
+tags:
+  - share
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: member
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: seedShareReceipt
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: "Registrar Internet"
+    timeout: 30000
+- assertVisible: "2 de 6 contas"
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: shareReceipt
+      FILE: pix-internet-outubro.pdf
+- extendedWaitUntil:
+    visible: "Qual conta você pagou?"
+    timeout: 15000
+- tapOn: "Registrar Internet"
+- extendedWaitUntil:
+    visible: "vence dia 15 · previsto R\\$ 119,90"
+    timeout: 10000
+- assertVisible: "R\\$ 125,50"
+- assertVisible: "Veio do comprovante. Corrija se pagou outro valor."
+- takeScreenshot: pay-recurring-bill--amount-from-receipt
+# O título da tela também diz "Registrar pagamento": o botão é o que fica abaixo do aviso.
+- tapOn:
+    text: "Registrar pagamento"
+    below: "Fica no seu nome.*"
+- extendedWaitUntil:
+    visible: "1 de 6 contas"
+    timeout: 60000
+- assertNotVisible: "Registrar Internet"
+- takeScreenshot: home--paid-with-amount-from-receipt
