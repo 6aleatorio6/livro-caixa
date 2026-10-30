@@ -196,6 +196,19 @@ describe('NewOneOffBillPage', () => {
     expect(addOneOffBillService).not.toHaveBeenCalled();
   });
 
+  it('Should keep refusing the empty amount after a receipt with no amount read is attached', async () => {
+    const user = await renderPage();
+    await user.press(screen.getByRole('button', { name: SUBMIT }));
+    expect(await screen.findAllByText('Preencha este campo.')).toHaveLength(2);
+
+    await user.press(
+      screen.getByRole('button', { name: 'Comprovante: Anexe o comprovante. Nenhum arquivo anexado. Escolher' }),
+    );
+
+    expect(screen.getByText(bill.receipt.name)).toBeOnTheScreen();
+    expect(screen.getAllByText('Preencha este campo.')).toHaveLength(2);
+  });
+
   it('Should offer the tags of the list as chips, none of them chosen', async () => {
     await renderPage();
 

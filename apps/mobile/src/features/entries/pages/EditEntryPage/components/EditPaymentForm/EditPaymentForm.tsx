@@ -5,7 +5,7 @@ import { StyleSheet } from 'react-native-unistyles';
 import { DeleteEntryButton } from '@/features/entries/components/DeleteEntryButton/DeleteEntryButton';
 import { AppText } from '@/shared/components/AppText/AppText';
 import { Button } from '@/shared/components/Button/Button';
-import { MoneyFieldSmart } from '@/shared/components/inputs/MoneyFieldSmart/MoneyFieldSmart';
+import { AmountPaidFieldSmart } from '@/shared/components/inputs/AmountPaidFieldSmart/AmountPaidFieldSmart';
 import { ReceiptFieldSmart } from '@/shared/components/inputs/ReceiptFieldSmart/ReceiptFieldSmart';
 import { Notice } from '@/shared/components/Notice/Notice';
 import { TagChip } from '@/shared/components/TagChip/TagChip';
@@ -32,10 +32,8 @@ export interface IEditPaymentFormProps {
 
 /** A alteração do pagamento: a conta só para leitura, o valor pago e o comprovante, que são o que muda, e a exclusão. */
 export function EditPaymentForm({ entry, tag, currentReceipt, onSubmit, onDeleted }: IEditPaymentFormProps) {
-  const { control, handleSubmit, formState } = usePayRecurringBillForm(
-    { hasCurrentReceipt: Boolean(currentReceipt) },
-    { amountCents: entry.amountCents },
-  );
+  const form = usePayRecurringBillForm({ hasCurrentReceipt: Boolean(currentReceipt) }, { amountCents: entry.amountCents });
+  const { control, handleSubmit, formState } = form;
 
   // O schema já recusou o valor vazio; sem arquivo novo, o comprovante fica o que está.
   const submit = handleSubmit(({ amountCents, receipt }) =>
@@ -57,12 +55,7 @@ export function EditPaymentForm({ entry, tag, currentReceipt, onSubmit, onDelete
         </View>
       </View>
 
-      <MoneyFieldSmart
-        control={control}
-        name="amountCents"
-        label="Valor pago"
-        supportText="Corrija se pagou outro valor."
-      />
+      <AmountPaidFieldSmart form={form} supportText="Corrija se pagou outro valor." />
       <ReceiptFieldSmart control={control} name="receipt" currentReceipt={currentReceipt} entryId={entry.id} />
       <Notice
         icon={UserRound}

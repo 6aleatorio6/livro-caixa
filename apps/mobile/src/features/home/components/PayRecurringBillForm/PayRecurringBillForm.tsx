@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
 import { Button } from '@/shared/components/Button/Button';
-import { MoneyFieldSmart } from '@/shared/components/inputs/MoneyFieldSmart/MoneyFieldSmart';
+import { AmountPaidFieldSmart } from '@/shared/components/inputs/AmountPaidFieldSmart/AmountPaidFieldSmart';
 import { ReceiptFieldSmart } from '@/shared/components/inputs/ReceiptFieldSmart/ReceiptFieldSmart';
 import { OwnershipNotice } from '@/shared/components/OwnershipNotice/OwnershipNotice';
 import { TagChip } from '@/shared/components/TagChip/TagChip';
@@ -29,11 +29,12 @@ export interface IPayRecurringBillFormProps {
 
 /** O pagamento de uma conta num mês: quem está sendo paga, o valor (do previsto, corrigível), o comprovante e o aviso. */
 export function PayRecurringBillForm({ bill, month, tag, initialValues, onSubmit }: IPayRecurringBillFormProps) {
-  const { control, handleSubmit, formState } = usePayRecurringBillForm(undefined, {
+  const form = usePayRecurringBillForm(undefined, {
     amountCents: bill.expectedAmountCents,
     receipt: null,
     ...initialValues,
   });
+  const { control, handleSubmit, formState } = form;
 
   // O schema já recusou o valor e o comprovante vazios.
   const submit = handleSubmit(({ amountCents, receipt }) =>
@@ -60,12 +61,7 @@ export function PayRecurringBillForm({ bill, month, tag, initialValues, onSubmit
         </View>
       </View>
 
-      <MoneyFieldSmart
-        control={control}
-        name="amountCents"
-        label="Valor pago"
-        supportText="Veio do valor previsto. Corrija se pagou outro valor."
-      />
+      <AmountPaidFieldSmart form={form} supportText="Veio do valor previsto. Corrija se pagou outro valor." />
       <ReceiptFieldSmart control={control} name="receipt" />
       <OwnershipNotice subject="este pagamento" />
 

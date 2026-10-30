@@ -5,7 +5,7 @@ import { StyleSheet } from 'react-native-unistyles';
 import { AppText } from '@/shared/components/AppText/AppText';
 import { Button } from '@/shared/components/Button/Button';
 import { DateFieldSmart } from '@/shared/components/inputs/DateFieldSmart/DateFieldSmart';
-import { MoneyFieldSmart } from '@/shared/components/inputs/MoneyFieldSmart/MoneyFieldSmart';
+import { AmountPaidFieldSmart } from '@/shared/components/inputs/AmountPaidFieldSmart/AmountPaidFieldSmart';
 import { ReceiptFieldSmart } from '@/shared/components/inputs/ReceiptFieldSmart/ReceiptFieldSmart';
 import { TagChoiceSmart } from '@/shared/components/inputs/TagChoiceSmart/TagChoiceSmart';
 import { TextFieldSmart } from '@/shared/components/inputs/TextFieldSmart/TextFieldSmart';
@@ -59,10 +59,11 @@ export function OneOffBillForm<TCurrentReceipt extends IReceiptFile | undefined 
   footer,
   onSubmit,
 }: IOneOffBillFormProps<TCurrentReceipt>) {
-  const { control, handleSubmit, formState } = useOneOffBillForm(
+  const form = useOneOffBillForm(
     { hasCurrentReceipt: Boolean(currentReceipt) },
     { date: toIsoDate(new Date()), ...initialValues },
   );
+  const { control, handleSubmit, formState } = form;
   // O schema já recusou o valor vazio, e o comprovante vazio quando não há um salvo.
   const submit = handleSubmit((values) =>
     onSubmit({ ...oneOffBillInputOf(values), receipt: values.receipt } as IOneOffBillSubmission<TCurrentReceipt>),
@@ -71,7 +72,7 @@ export function OneOffBillForm<TCurrentReceipt extends IReceiptFile | undefined 
   return (
     <View style={styles.form}>
       <TextFieldSmart control={control} name="name" label="Nome da conta" autoCapitalize="sentences" />
-      <MoneyFieldSmart control={control} name="amountCents" label="Valor pago" />
+      <AmountPaidFieldSmart form={form} />
       <DateFieldSmart
         control={control}
         name="date"
