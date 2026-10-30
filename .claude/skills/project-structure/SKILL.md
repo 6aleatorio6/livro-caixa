@@ -129,6 +129,15 @@ features/recurringBills/pages/
 | `core/store/` and `core/utils/storeActions/` | the global stores (toast, loader) and the functions that change them |
 | `core/types/` | the types of `core` |
 
+## Local native modules
+
+`modules/<name>/`, outside `src/`, holds a local Expo module: its `expo-module.config.json` and an
+`android/` with the Kotlin and the Gradle dependencies. Expo's autolinking finds the folder with no
+install. The TypeScript bridge lives in `src/shared/utils/<group>/` and loads the module with
+`requireOptionalNativeModule` from `expo`, so a binary built before the module still runs. A new or
+changed module needs `pnpm android` on the developer's PC. E.g. `modules/receipt-ocr`, bridged by
+`src/shared/utils/file/recognizeReceiptText.ts`.
+
 ## Names
 
 - **The file carries the name of what it exports**, with no hyphen: a component, page or class in
