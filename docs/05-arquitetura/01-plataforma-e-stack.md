@@ -121,9 +121,7 @@ Ficaram de fora:
 - **`@dariyd/react-native-pdf-page-image`:** desenhava a página do PDF com o `PdfRenderer` do
   próprio Android, para guardar o PDF de uma página como imagem, e compila com o Kotlin 2.4, porque é
   um módulo nativo escrito à mão. Deixou de ser usada porque a imagem sai maior que o PDF que o banco
-  gera: o de um Pix, com menos de 1 KB, virava uma imagem de 56 KB. Continua instalada até a decisão
-  sobre a [leitura do valor pelo comprovante](../04-escopo-excluido/07-leitura-do-valor-pelo-comprovante.md),
-  que pode usá-la para ler um PDF sem texto dentro.
+  gera: o de um Pix, com menos de 1 KB, virava uma imagem de 56 KB.
 - **`react-native-better-pdf`:** desenha o PDF com o `PdfRenderer` do próprio Android e gera a
   imagem de cada página. Mas o código que o `nitrogen` 0.37.1 gera para ela não compila no Kotlin
   2.4, que o React Native Firebase 27 pede: o Kotlin 2.4 transformou em erro um teste de tipo que
