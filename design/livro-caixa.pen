@@ -22096,6 +22096,49 @@
             },
             {
               "type": "frame",
+              "id": "eVSZ1",
+              "name": "Estado · Registrar pagamento, valor do comprovante",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "wcTJ4",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Estado · Registrar pagamento, valor do comprovante",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "WXJsz",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "O app leu o valor no comprovante anexado: o valor pago vem com ele, e o texto de apoio diz de onde veio. Digitado outro valor, volta o texto do previsto. A conta avulsa e a alteração mostram o mesmo texto.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
               "id": "V6KjH",
               "name": "Tela · Compartilhar comprovante",
               "width": "fill_container",
@@ -37573,6 +37616,28 @@
           }
         }
       ]
+    },
+    {
+      "id": "tfDjG",
+      "type": "ref",
+      "ref": "q56Jr",
+      "name": "Estado · Registrar pagamento, valor do comprovante",
+      "x": 7168,
+      "y": 19326,
+      "descendants": {
+        "ZNBgf/VN2cR": {
+          "content": "R$ 125,50"
+        },
+        "ZNBgf/vfVG1": {
+          "content": "Veio do comprovante. Corrija se pagou outro valor."
+        },
+        "E87DP5/JqtR3": {
+          "content": "PDF · 1 KB"
+        },
+        "E87DP5/u0fr1G": {
+          "content": "pix-internet-outubro.pdf"
+        }
+      }
     }
   ],
   "themes": {
