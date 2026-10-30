@@ -2,9 +2,9 @@
 # arquivos do Android; o Início passa a Internet de "A pagar" para "Pagas" e o anel muda; o pagamento aparece
 # em Pagamentos com o previsto; a Ana, abrindo a mesma conta pela rota do mês, vê o aviso de que já foi paga, sem o formulário.
 # Coberto por:
-# - O PDF escolhido no seletor do Android, convertido em imagem e gravado em `fileContents`: só esta jornada prova a
-#   conversão pela biblioteca nativa (@dariyd/react-native-pdf-page-image) e o lote pelo React Native Firebase no
-#   aparelho; pdfToImage.test.ts e ReceiptField.test.tsx cobrem o que o app faz com a resposta dela.
+# - O PDF escolhido no seletor do Android, gravado como está em `fileContents`: só esta jornada prova a leitura do
+#   arquivo escolhido e o lote pelo React Native Firebase no aparelho; prepareReceipt.test.ts e ReceiptField.test.tsx
+#   cobrem o que o app faz com o arquivo.
 # - O valor vem do previsto e a correção vale: PayRecurringBillPage.test.tsx e o contrato do
 #   payRecurringBillService (memberPaysWithCorrectedAmount).
 # - A conta sai do "A pagar", entra nas "Pagas" e o anel muda: HomePage.test.tsx e monthSummary.test.ts.
@@ -46,7 +46,7 @@ tags:
 - tapOn: Downloads
 - tapOn: recibo-pequeno.pdf
 - extendedWaitUntil:
-    visible: "Imagem · comprimida para .*"
+    visible: "PDF · .*"
     timeout: 30000
 - takeScreenshot: pay-recurring-bill--filled
 # O título da tela também diz "Registrar pagamento": o botão é o que fica abaixo do aviso.

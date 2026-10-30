@@ -11,12 +11,22 @@ import { shareFixture } from './share.ts';
 
 /**
  * Um comprovante de verdade: o arquivo de `data/fixtures/` (`file`) que vai para `fileContents` com o nome que a tela
- * mostra. O PDF chega ao banco como a imagem da página, com o nome original: o da Luz é o PNG de um PDF de uma página.
+ * mostra. O PDF é guardado como está, como o app o guarda: o da Luz tem duas páginas.
  */
-type ReceiptFixture = { name: string; file: string; contentType: string };
+type ReceiptFixture = { name: string; file: string; type: 'image' | 'pdf'; contentType: string };
 
-const COMPROVANTE_LUZ: ReceiptFixture = { name: 'comprovante-luz.pdf', file: 'comprovante-luz.png', contentType: 'image/png' };
-const RECIBO_CONSERTO: ReceiptFixture = { name: 'recibo-conserto.jpg', file: 'recibo-conserto.jpg', contentType: 'image/jpeg' };
+const COMPROVANTE_LUZ: ReceiptFixture = {
+  name: 'comprovante-luz.pdf',
+  file: 'comprovante-luz.pdf',
+  type: 'pdf',
+  contentType: 'application/pdf',
+};
+const RECIBO_CONSERTO: ReceiptFixture = {
+  name: 'recibo-conserto.jpg',
+  file: 'recibo-conserto.jpg',
+  type: 'image',
+  contentType: 'image/jpeg',
+};
 
 function readFixture(name: string) {
   return readFileSync(fileURLToPath(new URL(`fixtures/${name}`, import.meta.url)));
@@ -162,7 +172,7 @@ async function writeEntryWithReceipt(
   if (bytes) await setDoc(doc(db, 'fileContents', fileId), { content: Bytes.fromUint8Array(bytes) });
   await setDoc(doc(db, 'files', fileId), {
     name: receipt?.name ?? 'comprovante.jpg',
-    type: 'image',
+    type: receipt?.type ?? 'image',
     contentType: receipt?.contentType ?? 'image/jpeg',
     sizeBytes: bytes?.length ?? 120000,
     uploadedBy: paidBy,
@@ -307,8 +317,8 @@ export const scenariosByName: Record<string, Scenario> = {
   },
   /**
    * Os detalhes do lançamento do design, sobre o que o `reset` deixou, no mês atual: as tags e as cinco contas, a
-   * Luz paga pela Ana (R$ 187,35, previsto R$ 210,00, dia 10, Serviços) com o `comprovante-luz.pdf` já convertido
-   * em imagem e a avulsa Conserto da geladeira do Bruno (R$ 350,00, Casa) com o `recibo-conserto.jpg`. Os conteúdos
+   * Luz paga pela Ana (R$ 187,35, previsto R$ 210,00, dia 10, Serviços) com o `comprovante-luz.pdf` de duas
+   * páginas e a avulsa Conserto da geladeira do Bruno (R$ 350,00, Casa) com o `recibo-conserto.jpg`. Os conteúdos
    * existem de verdade em `fileContents`.
    */
   async seedEntryDetails({ db }) {

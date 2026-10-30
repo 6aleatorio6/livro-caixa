@@ -29,9 +29,9 @@ journeys/
     share.ts               shareFixture: pushes a fixture to the phone's Downloads and shares it with the
                            app through adb (the shareReceipt scenario)
     fixtures/              the small committed files scenarios read: the receipt contents a scenario
-                           writes to fileContents (comprovante-luz.png, recibo-conserto.jpg) and the
-                           files shareFixture pushes to the phone (pix-agua-outubro.pdf, one page;
-                           comprovante-luz.pdf, two pages, the one the app refuses)
+                           writes to fileContents (comprovante-luz.pdf, two pages; recibo-conserto.jpg)
+                           and the file shareFixture pushes to the phone (pix-agua-outubro.pdf, one
+                           page)
     request.js             the Maestro side (runScript): asks for a scenario, copies the answer to output
   .local/                  (outside Git)
     explore/               throwaway flows, run like any other
@@ -71,7 +71,6 @@ only content.
   runs is `data/request.js`.
 - **A receipt a scenario writes has real bytes in `fileContents/{id}`**, next to the `files/{id}`
   record and the entry that points to it, so the viewer reads it as it would in production. The
-  bytes come from a file of `data/fixtures/`, never inline. A PDF is stored as the image of its
-  page with the PDF's name, as the app converts it: the fixture is that image
-  (`comprovante-luz.png` for `comprovante-luz.pdf`).
+  bytes come from a file of `data/fixtures/`, never inline. A PDF is stored as it is, as the app
+  stores it.
 - **Nothing new loose at the root.** A new tool or configuration file enters the tree above.

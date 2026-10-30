@@ -1,10 +1,13 @@
-# O Bruno (membro) registra uma conta avulsa do mês passado: a foto de 22 MB é reduzida e o campo mostra
-# "comprimida para"; depois de registrar, o mês anterior mostra a conta e o total, e o mês atual continua vazio.
+# O Bruno (membro) registra uma conta avulsa do mês passado: o PDF de 6 MB é recusado no campo, a foto de 22 MB é
+# reduzida e o campo mostra "comprimida para"; depois de registrar, o mês anterior mostra a conta e o total, e o mês
+# atual continua vazio.
 # Coberto por:
 # - A redução da imagem (a foto passa de 900 KB e desce a escada de qualidade e de lado maior até caber): só
 #   esta jornada prova o `expo-image-manipulator` no aparelho, pelo seletor de arquivos do Android, que o Jest não
 #   roda; reduceImage.test.ts cobre a escada.
 # - A imagem que nem o piso faz caber, recusada: prepareReceipt.test.ts e ReceiptField.test.tsx.
+# - O PDF acima de 900 KB, recusado sem passar pela redução: o tamanho que o seletor do Android informa só existe no
+#   aparelho; prepareReceipt.test.ts e ReceiptField.test.tsx cobrem a recusa a partir do tamanho.
 # - A conta no mês anterior, o total e o mês atual vazio: PaymentsPage.test.tsx e o contrato do
 #   entryMonthQueryService.
 # - O registro da conta com o comprovante: doAddOneOffBill e o contrato do addOneOffBillService.
@@ -38,10 +41,18 @@ tags:
     below: "Previous month"
 - tapOn: OK
 - tapOn: Casa
-# O seletor de arquivos do Android, na pasta Downloads: a foto grande, reduzida pelo expo-image-manipulator.
+# O seletor de arquivos do Android, na pasta Downloads: primeiro o PDF grande, recusado.
 - tapOn: "Comprovante: Nenhum arquivo anexado. Escolher"
 - tapOn: Show roots
 - tapOn: Downloads
+- tapOn: recibo-grande.pdf
+- extendedWaitUntil:
+    visible: "O PDF passa de 900 KB. Escolha outro arquivo."
+    timeout: 15000
+- takeScreenshot: new-one-off-bill--pdf-too-big
+# Depois a foto grande, reduzida pelo expo-image-manipulator. O campo recusado oferece "Escolher outro", e o seletor
+# reabre na pasta Downloads.
+- tapOn: "Comprovante: .*Escolher outro"
 - tapOn: foto-grande.jpg
 - extendedWaitUntil:
     visible: "Imagem · comprimida para .*"

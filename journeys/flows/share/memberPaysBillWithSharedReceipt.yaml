@@ -6,12 +6,12 @@
 # - O app receber o arquivo do Android (o filtro do expo-sharing, a permissão de leitura do content://, a cópia
 #   para o cache, o redirecionamento do +native-intent): só no aparelho; o Jest não roda a parte nativa.
 #   useSharedReceipt.test.ts cobre o que o hook faz com o arquivo resolvido.
-# - O PDF compartilhado virar imagem: só no aparelho (a biblioteca de PDF é nativa); pdfToImage.test.ts cobre a URI
-#   que ela recebe, `file:///` no lugar do `file:/` de uma barra que o expo-sharing entrega.
+# - O PDF compartilhado desenhado na pré-visualização: só no aparelho (a biblioteca de PDF é nativa); PdfPages.test.tsx
+#   cobre a URI que ela recebe, `file:///` no lugar do `file:/` de uma barra que o expo-sharing entrega.
 # - A lista do mês com o comprovante e "Conta avulsa" por último, e o toque em "Registrar": ShareReceiptPage.test.tsx.
 # - O comprovante já no campo e o retorno ao Início depois de registrar: PayRecurringBillPage.test.tsx e
 #   sharedReceipt.test.ts.
-# - O toque no comprovante abrir o arquivo do cache em tela cheia: a imagem carregada só no aparelho;
+# - O toque no comprovante abrir o arquivo do cache em tela cheia: o PDF desenhado só no aparelho;
 #   ReceiptField.test.tsx cobre a rota e os parâmetros, e ReceiptPreviewPage.test.tsx o que a tela faz com eles.
 # - A Água paga e a Internet a pagar no Início: HomePage.test.tsx e monthSummary.test.ts.
 # - O comprovante nos detalhes: EntryDetailsPage.test.tsx e o contrato do payRecurringBillService.
@@ -54,10 +54,10 @@ tags:
     timeout: 10000
 - assertVisible: "Comprovante: pix-agua-outubro.pdf. Trocar"
 - takeScreenshot: pay-recurring-bill--shared-receipt
-# A dica de zoom só aparece depois que a imagem carregou.
+# O rótulo Comprovante só chega com o PDF desenhado.
 - tapOn: "Comprovante: pix-agua-outubro.pdf. Ver"
 - extendedWaitUntil:
-    visible: "Abra os dedos ou toque duas vezes para aproximar."
+    visible: Comprovante
     timeout: 10000
 - takeScreenshot: receipt-preview--shared-receipt
 - tapOn: "Fechar"

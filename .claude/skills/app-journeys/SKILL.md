@@ -234,12 +234,12 @@ throwaway flow before the round counts as passing.
   `adb reverse` that `pnpm android` set, and `signInAs` fails waiting for "Entrar com Google".
   `adb reverse tcp:8081 tcp:8081`, then the flow again.
 - **The file picker's files live only on the device.** `home/memberPaysRecurringBill` picks
-  `recibo-pequeno.pdf` (one page: the app refuses a PDF of more) and
-  `payments/memberRegistersOneOffBillWithReducedReceipt` picks `foto-grande.jpg` (over 900 KB) from
+  `recibo-pequeno.pdf`, and `payments/memberRegistersOneOffBillWithReducedReceipt` picks
+  `recibo-grande.pdf` (over 900 KB, refused) and `foto-grande.jpg` (over 900 KB, reduced) from
   Downloads; a new AVD or image has none, and the flows fail on "Element not found". Rebuild them
-  from `data/fixtures/` (a copy of `pix-agua-outubro.pdf`; `recibo-conserto.jpg` with JPEG comment
-  segments, `FF FE`, after the `FF D8`, to 22 MB), then `adb push` each to `/sdcard/Download/` and
-  send `MEDIA_SCANNER_SCAN_FILE` for it.
+  from `data/fixtures/` (a copy of `pix-agua-outubro.pdf`; the same PDF padded with `%` comment
+  lines to 6 MB; `recibo-conserto.jpg` with JPEG comment segments, `FF FE`, after the `FF D8`, to
+  22 MB), then `adb push` each to `/sdcard/Download/` and send `MEDIA_SCANNER_SCAN_FILE` for it.
 - **The status and navigation bars take height:** a list item near the end of the Início (the
   Água) sits below the fold. Wait for the first item, or scroll to the one the flow needs.
 - **`clearState`** erases the session and the cached data: every flow signs in again.
