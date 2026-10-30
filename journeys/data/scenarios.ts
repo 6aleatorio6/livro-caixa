@@ -1,36 +1,16 @@
 // Os cenários que um fluxo pede pelo nome, pelo `data/request.js`. Cada um mexe nos dados como
 // alguém de fora do app faria, inclusive com o app aberto.
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-
 import { Bytes, deleteDoc, doc, setDoc, Timestamp, updateDoc, type Firestore } from 'firebase/firestore';
 
 import { ACCOUNTS, toSignInLink } from './accounts.ts';
+import { contentTypeOf, readFixture } from './fixtures.ts';
 import type { OwnerFirestore } from './firestore.ts';
 import { shareFixture } from './share.ts';
 
-/**
- * Um comprovante de verdade: o arquivo de `data/fixtures/` (`file`) que vai para `fileContents` com o nome que a tela
- * mostra. O PDF é guardado como está, como o app o guarda: o da Luz tem duas páginas.
- */
-type ReceiptFixture = { name: string; file: string; type: 'image' | 'pdf'; contentType: string };
-
-const COMPROVANTE_LUZ: ReceiptFixture = {
-  name: 'comprovante-luz.pdf',
-  file: 'comprovante-luz.pdf',
-  type: 'pdf',
-  contentType: 'application/pdf',
-};
-const RECIBO_CONSERTO: ReceiptFixture = {
-  name: 'recibo-conserto.jpg',
-  file: 'recibo-conserto.jpg',
-  type: 'image',
-  contentType: 'image/jpeg',
-};
-
-function readFixture(name: string) {
-  return readFileSync(fileURLToPath(new URL(`fixtures/${name}`, import.meta.url)));
-}
+// Os comprovantes de verdade: arquivos de `data/fixtures/` que vão para `fileContents` com o próprio nome, o que a tela
+// mostra. O PDF é guardado como está, como o app o guarda: o da Luz tem duas páginas.
+const COMPROVANTE_LUZ = 'comprovante-luz.pdf';
+const RECIBO_CONSERTO = 'recibo-conserto.jpg';
 
 /** Os parâmetros que o `data/request.js` repassa, com o nome que têm no fluxo. */
 export type ScenarioParams = { EMAIL?: string; FILE?: string; COLD?: string };
@@ -135,7 +115,7 @@ async function writeOneOffBill(
   db: Firestore,
   id: string,
   bill: { name: string; amountCents: number; date: Date; tagId?: string; paidByEmail: string },
-  receipt?: ReceiptFixture,
+  receipt?: string,
 ) {
   const date = toDateText(bill.date);
   await writeEntryWithReceipt(
@@ -157,23 +137,26 @@ async function writeOneOffBill(
 /**
  * Grava um lançamento como os serviços do app: o registro do comprovante, o lançamento com o `paidBy`, o
  * `createdAt` e o `receiptFileId`, e o `hasEntries` de quem pagou. Sem `receipt`, o registro é de uma imagem sem
- * conteúdo em `fileContents`; com ele, o conteúdo é o arquivo de `data/fixtures/`.
+ * conteúdo em `fileContents`; com ele, o conteúdo é o arquivo de `data/fixtures/` com esse nome, e o tipo sai da
+ * extensão.
  */
 async function writeEntryWithReceipt(
   db: Firestore,
   id: string,
   paidByEmail: string,
   entry: Record<string, unknown>,
-  receipt?: ReceiptFixture,
+  receipt?: string,
 ) {
   const paidBy = await uidOf(db, paidByEmail);
   const fileId = `${id}-receipt`;
-  const bytes = receipt ? readFixture(receipt.file) : null;
+  const name = receipt ?? 'comprovante.jpg';
+  const contentType = contentTypeOf(name);
+  const bytes = receipt ? readFixture(receipt) : null;
   if (bytes) await setDoc(doc(db, 'fileContents', fileId), { content: Bytes.fromUint8Array(bytes) });
   await setDoc(doc(db, 'files', fileId), {
-    name: receipt?.name ?? 'comprovante.jpg',
-    type: receipt?.type ?? 'image',
-    contentType: receipt?.contentType ?? 'image/jpeg',
+    name,
+    type: contentType === 'application/pdf' ? 'pdf' : 'image',
+    contentType,
     sizeBytes: bytes?.length ?? 120000,
     uploadedBy: paidBy,
   });
@@ -194,7 +177,7 @@ function lastDayOf(month: string) {
 async function writePayment(
   db: Firestore,
   payment: { month: string; billId: string; amountCents: number; paidByEmail: string },
-  receipt?: ReceiptFixture,
+  receipt?: string,
 ) {
   const { month, billId, amountCents, paidByEmail } = payment;
   const bill = BILLS_IN_USE[billId as keyof typeof BILLS_IN_USE];

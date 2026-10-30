@@ -28,6 +28,8 @@ journeys/
                            (@firebase/rules-unit-testing): deleteAll
     share.ts               shareFixture: pushes a fixture to the phone's Downloads and shares it with the
                            app through adb (the shareReceipt scenario)
+    fixtures.ts            a fixture's path, bytes and content type (by extension), for scenarios.ts
+                           and share.ts
     fixtures/              the small committed files scenarios read: the receipt contents a scenario
                            writes to fileContents (comprovante-luz.pdf, two pages; recibo-conserto.jpg)
                            and the file shareFixture pushes to the phone (pix-agua-outubro.pdf, one
