@@ -2,7 +2,7 @@ import { act, render, screen, userEvent } from '@testing-library/react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { PdfPages } from '@/features/entries/components/PdfPages/PdfPages';
-import { ZoomableImage } from '@/features/entries/components/ZoomableImage/ZoomableImage';
+import { ScrollableImage } from '@/features/entries/components/ScrollableImage/ScrollableImage';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService.scenarios';
 import { entryQueryService } from '@/shared/services/entry/query/entryQueryService';
@@ -30,8 +30,8 @@ jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', (
 }));
 jest.mock('@/shared/services/file/getReceiptContentService', () => ({ getReceiptContentService: jest.fn() }));
 jest.mock('expo-router', () => ({ router: { back: jest.fn() }, useLocalSearchParams: jest.fn() }));
-// O zoom é dos gestos nativos e se confere no aparelho; o teste lê as props que a tela passa.
-jest.mock('@/features/entries/components/ZoomableImage/ZoomableImage', () => ({ ZoomableImage: jest.fn(() => null) }));
+// A carga e a rolagem da imagem se conferem no aparelho; o teste lê as props que a tela passa.
+jest.mock('@/features/entries/components/ScrollableImage/ScrollableImage', () => ({ ScrollableImage: jest.fn(() => null) }));
 // As páginas são desenhadas pelo módulo nativo da `react-native-pdf`; o teste lê as props que a tela passa.
 jest.mock('@/features/entries/components/PdfPages/PdfPages', () => ({ PdfPages: jest.fn(() => null) }));
 
@@ -47,7 +47,7 @@ const pdfReceipt = {
 const imageContent = getReceiptContentScenarios.receiptOfAnotherMember;
 const pdfContent = getReceiptContentScenarios.pdfOfAnotherMember;
 
-const imageProps = () => jest.mocked(ZoomableImage).mock.calls.at(-1)![0];
+const imageProps = () => jest.mocked(ScrollableImage).mock.calls.at(-1)![0];
 const pdfProps = () => jest.mocked(PdfPages).mock.calls.at(-1)![0];
 
 // O mock do lançamento lido pelo id: o `id` do cenário é o da rota.
@@ -100,7 +100,7 @@ describe('ReceiptViewerPage', () => {
 
       expect(getReceiptContentService).toHaveBeenCalledWith(pdfReceipt.scenario.result.id, 'application/pdf');
       expect(pdfProps()).toMatchObject({ uri: pdfContent.result, cacheFileName: pdfReceipt.scenario.result.id });
-      expect(ZoomableImage).not.toHaveBeenCalled();
+      expect(ScrollableImage).not.toHaveBeenCalled();
       expect(screen.getByText('comprovante-luz.pdf')).toBeOnTheScreen();
     });
 
@@ -164,7 +164,7 @@ describe('ReceiptViewerPage', () => {
 
       await renderViewer(oneOffBill, imageReceipt, family);
 
-      expect(ZoomableImage).not.toHaveBeenCalled();
+      expect(ScrollableImage).not.toHaveBeenCalled();
       expect(screen.queryByText('Não deu para abrir o comprovante.')).not.toBeOnTheScreen();
       expect(screen.getByText('Conserto da geladeira · R$ 350,00')).toBeOnTheScreen();
     });

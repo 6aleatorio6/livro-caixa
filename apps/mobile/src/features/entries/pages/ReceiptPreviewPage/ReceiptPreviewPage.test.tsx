@@ -2,17 +2,19 @@ import { act, render, screen } from '@testing-library/react-native';
 import { useLocalSearchParams } from 'expo-router';
 
 import { PdfPages } from '@/features/entries/components/PdfPages/PdfPages';
-import { ZoomableImage } from '@/features/entries/components/ZoomableImage/ZoomableImage';
+import { ScrollableImage } from '@/features/entries/components/ScrollableImage/ScrollableImage';
 
 import { ReceiptPreviewPage } from './ReceiptPreviewPage';
 
 jest.mock('expo-router', () => ({ router: { back: jest.fn() }, useLocalSearchParams: jest.fn() }));
-// O zoom é dos gestos nativos e se confere no aparelho; o teste lê as props que a tela passa.
-jest.mock('@/features/entries/components/ZoomableImage/ZoomableImage', () => ({ ZoomableImage: jest.fn(() => null) }));
+// A carga e a rolagem da imagem se conferem no aparelho; o teste lê as props que a tela passa.
+jest.mock('@/features/entries/components/ScrollableImage/ScrollableImage', () => ({
+  ScrollableImage: jest.fn(() => null),
+}));
 // As páginas são desenhadas pelo módulo nativo da `react-native-pdf`; o teste lê as props que a tela passa.
 jest.mock('@/features/entries/components/PdfPages/PdfPages', () => ({ PdfPages: jest.fn(() => null) }));
 
-const imageProps = () => jest.mocked(ZoomableImage).mock.calls.at(-1)![0];
+const imageProps = () => jest.mocked(ScrollableImage).mock.calls.at(-1)![0];
 const pdfProps = () => jest.mocked(PdfPages).mock.calls.at(-1)![0];
 
 function openPreview(params: { uri: string; name: string; type: string }) {
@@ -38,7 +40,7 @@ describe('ReceiptPreviewPage', () => {
 
     expect(pdfProps()).toMatchObject({ uri: 'file:///cache/pix-agua-outubro.pdf' });
     expect(pdfProps().cacheFileName).toBeUndefined();
-    expect(ZoomableImage).not.toHaveBeenCalled();
+    expect(ScrollableImage).not.toHaveBeenCalled();
     expect(screen.getByText('pix-agua-outubro.pdf')).toBeOnTheScreen();
   });
 

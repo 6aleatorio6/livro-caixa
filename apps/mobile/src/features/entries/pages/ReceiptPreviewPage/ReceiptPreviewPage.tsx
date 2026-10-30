@@ -6,7 +6,7 @@ import { ScopedTheme, StyleSheet } from 'react-native-unistyles';
 
 import { PdfPages } from '@/features/entries/components/PdfPages/PdfPages';
 import { ReceiptProblem } from '@/features/entries/components/ReceiptProblem/ReceiptProblem';
-import { ZoomableImage } from '@/features/entries/components/ZoomableImage/ZoomableImage';
+import { ScrollableImage } from '@/features/entries/components/ScrollableImage/ScrollableImage';
 import { Screen } from '@/shared/components/Screen/Screen';
 import { TopBar } from '@/shared/components/TopBar/TopBar';
 import type { IReceipt } from '@/shared/types/file/Receipt';
@@ -33,7 +33,7 @@ export function ReceiptPreviewPage() {
           ) : type === 'pdf' ? (
             <PdfPages uri={uri} onError={fail} />
           ) : (
-            <ZoomableImage uri={uri} onError={fail} />
+            <ScrollableImage uri={uri} onError={fail} />
           )}
         </View>
       </Screen>
