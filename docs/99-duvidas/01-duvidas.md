@@ -27,7 +27,7 @@ tema aparece na documentação.
 | D-19 | O JSON do Google falso leva o nome da pessoa? | 🟢 Respondido — sim, no campo `name` |
 | D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🟢 Respondido — por um comando do adb, antes do fluxo |
 | D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🟢 Respondido — Pagamentos, um mês e uma pessoa por vez, agrupado por tag |
-| D-22 | O app lê o valor no comprovante? | 🟢 Respondido — fica para depois, com a leitura no celular |
+| D-22 | O app lê o valor no comprovante? | 🟢 Respondido — sim, no celular, e preenche o valor pago |
 | D-23 | O comprovante em PDF abre dentro do app ou no leitor do celular? | 🟢 Respondido — dentro do app, com as páginas rolando |
 | D-24 | O app aceita PDF de mais de uma página? | 🟢 Respondido — sim, até 900 KB, guardado como está |
 | D-25 | Dá para pagar uma conta antes de o mês dela começar? | 🟢 Respondido — sim, só o próximo mês |
@@ -234,15 +234,18 @@ todos os lançamentos do mês com quem pagou.
 
 ## D-22 — Ler o valor no comprovante
 
-**Resposta:** fica como evolução futura, no Escopo Excluído. Quando entrar, a leitura é feita no
-próprio celular, com o reconhecimento de texto do ML Kit
-(`@infinitered/react-native-mlkit-text-recognition`). A sessão que pesquisou recomendou o Gemini,
-pelo Firebase AI Logic (`@react-native-firebase/ai`), que lê o PDF direto e devolve só o valor, mas
-envia o comprovante ao Google. A escolha foi a leitura no celular. Falta confirmar se o pacote do
-ML Kit funciona na nova arquitetura do React Native 0.88.
+**Resposta:** sim. Ao anexar o comprovante, o app lê o texto no próprio celular, com o
+reconhecimento de texto do ML Kit, e preenche o valor pago enquanto o membro não digitou no campo. O
+ML Kit roda num módulo Expo local, no lugar do pacote
+`@infinitered/react-native-mlkit-text-recognition`, que exigia o `expo-image` e puxava o ML Kit numa
+versão em aberto.
 
-**Onde aparece:** [Leitura do Valor pelo Comprovante](../04-escopo-excluido/07-leitura-do-valor-pelo-comprovante.md),
-[Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).
+Antes, a leitura ficava como evolução futura, no Escopo Excluído. A sessão que pesquisou tinha
+recomendado o Gemini, pelo Firebase AI Logic (`@react-native-firebase/ai`), que lê o PDF direto e
+devolve só o valor, mas envia o comprovante ao Google. A escolha foi a leitura no celular.
+
+**Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#o-valor-lido-do-comprovante),
+[Plataforma e Stack](../05-arquitetura/01-plataforma-e-stack.md).
 
 ## D-23 — O PDF dentro do app
 

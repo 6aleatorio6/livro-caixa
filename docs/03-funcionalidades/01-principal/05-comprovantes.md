@@ -2,8 +2,8 @@
 
 Todo [pagamento](03-pagamento-de-conta-recorrente.md) e toda [conta avulsa](04-conta-avulsa.md) tem
 um comprovante: uma imagem ou um PDF. O membro escolhe o arquivo dentro do app ou o compartilha a
-partir de outro app do Android. Por enquanto, o app guarda o comprovante, mas não lê o valor nele
-([Leitura do valor pelo comprovante](../../04-escopo-excluido/07-leitura-do-valor-pelo-comprovante.md)).
+partir de outro app do Android. Ao anexá-lo, o app lê nele o valor pago e preenche o valor do
+lançamento ([O valor lido do comprovante](#o-valor-lido-do-comprovante)).
 
 ## Formatos e tamanho
 
@@ -44,6 +44,26 @@ câmera nem a galeria.
 
 Quem compartilha sem estar logado faz o login pelo Google e perde o arquivo: precisa
 compartilhá-lo de novo depois de entrar.
+
+## O valor lido do comprovante
+
+Ao anexar o comprovante, o app lê o texto dele no próprio celular, sem enviá-lo a um serviço de fora,
+e preenche o valor pago do [pagamento](03-pagamento-de-conta-recorrente.md), da
+[conta avulsa](04-conta-avulsa.md) ou da alteração. O membro confere o valor antes de salvar.
+
+- **O que é lido:** a imagem, ou a primeira página do PDF. A leitura acontece enquanto o comprovante
+  é preparado, com o carregamento que já cobre a tela.
+- **Qual valor:** o valor em reais do comprovante, quando ele mostra um só, mesmo que repetido. Com
+  dois valores diferentes, como o do documento e o pago com juros, nada é preenchido. Ex.: o Pix de
+  R$ 30,00 preenche R$ 30,00.
+- **Quando preenche:** enquanto o membro não digitou no campo. O valor digitado fica, mesmo com
+  outro comprovante.
+- **O aviso:** embaixo do campo, o texto de apoio diz "Veio do comprovante. Corrija se pagou outro
+  valor." enquanto o valor mostrado é o lido. Digitado outro valor, volta o texto de antes.
+- **Quando o comprovante sai:** trocado por um em que nada se lê, ou recusado, o campo volta ao valor
+  com que abriu: o previsto, no pagamento; o salvo, na alteração; vazio, na conta avulsa nova.
+- **O comprovante compartilhado** chega com o valor já lido, e o pagamento abre com ele.
+- **O valor lido não é guardado:** ele só preenche o campo.
 
 ## Ver o comprovante
 
@@ -87,3 +107,12 @@ Antes de salvar, o membro também abre o comprovante anexado, para conferir o va
 - [ ] No pagamento, tocar no comprovante compartilhado o abre em tela cheia, sem abrir a escolha de
       arquivo; o Trocar abre a escolha.
 - [ ] Na lista do compartilhamento, tocar no comprovante o abre em tela cheia.
+- [ ] O valor em reais de um comprovante que mostra um só valor, mesmo repetido, preenche o valor
+      pago.
+- [ ] Um comprovante com dois valores diferentes não preenche nada.
+- [ ] Do PDF, só a primeira página é lida.
+- [ ] O valor que o membro digitou não é trocado pelo do comprovante.
+- [ ] Com o valor lido, o campo diz "Veio do comprovante. Corrija se pagou outro valor."; digitado
+      outro valor, o aviso sai.
+- [ ] Trocado por um comprovante sem valor lido, ou recusado, o campo volta ao valor com que abriu.
+- [ ] O pagamento aberto pelo compartilhamento já vem com o valor lido.

@@ -48,6 +48,14 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   pede o `react-native-blob-util`, que grava num arquivo o PDF lido do Firestore. O app grava esse
   arquivo a cada abertura, sem o `cache` da biblioteca, porque ela não apaga o arquivo que não
   conseguiu abrir.
+- **O valor do comprovante lido no celular pelo ML Kit**, o reconhecimento de texto do Google, num
+  módulo Expo local, `apps/mobile/modules/receipt-ocr`
+  ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#o-valor-lido-do-comprovante)).
+  O módulo lê a imagem, ou desenha a primeira página do PDF com o `PdfRenderer` do Android, e devolve
+  as linhas de texto com a posição de cada uma. Os parsers do app acham nelas o valor pago. O modelo
+  vai embutido no APK, com cerca de 4 MB em cada uma das 4 arquiteturas, e lê desde o primeiro
+  comprovante, sem internet. O modelo baixado pelo Google Play Services teria uns 260 KB, mas a
+  leitura feita antes de o download terminar não devolveria nada.
 - **Jornadas de teste com o Maestro**, no emulador Android do PC de quem desenvolve, contra os
   emuladores do Firebase ([Jornadas de Teste](02-jornadas-de-teste.md)).
 - **Testes de página com mocks conferidos por testes de contrato:** o teste de página mocka a
@@ -121,7 +129,14 @@ Ficaram de fora:
 - **`@dariyd/react-native-pdf-page-image`:** desenhava a página do PDF com o `PdfRenderer` do
   próprio Android, para guardar o PDF de uma página como imagem, e compila com o Kotlin 2.4, porque é
   um módulo nativo escrito à mão. Deixou de ser usada porque a imagem sai maior que o PDF que o banco
-  gera: o de um Pix, com menos de 1 KB, virava uma imagem de 56 KB.
+  gera: o de um Pix, com menos de 1 KB, virava uma imagem de 56 KB. A leitura do valor desenha a
+  página no próprio módulo, com o mesmo `PdfRenderer`, e a biblioteca saiu do app.
+- **`@infinitered/react-native-mlkit-text-recognition`, `expo-mlkit-ocr` e `expo-text-extractor`,**
+  para a leitura do valor: o primeiro exige o `expo-image`, que o app não tem, e puxa o ML Kit numa
+  versão em aberto; o segundo ainda está na versão 0.x, com pouco uso; o terceiro devolve só o texto,
+  sem a posição de cada linha.
+- **Gemini, pelo Firebase AI Logic,** para a leitura do valor: lê o PDF direto e devolve só o valor,
+  mas envia o comprovante ao Google.
 - **`react-native-better-pdf`:** desenha o PDF com o `PdfRenderer` do próprio Android e gera a
   imagem de cada página. Mas o código que o `nitrogen` 0.37.1 gera para ela não compila no Kotlin
   2.4, que o React Native Firebase 27 pede: o Kotlin 2.4 transformou em erro um teste de tipo que
