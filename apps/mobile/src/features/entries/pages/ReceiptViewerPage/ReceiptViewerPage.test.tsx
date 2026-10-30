@@ -36,9 +36,9 @@ const family = { service: allowedEmailListQueryService, scenario: allowedEmailLi
 const oneOffBill = { service: entryQueryService, scenario: entryQueryScenarios.oneOffBillOfTheMember };
 const payment = { service: entryQueryService, scenario: entryQueryScenarios.paymentOfTheMember };
 const imageReceipt = { service: receiptFileQueryService, scenario: receiptFileQueryScenarios.imageReceipt };
-const convertedPdfReceipt = {
+const pdfReceipt = {
   service: receiptFileQueryService,
-  scenario: receiptFileQueryScenarios.convertedPdfReceipt,
+  scenario: receiptFileQueryScenarios.pdfReceipt,
 };
 
 const imageContent = getReceiptContentScenarios.receiptOfAnotherMember;
@@ -91,9 +91,9 @@ describe('ReceiptViewerPage', () => {
     it('Should open a PDF as the image of its page, with the name chosen in the title', async () => {
       mockServiceScenario(getReceiptContentService, imageContent);
 
-      await renderViewer(payment, convertedPdfReceipt, family);
+      await renderViewer(payment, pdfReceipt, family);
 
-      expect(getReceiptContentService).toHaveBeenCalledWith(convertedPdfReceipt.scenario.result.id, 'image/png');
+      expect(getReceiptContentService).toHaveBeenCalledWith(pdfReceipt.scenario.result.id, 'application/pdf');
       expect(imageProps().uri).toBe(imageContent.result);
       expect(screen.getByText('comprovante-luz.pdf')).toBeOnTheScreen();
     });
@@ -101,7 +101,7 @@ describe('ReceiptViewerPage', () => {
     it('Should show the payment below the image: the bill, the amount, the month, who registered it and when', async () => {
       mockServiceScenario(getReceiptContentService, imageContent);
 
-      await renderViewer(payment, convertedPdfReceipt, family);
+      await renderViewer(payment, pdfReceipt, family);
 
       expect(screen.getByText('Luz · R$ 187,35')).toBeOnTheScreen();
       expect(screen.getByText('Pagamento de outubro de 2026 · registrado por Bruno em 10/10/2026')).toBeOnTheScreen();

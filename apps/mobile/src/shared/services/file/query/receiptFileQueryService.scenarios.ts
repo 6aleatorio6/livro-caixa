@@ -12,11 +12,11 @@ const IMAGE_FILE = {
   sizeBytes: 120000,
   uploadedBy: testAccountUid(BRUNO),
 } as const;
-// O PDF de uma página chega como a imagem da página, com o nome que a pessoa escolheu.
-const CONVERTED_PDF_FILE = {
+// O PDF é guardado como está.
+const PDF_FILE = {
   name: 'comprovante-luz.pdf',
-  type: 'image',
-  contentType: 'image/png',
+  type: 'pdf',
+  contentType: 'application/pdf',
   sizeBytes: 90000,
   uploadedBy: testAccountUid(BRUNO),
 } as const;
@@ -35,11 +35,11 @@ export const receiptFileQueryScenarios = {
     input: { id: RECEIPT_FILE_ID },
     result: toReceiptFile(RECEIPT_FILE_ID, IMAGE_FILE),
   },
-  convertedPdfReceipt: {
+  pdfReceipt: {
     signedInAs: ANA,
-    given: { ...BOTH_IN_THE_LIST, [`files/${RECEIPT_FILE_ID}`]: CONVERTED_PDF_FILE },
+    given: { ...BOTH_IN_THE_LIST, [`files/${RECEIPT_FILE_ID}`]: PDF_FILE },
     input: { id: RECEIPT_FILE_ID },
-    result: toReceiptFile(RECEIPT_FILE_ID, CONVERTED_PDF_FILE),
+    result: toReceiptFile(RECEIPT_FILE_ID, PDF_FILE),
   },
   // O Bruno lê o registro do comprovante dos próprios lançamentos que as telas de alterar abrem.
   receiptToChange: {

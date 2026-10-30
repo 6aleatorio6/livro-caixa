@@ -105,13 +105,13 @@ describe('ReceiptSummary', () => {
       await render(
         <ReceiptSummary
           file={null}
-          errorMessage="O PDF tem mais de uma página."
+          errorMessage="O PDF passa de 900 KB. Escolha outro arquivo."
           rejectedFileName="Compartilhe outro arquivo."
           isShared
         />,
       );
 
-      expect(screen.getByText('O PDF tem mais de uma página.')).toBeOnTheScreen();
+      expect(screen.getByText('O PDF passa de 900 KB. Escolha outro arquivo.')).toBeOnTheScreen();
       expect(screen.queryByText(/Veio do compartilhamento/)).toBeNull();
     });
   });
