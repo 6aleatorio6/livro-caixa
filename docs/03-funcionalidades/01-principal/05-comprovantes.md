@@ -7,8 +7,8 @@ partir de outro app do Android. Por enquanto, o app guarda o comprovante, mas n�
 
 ## Formatos e tamanho
 
-Cada comprovante tem até 900 KB e é guardado como imagem. Antes de salvar, o app comprime a imagem
-que passa disso, sem deixá-la ilegível, e converte o PDF na imagem da página.
+Cada comprovante tem até 900 KB. Antes de salvar, o app comprime a imagem que passa disso, sem
+deixá-la ilegível. O PDF vai como está.
 
 - **A imagem de até 900 KB vai como está.**
 - **Acima disso, o app comprime em degraus** e fica com o primeiro resultado que cabe. Primeiro
@@ -22,9 +22,9 @@ que passa disso, sem deixá-la ilegível, e converte o PDF na imagem da página.
   primeiro e vai como está.
 - **O que não cabe nem no piso é recusado**, e o membro escolhe outro arquivo. Se a compressão
   falhar, vale a imagem original, que também é recusada se passar de 900 KB.
-- **O PDF de uma página vira a imagem dela**, com o lado maior em 2560 pixels, e desce os mesmos
-  degraus. O comprovante guarda o nome do PDF.
-- **O PDF de mais de uma página é recusado, por enquanto.** O membro precisa escolher outro arquivo,
+- **O PDF de até 900 KB vai como está**, com qualquer número de páginas: o PDF que o banco gera tem
+  poucos KB e cabe com folga.
+- **O PDF acima de 900 KB é recusado**, porque não é comprimido. O membro escolhe outro arquivo,
   como a foto ou o print da página que tem o pagamento.
 
 ## Anexar de dentro do app
@@ -50,9 +50,14 @@ compartilhá-lo de novo depois de entrar.
 Qualquer membro vê o comprovante de qualquer lançamento, pelo Ver dos
 [detalhes do lançamento](07-detalhes-do-lancamento.md).
 
-O comprovante abre em tela cheia dentro do app, sobre fundo escuro, com zoom. Embaixo, de que
-lançamento ele é. O que veio de um PDF abre do mesmo jeito, como a imagem da página, sem sair para o
-leitor de PDF do celular.
+O comprovante abre em tela cheia dentro do app, sobre fundo escuro. Embaixo, de que lançamento ele
+é.
+
+- **A imagem ocupa a largura da tela**, com a altura da proporção dela. Um print longo, como o de um
+  extrato, rola até o fim. A imagem não tem zoom.
+- **O PDF abre com as páginas uma embaixo da outra**, rolando, com o zoom de pinça do leitor do app
+  e, quando há mais de uma página, a indicação "1 de 2". Ele não sai para o leitor de PDF do
+  celular.
 
 Antes de salvar, o membro também abre o comprovante anexado, para conferir o valor enquanto o digita:
 
@@ -73,11 +78,12 @@ Antes de salvar, o membro também abre o comprovante anexado, para conferir o va
       antes do lado maior.
 - [ ] Uma imagem que não cabe em 900 KB nem com 1600 pixels e qualidade de 50% é recusada.
 - [ ] Um GIF acima de 900 KB é recusado.
-- [ ] Um PDF de uma página é salvo como a imagem da página, com o nome do PDF.
-- [ ] Um PDF de mais de uma página é recusado.
+- [ ] Um PDF de até 900 KB é salvo como está, com qualquer número de páginas.
+- [ ] Um PDF acima de 900 KB é recusado.
 - [ ] Dentro do app, o comprovante só vem dos arquivos do celular.
 - [ ] Qualquer membro abre o comprovante de um lançamento de outro membro.
-- [ ] O comprovante abre em tela cheia dentro do app, com zoom, inclusive o que veio de um PDF.
+- [ ] A imagem abre em tela cheia na largura da tela e rola na vertical, sem zoom.
+- [ ] O PDF abre em tela cheia dentro do app, com as páginas rolando.
 - [ ] No pagamento, tocar no comprovante compartilhado o abre em tela cheia, sem abrir a escolha de
       arquivo; o Trocar abre a escolha.
 - [ ] Na lista do compartilhamento, tocar no comprovante o abre em tela cheia.

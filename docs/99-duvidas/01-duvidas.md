@@ -12,7 +12,7 @@ tema aparece na documentação.
 | D-04 | Quem cadastra, altera e exclui contas recorrentes, e o que acontece com os meses já pagos? | 🟢 Respondido — qualquer membro; os meses pagos não mudam |
 | D-05 | Em que mês um lançamento conta? | 🟢 Respondido — o pagamento no mês da conta; a conta avulsa no mês da data dela |
 | D-06 | Uma conta recorrente pode ter mais de um pagamento no mesmo mês? | 🟢 Respondido — não: o mês fica com o primeiro que pagar |
-| D-07 | O que é o processamento de imagens acima de 5 MB, e o que acontece com um PDF grande? | 🟢 Respondido — o limite é 900 KB; a imagem é comprimida em degraus até caber, e o PDF de uma página vira imagem |
+| D-07 | O que é o processamento de imagens acima de 5 MB, e o que acontece com um PDF grande? | 🟢 Respondido — o limite é 900 KB; a imagem é comprimida em degraus até caber, e o PDF vai como está, recusado acima disso |
 | D-08 | O que o app mostra depois de receber um arquivo compartilhado pelo Android? | 🟢 Respondido — "Conta avulsa" e as contas a pagar do mês atual e do próximo |
 | D-09 | De onde o membro anexa o comprovante dentro do app? | 🟢 Respondido — só dos arquivos do celular |
 | D-10 | O que o Início mostra, além do gráfico do mês? | 🟢 Respondido — lista do mês, separação por tag e por membro, meses anteriores e o próximo |
@@ -28,8 +28,8 @@ tema aparece na documentação.
 | D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🟢 Respondido — por um comando do adb, antes do fluxo |
 | D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🟢 Respondido — Pagamentos, um mês e uma pessoa por vez, agrupado por tag |
 | D-22 | O app lê o valor no comprovante? | 🟢 Respondido — fica para depois, com a leitura no celular |
-| D-23 | O comprovante em PDF abre dentro do app ou no leitor do celular? | 🟢 Respondido — dentro do app, já convertido em imagem |
-| D-24 | O app aceita PDF de mais de uma página? | 🟡 Parcial — por enquanto, não; falta decidir se e como volta |
+| D-23 | O comprovante em PDF abre dentro do app ou no leitor do celular? | 🟢 Respondido — dentro do app, com as páginas rolando |
+| D-24 | O app aceita PDF de mais de uma página? | 🟢 Respondido — sim, até 900 KB, guardado como está |
 | D-25 | Dá para pagar uma conta antes de o mês dela começar? | 🟢 Respondido — sim, só o próximo mês |
 
 <!-- Status: 🔴 Em aberto · 🟡 Parcial — o que falta · 🟢 Respondido — a resposta -->
@@ -90,10 +90,12 @@ recusado (modelo de um projeto anterior).
 **Resposta:** o comprovante tem até 900 KB, porque passou a morar num documento do Firestore, que
 tem no máximo 1 MiB. A imagem acima de 900 KB é comprimida em degraus: primeiro a qualidade, com o
 lado maior em 2560 pixels, depois o lado maior, até o piso de 1600 pixels com qualidade de 50%, e
-sai em WebP. O que não cabe nem no piso é recusado. O PDF de uma página vira a imagem dela e desce os
-mesmos degraus. Antes, o limite era de 5 MB no Cloud Storage: a imagem acima de 2 MB era reduzida
-para 2560 pixels, e o PDF ia como estava, recusado acima de 5 MB. O Cloud Storage saiu porque só
-funciona no plano Blaze, cuja ativação pedia um pagamento antecipado.
+sai em WebP. O que não cabe nem no piso é recusado. O PDF vai como está e é recusado acima de 900
+KB, porque não é comprimido. Antes, o limite era de 5 MB no Cloud Storage: a imagem acima de 2 MB era
+reduzida para 2560 pixels, e o PDF ia como estava, recusado acima de 5 MB. O Cloud Storage saiu porque
+só funciona no plano Blaze, cuja ativação pedia um pagamento antecipado. Por um tempo, o PDF de uma
+página virou a imagem dela antes de salvar. Voltou a ir como está porque a imagem ficava maior que o
+PDF que o banco gera: o de um Pix, com menos de 1 KB, virava 56 KB.
 
 **Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md),
 [Plataforma e Stack](../05-arquitetura/01-plataforma-e-stack.md).
@@ -244,21 +246,21 @@ ML Kit funciona na nova arquitetura do React Native 0.88.
 
 ## D-23 — O PDF dentro do app
 
-**Resposta:** o PDF abre dentro do app como a imagem, porque já é guardado como a imagem da sua
-página: em tela cheia, sobre fundo escuro, com zoom e, embaixo, de que lançamento ele é. A conversão
-é da `@dariyd/react-native-pdf-page-image`, quando o membro anexa o arquivo. Antes, o PDF era guardado
-como PDF e desenhado pela `react-native-pdf`, com rolagem entre as páginas; e, antes disso, a página
-dizia que o app o abria no leitor de PDF do celular.
+**Resposta:** o PDF abre dentro do app, desenhado pela `react-native-pdf`: em tela cheia, sobre fundo
+escuro, com as páginas rolando, o zoom de pinça do leitor e, embaixo, de que lançamento ele é. Antes,
+o PDF de uma página era guardado como a imagem dela, convertido pela
+`@dariyd/react-native-pdf-page-image`, e abria como a imagem; e, antes disso, a página dizia que o
+app o abria no leitor de PDF do celular.
 
 **Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md),
 [Plataforma e Stack](../05-arquitetura/01-plataforma-e-stack.md).
 
 ## D-24 — O PDF de mais de uma página
 
-**Resposta parcial:** por enquanto, o app recusa o PDF de mais de uma página, e o membro anexa a foto
-ou o print da página que tem o pagamento. Juntar as páginas numa imagem comprida esbarra no limite de
-bitmap do Android (uns 100 MB) e num zoom borrado, e guardar o PDF inteiro não caberia nos 900 KB do
-documento. Falta decidir se o PDF de várias páginas volta, e de que jeito.
+**Resposta:** sim. O PDF é guardado como está, com qualquer número de páginas, até 900 KB; o maior é
+recusado. O PDF que o banco gera tem poucos KB, então cabe com folga. Antes, quando o PDF virava a
+imagem da página, o de mais de uma página era recusado: juntar as páginas numa imagem comprida
+esbarrava no limite de bitmap do Android (uns 100 MB).
 
 **Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).
 

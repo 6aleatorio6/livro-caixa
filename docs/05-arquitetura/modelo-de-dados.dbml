@@ -14,7 +14,7 @@
 // os bytes em fileContents/{id}, com o mesmo id. O lançamento aponta para o registro do comprovante, e
 // os detalhes leem o registro em tempo real sem baixar os bytes, que só o visualizador lê. O lançamento,
 // o registro e os bytes entram e saem num lote só. As regras conferem que quem salva está em
-// allowedEmails, que é o autor do registro, que o arquivo é imagem de até 900 KB e que os bytes têm o
+// allowedEmails, que é o autor do registro, que o arquivo é imagem ou PDF de até 900 KB e que os bytes têm o
 // tamanho que o registro diz.
 //
 // Valores em dinheiro em centavos, inteiros. Datas sem hora como texto AAAA-MM-DD, e meses como
@@ -26,7 +26,8 @@ Enum EntryKind {
 }
 
 Enum FileType {
-  image [note: 'Imagem de até 900 KB; acima disso, comprimida no app e salva em WebP. O PDF de uma página chega como a imagem dela']
+  image [note: 'Imagem de até 900 KB; acima disso, comprimida no app e salva em WebP']
+  pdf [note: 'PDF de até 900 KB, com qualquer número de páginas, guardado como está; o maior é recusado']
 }
 
 Table allowedEmails {
@@ -87,7 +88,7 @@ Table files {
   id varchar [pk, note: 'Id gerado pelo app antes do lote']
   name varchar [not null, note: 'O nome do arquivo escolhido (1 a 255 caracteres), que o app mostra nos detalhes e no visualizador']
   type FileType [not null]
-  contentType varchar [not null, note: 'image/...; o PDF convertido fica image/png, ou image/webp quando comprimido']
+  contentType varchar [not null, note: 'image/... para a imagem (image/webp quando comprimida) e application/pdf para o PDF; as regras conferem o par com o type']
   sizeBytes int [not null, note: 'Até 900 KB (921.600 bytes), o tamanho de fileContents.content, conferido pelas regras']
   uploadedBy varchar [not null, note: 'O uid do login de quem salvou. Só ele exclui o registro e os bytes']
 
@@ -96,7 +97,7 @@ Table files {
 
 Table fileContents {
   id varchar [pk, ref: - files.id, note: 'O mesmo id do registro em files']
-  content bytes [not null, note: 'Os bytes da imagem, até 900 KB: um documento do Firestore tem no máximo 1 MiB']
+  content bytes [not null, note: 'Os bytes da imagem ou do PDF, até 900 KB: um documento do Firestore tem no máximo 1 MiB']
 
-  Note: 'Os bytes de cada arquivo, separados do registro para os detalhes, que leem files em tempo real, não baixarem a imagem. Todo membro lê um por id (nunca a lista). Só quem salvou o registro cria, no mesmo lote dele, e exclui, no lote que apaga o registro. Não há update.'
+  Note: 'Os bytes de cada arquivo, separados do registro para os detalhes, que leem files em tempo real, não baixarem o arquivo. Todo membro lê um por id (nunca a lista). Só quem salvou o registro cria, no mesmo lote dele, e exclui, no lote que apaga o registro. Não há update.'
 }
