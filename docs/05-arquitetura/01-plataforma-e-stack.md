@@ -36,7 +36,8 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   `fileContents`, que só o visualizador lê, uma vez. Os dois entram e saem no mesmo lote do
   lançamento, então não sobra arquivo sem lançamento nem lançamento sem arquivo. Um documento tem no
   máximo 1 MiB, e o comprovante fica em até 900 KB (921.600 bytes), com o resto de folga. As regras
-  do Firestore conferem o autor, o tipo (só imagem) e que o tamanho dos bytes é o do registro.
+  do Firestore conferem o autor, o tipo (imagem ou PDF, com o `contentType` que combina) e que o
+  tamanho dos bytes é o do registro.
 - **Imagens comprimidas com o `expo-image-manipulator`**, do próprio Expo, no celular e antes de
   salvar ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#formatos-e-tamanho)).
   A imagem acima de 900 KB desce uma escada: primeiro a qualidade, depois o lado maior, até um piso
