@@ -54,8 +54,14 @@ e preenche o valor pago do [pagamento](03-pagamento-de-conta-recorrente.md), da
 - **O que é lido:** a imagem, ou a primeira página do PDF. A leitura acontece enquanto o comprovante
   é preparado, com o carregamento que já cobre a tela.
 - **Qual valor:** o valor em reais do comprovante, quando ele mostra um só, mesmo que repetido. Com
-  dois valores diferentes, como o do documento e o pago com juros, nada é preenchido. Ex.: o Pix de
-  R$ 30,00 preenche R$ 30,00.
+  dois valores diferentes, como o do documento e o pago com juros, nada é preenchido. O valor zerado,
+  como a tarifa de R$ 0,00, não conta. Ex.: o Pix de R$ 30,00 com a tarifa de R$ 0,00 preenche
+  R$ 30,00.
+- **O Mercado Pago escreve os centavos menores, acima do número e sem vírgula** (R$ 63⁹⁶): o app o
+  reconhece pelo número de operação e lê os dois últimos dígitos como os centavos. Quando a leitura
+  traz o valor com a vírgula, vale a regra de cima.
+- **O teto:** um valor lido acima de R$ 9.999.999,99, o maior que o campo aceita, não preenche nada. É
+  a leitura que colou dígitos.
 - **Quando preenche:** enquanto o membro não digitou no campo. O valor digitado fica, mesmo com
   outro comprovante.
 - **O aviso:** embaixo do campo, o texto de apoio diz "Veio do comprovante. Corrija se pagou outro
@@ -110,6 +116,10 @@ Antes de salvar, o membro também abre o comprovante anexado, para conferir o va
 - [ ] O valor em reais de um comprovante que mostra um só valor, mesmo repetido, preenche o valor
       pago.
 - [ ] Um comprovante com dois valores diferentes não preenche nada.
+- [ ] O Pix de R$ 30,00 com a tarifa de R$ 0,00 preenche R$ 30,00.
+- [ ] O comprovante do Mercado Pago de R$ 63⁹⁶ preenche R$ 63,96, também quando a leitura traz a
+      vírgula.
+- [ ] Um valor lido acima de R$ 9.999.999,99 não preenche nada.
 - [ ] Do PDF, só a primeira página é lida.
 - [ ] O valor que o membro digitou não é trocado pelo do comprovante.
 - [ ] Com o valor lido, o campo diz "Veio do comprovante. Corrija se pagou outro valor."; digitado

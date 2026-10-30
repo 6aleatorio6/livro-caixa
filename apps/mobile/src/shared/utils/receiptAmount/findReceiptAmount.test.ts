@@ -31,6 +31,31 @@ describe('findReceiptAmount', () => {
     });
   });
 
+  it('Should read the raised cents of a Mercado Pago receipt when the OCR puts a space before them', () => {
+    const lines = ocrLinesOf('Comprovante de transferência', 'R$ 1.250 90', 'N.º de operação de Mercado Pago');
+
+    expect(findReceiptAmount(lines)).toBe(125090);
+  });
+
+  it('Should read a Mercado Pago receipt whose cents the OCR reads after a comma', () => {
+    const lines = ocrLinesOf('Comprovante de transferência', 'R$ 63,96', 'N.º de operação de Mercado Pago');
+
+    expect(findReceiptAmount(lines)).toBe(6396);
+  });
+
+  // O Itaú do I2 tem o Mercado Pago como a instituição de quem recebeu, e o valor com vírgula.
+  it('Should not read an Itaú Pix paid to Mercado Pago as a Mercado Pago receipt', () => {
+    const lines = ocrLinesOf(
+      'Comprovante de Pix',
+      'R$ 680,00',
+      'Para',
+      'Instituição: MERCADO PAGO',
+      'INSTITUIÇÃO DE PAGAMENTO',
+    );
+
+    expect(findReceiptAmount(lines)).toBe(68000);
+  });
+
   it('Should read the amount once when the receipt repeats it', () => {
     const lines = ocrLinesOf('Comprovante de Pix', 'Valor', 'R$ 30,00', 'Para', 'NOME SOBRENOME', 'Total', 'R$ 30,00');
 
@@ -57,6 +82,19 @@ describe('findReceiptAmount', () => {
 
   it('Should read nothing when the only amount is zero', () => {
     const lines = ocrLinesOf('Comprovante de Pix', 'Valor 30,00', 'Tarifa', 'R$ 0,00');
+
+    expect(findReceiptAmount(lines)).toBeNull();
+  });
+
+  it('Should read the largest amount the amount field takes, R$ 9.999.999,99', () => {
+    const lines = ocrLinesOf('Comprovante de pagamento', 'Valor pago', 'R$ 9.999.999,99');
+
+    expect(findReceiptAmount(lines)).toBe(999999999);
+  });
+
+  // O teto do campo e das regras: um valor acima dele é dígito colado pelo OCR, e o campo nem o aceitaria.
+  it('Should read nothing when the amount passes the largest the amount field takes', () => {
+    const lines = ocrLinesOf('Comprovante de pagamento', 'Valor pago', 'R$ 10.000.000,00');
 
     expect(findReceiptAmount(lines)).toBeNull();
   });
