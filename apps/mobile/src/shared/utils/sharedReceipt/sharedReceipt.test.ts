@@ -11,6 +11,7 @@ const receiptNamed = (name: string): IReceipt => ({
   sizeBytes: 1000,
   type: 'pdf',
   wasReduced: false,
+  readAmountCents: null,
 });
 
 describe('Shared receipt store', () => {

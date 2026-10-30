@@ -43,6 +43,7 @@ const sharedPdf: IReceipt = {
   sizeBytes: 64 * 1024,
   type: 'pdf',
   wasReduced: false,
+  readAmountCents: null,
 };
 
 function shareIs(result: ReturnType<typeof useSharedReceipt>) {

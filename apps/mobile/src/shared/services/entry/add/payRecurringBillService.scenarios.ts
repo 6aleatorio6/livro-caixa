@@ -17,6 +17,7 @@ const RECEIPT: IRecurringPaymentInput['receipt'] = {
   sizeBytes: RECEIPT_FIXTURE.sizeBytes,
   type: 'image',
   wasReduced: false,
+  readAmountCents: null,
 };
 // A Internet da lista de contas (dia 15, Serviços): a tela lê a conta dela, e a regra exige que a conta exista.
 const INTERNET_BILL = recurringBillListQueryScenarios.fiveBills.result.find(({ id }) => id === 'internet')!;

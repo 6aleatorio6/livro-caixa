@@ -12,6 +12,7 @@ const receipt: IReceipt = {
   sizeBytes: 100,
   type: 'image',
   wasReduced: false,
+  readAmountCents: null,
 };
 
 /** Envia o formulário preenchido com o nome e a data dados e devolve os erros que o schema achou. */

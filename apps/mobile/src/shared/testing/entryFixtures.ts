@@ -24,6 +24,7 @@ export const NEW_RECEIPT: IReceipt = {
   sizeBytes: RECEIPT_FIXTURE.sizeBytes,
   type: 'image',
   wasReduced: false,
+  readAmountCents: null,
 };
 
 // A Luz de outubro, paga por R$ 187,35 de R$ 210,00 previstos. O pagamento não tem `date`.

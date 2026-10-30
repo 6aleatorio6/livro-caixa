@@ -22,6 +22,7 @@ const jpg: IReceipt = {
   sizeBytes: Math.round(1.2 * 1024 * 1024),
   type: 'image',
   wasReduced: false,
+  readAmountCents: null,
 };
 const pdf: IReceipt = {
   uri: 'file:///luz.pdf',
@@ -30,6 +31,7 @@ const pdf: IReceipt = {
   sizeBytes: 182 * 1024,
   type: 'pdf',
   wasReduced: false,
+  readAmountCents: null,
 };
 const savedReceipt: IReceiptFile = {
   id: 'file-1',
