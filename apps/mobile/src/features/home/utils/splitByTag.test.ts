@@ -48,24 +48,32 @@ describe('splitByTag', () => {
   it('Should keep a tag with only to pay and break a tie by name', () => {
     const summary = monthSummary({ month: '2026-10', bills: [bill('a', 'health', 500), bill('b', 'home', 700)], entries: [] });
 
-    expect(splitByTag(summary, [health, home]).map(({ tag: { name } }) => name)).toEqual(['Casa', 'Saúde']);
+    expect(splitByTag(summary, [health, home]).map(({ tag }) => tag?.name)).toEqual(['Casa', 'Saúde']);
   });
 
-  it('Should leave out the untagged entries and bills', () => {
-    const summary = monthSummary({ month: '2026-10', bills: [bill('a', null, 500)], entries: [oneOff('x', null, 300)] });
+  // Cada conta tem no máximo uma tag: com a linha sem tag, as linhas somam o mês inteiro.
+  it('Should put what has no tag in the last row, with tag null, even when it paid the most', () => {
+    const summary = monthSummary({
+      month: '2026-10',
+      bills: [bill('a', null, 500), bill('rent', 'home', 100000)],
+      entries: [oneOff('x', null, 300), oneOff('y', 'home', 100)],
+    });
 
-    expect(splitByTag(summary, [home])).toEqual([]);
+    expect(splitByTag(summary, [home, health])).toEqual([
+      { tag: home, paidCents: 100, toPayCents: 100000 },
+      { tag: null, paidCents: 300, toPayCents: 500 },
+    ]);
   });
 
-  it('Should leave out a tagId that is not in the tags list', () => {
+  it('Should put an entry or a bill whose tag is not in the list in the untagged row', () => {
     const summary = monthSummary({ month: '2026-10', bills: [bill('a', 'gone', 500)], entries: [oneOff('x', 'gone', 300)] });
 
-    expect(splitByTag(summary, [home])).toEqual([]);
+    expect(splitByTag(summary, [home])).toEqual([{ tag: null, paidCents: 300, toPayCents: 500 }]);
   });
 
-  it('Should be empty without tags', () => {
-    const summary = monthSummary({ month: '2026-10', bills: [], entries: [oneOff('x', 'home', 300)] });
+  it('Should be empty when the month has nothing', () => {
+    const summary = monthSummary({ month: '2026-10', bills: [], entries: [] });
 
-    expect(splitByTag(summary, [])).toEqual([]);
+    expect(splitByTag(summary, [home])).toEqual([]);
   });
 });

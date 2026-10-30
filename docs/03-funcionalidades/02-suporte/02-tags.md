@@ -20,11 +20,15 @@ Qualquer membro, quando precisa de uma tag que ainda não existe ou quer mudar u
 - O nome da tag é único, sem diferença entre maiúsculas e minúsculas nem entre letras com e sem
   acento: "Saúde", "saude" e "SAÚDE" são o mesmo nome, e o app recusa uma segunda tag com ele.
 - A tag é opcional, tanto na conta recorrente quanto na conta avulsa.
+- Cada conta, recorrente ou avulsa, tem no máximo uma tag. Assim, a separação por tag do
+  [Início](../01-principal/01-inicio.md) soma o que a família pagou no mês, sem contar uma conta duas
+  vezes, e o que não tem tag fica na linha Sem tag.
 
 ## Critérios de aceite
 
 - [ ] Qualquer membro cria uma tag com um nome e uma das cores da lista.
 - [ ] A tag criada aparece para escolha na conta recorrente e na conta avulsa.
+- [ ] Uma conta recorrente ou avulsa fica com uma tag só: escolher outra troca a anterior.
 - [ ] Qualquer membro altera o nome e a cor de uma tag.
 - [ ] O app não deixa excluir uma tag que alguma conta, recorrente ou avulsa, usa.
 - [ ] Com a tag "Saúde" criada, o app recusa uma nova tag "saude" e a troca do nome de outra tag

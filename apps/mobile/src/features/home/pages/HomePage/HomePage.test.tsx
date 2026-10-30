@@ -149,6 +149,27 @@ describe('HomePage', () => {
     expect(screen.getByText('e mais R$ 217,90 a pagar')).toBeOnTheScreen();
   });
 
+  it('Should show "Sem tag" last in the split by tag, with what has no tag', async () => {
+    mockRealtime(fiveBills, threeTags, family, {
+      service: entryMonthQueryService,
+      scenario: entryMonthQueryScenarios.monthWithEntries,
+    });
+    await render(<HomePage />);
+
+    // Serviços pagou R$ 250,00 e Casa R$ 89,90; o Estacionamento, sem tag, R$ 15,00, e mesmo assim vem por último.
+    const names = screen.getAllByText(/^(Casa|Serviços|Sem tag)$/).map((node) => node.props.children);
+    expect(names).toEqual(['Serviços', 'Casa', 'Sem tag']);
+    // Na linha Sem tag e na do Estacionamento, entre as pagas.
+    expect(screen.getAllByText('R$ 15,00')).toHaveLength(2);
+  });
+
+  it('Should not put everything in "Sem tag" while the tags load', async () => {
+    mockRealtime(fiveBills, { service: tagListQueryService, status: 'loading' }, family, familyMonth);
+    await render(<HomePage />);
+
+    expect(screen.queryByText('Sem tag')).not.toBeOnTheScreen();
+  });
+
   it('Should split what was paid by member with the current name of the person', async () => {
     mockRealtime(fiveBills, threeTags, renamedFamily, familyMonth);
     await render(<HomePage />);

@@ -38,7 +38,8 @@ O formato do gráfico fica para o design.
   Ex.: Ana paga o Aluguel de novembro em 28 de outubro; o Início de outubro não muda, e o de
   novembro mostra o Aluguel pago, no nome de Ana.
 - A conta avulsa entra no mês da data dela.
-- Um lançamento sem tag entra no total do mês, mas em nenhuma tag.
+- Na separação por tag, o que não tem tag aparece na linha Sem tag, sempre a última. Como cada conta
+  tem no máximo uma tag, as linhas somam o que a família pagou no mês.
 
 ## Critérios de aceite
 
@@ -47,6 +48,7 @@ O formato do gráfico fica para o design.
 - [ ] Uma conta recorrente sem pagamento no mês aparece no que ainda vai ser pago, pelo valor
       previsto.
 - [ ] O Início mostra quanto foi em cada tag e quanto cada membro pagou.
+- [ ] Uma conta avulsa sem tag aparece na linha Sem tag, a última da separação por tag.
 - [ ] Dá para trocar para um mês anterior e ver os números dele.
 - [ ] Dá para avançar até o próximo mês, que mostra as contas recorrentes dele a pagar; nele, o
       Próximo mês fica desabilitado.

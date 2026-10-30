@@ -13,4 +13,4 @@
 | **Conta avulsa** | Conta da família que não se repete, registrada já paga por um membro, com o comprovante. Entra no mês da data dela. |
 | **Lançamento** | O que um membro registra no app: o pagamento de uma conta recorrente ou uma conta avulsa. |
 | **Comprovante** | Imagem ou PDF que prova o lançamento. Obrigatório em todos. |
-| **Tag** | Etiqueta com nome e cor que classifica contas recorrentes e contas avulsas. É opcional nos dois, e o nome não se repete. |
+| **Tag** | Etiqueta com nome e cor que classifica contas recorrentes e contas avulsas. É opcional nos dois, cada conta tem no máximo uma, e o nome não se repete. |
