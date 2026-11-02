@@ -22374,6 +22374,49 @@
             },
             {
               "type": "frame",
+              "id": "n3ZDx",
+              "name": "Tela · Pagamentos, todos",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "VPtJy",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Pagamentos, todos",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "iy8Ia",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "O chip Todos marcado: os lançamentos da família inteira no mês, agrupados por tag, com quem pagou na linha. O cartão mostra o total da família, sem porcentagem.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
               "id": "RcbmI",
               "name": "Tela · Nova conta avulsa",
               "width": "fill_container",
@@ -23652,7 +23695,75 @@
                   "fill": "#1C1C1A",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "A aba do meio passa a Pagamentos e mostra os lançamentos de uma pessoa por vez, num filtro de chips com os membros da família, aberto em Você. Escolha da IA a pedido de Leonardo (29/10/2026): o Início já lista todos os pagos com quem pagou, e o que faltava era ver o que uma pessoa pagou; Você primeiro mantém a tarefa da aba (conferir e corrigir o que eu paguei) numa sessão de menos de um minuto, e o cartão do total vale igual para qualquer pessoa. Descartado: a alternância Meus / Da família, que repete as Pagas do Início, e a lista agrupada por pessoa, que fica longa e põe os lançamentos dos outros junto dos meus. A lista se agrupa por tag, pedido de Leonardo (29/10/2026): as tags em ordem alfabética, Sem tag por último, cada grupo com a cor, o nome e o total da tag, e dentro do grupo do mais recente para o mais antigo. Com a tag no cabeçalho, a linha do lançamento deixa de repeti-la.",
+                  "content": "A aba do meio passa a Pagamentos e mostra os lançamentos de uma pessoa por vez, num filtro de chips com os membros da família, aberto em Você. Escolha da IA a pedido de Leonardo (29/10/2026): o Início já lista todos os pagos com quem pagou, e o que faltava era ver o que uma pessoa pagou; Você primeiro mantém a tarefa da aba (conferir e corrigir o que eu paguei) numa sessão de menos de um minuto, e o cartão do total vale igual para qualquer pessoa. Descartado: a alternância Meus / Da família, que repete as Pagas do Início, e a lista agrupada por pessoa, que fica longa e põe os lançamentos dos outros junto dos meus. A lista se agrupa por tag, pedido de Leonardo (29/10/2026): as tags em ordem alfabética, Sem tag por último, cada grupo com a cor, o nome e o total da tag, e dentro do grupo do mais recente para o mais antigo. Com a tag no cabeçalho, a linha do lançamento deixa de repeti-la. Em 02/11/2026, Leonardo pediu o chip Todos: ele vem primeiro, a aba continua abrindo em Você, a lista da família se agrupa por tag como as outras e cada linha diz quem pagou. O cartão mostra o total da família, sem porcentagem.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "OIg17",
+              "name": "Selo do mês",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "G4gadS",
+                  "name": "Rótulo",
+                  "fill": "#6B6B66",
+                  "content": "Selo do mês",
+                  "lineHeight": 1.3,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "z2o3nR",
+                  "name": "Texto",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "O cabeçalho do Início e de Pagamentos mostra, ao lado do rótulo da aba, o selo “Este mês” (primary-container) no mês atual e “Mês que vem” (tertiary-container, a cor do a pagar) no próximo; os meses anteriores não têm selo. Pedido de Leonardo em 02/11/2026; o selo fica na linha do rótulo porque, na do mês, “Fevereiro de 2026” com o selo e os dois botões passa de 412. Por isso o Início ganhou o rótulo “Início”.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "G0m1DY",
+              "name": "Tag na linha do Início",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "NKJQy",
+                  "name": "Rótulo",
+                  "fill": "#6B6B66",
+                  "content": "Tag na linha do Início",
+                  "lineHeight": 1.3,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "EGJ6v",
+                  "name": "Texto",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Nas contas do Início (a pagar e pagas) e do Compartilhar comprovante, a tag sai do texto e vira uma bolinha de 8 px na cor dela, no começo do detalhe; sem tag, sem bolinha. Leonardo pediu a tag na mesma linha do nome e depois uma bolinha no lugar do nome (02/11/2026); entre a bolinha depois do nome, a marca na cor da tag, o anel e a bolinha no detalhe, escolheu a bolinha de 8 px no detalhe: maior que o ponto separador e igual à da divisão por tag. Em Pagamentos a linha segue sem tag, que está no grupo.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 16,
@@ -26322,19 +26433,52 @@
                   "gap": 2,
                   "children": [
                     {
-                      "type": "text",
-                      "id": "zxgJf",
-                      "x": 0,
-                      "y": 0,
-                      "name": "App",
-                      "enabled": false,
-                      "fill": "$primary",
-                      "content": "Livro-Caixa",
-                      "lineHeight": "$label-medium-line-height",
-                      "fontFamily": "$font-family",
-                      "fontSize": "$label-medium-size",
-                      "fontWeight": "$label-medium-weight",
-                      "letterSpacing": "$label-medium-tracking"
+                      "type": "frame",
+                      "id": "W23vf5",
+                      "name": "Rótulo",
+                      "height": 20,
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "zxgJf",
+                          "name": "App",
+                          "fill": "$on-surface-variant",
+                          "content": "Início",
+                          "lineHeight": "$label-medium-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$label-medium-size",
+                          "fontWeight": "$label-medium-weight",
+                          "letterSpacing": "$label-medium-tracking"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "FkWhP",
+                          "name": "Selo do mês",
+                          "fill": "$primary-container",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            2,
+                            8
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "mQYdD",
+                              "name": "Texto",
+                              "fill": "$on-primary-container",
+                              "content": "Este mês",
+                              "lineHeight": "$label-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-small-size",
+                              "fontWeight": "$label-small-weight",
+                              "letterSpacing": "$label-small-tracking"
+                            }
+                          ]
+                        }
+                      ]
                     },
                     {
                       "type": "text",
@@ -26527,10 +26671,45 @@
                       "fill": "$on-primary-container"
                     },
                     "CqyUL": {
-                      "content": "Aluguel"
+                      "type": "text",
+                      "id": "zy2aP",
+                      "name": "Nome",
+                      "fill": "$on-surface",
+                      "content": "Aluguel",
+                      "lineHeight": "$title-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-medium-size",
+                      "fontWeight": "$title-medium-weight",
+                      "letterSpacing": "$title-medium-tracking"
                     },
                     "OSPYw": {
-                      "content": "dia 5 · Ana · Casa"
+                      "type": "frame",
+                      "id": "UDLfg",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "R6Hysi",
+                          "name": "Cor da tag",
+                          "fill": "$tag-wood",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "Qk78w",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "dia 5 · Ana",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
                     },
                     "x7N4T1": {
                       "enabled": true,
@@ -26556,10 +26735,45 @@
                       "fill": "$on-primary-container"
                     },
                     "CqyUL": {
-                      "content": "Condomínio"
+                      "type": "text",
+                      "id": "X48v0",
+                      "name": "Nome",
+                      "fill": "$on-surface",
+                      "content": "Condomínio",
+                      "lineHeight": "$title-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-medium-size",
+                      "fontWeight": "$title-medium-weight",
+                      "letterSpacing": "$title-medium-tracking"
                     },
                     "OSPYw": {
-                      "content": "dia 8 · Bruno · Casa"
+                      "type": "frame",
+                      "id": "xPIVD",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "c5MiFC",
+                          "name": "Cor da tag",
+                          "fill": "$tag-wood",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "zxICb",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "dia 8 · Bruno",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
                     },
                     "x7N4T1": {
                       "enabled": true,
@@ -26585,10 +26799,45 @@
                       "fill": "$on-primary-container"
                     },
                     "CqyUL": {
-                      "content": "Luz"
+                      "type": "text",
+                      "id": "P8Zxa",
+                      "name": "Nome",
+                      "fill": "$on-surface",
+                      "content": "Luz",
+                      "lineHeight": "$title-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-medium-size",
+                      "fontWeight": "$title-medium-weight",
+                      "letterSpacing": "$title-medium-tracking"
                     },
                     "OSPYw": {
-                      "content": "dia 10 · Ana · previsto R$ 210,00"
+                      "type": "frame",
+                      "id": "qsRTY",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "GsJvu",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "MYoBV",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "dia 10 · Ana · previsto R$ 210,00",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
                     },
                     "x7N4T1": {
                       "enabled": true,
@@ -26683,7 +26932,50 @@
                   "type": "ref",
                   "ref": "EuVW1",
                   "name": "Internet",
-                  "width": "fill_container"
+                  "width": "fill_container",
+                  "descendants": {
+                    "CqyUL": {
+                      "type": "text",
+                      "id": "rqKjd",
+                      "name": "Nome",
+                      "fill": "$on-surface",
+                      "content": "Internet",
+                      "lineHeight": "$title-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-medium-size",
+                      "fontWeight": "$title-medium-weight",
+                      "letterSpacing": "$title-medium-tracking"
+                    },
+                    "OSPYw": {
+                      "type": "frame",
+                      "id": "rrVMl",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "Y3T5f",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "kstmW",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 119,90 · vence dia 15",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    }
+                  }
                 },
                 {
                   "id": "gofhW",
@@ -26693,10 +26985,45 @@
                   "width": "fill_container",
                   "descendants": {
                     "CqyUL": {
-                      "content": "Água"
+                      "type": "text",
+                      "id": "m7b3Gg",
+                      "name": "Nome",
+                      "fill": "$on-surface",
+                      "content": "Água",
+                      "lineHeight": "$title-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-medium-size",
+                      "fontWeight": "$title-medium-weight",
+                      "letterSpacing": "$title-medium-tracking"
                     },
                     "OSPYw": {
-                      "content": "R$ 98,00 · vence dia 20 · Serviços"
+                      "type": "frame",
+                      "id": "MC4Pj",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "A40JVa",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "pKAem",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 98,00 · vence dia 20",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
                     }
                   }
                 }
@@ -26838,19 +27165,52 @@
                   "gap": 2,
                   "children": [
                     {
-                      "type": "text",
-                      "id": "pz2TW",
-                      "x": 0,
-                      "y": 0,
-                      "name": "App",
-                      "enabled": false,
-                      "fill": "$primary",
-                      "content": "Livro-Caixa",
-                      "lineHeight": "$label-medium-line-height",
-                      "fontFamily": "$font-family",
-                      "fontSize": "$label-medium-size",
-                      "fontWeight": "$label-medium-weight",
-                      "letterSpacing": "$label-medium-tracking"
+                      "type": "frame",
+                      "id": "EZnen",
+                      "name": "Rótulo",
+                      "height": 20,
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "pz2TW",
+                          "name": "App",
+                          "fill": "$on-surface-variant",
+                          "content": "Início",
+                          "lineHeight": "$label-medium-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$label-medium-size",
+                          "fontWeight": "$label-medium-weight",
+                          "letterSpacing": "$label-medium-tracking"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "icWo4",
+                          "name": "Selo do mês",
+                          "fill": "$primary-container",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            2,
+                            8
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "kwH8H",
+                              "name": "Texto",
+                              "fill": "$on-primary-container",
+                              "content": "Este mês",
+                              "lineHeight": "$label-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-small-size",
+                              "fontWeight": "$label-small-weight",
+                              "letterSpacing": "$label-small-tracking"
+                            }
+                          ]
+                        }
+                      ]
                     },
                     {
                       "type": "text",
@@ -27033,7 +27393,38 @@
                   "type": "ref",
                   "ref": "EuVW1",
                   "name": "Internet",
-                  "width": "fill_container"
+                  "width": "fill_container",
+                  "descendants": {
+                    "OSPYw": {
+                      "type": "frame",
+                      "id": "dxLmu",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "mYT3G",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "tg6cy",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 119,90 · vence dia 15",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    }
+                  }
                 },
                 {
                   "id": "pCO96",
@@ -27046,7 +27437,33 @@
                       "content": "Água"
                     },
                     "OSPYw": {
-                      "content": "R$ 98,00 · vence dia 20 · Serviços"
+                      "type": "frame",
+                      "id": "xsgOc",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "V6SF2",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "AdabK",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 98,00 · vence dia 20",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
                     }
                   }
                 }
@@ -27118,7 +27535,33 @@
                       "content": "Aluguel"
                     },
                     "OSPYw": {
-                      "content": "dia 5 · Ana · Casa"
+                      "type": "frame",
+                      "id": "DhQ9p",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "F78vnV",
+                          "name": "Cor da tag",
+                          "fill": "$tag-wood",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "KFelR",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "dia 5 · Ana",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
                     },
                     "x7N4T1": {
                       "enabled": true,
@@ -27147,7 +27590,33 @@
                       "content": "Condomínio"
                     },
                     "OSPYw": {
-                      "content": "dia 8 · Bruno · Casa"
+                      "type": "frame",
+                      "id": "KfNZv",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "Yavno",
+                          "name": "Cor da tag",
+                          "fill": "$tag-wood",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "E8Chw",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "dia 8 · Bruno",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
                     },
                     "x7N4T1": {
                       "enabled": true,
@@ -27176,7 +27645,33 @@
                       "content": "Luz"
                     },
                     "OSPYw": {
-                      "content": "dia 10 · Ana · previsto R$ 210,00"
+                      "type": "frame",
+                      "id": "VyeDU",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "O45mAX",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "FAv0J",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "dia 10 · Ana · previsto R$ 210,00",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
                     },
                     "x7N4T1": {
                       "enabled": true,
@@ -27718,7 +28213,38 @@
                   "type": "ref",
                   "ref": "EuVW1",
                   "name": "Internet",
-                  "width": "fill_container"
+                  "width": "fill_container",
+                  "descendants": {
+                    "OSPYw": {
+                      "type": "frame",
+                      "id": "jVh4D",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "R8H48",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "e83kd",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 119,90 · vence dia 15",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    }
+                  }
                 },
                 {
                   "id": "ma84e",
@@ -27731,7 +28257,33 @@
                       "content": "Água"
                     },
                     "OSPYw": {
-                      "content": "R$ 98,00 · vence dia 20 · Serviços"
+                      "type": "frame",
+                      "id": "jTW8B",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "k02Ygz",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "Z3xM8",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 98,00 · vence dia 20",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
                     }
                   }
                 }
@@ -27768,7 +28320,33 @@
                       "content": "Aluguel"
                     },
                     "OSPYw": {
-                      "content": "R$ 1.800,00 · vence dia 5 · Casa"
+                      "type": "frame",
+                      "id": "Apwrz",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "gYqjn",
+                          "name": "Cor da tag",
+                          "fill": "$tag-wood",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "w4OgNI",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 1.800,00 · vence dia 5",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
                     }
                   }
                 },
@@ -27783,7 +28361,33 @@
                       "content": "Condomínio"
                     },
                     "OSPYw": {
-                      "content": "R$ 450,00 · vence dia 8 · Casa"
+                      "type": "frame",
+                      "id": "zyg6d",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "RzayI",
+                          "name": "Cor da tag",
+                          "fill": "$tag-wood",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "WFEnU",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 450,00 · vence dia 8",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
                     }
                   }
                 },
@@ -27798,7 +28402,33 @@
                       "content": "Luz"
                     },
                     "OSPYw": {
-                      "content": "R$ 210,00 · vence dia 10 · Serviços"
+                      "type": "frame",
+                      "id": "BKzxG",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "ZCt3o",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "p4FFJ",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 210,00 · vence dia 10",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
                     }
                   }
                 },
@@ -27813,7 +28443,33 @@
                       "content": "Internet"
                     },
                     "OSPYw": {
-                      "content": "R$ 119,90 · vence dia 15 · Serviços"
+                      "type": "frame",
+                      "id": "F3Fg1c",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "FdtB1",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "BiZ8l",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 119,90 · vence dia 15",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
                     }
                   }
                 },
@@ -27828,7 +28484,33 @@
                       "content": "Água"
                     },
                     "OSPYw": {
-                      "content": "R$ 98,00 · vence dia 20 · Serviços"
+                      "type": "frame",
+                      "id": "MmJzV",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "M8BqQu",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "qYLIh",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 98,00 · vence dia 20",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
                     }
                   }
                 }
@@ -27970,16 +28652,52 @@
                   "gap": 2,
                   "children": [
                     {
-                      "type": "text",
-                      "id": "GKkRd",
-                      "name": "Aba",
-                      "fill": "$on-surface-variant",
-                      "content": "Pagamentos",
-                      "lineHeight": "$label-medium-line-height",
-                      "fontFamily": "$font-family",
-                      "fontSize": "$label-medium-size",
-                      "fontWeight": "$label-medium-weight",
-                      "letterSpacing": "$label-medium-tracking"
+                      "type": "frame",
+                      "id": "Ocvd0",
+                      "name": "Rótulo",
+                      "height": 20,
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "GKkRd",
+                          "name": "Aba",
+                          "fill": "$on-surface-variant",
+                          "content": "Pagamentos",
+                          "lineHeight": "$label-medium-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$label-medium-size",
+                          "fontWeight": "$label-medium-weight",
+                          "letterSpacing": "$label-medium-tracking"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "d3qiVf",
+                          "name": "Selo do mês",
+                          "fill": "$primary-container",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            2,
+                            8
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "X9KPGa",
+                              "name": "Texto",
+                              "fill": "$on-primary-container",
+                              "content": "Este mês",
+                              "lineHeight": "$label-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-small-size",
+                              "fontWeight": "$label-small-weight",
+                              "letterSpacing": "$label-small-tracking"
+                            }
+                          ]
+                        }
+                      ]
                     },
                     {
                       "type": "text",
@@ -28029,6 +28747,24 @@
               "width": "fill_container",
               "gap": 8,
               "children": [
+                {
+                  "id": "Ojjxy",
+                  "type": "ref",
+                  "ref": "M3onBb",
+                  "name": "Todos",
+                  "descendants": {
+                    "V78Sy": {
+                      "enabled": false
+                    },
+                    "olBfv": {
+                      "enabled": false
+                    },
+                    "PooxK": {
+                      "content": "Todos",
+                      "fill": "$on-surface-variant"
+                    }
+                  }
+                },
                 {
                   "id": "jOFns",
                   "type": "ref",
@@ -35866,16 +36602,52 @@
                   "gap": 2,
                   "children": [
                     {
-                      "type": "text",
-                      "id": "n7X5wa",
-                      "name": "Aba",
-                      "fill": "$on-surface-variant",
-                      "content": "Pagamentos",
-                      "lineHeight": "$label-medium-line-height",
-                      "fontFamily": "$font-family",
-                      "fontSize": "$label-medium-size",
-                      "fontWeight": "$label-medium-weight",
-                      "letterSpacing": "$label-medium-tracking"
+                      "type": "frame",
+                      "id": "iF977",
+                      "name": "Rótulo",
+                      "height": 20,
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "n7X5wa",
+                          "name": "Aba",
+                          "fill": "$on-surface-variant",
+                          "content": "Pagamentos",
+                          "lineHeight": "$label-medium-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$label-medium-size",
+                          "fontWeight": "$label-medium-weight",
+                          "letterSpacing": "$label-medium-tracking"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "UgGRl",
+                          "name": "Selo do mês",
+                          "fill": "$primary-container",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            2,
+                            8
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "uQRYg",
+                              "name": "Texto",
+                              "fill": "$on-primary-container",
+                              "content": "Este mês",
+                              "lineHeight": "$label-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-small-size",
+                              "fontWeight": "$label-small-weight",
+                              "letterSpacing": "$label-small-tracking"
+                            }
+                          ]
+                        }
+                      ]
                     },
                     {
                       "type": "text",
@@ -35925,6 +36697,24 @@
               "width": "fill_container",
               "gap": 8,
               "children": [
+                {
+                  "id": "nm9LR",
+                  "type": "ref",
+                  "ref": "M3onBb",
+                  "name": "Todos",
+                  "descendants": {
+                    "V78Sy": {
+                      "enabled": false
+                    },
+                    "olBfv": {
+                      "enabled": false
+                    },
+                    "PooxK": {
+                      "content": "Todos",
+                      "fill": "$on-surface-variant"
+                    }
+                  }
+                },
                 {
                   "id": "g1oYOm",
                   "type": "ref",
@@ -36193,16 +36983,73 @@
               "alignItems": "center",
               "children": [
                 {
-                  "type": "text",
-                  "id": "vQnuK",
-                  "name": "Mês atual",
-                  "fill": "$on-surface",
-                  "content": "Outubro de 2026",
-                  "lineHeight": "$headline-small-emphasized-line-height",
-                  "fontFamily": "$font-family",
-                  "fontSize": "$headline-small-emphasized-size",
-                  "fontWeight": "$headline-small-emphasized-weight",
-                  "letterSpacing": "$headline-small-emphasized-tracking"
+                  "type": "frame",
+                  "id": "WhbHg",
+                  "name": "Mês",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "iWJ7Z",
+                      "name": "Rótulo",
+                      "height": 20,
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "u0StDG",
+                          "name": "Aba",
+                          "fill": "$on-surface-variant",
+                          "content": "Início",
+                          "lineHeight": "$label-medium-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$label-medium-size",
+                          "fontWeight": "$label-medium-weight",
+                          "letterSpacing": "$label-medium-tracking"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "j7CKFe",
+                          "name": "Selo do mês",
+                          "fill": "$primary-container",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            2,
+                            8
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "l32ZWx",
+                              "name": "Texto",
+                              "fill": "$on-primary-container",
+                              "content": "Este mês",
+                              "lineHeight": "$label-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-small-size",
+                              "fontWeight": "$label-small-weight",
+                              "letterSpacing": "$label-small-tracking"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "vQnuK",
+                      "name": "Mês atual",
+                      "fill": "$on-surface",
+                      "content": "Outubro de 2026",
+                      "lineHeight": "$headline-small-emphasized-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$headline-small-emphasized-size",
+                      "fontWeight": "$headline-small-emphasized-weight",
+                      "letterSpacing": "$headline-small-emphasized-tracking"
+                    }
+                  ]
                 },
                 {
                   "type": "frame",
@@ -36858,16 +37705,52 @@
                   "gap": 2,
                   "children": [
                     {
-                      "type": "text",
-                      "id": "X5Vyo9",
-                      "name": "Aba",
-                      "fill": "$on-surface-variant",
-                      "content": "Pagamentos",
-                      "lineHeight": "$label-medium-line-height",
-                      "fontFamily": "$font-family",
-                      "fontSize": "$label-medium-size",
-                      "fontWeight": "$label-medium-weight",
-                      "letterSpacing": "$label-medium-tracking"
+                      "type": "frame",
+                      "id": "toc4m",
+                      "name": "Rótulo",
+                      "height": 20,
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "X5Vyo9",
+                          "name": "Aba",
+                          "fill": "$on-surface-variant",
+                          "content": "Pagamentos",
+                          "lineHeight": "$label-medium-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$label-medium-size",
+                          "fontWeight": "$label-medium-weight",
+                          "letterSpacing": "$label-medium-tracking"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "GiSOz",
+                          "name": "Selo do mês",
+                          "fill": "$primary-container",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            2,
+                            8
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "JcLx8",
+                              "name": "Texto",
+                              "fill": "$on-primary-container",
+                              "content": "Este mês",
+                              "lineHeight": "$label-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-small-size",
+                              "fontWeight": "$label-small-weight",
+                              "letterSpacing": "$label-small-tracking"
+                            }
+                          ]
+                        }
+                      ]
                     },
                     {
                       "type": "text",
@@ -36917,6 +37800,24 @@
               "width": "fill_container",
               "gap": 8,
               "children": [
+                {
+                  "id": "znDHV",
+                  "type": "ref",
+                  "ref": "M3onBb",
+                  "name": "Todos",
+                  "descendants": {
+                    "V78Sy": {
+                      "enabled": false
+                    },
+                    "olBfv": {
+                      "enabled": false
+                    },
+                    "PooxK": {
+                      "content": "Todos",
+                      "fill": "$on-surface-variant"
+                    }
+                  }
+                },
                 {
                   "id": "f5DDt",
                   "type": "ref",
@@ -37402,16 +38303,52 @@
                   "gap": 2,
                   "children": [
                     {
-                      "type": "text",
-                      "id": "h7dKn",
-                      "name": "Aba",
-                      "fill": "$on-surface-variant",
-                      "content": "Pagamentos",
-                      "lineHeight": "$label-medium-line-height",
-                      "fontFamily": "$font-family",
-                      "fontSize": "$label-medium-size",
-                      "fontWeight": "$label-medium-weight",
-                      "letterSpacing": "$label-medium-tracking"
+                      "type": "frame",
+                      "id": "MJiiR",
+                      "name": "Rótulo",
+                      "height": 20,
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "h7dKn",
+                          "name": "Aba",
+                          "fill": "$on-surface-variant",
+                          "content": "Pagamentos",
+                          "lineHeight": "$label-medium-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$label-medium-size",
+                          "fontWeight": "$label-medium-weight",
+                          "letterSpacing": "$label-medium-tracking"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "WGpx5",
+                          "name": "Selo do mês",
+                          "fill": "$primary-container",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            2,
+                            8
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "G6uFp",
+                              "name": "Texto",
+                              "fill": "$on-primary-container",
+                              "content": "Este mês",
+                              "lineHeight": "$label-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-small-size",
+                              "fontWeight": "$label-small-weight",
+                              "letterSpacing": "$label-small-tracking"
+                            }
+                          ]
+                        }
+                      ]
                     },
                     {
                       "type": "text",
@@ -37461,6 +38398,26 @@
               "width": "fill_container",
               "gap": 8,
               "children": [
+                {
+                  "id": "soAQm",
+                  "type": "ref",
+                  "ref": "M3onBb",
+                  "name": "Todos",
+                  "fill": "#00000000",
+                  "strokeWidth": 1,
+                  "descendants": {
+                    "V78Sy": {
+                      "enabled": false
+                    },
+                    "olBfv": {
+                      "enabled": false
+                    },
+                    "PooxK": {
+                      "content": "Todos",
+                      "fill": "$on-surface-variant"
+                    }
+                  }
+                },
                 {
                   "id": "Vql4f",
                   "type": "ref",
@@ -37638,6 +38595,729 @@
           "content": "pix-internet-outubro.pdf"
         }
       }
+    },
+    {
+      "type": "frame",
+      "id": "ofjG2",
+      "x": 9200,
+      "y": 20800,
+      "name": "Tela · Pagamentos, todos",
+      "theme": {
+        "mode": "light"
+      },
+      "clip": true,
+      "width": 412,
+      "height": 915,
+      "fill": "$surface",
+      "cornerRadius": 28,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#0000001A",
+        "offset": {
+          "x": 0,
+          "y": 8
+        },
+        "blur": 32
+      },
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "mZHlG",
+          "name": "Barra de status",
+          "width": "fill_container",
+          "height": 36,
+          "padding": [
+            0,
+            20
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "LM5ht",
+              "name": "Hora",
+              "fill": "$on-surface",
+              "content": "10:24",
+              "lineHeight": "$label-large-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$label-large-size",
+              "fontWeight": "$label-large-weight",
+              "letterSpacing": "$label-large-tracking"
+            },
+            {
+              "type": "frame",
+              "id": "l2BAAp",
+              "name": "Ícones",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "Q6Fha",
+                  "name": "signal",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                },
+                {
+                  "type": "icon",
+                  "id": "onqTC",
+                  "name": "wifi",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                },
+                {
+                  "type": "icon",
+                  "id": "xv19S",
+                  "name": "battery-full",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Jouef",
+          "name": "Conteúdo",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            8,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "C2kDC",
+              "name": "Cabeçalho",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "A0ZjZN",
+                  "name": "Mês",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "DclGQ",
+                      "name": "Rótulo",
+                      "height": 20,
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "fPOX2",
+                          "name": "Aba",
+                          "fill": "$on-surface-variant",
+                          "content": "Pagamentos",
+                          "lineHeight": "$label-medium-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$label-medium-size",
+                          "fontWeight": "$label-medium-weight",
+                          "letterSpacing": "$label-medium-tracking"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Xpt50",
+                          "name": "Selo do mês",
+                          "fill": "$primary-container",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            2,
+                            8
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "SUwPu",
+                              "name": "Texto",
+                              "fill": "$on-primary-container",
+                              "content": "Este mês",
+                              "lineHeight": "$label-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-small-size",
+                              "fontWeight": "$label-small-weight",
+                              "letterSpacing": "$label-small-tracking"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "BRIKo",
+                      "name": "Mês atual",
+                      "fill": "$on-surface",
+                      "content": "Outubro de 2026",
+                      "lineHeight": "$headline-small-emphasized-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$headline-small-emphasized-size",
+                      "fontWeight": "$headline-small-emphasized-weight",
+                      "letterSpacing": "$headline-small-emphasized-tracking"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "wxFW3",
+                  "name": "Troca de mês",
+                  "children": [
+                    {
+                      "id": "owZVe",
+                      "type": "ref",
+                      "ref": "m2ArK2",
+                      "name": "Mês anterior"
+                    },
+                    {
+                      "id": "s0yf9y",
+                      "type": "ref",
+                      "ref": "m2ArK2",
+                      "name": "Próximo mês",
+                      "descendants": {
+                        "uRzVL": {
+                          "icon": "chevron-right",
+                          "fill": "$outline-variant"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "jL1wk",
+              "name": "Pessoas",
+              "width": "fill_container",
+              "gap": 8,
+              "children": [
+                {
+                  "id": "bZPtw",
+                  "type": "ref",
+                  "ref": "M3onBb",
+                  "name": "Todos",
+                  "fill": "$secondary-container",
+                  "strokeWidth": 0,
+                  "descendants": {
+                    "V78Sy": {
+                      "enabled": true
+                    },
+                    "olBfv": {
+                      "enabled": false
+                    },
+                    "PooxK": {
+                      "content": "Todos",
+                      "fill": "$on-secondary-container"
+                    }
+                  }
+                },
+                {
+                  "id": "x4Brb",
+                  "type": "ref",
+                  "ref": "M3onBb",
+                  "name": "Você",
+                  "descendants": {
+                    "V78Sy": {
+                      "enabled": false
+                    },
+                    "olBfv": {
+                      "enabled": false
+                    },
+                    "PooxK": {
+                      "content": "Você",
+                      "fill": "$on-surface-variant"
+                    }
+                  }
+                },
+                {
+                  "id": "oiELz",
+                  "type": "ref",
+                  "ref": "M3onBb",
+                  "name": "Bruno",
+                  "descendants": {
+                    "V78Sy": {
+                      "enabled": false
+                    },
+                    "olBfv": {
+                      "enabled": false
+                    },
+                    "PooxK": {
+                      "content": "Bruno",
+                      "fill": "$on-surface-variant"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Y0OSx",
+              "name": "Total do mês",
+              "width": "fill_container",
+              "fill": "$surface-container-low",
+              "cornerRadius": 28,
+              "layout": "vertical",
+              "gap": 4,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "jHSvk",
+                  "name": "Rótulo",
+                  "fill": "$on-surface-variant",
+                  "content": "A família registrou em outubro",
+                  "lineHeight": "$label-large-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$label-large-size",
+                  "fontWeight": "$label-large-weight",
+                  "letterSpacing": "$label-large-tracking"
+                },
+                {
+                  "type": "text",
+                  "id": "H1VJV",
+                  "name": "Valor",
+                  "fill": "$primary",
+                  "content": "R$ 2.787,35",
+                  "lineHeight": "$headline-large-emphasized-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$headline-large-emphasized-size",
+                  "fontWeight": "$headline-large-emphasized-weight",
+                  "letterSpacing": "$headline-large-emphasized-tracking"
+                },
+                {
+                  "type": "text",
+                  "id": "A0IqR",
+                  "name": "Detalhe",
+                  "fill": "$on-surface-variant",
+                  "content": "4 lançamentos",
+                  "lineHeight": "$body-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$body-small-size",
+                  "fontWeight": "$body-small-weight",
+                  "letterSpacing": "$body-small-tracking"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "GpY59",
+              "name": "Lançamentos",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "vaSTg",
+                  "name": "Casa",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "uPIzR",
+                      "name": "Cabeçalho da tag",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        4,
+                        0
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ct8Rs",
+                          "name": "Tag",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "up4je",
+                              "name": "Cor",
+                              "fill": "$tag-wood",
+                              "width": 10,
+                              "height": 10
+                            },
+                            {
+                              "type": "text",
+                              "id": "el1NA",
+                              "name": "Nome",
+                              "fill": "$on-surface-variant",
+                              "content": "Casa",
+                              "lineHeight": "$label-large-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-large-size",
+                              "fontWeight": "$label-large-weight",
+                              "letterSpacing": "$label-large-tracking"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "t3Pwfv",
+                          "name": "Total",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 2.250,00",
+                          "lineHeight": "$label-large-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$label-large-size",
+                          "fontWeight": "$label-large-weight",
+                          "letterSpacing": "$label-large-tracking"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "TX4Cw",
+                      "type": "ref",
+                      "ref": "EuVW1",
+                      "name": "Condomínio",
+                      "width": "fill_container",
+                      "descendants": {
+                        "tzq6I": {
+                          "fill": "$primary-container"
+                        },
+                        "fqUT8": {
+                          "icon": "check",
+                          "fill": "$on-primary-container"
+                        },
+                        "CqyUL": {
+                          "content": "Condomínio"
+                        },
+                        "OSPYw": {
+                          "content": "pago em 08/10 · Bruno"
+                        },
+                        "x7N4T1": {
+                          "enabled": true,
+                          "content": "R$ 450,00"
+                        },
+                        "r4mDrJ": {
+                          "enabled": false
+                        }
+                      }
+                    },
+                    {
+                      "id": "I61MP",
+                      "type": "ref",
+                      "ref": "EuVW1",
+                      "name": "Aluguel",
+                      "width": "fill_container",
+                      "descendants": {
+                        "tzq6I": {
+                          "fill": "$primary-container"
+                        },
+                        "fqUT8": {
+                          "icon": "check",
+                          "fill": "$on-primary-container"
+                        },
+                        "CqyUL": {
+                          "content": "Aluguel"
+                        },
+                        "OSPYw": {
+                          "content": "pago em 04/10 · Ana"
+                        },
+                        "x7N4T1": {
+                          "enabled": true,
+                          "content": "R$ 1.800,00"
+                        },
+                        "r4mDrJ": {
+                          "enabled": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "BnJSX",
+                  "name": "Serviços",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "qMsvi",
+                      "name": "Cabeçalho da tag",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        4,
+                        0
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "f0N5A",
+                          "name": "Tag",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "Kh7PJ",
+                              "name": "Cor",
+                              "fill": "$tag-blue",
+                              "width": 10,
+                              "height": 10
+                            },
+                            {
+                              "type": "text",
+                              "id": "my8I9",
+                              "name": "Nome",
+                              "fill": "$on-surface-variant",
+                              "content": "Serviços",
+                              "lineHeight": "$label-large-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-large-size",
+                              "fontWeight": "$label-large-weight",
+                              "letterSpacing": "$label-large-tracking"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "IE5QZ",
+                          "name": "Total",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 187,35",
+                          "lineHeight": "$label-large-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$label-large-size",
+                          "fontWeight": "$label-large-weight",
+                          "letterSpacing": "$label-large-tracking"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "uOeZA",
+                      "type": "ref",
+                      "ref": "EuVW1",
+                      "name": "Luz",
+                      "width": "fill_container",
+                      "descendants": {
+                        "tzq6I": {
+                          "fill": "$primary-container"
+                        },
+                        "fqUT8": {
+                          "icon": "check",
+                          "fill": "$on-primary-container"
+                        },
+                        "CqyUL": {
+                          "content": "Luz"
+                        },
+                        "OSPYw": {
+                          "content": "pago em 11/10 · Ana · previsto R$ 210,00"
+                        },
+                        "x7N4T1": {
+                          "enabled": true,
+                          "content": "R$ 187,35"
+                        },
+                        "r4mDrJ": {
+                          "enabled": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "HejBs",
+                  "name": "Sem tag",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "nj32S",
+                      "name": "Cabeçalho da tag",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        4,
+                        0
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "qcZ2D",
+                          "name": "Tag",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "cn8Eb",
+                              "name": "Cor",
+                              "fill": "$outline",
+                              "width": 10,
+                              "height": 10
+                            },
+                            {
+                              "type": "text",
+                              "id": "tf0C1",
+                              "name": "Nome",
+                              "fill": "$on-surface-variant",
+                              "content": "Sem tag",
+                              "lineHeight": "$label-large-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-large-size",
+                              "fontWeight": "$label-large-weight",
+                              "letterSpacing": "$label-large-tracking"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "Ewh5A",
+                          "name": "Total",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 350,00",
+                          "lineHeight": "$label-large-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$label-large-size",
+                          "fontWeight": "$label-large-weight",
+                          "letterSpacing": "$label-large-tracking"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "ep9Vu",
+                      "type": "ref",
+                      "ref": "EuVW1",
+                      "name": "Conserto da geladeira",
+                      "width": "fill_container",
+                      "descendants": {
+                        "tzq6I": {
+                          "fill": "$secondary-container"
+                        },
+                        "fqUT8": {
+                          "icon": "receipt",
+                          "fill": "$on-secondary-container"
+                        },
+                        "CqyUL": {
+                          "content": "Conserto da geladeira"
+                        },
+                        "OSPYw": {
+                          "content": "12/10 · avulsa · Bruno"
+                        },
+                        "x7N4T1": {
+                          "enabled": true,
+                          "content": "R$ 350,00"
+                        },
+                        "r4mDrJ": {
+                          "enabled": false
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "HyXnr",
+              "name": "Dica",
+              "fill": "$on-surface-variant",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Toque num lançamento para ver os detalhes e o comprovante.",
+              "lineHeight": "$body-small-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$body-small-size",
+              "fontWeight": "$body-small-weight",
+              "letterSpacing": "$body-small-tracking"
+            },
+            {
+              "type": "frame",
+              "id": "zdHRX",
+              "name": "Espaço",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "vertical"
+            },
+            {
+              "type": "frame",
+              "id": "z5RtlX",
+              "name": "Ação",
+              "width": "fill_container",
+              "justifyContent": "end",
+              "children": [
+                {
+                  "id": "f6V6Jv",
+                  "type": "ref",
+                  "ref": "PjSaD",
+                  "name": "Nova conta avulsa"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "EuWec",
+          "type": "ref",
+          "ref": "cryGB",
+          "name": "Navegação",
+          "width": "fill_container",
+          "descendants": {
+            "vNPLA": {
+              "fill": "#00000000"
+            },
+            "S226JS": {
+              "fill": "$on-surface-variant"
+            },
+            "p6wAH": {
+              "fill": "$on-surface-variant",
+              "fontWeight": "$label-medium-weight"
+            },
+            "gnkTX": {
+              "fill": "$secondary-container"
+            },
+            "w8XD5": {
+              "fill": "$on-secondary-container"
+            },
+            "LGDf2": {
+              "fill": "$on-surface",
+              "fontWeight": "$label-medium-emphasized-weight",
+              "content": "Pagamentos"
+            }
+          }
+        }
+      ]
     }
   ],
   "themes": {
