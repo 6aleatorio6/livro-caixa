@@ -20,9 +20,9 @@ on one of these:
   the SVG is drawn in the browser after hydration. A syntax error passes `pnpm docusaurus build`
   and ships as an error box where the diagram should be. The two scripts of step 5 are the only
   checks there are.
-- **The built HTML holds no diagram text.** The local search indexes built HTML, so labels,
-  `accTitle`, `accDescr` and a frontmatter `title` are never found — and anyone fetching the page
-  without JS sees nothing there. Every term that matters has to be in the prose too.
+- **The built HTML holds no diagram text.** Anyone fetching the page without JS — a crawler, a
+  summarizer, an AI reading the page — never sees the labels, `accTitle`, `accDescr` or a
+  frontmatter `title`. Every term that matters has to be in the prose too.
 - **Light and dark redraw the diagram with Docusaurus's default themes** (`default` / `dark`).
   Whatever pins a color or a theme — `style`, a `classDef` fill, frontmatter
   `theme`/`themeVariables`/`look`, `%%{init}%%` — stays the same in both modes, and a light fill
@@ -135,7 +135,7 @@ both themes* in [syntax-and-layout.md](references/syntax-and-layout.md)).
   direita".
 - **After, if needed:** the takeaway in one sentence, and the one-line legend if you went beyond
   the vocabulary.
-- **Every searchable term in the text** — entity names, statuses, endpoints the diagram shows.
+- **Every term that matters in the text** — entity names, statuses, endpoints the diagram shows.
 - **`accTitle:`** on the line after the diagram keyword, naming what the diagram is (screen
   readers announce it). Skip `accDescr`: the surrounding prose is the description, and a second copy
   inside the block drifts. `accTitle` breaks the parse in `mindmap`, `block` and `sankey`.
