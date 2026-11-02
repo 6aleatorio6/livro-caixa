@@ -1,4 +1,4 @@
-import { FileCheck, FileX, Image, Paperclip } from 'lucide-react-native';
+import { FileCheck, FileX, Image, type LucideIcon, Paperclip } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
@@ -23,6 +23,10 @@ export interface IReceiptSummaryProps {
   disabled?: boolean;
   /** O arquivo veio do compartilhamento do Android: o texto de cima começa com "Veio do compartilhamento · ". */
   isShared?: boolean;
+  /** O texto de cima no lugar do tipo e do tamanho: de quem é o comprovante ("Bruno · 16/11 · R$ 40,00"). */
+  heading?: string;
+  /** A marca no lugar da do tipo de arquivo: a da contribuição, por exemplo. */
+  icon?: LucideIcon;
 }
 
 /**
@@ -37,6 +41,8 @@ export function ReceiptSummary({
   onOpen,
   disabled = false,
   isShared = false,
+  heading,
+  icon,
 }: IReceiptSummaryProps) {
   const { theme } = useUnistyles();
 
@@ -47,12 +53,13 @@ export function ReceiptSummary({
   const iconColor =
     theme.colors[hasError ? 'onErrorContainer' : attached ? 'onPrimaryContainer' : 'onSecondaryContainer'];
   const Icon =
-    rejectedFileName !== undefined ? FileX : attached ? (attached.type === 'pdf' ? FileCheck : Image) : Paperclip;
+    icon ??
+    (rejectedFileName !== undefined ? FileX : attached ? (attached.type === 'pdf' ? FileCheck : Image) : Paperclip);
   const typeName = attached?.type === 'pdf' ? 'PDF' : 'Imagem';
   const attachedLabel = attached
     ? `${isShared ? 'Veio do compartilhamento · ' : ''}${typeName} · ${attached.wasReduced ? 'comprimida para ' : ''}${formatFileSize(attached.sizeBytes)}`
     : null;
-  const label = errorMessage ?? attachedLabel ?? 'Comprovante';
+  const label = errorMessage ?? heading ?? attachedLabel ?? 'Comprovante';
   const fileText = rejectedFileName ?? attached?.name ?? 'Nenhum arquivo anexado';
 
   const summary = (

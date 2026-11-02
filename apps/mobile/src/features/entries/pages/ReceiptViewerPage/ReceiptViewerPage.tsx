@@ -12,7 +12,7 @@ import { TopBar } from '@/shared/components/TopBar/TopBar';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { entryQueryService } from '@/shared/services/entry/query/entryQueryService';
-import { isOwnedEntry } from '@/shared/utils/entry/isOwnedEntry';
+import { isAuthoredEntry } from '@/shared/utils/entry/isAuthoredEntry';
 import { receiptFileQueryService } from '@/shared/services/file/query/receiptFileQueryService';
 import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 
@@ -27,8 +27,8 @@ export function ReceiptViewerPage() {
   const { theme } = useUnistyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { status: entryStatus, data } = useRealtime(entryQueryService, { id });
-  // Até o visualizador conhecer a contribuição e o pagamento sem dono, os dois abrem como o lançamento que não existe.
-  const entry = data && isOwnedEntry(data) ? data : null;
+  // O pagamento sem dono não tem comprovante: cada contribuição tem o seu.
+  const entry = data && isAuthoredEntry(data) ? data : null;
   const { status: fileStatus, data: file } = useRealtime(receiptFileQueryService, { id: entry?.receiptFileId ?? null });
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
   const receipt = useReceiptContent(file ?? null);

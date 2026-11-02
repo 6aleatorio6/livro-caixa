@@ -13,8 +13,11 @@ import { createRealtimeService } from '@/shared/utils/serviceUtils/createRealtim
  * usuário filtra pelo `paidBy`.
  */
 export const entryMonthQueryService = createRealtimeService({
-  refs: ({ month }: { month: string }) => [query(collection(firestoreDb, 'entries'), where('month', '==', month))],
-  resolve: ([entries]): IEntry[] =>
+  // Sem o mês (a tela ainda espera o lançamento que o diz), a leitura fica parada.
+  refs: ({ month }: { month: string | null }) =>
+    month ? [query(collection(firestoreDb, 'entries'), where('month', '==', month))] : [],
+  // Sem o mês, `resolve` não roda: a leitura parada não entrega nada.
+  resolve: ([entries = []]): IEntry[] =>
     entries
       // A ordem lê o `createdAt` do documento junto do dia que o `toEntry` já resolveu (o `paidOn` do pagamento).
       .flatMap((document) => {

@@ -1,15 +1,13 @@
 import { ListItem } from '@/shared/components/ListItem/ListItem';
 import { AppText } from '@/shared/components/AppText/AppText';
+import type { IEntryMarkKind } from '@/shared/types/entry/EntryMarkKind';
 import type { ITag } from '@/shared/types/tag/Tag';
 import { entryMarkOf } from '@/shared/utils/entry/entryMarkOf';
 import { formatCents } from '@/shared/utils/format/formatCents';
 
 export interface IEntryItemProps {
-  /**
-   * O tipo do lançamento, que decide a marca: a conta avulsa (`oneOff`), o pagamento de uma conta recorrente
-   * (`payment`) ou a conta paga só pelas contribuições (`contributions`).
-   */
-  kind: 'oneOff' | 'payment' | 'contributions';
+  /** O tipo do lançamento, que decide a marca. */
+  kind: IEntryMarkKind;
   name: string;
   /** O valor pago, em centavos. */
   amountCents: number;

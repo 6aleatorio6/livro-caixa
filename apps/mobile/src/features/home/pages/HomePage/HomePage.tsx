@@ -26,6 +26,7 @@ import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { dayOf } from '@/shared/utils/date/dayOf';
 import { billAmountOf } from '@/shared/utils/entry/billAmountOf';
 import { contributionsSupportOf } from '@/shared/utils/entry/contributionsSupportOf';
+import { entryMarkKindOf } from '@/shared/utils/entry/entryMarkKindOf';
 import { memberPartsOf } from '@/shared/utils/entry/memberPartsOf';
 import { formatCents } from '@/shared/utils/format/formatCents';
 import { tagDisplayOf } from '@/shared/utils/tag/tagDisplayOf';
@@ -130,7 +131,7 @@ export function HomePage() {
                 {paidRows.map((entry) => (
                   <EntryItem
                     key={entry.id}
-                    kind={entry.kind === 'oneOffBill' ? 'oneOff' : entry.paidBy === null ? 'contributions' : 'payment'}
+                    kind={entryMarkKindOf(entry)}
                     name={entry.name}
                     tag={findTag(entry.tagId, tags)}
                     amountCents={billAmountOf(entry, summary.entries)}

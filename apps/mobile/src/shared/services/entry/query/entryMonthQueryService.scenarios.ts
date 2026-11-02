@@ -1,3 +1,4 @@
+import { CONTRIBUTION, CONTRIBUTION_DOCUMENT, PAYMENT, PAYMENT_DOCUMENT } from '@/shared/testing/entryFixtures';
 import { HOME_TAG_ID, UTILITIES_TAG_ID } from '@/shared/testing/tagFixtures';
 import { testAccountUid } from '@/shared/testing/testAccountUid';
 import type { IEntry } from '@/shared/types/entry/Entry';
@@ -204,6 +205,13 @@ export const entryMonthQueryScenarios = {
       toEntry('2026-11_rent', { ...UNOWNED_RENT, date: null, paidOn: '2026-11-04', paidBy: null, amountCents: null, receiptFileId: null }),
       { id: 'k3J9', kind: 'contribution', month: '2026-11', entryId: '2026-11_rent', amountCents: 100000, paidBy: testAccountUid(BRUNO), receiptFileId: 'f22', paidOn: '2026-11-04' },
     ],
+  },
+  // A Luz que o Bruno pagou, com a contribuição de R$ 40,00 da Ana, registrada no dia seguinte: vem primeiro.
+  monthWithContributionToPayment: {
+    signedInAs: BRUNO,
+    given: { ...BOTH_IN_THE_LIST, 'entries/2026-10_electricity': PAYMENT_DOCUMENT, 'entries/c-ana': CONTRIBUTION_DOCUMENT },
+    input: { month: '2026-10' },
+    result: [CONTRIBUTION, PAYMENT],
   },
   // Um `kind` que o app não conhece (gravado por uma versão mais nova) não aparece como conta avulsa: fica de fora.
   monthWithUnknownKind: {

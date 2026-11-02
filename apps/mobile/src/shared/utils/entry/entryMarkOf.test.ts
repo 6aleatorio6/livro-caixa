@@ -1,4 +1,4 @@
-import { Check, Receipt, UsersRound } from 'lucide-react-native';
+import { Check, HandCoins, Receipt, UsersRound } from 'lucide-react-native';
 
 import { entryMarkOf } from './entryMarkOf';
 
@@ -20,8 +20,16 @@ describe('entryMarkOf', () => {
   });
 
   it('Should mark a bill paid only by contributions with the people on the primary container', () => {
-    expect(entryMarkOf('contributions')).toEqual({
+    expect(entryMarkOf('paidByContributions')).toEqual({
       icon: UsersRound,
+      markColor: 'primaryContainer',
+      iconColor: 'onPrimaryContainer',
+    });
+  });
+
+  it('Should mark a contribution with the coins in hand on the primary container', () => {
+    expect(entryMarkOf('contribution')).toEqual({
+      icon: HandCoins,
       markColor: 'primaryContainer',
       iconColor: 'onPrimaryContainer',
     });

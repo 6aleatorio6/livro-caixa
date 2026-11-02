@@ -13,9 +13,20 @@ import {
 } from '@/shared/testing/entryFixtures';
 import { entryOf } from '@/shared/testing/entryOf';
 import type { IEntry } from '@/shared/types/entry/Entry';
+import { entryMonthQueryScenarios } from '@/shared/services/entry/query/entryMonthQueryService.scenarios';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 
+// O Aluguel de novembro, pago só pelas contribuições do Bruno e da Carla: o pagamento sem dono alcançou o previsto.
+const NOVEMBER = entryMonthQueryScenarios.monthWithContributions;
+const REACHED_RENT = NOVEMBER.result.find(({ id }) => id === '2026-11_rent')!;
+
 export const entryQueryScenarios = {
+  reachedUnownedPayment: {
+    signedInAs: BRUNO,
+    given: { ...BOTH_IN_THE_LIST, 'entries/2026-11_rent': NOVEMBER.given['entries/2026-11_rent'] },
+    input: { id: '2026-11_rent' },
+    result: REACHED_RENT,
+  },
   // O Bruno abre o pagamento dele (a Luz); o valor pago é corrigido com a folha aberta. As telas de alterar e de
   // excluir abrem o mesmo lançamento: a leitura entrega exatamente o `entry` com que os serviços são chamados.
   paymentOfTheMember: {

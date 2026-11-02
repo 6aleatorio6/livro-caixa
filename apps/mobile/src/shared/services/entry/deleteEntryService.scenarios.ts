@@ -127,7 +127,8 @@ export const deleteEntryScenarios = {
       ...receiptOf(CONTRIBUTION_FILE_ID, ANA).fileDocuments,
     },
     fileContentsGiven: receiptOf(CONTRIBUTION_FILE_ID, ANA).fileContentIds,
-    input: [CONTRIBUTION, [PAYMENT, CONTRIBUTION]],
+    // Os lançamentos do mês na ordem em que a leitura do mês os entrega (`monthWithContributionToPayment`).
+    input: [CONTRIBUTION, [CONTRIBUTION, PAYMENT]],
     result: undefined,
     remainingEntryIds: ['2026-10_electricity'],
   },

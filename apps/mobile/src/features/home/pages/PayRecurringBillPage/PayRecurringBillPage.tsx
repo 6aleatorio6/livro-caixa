@@ -16,6 +16,7 @@ import { doAddContribution } from '@/shared/utils/actions/doAddContribution';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { contributionsOf } from '@/shared/utils/entry/contributionsOf';
 import { contributionsSupportOf } from '@/shared/utils/entry/contributionsSupportOf';
+import { isFullyContributed } from '@/shared/utils/entry/isFullyContributed';
 import { sumCents } from '@/shared/utils/entry/sumCents';
 import { findTag } from '@/shared/utils/tag/findTag';
 
@@ -25,7 +26,8 @@ import { doPayRecurringBill } from '@/features/home/utils/actions/doPayRecurring
 
 /** Onde qualquer membro registra o pagamento de uma conta recorrente no mês que o Início abriu. */
 export function PayRecurringBillPage() {
-  const { id, month } = useLocalSearchParams<{ id: string; month: string }>();
+  // `attach=1`: o "Anexar o comprovante da conta" dos detalhes, que paga o mês que as contribuições já pagaram.
+  const { id, month, attach } = useLocalSearchParams<{ id: string; month: string; attach?: string }>();
   const { initialReceipt, finish } = useSharedReceiptOpening();
   const { status, data: bills } = useRealtime(recurringBillListQueryService, {});
   const { data: tags } = useRealtime(tagListQueryService, {});
@@ -46,7 +48,22 @@ export function PayRecurringBillPage() {
   );
   const contributions = payment && entries ? contributionsOf(payment.id, entries) : [];
   const contributedCents = sumCents(contributions);
-  const isPaid = isToPay && payment !== undefined && (payment.paidBy !== null || contributedCents >= payment.expectedAmountCents);
+  // O mês com contribuições não segue mais a conta: o nome, o vencimento, o previsto e a tag são as cópias do pagamento
+  // sem dono, que o pagamento mantém ao ganhar o dono.
+  const monthBill =
+    bill && payment?.paidBy === null
+      ? {
+          ...bill,
+          name: payment.name,
+          dayOfMonth: payment.dueDay,
+          expectedAmountCents: payment.expectedAmountCents,
+          tagId: payment.tagId,
+        }
+      : bill;
+  const isPaid =
+    isToPay &&
+    payment !== undefined &&
+    (payment.paidBy !== null || (attach !== '1' && isFullyContributed(payment, entries ?? [])));
 
   return (
     <Screen>

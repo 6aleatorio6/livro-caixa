@@ -87,13 +87,16 @@ describe('PayRecurringBillPage', () => {
 
   async function renderPage(
     id = paymentOfScenario.bill.id,
-    { month, entriesScenario = entryMonthQueryScenarios.emptyMonth, shared } = { month: paymentOfScenario.month } as {
+    { month, entriesScenario = entryMonthQueryScenarios.emptyMonth, shared, attach } = {
+      month: paymentOfScenario.month,
+    } as {
       month?: string;
       entriesScenario?: (typeof entryMonthQueryScenarios)[keyof typeof entryMonthQueryScenarios];
       shared?: string;
+      attach?: string;
     },
   ) {
-    jest.mocked(useLocalSearchParams).mockReturnValue({ id, month, shared });
+    jest.mocked(useLocalSearchParams).mockReturnValue({ id, month, shared, attach });
     realtime = mockRealtime(
       { service: entryMonthQueryService, scenario: entriesScenario },
       { service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.fiveBills },
@@ -281,6 +284,14 @@ describe('PayRecurringBillPage', () => {
 
       expect(await screen.findByText('O pagamento não fica abaixo das contribuições, de R$ 100,00.')).toBeOnTheScreen();
       expect(payRecurringBillService).not.toHaveBeenCalled();
+    });
+
+    it('Should open the payment with the sum of the contributions from "Anexar o comprovante da conta"', async () => {
+      await renderPage('rent', { ...openMonth, attach: '1' });
+
+      expect(screen.queryByText('Esta conta já foi paga neste mês.')).not.toBeOnTheScreen();
+      expect(screen.getByDisplayValue('R$ 2.000,00')).toBeOnTheScreen();
+      expect(screen.getByRole('button', { name: SUBMIT })).toBeOnTheScreen();
     });
 
     it('Should say the bill was already paid when the contributions reached the expected amount', async () => {

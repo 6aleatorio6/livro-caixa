@@ -127,6 +127,21 @@ describe('ReceiptViewerPage', () => {
     });
   });
 
+  it("Should open a contribution's receipt, saying below that it is a contribution, who registered it and when", async () => {
+    jest.mocked(getReceiptContentService).mockReturnValue(new Promise(() => {}));
+    const contribution = { service: entryQueryService, scenario: entryQueryScenarios.contribution };
+    const contributionReceipt = {
+      service: receiptFileQueryService,
+      scenario: receiptFileQueryScenarios.contributionReceipt,
+    };
+
+    await renderViewer(contribution, contributionReceipt, family);
+
+    expect(screen.getByText('pix-luz-ana.jpg')).toBeOnTheScreen();
+    expect(screen.getByText('Contribuição · R$ 40,00')).toBeOnTheScreen();
+    expect(screen.getByText('Contribuição em outubro de 2026 · registrada por Ana em 11/10/2026')).toBeOnTheScreen();
+  });
+
   describe('When there is nothing to show', () => {
     it('Should say the receipt was not found, without Tentar de novo, when the content is missing', async () => {
       mockServiceRejection(getReceiptContentService, getReceiptContentRejectedScenarios.receiptContentMissing);
