@@ -1,6 +1,6 @@
 import { writeBatch } from 'firebase/firestore';
 
-import { oneOffBillOf, receiptContentOf, receiptFileOf, recurringPaymentOf } from './documents.mjs';
+import { contributionOf, oneOffBillOf, receiptContentOf, receiptFileOf, recurringPaymentOf } from './documents.mjs';
 import { entryDocOf, entryOf, fileContentOf, fileOf } from './refs.mjs';
 
 // O registro e o conteúdo do comprovante entram e saem do lote juntos, como o app os grava.
@@ -54,6 +54,46 @@ export function addOneOffBillBatch(firestore, { entryId = 'e1', entry = oneOffBi
  */
 export function addPaymentBatch(firestore, { entry = recurringPaymentOf(), entryId = `${entry.month}_${entry.recurringBillId}`, ...rest } = {}) {
   return addEntryBatch(firestore, { entryId, entry, ...rest });
+}
+
+/**
+ * O lote da contribuição como o app grava: o comprovante, a contribuição (`entryId`, id gerado) e o `hasEntries`. Na
+ * primeira contribuição de um mês sem pagamento, `unownedPayment` entra no lote com o id `{month}_{recurringBillId}`.
+ */
+export function addContributionBatch(firestore, { entryId = 'c1', entry = contributionOf(), unownedPayment = null, ...rest } = {}) {
+  if (unownedPayment === null) return addEntryBatch(firestore, { entryId, entry, ...rest });
+  const { fileId = entry.receiptFileId, file = receiptFileOf(), email = 'bruno@gmail.com', markHasEntries = true } = rest;
+  const batch = writeBatch(firestore);
+  if (file !== null) addReceipt(batch, firestore, fileId, file);
+  batch.set(entryDocOf(firestore, `${unownedPayment.month}_${unownedPayment.recurringBillId}`), unownedPayment);
+  batch.set(entryDocOf(firestore, entryId), entry);
+  if (markHasEntries) batch.update(entryOf(firestore, email), { hasEntries: true });
+  return batch.commit();
+}
+
+/**
+ * O lote em que o pagamento sem dono `paymentId` ganha o dono: o comprovante novo (`file: null` o deixa de fora), os
+ * campos de `owner` e o `hasEntries` de `email`. `deleteContributionId` apaga no mesmo lote a contribuição que vira
+ * esse pagamento, sem o comprovante dela, que passa para o pagamento.
+ */
+export function takeOwnershipBatch(firestore, { paymentId, owner, file = receiptFileOf(), email = 'bruno@gmail.com', deleteContributionId = null }) {
+  const batch = writeBatch(firestore);
+  if (file !== null) addReceipt(batch, firestore, owner.receiptFileId, file);
+  batch.update(entryDocOf(firestore, paymentId), owner);
+  if (deleteContributionId !== null) batch.delete(entryDocOf(firestore, deleteContributionId));
+  batch.update(entryOf(firestore, email), { hasEntries: true });
+  return batch.commit();
+}
+
+/**
+ * O lote que transforma o pagamento `paymentId` numa contribuição: o pagamento perde o dono (`removal`, os campos
+ * apagados) e a contribuição `contributionId` nasce com o valor e o comprovante dele.
+ */
+export function paymentToContributionBatch(firestore, { paymentId, removal, contributionId, contribution }) {
+  const batch = writeBatch(firestore);
+  batch.update(entryDocOf(firestore, paymentId), removal);
+  batch.set(entryDocOf(firestore, contributionId), contribution);
+  return batch.commit();
 }
 
 /**
