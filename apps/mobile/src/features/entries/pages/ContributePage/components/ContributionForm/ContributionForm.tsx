@@ -2,12 +2,11 @@ import { useWatch } from 'react-hook-form';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
-import { AppText } from '@/shared/components/AppText/AppText';
+import { BillHeading } from '@/shared/components/BillHeading/BillHeading';
 import { Button } from '@/shared/components/Button/Button';
 import { AmountPaidFieldSmart } from '@/shared/components/inputs/AmountPaidFieldSmart/AmountPaidFieldSmart';
 import { ReceiptFieldSmart } from '@/shared/components/inputs/ReceiptFieldSmart/ReceiptFieldSmart';
 import { OwnershipNotice } from '@/shared/components/OwnershipNotice/OwnershipNotice';
-import { TagChip } from '@/shared/components/TagChip/TagChip';
 import type { IBillEntry } from '@/shared/types/entry/BillEntry';
 import type { IContributionInput } from '@/shared/types/entry/ContributionInput';
 import type { IReceipt } from '@/shared/types/file/Receipt';
@@ -15,7 +14,7 @@ import type { ITag } from '@/shared/types/tag/Tag';
 import { monthName } from '@/shared/utils/date/monthName';
 import { formatCents } from '@/shared/utils/format/formatCents';
 
-import { useContributionForm } from '../../hooks/useContributionForm/useContributionForm';
+import { useContributionForm } from '@/features/entries/hooks/useContributionForm/useContributionForm';
 
 export interface IContributionFormProps {
   /** O lançamento que recebe a contribuição. */
@@ -58,11 +57,18 @@ export function ContributionForm({
 
   // O schema já recusou o valor e o comprovante vazios.
   const submit = handleSubmit((values) =>
-    onSubmit({ target: { entry: target }, amountCents: values.amountCents as number, receipt: values.receipt as IReceipt }),
+    onSubmit({
+      target: { entry: target },
+      amountCents: values.amountCents as number,
+      receipt: values.receipt as IReceipt,
+    }),
   );
 
   const kindLabel = target.kind === 'oneOffBill' ? 'Conta avulsa' : 'Pagamento';
-  const heading = payerName === null ? `Conta de ${monthName(target.month)}` : `${kindLabel} de ${payerName} · ${monthName(target.month)}`;
+  const heading =
+    payerName === null
+      ? `Conta de ${monthName(target.month)}`
+      : `${kindLabel} de ${payerName} · ${monthName(target.month)}`;
   const amountLine =
     payerName === null
       ? `previsto ${formatCents(target.kind === 'recurringPayment' ? target.expectedAmountCents : targetAmountCents)}`
@@ -74,18 +80,7 @@ export function ContributionForm({
 
   return (
     <View style={styles.form}>
-      <View style={styles.bill}>
-        <AppText variant="labelMedium" color="onSurfaceVariant">
-          {heading}
-        </AppText>
-        <AppText variant="headlineSmallEmphasized">{target.name}</AppText>
-        <View style={styles.details}>
-          {tag ? <TagChip name={tag.name} color={tag.color} /> : null}
-          <AppText variant="bodyMedium" color="onSurfaceVariant">
-            {amountLine}
-          </AppText>
-        </View>
-      </View>
+      <BillHeading label={heading} name={target.name} tag={tag} details={amountLine} />
 
       <AmountPaidFieldSmart
         form={form}
@@ -103,7 +98,5 @@ export function ContributionForm({
 
 const styles = StyleSheet.create((theme) => ({
   form: { gap: theme.spacing.extraLarge },
-  bill: { gap: theme.spacing.small },
-  details: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.medium },
   spacer: { height: theme.spacing.large },
 }));

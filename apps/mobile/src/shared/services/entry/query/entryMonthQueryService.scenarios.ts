@@ -1,4 +1,13 @@
-import { CONTRIBUTION, CONTRIBUTION_DOCUMENT, PAYMENT, PAYMENT_DOCUMENT } from '@/shared/testing/entryFixtures';
+import {
+  CONTRIBUTION,
+  CONTRIBUTION_DOCUMENT,
+  CONTRIBUTION_TO_UNOWNED,
+  CONTRIBUTION_TO_UNOWNED_DOCUMENT,
+  PAYMENT,
+  PAYMENT_DOCUMENT,
+  UNOWNED_PAYMENT,
+  UNOWNED_PAYMENT_DOCUMENT,
+} from '@/shared/testing/entryFixtures';
 import { HOME_TAG_ID, UTILITIES_TAG_ID } from '@/shared/testing/tagFixtures';
 import { testAccountUid } from '@/shared/testing/testAccountUid';
 import type { IEntry } from '@/shared/types/entry/Entry';
@@ -40,10 +49,41 @@ const NEW_ONE = { ...base, month: '2026-10', name: 'Padaria', amountCents: 1200,
 // do Bruno, a Luz ainda a pagar com R$ 100,00 da Ana, e a Farmácia da Ana com R$ 30,00 da Carla.
 const CARLA_UID = testAccountUid('carla.lima@exemplo.com');
 const november = (day: string) => new Date(`2026-11-${day}T12:00:00Z`);
-const UNOWNED_RENT = { kind: 'recurringPayment', createdAt: november('04'), month: '2026-11', recurringBillId: 'rent', name: 'Aluguel', dueDay: 10, expectedAmountCents: 200000, tagId: HOME_TAG_ID };
-const UNOWNED_ELECTRICITY = { ...UNOWNED_RENT, createdAt: november('08'), recurringBillId: 'electricity', name: 'Luz', dueDay: 20, expectedAmountCents: 20000 };
-const NOVEMBER_INTERNET = { ...INTERNET_PAYMENT, createdAt: november('15'), month: '2026-11', amountCents: 12000, expectedAmountCents: 12000, receiptFileId: 'f21' };
-const NOVEMBER_PHARMACY = { ...PHARMACY, createdAt: november('12'), month: '2026-11', amountCents: 8000, date: '2026-11-12', paidBy: testAccountUid(ANA), receiptFileId: 'f26' };
+const UNOWNED_RENT = {
+  kind: 'recurringPayment',
+  createdAt: november('04'),
+  month: '2026-11',
+  recurringBillId: 'rent',
+  name: 'Aluguel',
+  dueDay: 10,
+  expectedAmountCents: 200000,
+  tagId: HOME_TAG_ID,
+};
+const UNOWNED_ELECTRICITY = {
+  ...UNOWNED_RENT,
+  createdAt: november('08'),
+  recurringBillId: 'electricity',
+  name: 'Luz',
+  dueDay: 20,
+  expectedAmountCents: 20000,
+};
+const NOVEMBER_INTERNET = {
+  ...INTERNET_PAYMENT,
+  createdAt: november('15'),
+  month: '2026-11',
+  amountCents: 12000,
+  expectedAmountCents: 12000,
+  receiptFileId: 'f21',
+};
+const NOVEMBER_PHARMACY = {
+  ...PHARMACY,
+  createdAt: november('12'),
+  month: '2026-11',
+  amountCents: 8000,
+  date: '2026-11-12',
+  paidBy: testAccountUid(ANA),
+  receiptFileId: 'f26',
+};
 const contribution = (createdAt: Date, entryId: string, amountCents: number, paidBy: string, receiptFileId: string) =>
   ({ kind: 'contribution', createdAt, month: '2026-11', entryId, amountCents, paidBy, receiptFileId }) as const;
 const BRUNO_ON_RENT = contribution(november('04'), '2026-11_rent', 100000, testAccountUid(BRUNO), 'f22');
@@ -195,23 +235,97 @@ export const entryMonthQueryScenarios = {
     },
     input: { month: '2026-11' },
     result: [
-      { id: 'm1X7', kind: 'contribution', month: '2026-11', entryId: '2026-11_internet', amountCents: 4000, paidBy: testAccountUid(BRUNO), receiptFileId: 'f24', paidOn: '2026-11-16' },
+      {
+        id: 'm1X7',
+        kind: 'contribution',
+        month: '2026-11',
+        entryId: '2026-11_internet',
+        amountCents: 4000,
+        paidBy: testAccountUid(BRUNO),
+        receiptFileId: 'f24',
+        paidOn: '2026-11-16',
+      },
       toEntry('2026-11_internet', { ...NOVEMBER_INTERNET, date: null, paidOn: '2026-11-15' }),
-      { id: 'c2W4', kind: 'contribution', month: '2026-11', entryId: 'pharmacy', amountCents: 3000, paidBy: CARLA_UID, receiptFileId: 'f27', paidOn: '2026-11-13' },
+      {
+        id: 'c2W4',
+        kind: 'contribution',
+        month: '2026-11',
+        entryId: 'pharmacy',
+        amountCents: 3000,
+        paidBy: CARLA_UID,
+        receiptFileId: 'f27',
+        paidOn: '2026-11-13',
+      },
       toEntry('pharmacy', NOVEMBER_PHARMACY),
-      toEntry('2026-11_electricity', { ...UNOWNED_ELECTRICITY, date: null, paidOn: '2026-11-08', paidBy: null, amountCents: null, receiptFileId: null }),
-      { id: 't6R1', kind: 'contribution', month: '2026-11', entryId: '2026-11_electricity', amountCents: 10000, paidBy: testAccountUid(ANA), receiptFileId: 'f25', paidOn: '2026-11-08' },
-      { id: 'p8Q2', kind: 'contribution', month: '2026-11', entryId: '2026-11_rent', amountCents: 100000, paidBy: CARLA_UID, receiptFileId: 'f23', paidOn: '2026-11-05' },
-      toEntry('2026-11_rent', { ...UNOWNED_RENT, date: null, paidOn: '2026-11-04', paidBy: null, amountCents: null, receiptFileId: null }),
-      { id: 'k3J9', kind: 'contribution', month: '2026-11', entryId: '2026-11_rent', amountCents: 100000, paidBy: testAccountUid(BRUNO), receiptFileId: 'f22', paidOn: '2026-11-04' },
+      toEntry('2026-11_electricity', {
+        ...UNOWNED_ELECTRICITY,
+        date: null,
+        paidOn: '2026-11-08',
+        paidBy: null,
+        amountCents: null,
+        receiptFileId: null,
+      }),
+      {
+        id: 't6R1',
+        kind: 'contribution',
+        month: '2026-11',
+        entryId: '2026-11_electricity',
+        amountCents: 10000,
+        paidBy: testAccountUid(ANA),
+        receiptFileId: 'f25',
+        paidOn: '2026-11-08',
+      },
+      {
+        id: 'p8Q2',
+        kind: 'contribution',
+        month: '2026-11',
+        entryId: '2026-11_rent',
+        amountCents: 100000,
+        paidBy: CARLA_UID,
+        receiptFileId: 'f23',
+        paidOn: '2026-11-05',
+      },
+      toEntry('2026-11_rent', {
+        ...UNOWNED_RENT,
+        date: null,
+        paidOn: '2026-11-04',
+        paidBy: null,
+        amountCents: null,
+        receiptFileId: null,
+      }),
+      {
+        id: 'k3J9',
+        kind: 'contribution',
+        month: '2026-11',
+        entryId: '2026-11_rent',
+        amountCents: 100000,
+        paidBy: testAccountUid(BRUNO),
+        receiptFileId: 'f22',
+        paidOn: '2026-11-04',
+      },
     ],
   },
   // A Luz que o Bruno pagou, com a contribuição de R$ 40,00 da Ana, registrada no dia seguinte: vem primeiro.
   monthWithContributionToPayment: {
     signedInAs: BRUNO,
-    given: { ...BOTH_IN_THE_LIST, 'entries/2026-10_electricity': PAYMENT_DOCUMENT, 'entries/c-ana': CONTRIBUTION_DOCUMENT },
+    given: {
+      ...BOTH_IN_THE_LIST,
+      'entries/2026-10_electricity': PAYMENT_DOCUMENT,
+      'entries/c-ana': CONTRIBUTION_DOCUMENT,
+    },
     input: { month: '2026-10' },
     result: [CONTRIBUTION, PAYMENT],
+  },
+  // A Internet de outubro sem dono, com a contribuição de R$ 50,00 da Ana, registrada dois dias depois: vem primeiro.
+  monthWithContributionToUnownedPayment: {
+    signedInAs: BRUNO,
+    given: {
+      ...BOTH_IN_THE_LIST,
+      'entries/2026-10_internet': UNOWNED_PAYMENT_DOCUMENT,
+      'entries/c-ana': CONTRIBUTION_TO_UNOWNED_DOCUMENT,
+    },
+    input: { month: '2026-10' },
+    result: [CONTRIBUTION_TO_UNOWNED, UNOWNED_PAYMENT],
   },
   // Um `kind` que o app não conhece (gravado por uma versão mais nova) não aparece como conta avulsa: fica de fora.
   monthWithUnknownKind: {

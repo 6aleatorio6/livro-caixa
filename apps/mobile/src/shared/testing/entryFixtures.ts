@@ -3,6 +3,7 @@ import { HOME_TAG_ID, UTILITIES_TAG_ID } from '@/shared/testing/tagFixtures';
 import { entryOf } from '@/shared/testing/entryOf';
 import { testAccountUid } from '@/shared/testing/testAccountUid';
 import type { IContributionEntry } from '@/shared/types/entry/ContributionEntry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { IUnownedPaymentEntry } from '@/shared/types/entry/UnownedPaymentEntry';
 import type { IReceipt } from '@/shared/types/file/Receipt';
 
@@ -43,7 +44,11 @@ export const PAYMENT_DOCUMENT = {
   paidBy: testAccountUid(BRUNO),
   receiptFileId: RECEIPT_FILE_ID,
 };
-export const PAYMENT = entryOf('2026-10_electricity', { ...PAYMENT_DOCUMENT, date: null, paidOn: '2026-10-10' });
+export const PAYMENT = entryOf<Extract<IOwnedEntry, { kind: 'recurringPayment' }>>('2026-10_electricity', {
+  ...PAYMENT_DOCUMENT,
+  date: null,
+  paidOn: '2026-10-10',
+});
 
 // O conserto da geladeira, conta avulsa; a avulsa sem tag não tem o campo `tagId`.
 export const ONE_OFF_BILL_WITHOUT_TAG_DOCUMENT = {
@@ -100,3 +105,15 @@ export const UNOWNED_PAYMENT = entryOf<IUnownedPaymentEntry>('2026-10_internet',
   amountCents: null,
   receiptFileId: null,
 });
+
+// A contribuição da Ana, R$ 50,00, na Internet de outubro ainda sem dono: a única do mês.
+export const CONTRIBUTION_TO_UNOWNED_DOCUMENT = {
+  ...CONTRIBUTION_DOCUMENT,
+  entryId: '2026-10_internet',
+  amountCents: 5000,
+};
+export const CONTRIBUTION_TO_UNOWNED: IContributionEntry = {
+  ...CONTRIBUTION,
+  entryId: '2026-10_internet',
+  amountCents: 5000,
+};

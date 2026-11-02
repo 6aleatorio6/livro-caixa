@@ -10,6 +10,10 @@ import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/q
 import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
 import { deleteEntryService } from '@/shared/services/entry/deleteEntryService';
 import { deleteEntryScenarios } from '@/shared/services/entry/deleteEntryService.scenarios';
+import { convertEntryService } from '@/shared/services/entry/convertEntryService';
+import { convertEntryScenarios } from '@/shared/services/entry/convertEntryService.scenarios';
+import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
+import { entryMonthQueryScenarios } from '@/shared/services/entry/query/entryMonthQueryService.scenarios';
 import { entryQueryService } from '@/shared/services/entry/query/entryQueryService';
 import { entryQueryScenarios } from '@/shared/services/entry/query/entryQueryService.scenarios';
 import { updateEntryService } from '@/shared/services/entry/updateEntryService';
@@ -36,6 +40,8 @@ import { EditEntryPage } from './EditEntryPage';
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
 jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jest.fn() }));
 jest.mock('@/shared/services/entry/query/entryQueryService', () => ({ entryQueryService: {} }));
+jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entryMonthQueryService: {} }));
+jest.mock('@/shared/services/entry/convertEntryService', () => ({ convertEntryService: jest.fn() }));
 jest.mock('@/shared/services/file/query/receiptFileQueryService', () => ({ receiptFileQueryService: {} }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({
   allowedEmailListQueryService: {},
@@ -55,6 +61,8 @@ const threeTags = { service: tagListQueryService, scenario: tagListQueryScenario
 const paymentToChange = { service: entryQueryService, scenario: entryQueryScenarios.paymentOfTheMember };
 const oneOffBillToChange = { service: entryQueryService, scenario: entryQueryScenarios.oneOffBillOfTheMember };
 const receiptToChange = { service: receiptFileQueryService, scenario: receiptFileQueryScenarios.receiptToChange };
+// O mês do lançamento, sem contribuições: o padrão de toda tela que não diz outro.
+const monthWithoutContributions = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth };
 
 // O mock do lançamento lido pelo id: o `id` do cenário é o da rota.
 type IEntryMock = IRealtimeMock & { scenario: { input: { id: string } } };
@@ -82,7 +90,12 @@ afterEach(() => {
 describe('EditEntryPage', () => {
   async function renderEdit(entry: IEntryMock = paymentToChange, ...others: Parameters<typeof mockRealtime>) {
     jest.mocked(useLocalSearchParams).mockReturnValue({ id: entry.scenario.input.id });
-    mockRealtime(entry, ...(others.length ? others : [receiptToChange, family, threeTags]));
+    // O mês sem contribuições vai depois do que o teste dá, com a mesma entrada, que vem antes e vale; sem o
+    // lançamento, a leitura do mês fica parada.
+    mockRealtime(entry, ...(others.length ? others : [receiptToChange, family, threeTags]), monthWithoutContributions, {
+      service: entryMonthQueryService,
+      status: 'idle',
+    });
     await render(<EditEntryPage />);
     return userEvent.setup();
   }
@@ -311,6 +324,109 @@ describe('EditEntryPage', () => {
     });
   });
 
+  describe('Paguei só uma parte', () => {
+    const SWITCH = { name: 'Paguei só uma parte' };
+    const contributionReceipt = {
+      service: receiptFileQueryService,
+      scenario: receiptFileQueryScenarios.contributionReceipt,
+    };
+
+    it('Should turn a payment into a contribution from the switch, say so and leave the edit screen and the sheet', async () => {
+      const conversion = convertEntryScenarios.memberTurnsPaymentIntoContribution;
+      mockServiceScenario(convertEntryService, conversion);
+      const user = await renderEdit();
+      await act(async () => jest.advanceTimersByTimeAsync(500));
+
+      expect(screen.getByText('Transforma este pagamento numa contribuição.')).toBeOnTheScreen();
+      await user.press(screen.getByRole('switch', SWITCH));
+      await user.press(screen.getByRole('button', { name: SAVE }));
+
+      expect(convertEntryService).toHaveBeenCalledWith(...conversion.input);
+      expect(updateEntryService).not.toHaveBeenCalled();
+      expect(showToast).toHaveBeenCalledWith('O pagamento virou uma contribuição.', 'success');
+      expect(router.dismiss).toHaveBeenCalledWith(2);
+    });
+
+    it('Should hide the switch on a contribution to an owned payment', async () => {
+      jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.adminSignsIn));
+      await renderEdit(
+        { service: entryQueryService, scenario: entryQueryScenarios.contribution },
+        contributionReceipt,
+        family,
+        threeTags,
+        { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithContributionToPayment },
+      );
+      await act(async () => jest.advanceTimersByTimeAsync(500));
+
+      expect(screen.getByText('Alterar contribuição')).toBeOnTheScreen();
+      expect(screen.getByDisplayValue('R$ 40,00')).toBeOnTheScreen();
+      expect(screen.queryByRole('switch', SWITCH)).not.toBeOnTheScreen();
+      expect(screen.getByRole('button', { name: 'Excluir contribuição' })).toBeOnTheScreen();
+    });
+
+    it('Should still let the author delete a contribution whose entry is no longer in the month', async () => {
+      jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.adminSignsIn));
+      // O mês vazio: a Luz que a contribuição recebia saiu dele.
+      await renderEdit(
+        { service: entryQueryService, scenario: entryQueryScenarios.contribution },
+        contributionReceipt,
+        family,
+        threeTags,
+      );
+
+      expect(screen.getByText('O lançamento desta contribuição não está mais neste mês.')).toBeOnTheScreen();
+      expect(screen.getByRole('button', { name: 'Excluir contribuição' })).toBeEnabled();
+      expect(screen.queryByRole('button', { name: SAVE })).not.toBeOnTheScreen();
+    });
+
+    describe('A contribution to a month with no owner', () => {
+      async function renderMonthContribution() {
+        jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.adminSignsIn));
+        const user = await renderEdit(
+          { service: entryQueryService, scenario: entryQueryScenarios.contributionToUnownedPayment },
+          contributionReceipt,
+          family,
+          threeTags,
+          { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithContributionToUnownedPayment },
+        );
+        await act(async () => jest.advanceTimersByTimeAsync(500));
+        return user;
+      }
+
+      it('Should turn the contribution into the payment of the month when the switch is turned off', async () => {
+        const conversion = convertEntryScenarios.memberTurnsContributionIntoPayment;
+        mockServiceScenario(convertEntryService, conversion);
+        const user = await renderMonthContribution();
+
+        expect(screen.getByRole('switch', SWITCH)).toBeChecked();
+        await user.press(screen.getByRole('switch', SWITCH));
+        await user.press(screen.getByRole('button', { name: SAVE }));
+
+        expect(convertEntryService).toHaveBeenCalledWith(...conversion.input);
+        expect(showToast).toHaveBeenCalledWith('A contribuição virou o pagamento do mês.', 'success');
+      });
+
+      it('Should refuse turning a contribution below 30% of the expected amount into a payment', async () => {
+        const change = updateEntryScenarios.memberChangesMonthContributionAmount;
+        mockServiceScenario(updateEntryService, change);
+        const user = await renderMonthContribution();
+
+        // A Internet prevista em R$ 120,00: 30% são R$ 36,00, e R$ 30,00 fica abaixo.
+        const field = screen.getByLabelText('Quanto você pagou');
+        await user.clear(field);
+        await user.type(field, '3000');
+        await user.press(screen.getByRole('switch', SWITCH));
+
+        expect(screen.getByRole('switch', SWITCH)).toBeChecked();
+        expect(screen.getByRole('switch', SWITCH)).toBeDisabled();
+        await user.press(screen.getByRole('button', { name: SAVE }));
+
+        expect(updateEntryService).toHaveBeenCalledWith(...change.input);
+        expect(convertEntryService).not.toHaveBeenCalled();
+      });
+    });
+  });
+
   describe('Deleting from the edit screen', () => {
     it('Should ask first and call the service only after the dialog is confirmed', async () => {
       const scenario = deleteEntryScenarios.memberDeletesPayment;
@@ -396,6 +512,7 @@ describe('EditEntryPage', () => {
       mockRealtime(
         { service: entryQueryService, status: 'loading' },
         { service: receiptFileQueryService, status: 'idle' },
+        { service: entryMonthQueryService, status: 'idle' },
         family,
         threeTags,
       );

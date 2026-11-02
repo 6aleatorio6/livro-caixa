@@ -25,7 +25,10 @@ const contributionSchema = object({
  * O formulário da contribuição num lançamento registrado: o valor, que não passa do que falta (as contribuições somam
  * no máximo o valor pago), e o comprovante.
  */
-export const useContributionForm = createFormHook<IContributionFormValues, IContributionFormContext>(contributionSchema, {
-  amountCents: null,
-  receipt: null,
-});
+export const useContributionForm = createFormHook<IContributionFormValues, IContributionFormContext>(
+  contributionSchema,
+  {
+    amountCents: null,
+    receipt: null,
+  },
+);

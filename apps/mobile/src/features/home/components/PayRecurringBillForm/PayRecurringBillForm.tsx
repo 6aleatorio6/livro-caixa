@@ -2,13 +2,12 @@ import { useWatch } from 'react-hook-form';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
-import { AppText } from '@/shared/components/AppText/AppText';
+import { BillHeading } from '@/shared/components/BillHeading/BillHeading';
 import { Button } from '@/shared/components/Button/Button';
 import { AmountPaidFieldSmart } from '@/shared/components/inputs/AmountPaidFieldSmart/AmountPaidFieldSmart';
 import { ReceiptFieldSmart } from '@/shared/components/inputs/ReceiptFieldSmart/ReceiptFieldSmart';
 import { OwnershipNotice } from '@/shared/components/OwnershipNotice/OwnershipNotice';
 import { PartialPaymentSwitch } from '@/shared/components/PartialPaymentSwitch/PartialPaymentSwitch';
-import { TagChip } from '@/shared/components/TagChip/TagChip';
 import { usePayRecurringBillForm } from '@/shared/hooks/usePayRecurringBillForm/usePayRecurringBillForm';
 import type { IRecurringPaymentInput } from '@/shared/types/entry/RecurringPaymentInput';
 import type { IPayRecurringBillFormValues } from '@/shared/types/entry/PayRecurringBillFormValues';
@@ -68,8 +67,13 @@ export function PayRecurringBillForm({
   // O schema já recusou o valor e o comprovante vazios.
   const submit = handleSubmit((values) =>
     onSubmit(
-      { bill, month, amountCents: values.amountCents as number, receipt: values.receipt as IRecurringPaymentInput['receipt'] },
-      values.isPartial || isContributionOnly(values.amountCents, expectedCents),
+      {
+        bill,
+        month,
+        amountCents: values.amountCents as number,
+        receipt: values.receipt as IRecurringPaymentInput['receipt'],
+      },
+      isContributionRegistration(values, expectedCents),
     ),
   );
 
@@ -79,20 +83,16 @@ export function PayRecurringBillForm({
 
   return (
     <View style={styles.form}>
-      <View style={styles.bill}>
-        <AppText variant="labelMedium" color="onSurfaceVariant">
-          {`Conta de ${monthName(month)}`}
-        </AppText>
-        <AppText variant="headlineSmallEmphasized">{bill.name}</AppText>
-        <View style={styles.details}>
-          {tag ? <TagChip name={tag.name} color={tag.color} /> : null}
-          <AppText variant="bodyMedium" color="onSurfaceVariant">
-            {contributedCents > 0
-              ? `vence dia ${bill.dayOfMonth} · faltam ${formatCents(Math.max(remainingCents, 0))}`
-              : `vence dia ${bill.dayOfMonth} · previsto ${formatCents(expectedCents)}`}
-          </AppText>
-        </View>
-      </View>
+      <BillHeading
+        label={`Conta de ${monthName(month)}`}
+        name={bill.name}
+        tag={tag}
+        details={
+          contributedCents > 0
+            ? `vence dia ${bill.dayOfMonth} · faltam ${formatCents(Math.max(remainingCents, 0))}`
+            : `vence dia ${bill.dayOfMonth} · previsto ${formatCents(expectedCents)}`
+        }
+      />
 
       <AmountPaidFieldSmart
         form={form}
@@ -120,7 +120,5 @@ export function PayRecurringBillForm({
 
 const styles = StyleSheet.create((theme) => ({
   form: { gap: theme.spacing.extraLarge },
-  bill: { gap: theme.spacing.small },
-  details: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.medium },
   spacer: { height: theme.spacing.large },
 }));

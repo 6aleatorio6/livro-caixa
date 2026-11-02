@@ -3,6 +3,8 @@ import {
   BRUNO,
   CONTRIBUTION,
   CONTRIBUTION_DOCUMENT,
+  CONTRIBUTION_TO_UNOWNED,
+  CONTRIBUTION_TO_UNOWNED_DOCUMENT,
   ONE_OFF_BILL,
   ONE_OFF_BILL_DOCUMENT,
   ONE_OFF_BILL_WITHOUT_TAG_DOCUMENT,
@@ -58,6 +60,13 @@ export const entryQueryScenarios = {
     given: { ...BOTH_IN_THE_LIST, 'entries/c-ana': CONTRIBUTION_DOCUMENT },
     input: { id: 'c-ana' },
     result: CONTRIBUTION,
+  },
+  // A contribuição num mês ainda sem dono: a que o interruptor de Alterar transforma no pagamento.
+  contributionToUnownedPayment: {
+    signedInAs: BRUNO,
+    given: { ...BOTH_IN_THE_LIST, 'entries/c-ana': CONTRIBUTION_TO_UNOWNED_DOCUMENT },
+    input: { id: 'c-ana' },
+    result: CONTRIBUTION_TO_UNOWNED,
   },
   // O pagamento sem dono chega com quem pagou, o valor e o comprovante em `null`; as cópias da conta ficam.
   unownedPayment: {
