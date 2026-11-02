@@ -217,13 +217,49 @@ describe('PaymentsPage', () => {
   });
 
   describe('Chips of the family', () => {
-    it('Should open on "Você" and offer who already entered the app', async () => {
+    it('Should open on "Você" and offer "Todos" and who already entered the app', async () => {
       mockRealtime(october, threeTags, family);
       await render(<PaymentsPage />);
 
       expect(screen.getByRole('button', { name: 'Você' })).toBeSelected();
-      const chips = screen.getAllByRole('button', { name: /^(Você|Ana|Clara|Elisa.*)$/ });
-      expect(chips.map((chip) => chip.props.accessibilityLabel)).toEqual(['Você', 'Ana', 'Clara']);
+      const chips = screen.getAllByRole('button', { name: /^(Todos|Você|Ana|Clara|Elisa.*)$/ });
+      expect(chips.map((chip) => chip.props.accessibilityLabel)).toEqual(['Todos', 'Você', 'Ana', 'Clara']);
+    });
+
+    it('Should show the entries of the whole family, grouped by tag, with who paid each one, when "Todos" is pressed', async () => {
+      mockRealtime(october, threeTags, family);
+      await render(<PaymentsPage />);
+
+      await userEvent.setup().press(screen.getByRole('button', { name: 'Todos' }));
+
+      expect(screen.getByRole('button', { name: 'Todos' })).toBeSelected();
+      const headers = screen.getAllByText(/^(Casa|Serviços|Sem tag)$/).map((node) => node.props.children);
+      expect(headers).toEqual(['Casa', 'Serviços', 'Sem tag']);
+      expect(screen.getByText('12/10 · avulsa · Bruno')).toBeOnTheScreen();
+      expect(screen.getByText('20/10 · avulsa · Ana')).toBeOnTheScreen();
+      expect(screen.getByText('12/10 · avulsa · Ana')).toBeOnTheScreen();
+    });
+
+    // A porcentagem da família sobre ela mesma seria sempre 100%: o cartão não a mostra.
+    it('Should show the family total without the share when "Todos" is pressed', async () => {
+      mockRealtime(october, threeTags, family);
+      await render(<PaymentsPage />);
+
+      await userEvent.setup().press(screen.getByRole('button', { name: 'Todos' }));
+
+      expect(screen.getByText('A família registrou em outubro')).toBeOnTheScreen();
+      expect(screen.getByText('R$ 354,90')).toBeOnTheScreen();
+      expect(screen.getByText('3 lançamentos')).toBeOnTheScreen();
+    });
+
+    it('Should say nobody paid in the month when "Todos" is pressed on an empty month', async () => {
+      mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth }, threeTags, family);
+      await render(<PaymentsPage />);
+
+      await userEvent.setup().press(screen.getByRole('button', { name: 'Todos' }));
+
+      expect(screen.getByText('Nenhum pagamento em outubro')).toBeOnTheScreen();
+      expect(screen.getByText('Quando você registrar um pagamento ou uma conta avulsa, ele aparece aqui.')).toBeOnTheScreen();
     });
 
     it('Should show the entries of another member, grouped by tag, when their chip is pressed', async () => {

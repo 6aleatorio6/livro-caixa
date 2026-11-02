@@ -26,7 +26,7 @@ tema aparece na documentação.
 | D-18 | Como o Maestro alcança o emulador do PC? | 🟢 Respondido — pela rede do PC, que o container divide |
 | D-19 | O JSON do Google falso leva o nome da pessoa? | 🟢 Respondido — sim, no campo `name` |
 | D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🟢 Respondido — por um comando do adb, antes do fluxo |
-| D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🟢 Respondido — Pagamentos, um mês e uma pessoa por vez, agrupado por tag |
+| D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🟢 Respondido — Pagamentos, um mês e uma pessoa (ou todos) por vez, agrupado por tag |
 | D-22 | O app lê o valor no comprovante? | 🟢 Respondido — sim, no celular, e preenche o valor pago |
 | D-23 | O comprovante em PDF abre dentro do app ou no leitor do celular? | 🟢 Respondido — dentro do app, com as páginas rolando |
 | D-24 | O app aceita PDF de mais de uma página? | 🟢 Respondido — sim, até 900 KB, guardado como está |
@@ -228,7 +228,9 @@ de abas o rótulo passou a "Pagamentos" (29/10/2026): "Meus pagamentos" quebrava
 pequena. No mesmo dia, Leonardo pediu que a aba mostrasse também os lançamentos dos outros membros, e
 o nome da tela virou "Pagamentos": chips com os membros, abertos em "Você", e a lista agrupada por
 tag, com as tags em ordem alfabética e Sem tag por último. Sem chip "Todos", porque o Início já lista
-todos os lançamentos do mês com quem pagou.
+todos os lançamentos do mês com quem pagou. Em 02/11/2026, Leonardo pediu o chip "Todos": ele vem
+primeiro, a aba continua abrindo em "Você", a lista da família se agrupa por tag como as outras, com
+quem pagou em cada linha, e o total é o da família, sem a porcentagem.
 
 **Onde aparece:** [Pagamentos](../03-funcionalidades/01-principal/06-pagamentos.md).
 

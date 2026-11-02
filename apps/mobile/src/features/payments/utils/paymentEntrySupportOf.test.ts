@@ -45,4 +45,12 @@ describe('paymentEntrySupportOf', () => {
   it('Should write the date and the one-off mark of a one-off bill, without the tag', () => {
     expect(paymentEntrySupportOf(oneOff)).toBe('12/10 · avulsa');
   });
+
+  // No chip "Todos", nenhum chip diz de quem é o lançamento: a linha diz.
+  it('Should add who paid when given, before the expected amount', () => {
+    expect(paymentEntrySupportOf({ ...payment, amountCents: 18735, expectedAmountCents: 11990 }, 'Ana')).toBe(
+      'pago em 25/10 · Ana · previsto R$ 119,90',
+    );
+    expect(paymentEntrySupportOf(oneOff, 'Bruno')).toBe('12/10 · avulsa · Bruno');
+  });
 });

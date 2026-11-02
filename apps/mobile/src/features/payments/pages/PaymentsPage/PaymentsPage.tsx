@@ -26,29 +26,31 @@ import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonth
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { monthName } from '@/shared/utils/date/monthName';
+import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 import { tagDisplayOf } from '@/shared/utils/tag/tagDisplayOf';
 
 /**
- * Os lançamentos de uma pessoa da família por vez, escolhida nos chips (abre em quem está logado), mês a mês e
- * agrupados por tag, com o total dela no mês; o botão registra uma conta avulsa.
+ * Os lançamentos de uma pessoa da família por vez, ou de todos, escolhidos nos chips (abre em quem está logado), mês a
+ * mês e agrupados por tag, com o total no mês; o botão registra uma conta avulsa.
  */
 export function PaymentsPage() {
   const authState = useAuthState();
   const uid = authState.status === 'signedIn' ? authState.user.uid : null;
   const [month, setMonth] = useState(currentMonth);
-  // A pessoa escolhida nos chips, independente do mês; `null` é quem está logado, o chip "Você".
-  const [chosenUid, setChosenUid] = useState<string | null>(null);
+  // A `key` do chip escolhido, independente do mês; antes de tocar num chip, vale quem está logado, o chip "Você".
+  const [chosenKey, setChosenKey] = useState<string>();
   const { status, data: entries } = useRealtime(entryMonthQueryService, { month });
   const { status: tagsStatus, data: tags } = useRealtime(tagListQueryService, {});
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
 
   const choices = uid ? memberChoicesOf(people ?? [], uid) : [];
-  // Sem escolha, ou com a pessoa escolhida fora da lista (removida com a tela aberta), vale o primeiro chip, "Você".
-  const chosen = choices.find((choice) => choice.uid === chosenUid) ?? choices[0];
-  const isMine = chosen?.uid === uid;
-  // A leitura traz o mês da família inteira; a lista é só da pessoa escolhida. Sem as tags, todo lançamento cairia no
-  // grupo sem tag: a lista as espera.
-  const theirs = entries?.filter((entry) => entry.paidBy === chosen?.uid);
+  // Sem escolha, ou com a pessoa escolhida fora da lista (removida com a tela aberta), vale o chip "Você".
+  const chosen = choices.find((choice) => choice.key === chosenKey) ?? choices.find((choice) => choice.key === uid);
+  const isEveryone = chosen?.kind === 'everyone';
+  const isMine = chosen?.key === uid;
+  // A leitura traz o mês da família inteira; a lista é a da pessoa escolhida, ou toda no chip "Todos". Sem as tags, todo
+  // lançamento cairia no grupo sem tag: a lista as espera.
+  const theirs = chosen?.kind === 'member' ? entries?.filter((entry) => entry.paidBy === chosen.uid) : entries;
   const groups = theirs && tags ? entryGroupsByTag(theirs, tags) : null;
   const hasError = status === 'error' || tagsStatus === 'error';
   const familyAmountCents = entries?.reduce((sum, entry) => sum + entry.amountCents, 0) ?? 0;
@@ -61,10 +63,10 @@ export function PaymentsPage() {
         <View style={styles.chips}>
           {choices.map((choice) => (
             <FilterChip
-              key={choice.uid}
+              key={choice.key}
               label={choice.name}
-              isSelected={choice.uid === chosen?.uid}
-              onPress={() => setChosenUid(choice.uid)}
+              isSelected={choice.key === chosen?.key}
+              onPress={() => setChosenKey(choice.key)}
             />
           ))}
         </View>
@@ -79,17 +81,19 @@ export function PaymentsPage() {
           // O texto de baixo diz o que a própria pessoa faz para algo aparecer: não vale para outro membro.
           <EmptyState
             image={monthClosed}
-            title={`Nenhum pagamento ${isMine ? 'seu' : `de ${chosen.name}`} em ${monthName(month)}`}
-            text={isMine ? 'Quando você registrar um pagamento ou uma conta avulsa, ele aparece aqui.' : undefined}
+            title={emptyTitleOf(chosen.name, month, { isMine, isEveryone })}
+            text={
+              isMine || isEveryone ? 'Quando você registrar um pagamento ou uma conta avulsa, ele aparece aqui.' : undefined
+            }
           />
         ) : (
           <>
             <MonthTotalCard
-              ownerName={chosen.name}
+              ownerName={isEveryone ? 'A família' : chosen.name}
               month={month}
               amountCents={groups.reduce((sum, group) => sum + group.totalCents, 0)}
               entryCount={groups.reduce((count, group) => count + group.entries.length, 0)}
-              familyAmountCents={familyAmountCents}
+              familyAmountCents={isEveryone ? undefined : familyAmountCents}
             />
             <View style={styles.groups}>
               {groups.map(({ tag, totalCents, entries: groupEntries }) => {
@@ -103,7 +107,11 @@ export function PaymentsPage() {
                         name={entry.name}
                         amountCents={entry.amountCents}
                         onPress={() => router.push({ pathname: '/entries/[id]', params: { id: entry.id } })}
-                        support={paymentEntrySupportOf(entry)}
+                        // No chip "Todos" nenhum chip diz de quem é o lançamento: a linha diz.
+                        support={paymentEntrySupportOf(
+                          entry,
+                          isEveryone ? memberNameOf(entry.paidBy, people ?? []) : undefined,
+                        )}
                       />
                     ))}
                   </EntryTagGroup>
@@ -119,6 +127,12 @@ export function PaymentsPage() {
       <ExtendedFab icon={Plus} label="Nova conta avulsa" onPress={() => router.push('/one-off-bills/new')} />
     </Screen>
   );
+}
+
+/** O título do mês sem lançamentos: "Nenhum pagamento seu em outubro", "… de Bruno …" ou, no chip "Todos", de ninguém. */
+function emptyTitleOf(name: string, month: string, { isMine, isEveryone }: { isMine: boolean; isEveryone: boolean }) {
+  if (isEveryone) return `Nenhum pagamento em ${monthName(month)}`;
+  return `Nenhum pagamento ${isMine ? 'seu' : `de ${name}`} em ${monthName(month)}`;
 }
 
 const styles = StyleSheet.create((theme) => ({

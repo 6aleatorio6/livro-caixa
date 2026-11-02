@@ -37,4 +37,11 @@ describe('MonthTotalCard', () => {
     expect(screen.getByText('Bruno registrou em outubro')).toBeOnTheScreen();
     expect(screen.getByText('2 lançamentos · 28% do que a família pagou')).toBeOnTheScreen();
   });
+
+  it('Should show the family total without a share of itself', async () => {
+    await render(<MonthTotalCard ownerName="A família" month="2026-10" amountCents={278735} entryCount={4} />);
+
+    expect(screen.getByText('A família registrou em outubro')).toBeOnTheScreen();
+    expect(screen.getByText('4 lançamentos')).toBeOnTheScreen();
+  });
 });

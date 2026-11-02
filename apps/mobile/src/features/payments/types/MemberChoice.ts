@@ -1,5 +1,7 @@
-/** Uma pessoa nos chips de Pagamentos: o uid dos lançamentos dela e o nome do chip ("Você" para quem está logado). */
-export interface IMemberChoice {
-  uid: string;
-  name: string;
-}
+/**
+ * Um chip de Pagamentos: "Todos", a família inteira, ou uma pessoa, pelo uid dos lançamentos dela. A `key` identifica o
+ * chip ("everyone" ou o uid) e o `name` é o rótulo ("Você" para quem está logado).
+ */
+export type IMemberChoice =
+  | { kind: 'everyone'; key: 'everyone'; name: string }
+  | { kind: 'member'; key: string; uid: string; name: string };
