@@ -1,15 +1,17 @@
 import type { IAllowedEmailListItem } from '@/shared/types/allowedEmail/AllowedEmailListItem';
-import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
-import type { IMemberSplit } from '../types/MemberSplit';
+import type { IMemberPart } from '@/shared/types/entry/MemberPart';
 import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 
+import type { IMemberSplit } from '../types/MemberSplit';
+
 /**
- * Divide o pago do mês por pessoa, do maior para o menor. O nome é o primeiro nome atual, da lista de pessoas (não o
- * do lançamento); quem não está mais na lista aparece como "Alguém".
+ * Divide o pago do mês por pessoa, pelas partes de cada uma (o valor pago menos as contribuições, e as contribuições),
+ * do maior para o menor. O nome é o primeiro nome atual, da lista de pessoas (não o do lançamento); quem não está mais
+ * na lista aparece como "Alguém".
  */
-export function splitByMember(paid: IOwnedEntry[], people: IAllowedEmailListItem[]): IMemberSplit[] {
+export function splitByMember(parts: IMemberPart[], people: IAllowedEmailListItem[]): IMemberSplit[] {
   const totals = new Map<string, number>();
-  paid.forEach((entry) => totals.set(entry.paidBy, (totals.get(entry.paidBy) ?? 0) + entry.amountCents));
+  parts.forEach(({ uid, amountCents }) => totals.set(uid, (totals.get(uid) ?? 0) + amountCents));
 
   return [...totals.entries()]
     .map(([uid, paidCents]) => ({ uid, name: memberNameOf(uid, people), paidCents }))

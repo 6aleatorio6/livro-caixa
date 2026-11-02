@@ -5,8 +5,11 @@ import { entryMarkOf } from '@/shared/utils/entry/entryMarkOf';
 import { formatCents } from '@/shared/utils/format/formatCents';
 
 export interface IEntryItemProps {
-  /** O tipo do lançamento, que decide a marca: a conta avulsa (`oneOff`) ou o pagamento de uma conta recorrente (`payment`). */
-  kind: 'oneOff' | 'payment';
+  /**
+   * O tipo do lançamento, que decide a marca: a conta avulsa (`oneOff`), o pagamento de uma conta recorrente
+   * (`payment`) ou a conta paga só pelas contribuições (`contributions`).
+   */
+  kind: 'oneOff' | 'payment' | 'contributions';
   name: string;
   /** O valor pago, em centavos. */
   amountCents: number;

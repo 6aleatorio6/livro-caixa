@@ -1,4 +1,4 @@
-import { Check, Receipt } from 'lucide-react-native';
+import { Check, Receipt, UsersRound } from 'lucide-react-native';
 
 import { entryMarkOf } from './entryMarkOf';
 
@@ -16,6 +16,14 @@ describe('entryMarkOf', () => {
       icon: Receipt,
       markColor: 'secondaryContainer',
       iconColor: 'onSecondaryContainer',
+    });
+  });
+
+  it('Should mark a bill paid only by contributions with the people on the primary container', () => {
+    expect(entryMarkOf('contributions')).toEqual({
+      icon: UsersRound,
+      markColor: 'primaryContainer',
+      iconColor: 'onPrimaryContainer',
     });
   });
 });

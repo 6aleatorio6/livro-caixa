@@ -1,4 +1,6 @@
-import type { IEntry } from '@/shared/types/entry/Entry';
+import { contributionOf } from '@/shared/testing/contributionOf';
+import { unownedPaymentOf } from '@/shared/testing/unownedPaymentOf';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 import type { ITag } from '@/shared/types/tag/Tag';
 
@@ -19,7 +21,7 @@ const bill = (id: string, tagId: string | null, expectedAmountCents: number): IR
   tagId,
 });
 
-const oneOff = (id: string, tagId: string | null, amountCents: number): IEntry => ({
+const oneOff = (id: string, tagId: string | null, amountCents: number): IOwnedEntry => ({
   id,
   kind: 'oneOffBill',
   date: '2026-10-12',
@@ -75,5 +77,46 @@ describe('splitByTag', () => {
     const summary = monthSummary({ month: '2026-10', bills: [], entries: [] });
 
     expect(splitByTag(summary, [home])).toEqual([]);
+  });
+
+  it('Should keep the tag split unchanged by contributions, counting them in the tag of their bill', () => {
+    const electricity = unownedPaymentOf({
+      id: '2026-10_light',
+      recurringBillId: 'light',
+      tagId: 'home',
+      expectedAmountCents: 20000,
+    });
+    const pharmacy = oneOff('pharmacy', 'health', 8000);
+    const summary = monthSummary({
+      month: '2026-10',
+      bills: [bill('light', 'home', 25000)],
+      entries: [
+        pharmacy,
+        contributionOf(pharmacy.id, 'bruno', 3000),
+        electricity,
+        contributionOf(electricity.id, 'bruno', 5000),
+      ],
+    });
+
+    expect(splitByTag(summary, [home, health])).toEqual([
+      { tag: health, paidCents: 8000, toPayCents: 0 },
+      { tag: home, paidCents: 5000, toPayCents: 15000 },
+    ]);
+  });
+
+  it('Should keep a month with contributions in the tag it froze, even with no tag, when the bill gets one later', () => {
+    const light = unownedPaymentOf({
+      id: '2026-10_light',
+      recurringBillId: 'light',
+      tagId: null,
+      expectedAmountCents: 20000,
+    });
+    const summary = monthSummary({
+      month: '2026-10',
+      bills: [bill('light', 'home', 20000)],
+      entries: [light, contributionOf(light.id, 'bruno', 5000)],
+    });
+
+    expect(splitByTag(summary, [home])).toEqual([{ tag: null, paidCents: 5000, toPayCents: 15000 }]);
   });
 });

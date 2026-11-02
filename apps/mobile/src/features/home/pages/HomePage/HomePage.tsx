@@ -10,7 +10,6 @@ import { SplitRow } from '@/features/home/components/SplitRow/SplitRow';
 import { useOpenPendingShare } from '@/features/home/hooks/useOpenPendingShare/useOpenPendingShare';
 import { useMonthSummary } from '@/features/home/hooks/useMonthSummary/useMonthSummary';
 import { homeEntrySupportOf } from '@/features/home/utils/homeEntrySupportOf';
-import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 import { paidRowsOf } from '@/features/home/utils/paidRowsOf';
 import { splitByMember } from '@/features/home/utils/splitByMember';
 import { splitByTag } from '@/features/home/utils/splitByTag';
@@ -25,6 +24,9 @@ import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/que
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { dayOf } from '@/shared/utils/date/dayOf';
+import { billAmountOf } from '@/shared/utils/entry/billAmountOf';
+import { contributionsSupportOf } from '@/shared/utils/entry/contributionsSupportOf';
+import { memberPartsOf } from '@/shared/utils/entry/memberPartsOf';
 import { formatCents } from '@/shared/utils/format/formatCents';
 import { tagDisplayOf } from '@/shared/utils/tag/tagDisplayOf';
 import { findTag } from '@/shared/utils/tag/findTag';
@@ -46,6 +48,10 @@ export function HomePage() {
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
 
   const paidRows = paidRowsOf(summary?.paid ?? []);
+  // A soma das linhas pagas: sem as contribuições das contas ainda a pagar, que o cartão do mês conta no pago.
+  const paidRowsCents = summary
+    ? paidRows.reduce((total, entry) => total + billAmountOf(entry, summary.entries), 0)
+    : 0;
 
   return (
     <Screen>
@@ -84,7 +90,7 @@ export function HomePage() {
                           />
                         );
                       })
-                    : splitByMember(summary.paid, people ?? []).map(({ uid, name, paidCents }) => (
+                    : splitByMember(memberPartsOf(summary.entries), people ?? []).map(({ uid, name, paidCents }) => (
                         <SplitRow
                           key={uid}
                           mark="avatar"
@@ -103,13 +109,14 @@ export function HomePage() {
                 title="A pagar"
                 summary={{ count: summary.toPay.length, totalCents: summary.toPayCents }}
               >
-                {summary.toPay.map(({ bill, dueDate }) => (
+                {summary.toPay.map(({ bill, name, tagId, dueDate, contributions, remainingCents }) => (
                   <BillToPayItem
                     key={bill.id}
-                    name={bill.name}
-                    expectedCents={bill.expectedAmountCents}
+                    name={name}
+                    remainingCents={remainingCents}
                     dueDay={dayOf(dueDate)}
-                    tag={findTag(bill.tagId, tags)}
+                    contributionsSupport={contributionsSupportOf(contributions, people ?? [])}
+                    tag={findTag(tagId, tags)}
                     onPress={() =>
                       router.push({ pathname: '/recurring-bills/[id]/pay', params: { id: bill.id, month } })
                     }
@@ -119,16 +126,16 @@ export function HomePage() {
             ) : null}
 
             {paidRows.length > 0 ? (
-              <MonthListSection title="Pagas" summary={{ count: paidRows.length, totalCents: summary.paidCents }}>
+              <MonthListSection title="Pagas" summary={{ count: paidRows.length, totalCents: paidRowsCents }}>
                 {paidRows.map((entry) => (
                   <EntryItem
                     key={entry.id}
-                    kind={entry.kind === 'recurringPayment' ? 'payment' : 'oneOff'}
+                    kind={entry.kind === 'oneOffBill' ? 'oneOff' : entry.paidBy === null ? 'contributions' : 'payment'}
                     name={entry.name}
                     tag={findTag(entry.tagId, tags)}
-                    amountCents={entry.amountCents}
+                    amountCents={billAmountOf(entry, summary.entries)}
                     onPress={() => router.push({ pathname: '/entries/[id]', params: { id: entry.id } })}
-                    support={homeEntrySupportOf(entry, memberNameOf(entry.paidBy, people ?? []))}
+                    support={homeEntrySupportOf(entry, summary.entries, people ?? [])}
                   />
                 ))}
               </MonthListSection>

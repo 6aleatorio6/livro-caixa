@@ -217,6 +217,31 @@ describe('HomePage', () => {
     expect(screen.getByRole('button', { name: 'Próximo mês' })).toBeDisabled();
   });
 
+  // O exemplo de novembro da página Contribuição: R$ 2.300,00 pagos, com a Luz a pagar pelo que falta.
+  it('Should count the contributions in the month, in the rows and in the split by member', async () => {
+    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    await render(<HomePage />);
+    mockRealtime(fiveBills, threeTags, family, {
+      service: entryMonthQueryService,
+      scenario: entryMonthQueryScenarios.monthWithContributions,
+    });
+    const user = userEvent.setup();
+
+    await user.press(screen.getByRole('button', { name: 'Próximo mês' }));
+
+    expect(screen.getAllByText('R$ 2.300,00').length).toBeGreaterThan(0);
+    expect(screen.getByText('faltam R$ 100,00 · R$ 100,00 de Ana · dia 20')).toBeOnTheScreen();
+    expect(screen.getByText('dia 15 · Ana · R$ 40,00 de Bruno')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 2.000,00')).toBeOnTheScreen();
+
+    await user.press(screen.getByRole('tab', { name: 'Por membro' }));
+
+    // A Ana fica com R$ 80,00 da Internet, R$ 100,00 da Luz e R$ 50,00 da Farmácia; a Carla não está na lista.
+    expect(screen.getByText('R$ 230,00')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 1.040,00')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 1.030,00')).toBeOnTheScreen();
+  });
+
   it('Should show all bills to pay and a zero paid when the month has no entries', async () => {
     mockRealtime(fiveBills, threeTags, family, emptyMonth);
     await render(<HomePage />);

@@ -5,6 +5,8 @@ import { BackHandler } from 'react-native';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 
 import { useSharedReceipt } from '@/features/home/hooks/useSharedReceipt/useSharedReceipt';
+import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
+import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService.scenarios';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { entryMonthQueryScenarios } from '@/shared/services/entry/query/entryMonthQueryService.scenarios';
 import { recurringBillListQueryService } from '@/shared/services/recurringBill/query/recurringBillListQueryService';
@@ -20,12 +22,14 @@ import { ShareReceiptPage } from './ShareReceiptPage';
 
 // Mocks com fábrica: o módulo real carregaria o React Native Firebase, que não roda no Jest.
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
+jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({ allowedEmailListQueryService: {} }));
 jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entryMonthQueryService: {} }));
 jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService', () => ({ recurringBillListQueryService: {} }));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
 jest.mock('@/features/home/hooks/useSharedReceipt/useSharedReceipt', () => ({ useSharedReceipt: jest.fn() }));
 jest.mock('expo-router', () => ({ router: { push: jest.fn(), dismissTo: jest.fn() } }));
 
+const family = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyList };
 const fiveBills = { service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.fiveBills };
 const noBills = { service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.noBills };
 const threeTags = { service: tagListQueryService, scenario: tagListQueryScenarios.threeTags };
@@ -68,7 +72,7 @@ afterEach(() => {
 
 describe('ShareReceiptPage', () => {
   it('Should show the shared receipt, "Conta avulsa" first, then the bills to pay of this month and of the next one', async () => {
-    mockRealtime(fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
     await render(<ShareReceiptPage />);
 
     expect(screen.getByText('Qual conta você pagou?')).toBeOnTheScreen();
@@ -94,7 +98,7 @@ describe('ShareReceiptPage', () => {
   });
 
   it('Should not let the shared receipt be changed on this screen', async () => {
-    mockRealtime(fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
     await render(<ShareReceiptPage />);
 
     expect(screen.queryByText('Trocar')).toBeNull();
@@ -102,7 +106,7 @@ describe('ShareReceiptPage', () => {
   });
 
   it('Should open the shared receipt full screen on a tap, to check the amount', async () => {
-    mockRealtime(fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
     await render(<ShareReceiptPage />);
 
     await userEvent.setup().press(screen.getByRole('button', { name: 'Comprovante: pix-agua-outubro.pdf. Ver' }));
@@ -114,7 +118,7 @@ describe('ShareReceiptPage', () => {
   });
 
   it('Should open the payment of the bill with the month of its list and the shared flag', async () => {
-    mockRealtime(fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
     await render(<ShareReceiptPage />);
     const user = userEvent.setup();
     const [octoberWater, novemberWater] = screen.getAllByRole('button', { name: 'Registrar Água' });
@@ -133,7 +137,7 @@ describe('ShareReceiptPage', () => {
   });
 
   it('Should open the new one-off bill with the shared flag', async () => {
-    mockRealtime(fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
     await render(<ShareReceiptPage />);
 
     await userEvent.setup().press(screen.getByRole('button', { name: 'Conta avulsa' }));
@@ -142,7 +146,7 @@ describe('ShareReceiptPage', () => {
   });
 
   it('Should say there is no bill to pay and still offer "Conta avulsa"', async () => {
-    mockRealtime(noBills, threeTags, emptyMonth, novemberPaidEarly);
+    mockRealtime(family, noBills, threeTags, emptyMonth, novemberPaidEarly);
     await render(<ShareReceiptPage />);
 
     expect(screen.getByText('Nenhuma conta a pagar em outubro.')).toBeOnTheScreen();
@@ -151,7 +155,7 @@ describe('ShareReceiptPage', () => {
   });
 
   it('Should drop a bill another member pays while the screen is open', async () => {
-    const realtime = mockRealtime(fiveBills, threeTags, paymentAddedWhileOpen, novemberPaidEarly);
+    const realtime = mockRealtime(family, fiveBills, threeTags, paymentAddedWhileOpen, novemberPaidEarly);
     await render(<ShareReceiptPage />);
     expect(screen.getAllByRole('button', { name: 'Registrar Internet' })).toHaveLength(2);
 
@@ -164,7 +168,7 @@ describe('ShareReceiptPage', () => {
 
   it('Should show the reason of a refused file and no list of bills', async () => {
     shareIs({ status: 'rejected', message: 'O PDF passa de 900 KB. Escolha outro arquivo.' });
-    mockRealtime(fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
     await render(<ShareReceiptPage />);
 
     expect(screen.getByText('O PDF passa de 900 KB. Escolha outro arquivo.')).toBeOnTheScreen();
@@ -175,7 +179,7 @@ describe('ShareReceiptPage', () => {
 
   it('Should show a loader and no list while the file is being read', async () => {
     shareIs({ status: 'resolving' });
-    mockRealtime(fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
     await render(<ShareReceiptPage />);
 
     expect(screen.getByLabelText('Lendo o arquivo')).toBeOnTheScreen();
@@ -188,7 +192,7 @@ describe('ShareReceiptPage', () => {
     ['refused', { status: 'rejected', message: 'O PDF passa de 900 KB. Escolha outro arquivo.' }],
   ] as const)('Should not read the month while the file is %s', async (_state, result) => {
     shareIs(result);
-    mockRealtime(fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
     jest.mocked(useRealtime).mockClear();
     await render(<ShareReceiptPage />);
 
@@ -197,7 +201,7 @@ describe('ShareReceiptPage', () => {
 
   it('Should go back to the home when nothing was shared', async () => {
     shareIs({ status: 'empty' });
-    mockRealtime(fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
     await render(<ShareReceiptPage />);
 
     expect(router.dismissTo).toHaveBeenCalledWith('/');
@@ -205,7 +209,7 @@ describe('ShareReceiptPage', () => {
   });
 
   it('Should show a loader in place of the bills, with "Conta avulsa", while the month loads', async () => {
-    mockRealtime(
+    mockRealtime(family, 
       { service: recurringBillListQueryService, status: 'loading' },
       threeTags,
       { service: entryMonthQueryService, status: 'loading' },
@@ -219,7 +223,7 @@ describe('ShareReceiptPage', () => {
 
   describe('When the screen leaves the stack', () => {
     it('Should go to the home with the x', async () => {
-      mockRealtime(fiveBills, threeTags, familyMonth, novemberPaidEarly);
+      mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
       await render(<ShareReceiptPage />);
 
       await userEvent.setup().press(screen.getByRole('button', { name: 'Fechar' }));
@@ -229,7 +233,7 @@ describe('ShareReceiptPage', () => {
 
     it('Should discard the shared receipt, however the screen was left', async () => {
       setSharedReceipt(sharedPdf);
-      mockRealtime(fiveBills, threeTags, familyMonth, novemberPaidEarly);
+      mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
       const { unmount } = await render(<ShareReceiptPage />);
       expect(useSharedReceiptStore.getState().receipt).toBe(sharedPdf);
 
@@ -240,7 +244,7 @@ describe('ShareReceiptPage', () => {
 
     it('Should leave the Android back button to the stack', async () => {
       const addListener = jest.spyOn(BackHandler, 'addEventListener');
-      mockRealtime(fiveBills, threeTags, familyMonth, novemberPaidEarly);
+      mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
       await render(<ShareReceiptPage />);
 
       expect(addListener).not.toHaveBeenCalledWith('hardwareBackPress', expect.anything());
@@ -249,7 +253,7 @@ describe('ShareReceiptPage', () => {
 
   it('Should keep the shared receipt when a bill is chosen', async () => {
     setSharedReceipt(sharedPdf);
-    mockRealtime(fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
     await render(<ShareReceiptPage />);
 
     await userEvent.setup().press(screen.getByRole('button', { name: 'Conta avulsa' }));

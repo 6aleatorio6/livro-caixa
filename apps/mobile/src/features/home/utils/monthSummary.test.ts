@@ -1,6 +1,10 @@
 import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 
+import { contributionOf } from '@/shared/testing/contributionOf';
+import { ownedPaymentOf } from '@/shared/testing/ownedPaymentOf';
+import { unownedPaymentOf } from '@/shared/testing/unownedPaymentOf';
+
 import { monthSummary } from './monthSummary';
 
 const bill = (overrides: Partial<IRecurringBill> = {}): IRecurringBill => ({
@@ -48,6 +52,7 @@ describe('monthSummary', () => {
     expect(monthSummary({ month: '2026-10', bills: [], entries: [] })).toEqual({
       toPay: [],
       paid: [],
+      entries: [],
       toPayCents: 0,
       paidCents: 0,
       totalCents: 0,
@@ -58,7 +63,17 @@ describe('monthSummary', () => {
   it('Should list a bill without payment as to pay, by the expected amount', () => {
     const summary = monthSummary({ month: '2026-10', bills: [bill()], entries: [] });
 
-    expect(summary.toPay).toEqual([{ bill: bill(), dueDate: '2026-10-05' }]);
+    expect(summary.toPay).toEqual([
+      {
+        bill: bill(),
+        name: 'Aluguel',
+        tagId: null,
+        dueDate: '2026-10-05',
+        payment: null,
+        contributions: [],
+        remainingCents: 100000,
+      },
+    ]);
     expect(summary).toMatchObject({ toPayCents: 100000, paidCents: 0, totalCents: 100000, billCount: 1 });
   });
 
@@ -99,7 +114,17 @@ describe('monthSummary', () => {
   it('Should take a day 31 bill as due in a 30-day month', () => {
     const summary = monthSummary({ month: '2026-04', bills: [bill({ dayOfMonth: 31 })], entries: [] });
 
-    expect(summary.toPay).toEqual([{ bill: bill({ dayOfMonth: 31 }), dueDate: '2026-04-30' }]);
+    expect(summary.toPay).toEqual([
+      {
+        bill: bill({ dayOfMonth: 31 }),
+        name: 'Aluguel',
+        tagId: null,
+        dueDate: '2026-04-30',
+        payment: null,
+        contributions: [],
+        remainingCents: 100000,
+      },
+    ]);
   });
 
   it('Should leave out a bill whose due date is before its start', () => {
@@ -134,5 +159,102 @@ describe('monthSummary', () => {
     const summary = monthSummary({ month: '2026-10', bills: [bill({ id: 'x', tagId: null })], entries: [oneOff({ tagId: null })] });
 
     expect(summary.totalCents).toBe(104500);
+  });
+
+  describe('With contributions', () => {
+    // A Luz prevista em R$ 200,00, sem dono; a conta de hoje é a mesma.
+    const electricityBill = bill({ id: 'electricity', name: 'Luz', expectedAmountCents: 20000, dayOfMonth: 20 });
+    const electricity = unownedPaymentOf();
+
+    it('Should keep a month with contributions below the expected amount to pay for what is left', () => {
+      const entries = [electricity, contributionOf(electricity.id, 'ana', 10000)];
+
+      const summary = monthSummary({ month: '2026-10', bills: [electricityBill], entries });
+
+      expect(summary.toPay).toEqual([
+        // O nome e a tag são as cópias do pagamento sem dono.
+        {
+          bill: electricityBill,
+          name: 'Luz',
+          tagId: 'servicos',
+          dueDate: '2026-10-20',
+          payment: electricity,
+          contributions: [entries[1]],
+          remainingCents: 10000,
+        },
+      ]);
+      expect(summary.paid).toEqual([]);
+      expect(summary).toMatchObject({ toPayCents: 10000, paidCents: 10000, totalCents: 20000, billCount: 1 });
+    });
+
+    it('Should count it paid when the contributions reach the expected amount', () => {
+      const entries = [
+        electricity,
+        contributionOf(electricity.id, 'ana', 10000),
+        contributionOf(electricity.id, 'bruno', 10000),
+      ];
+
+      const summary = monthSummary({ month: '2026-10', bills: [electricityBill], entries });
+
+      expect(summary.toPay).toEqual([]);
+      expect(summary.paid).toEqual([electricity]);
+      expect(summary).toMatchObject({ toPayCents: 0, paidCents: 20000, totalCents: 20000, billCount: 1 });
+    });
+
+    it('Should count it paid by the sum when the contributions pass the expected amount', () => {
+      const entries = [
+        electricity,
+        contributionOf(electricity.id, 'ana', 10000),
+        contributionOf(electricity.id, 'bruno', 13000),
+      ];
+
+      const summary = monthSummary({ month: '2026-10', bills: [electricityBill], entries });
+
+      expect(summary.paid).toEqual([electricity]);
+      expect(summary).toMatchObject({ toPayCents: 0, paidCents: 23000, totalCents: 23000 });
+    });
+
+    it("Should keep the month's expected amount when the bill changes", () => {
+      const rentBill = bill({ expectedAmountCents: 220000 });
+      const rent = unownedPaymentOf({
+        id: '2026-10_rent',
+        recurringBillId: 'rent',
+        name: 'Aluguel',
+        dueDay: 5,
+        expectedAmountCents: 200000,
+      });
+
+      const summary = monthSummary({
+        month: '2026-10',
+        bills: [rentBill],
+        entries: [rent, contributionOf(rent.id, 'bruno', 50000)],
+      });
+
+      expect(summary.toPay.map(({ remainingCents }) => remainingCents)).toEqual([150000]);
+      expect(summary).toMatchObject({ toPayCents: 150000, paidCents: 50000, totalCents: 200000 });
+    });
+
+    it('Should keep the contributions of a deleted bill in the month, without what was left', () => {
+      const summary = monthSummary({
+        month: '2026-10',
+        bills: [],
+        entries: [electricity, contributionOf(electricity.id, 'bruno', 5000)],
+      });
+
+      expect(summary).toMatchObject({ toPay: [], paid: [], toPayCents: 0, paidCents: 5000, totalCents: 5000 });
+    });
+
+    it('Should keep the month total unchanged by contributions to a paid entry', () => {
+      const rent = ownedPaymentOf({ amountCents: 100000, expectedAmountCents: 100000 });
+
+      const summary = monthSummary({
+        month: '2026-10',
+        bills: [bill()],
+        entries: [rent, contributionOf(rent.id, 'bruno', 40000)],
+      });
+
+      expect(summary.paid).toEqual([rent]);
+      expect(summary).toMatchObject({ toPayCents: 0, paidCents: 100000, totalCents: 100000, billCount: 1 });
+    });
   });
 });

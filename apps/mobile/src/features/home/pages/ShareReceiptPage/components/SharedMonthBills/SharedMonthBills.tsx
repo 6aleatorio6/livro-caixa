@@ -7,8 +7,10 @@ import { MonthListSection } from '@/features/home/components/MonthListSection/Mo
 import { useMonthSummary } from '@/features/home/hooks/useMonthSummary/useMonthSummary';
 import { AppText } from '@/shared/components/AppText/AppText';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
+import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { dayOf } from '@/shared/utils/date/dayOf';
+import { contributionsSupportOf } from '@/shared/utils/entry/contributionsSupportOf';
 import { monthName } from '@/shared/utils/date/monthName';
 import { findTag } from '@/shared/utils/tag/findTag';
 
@@ -22,6 +24,7 @@ export function SharedMonthBills({ month }: ISharedMonthBillsProps) {
   const { theme } = useUnistyles();
   const { summary, hasError } = useMonthSummary(month);
   const { data: tags } = useRealtime(tagListQueryService, {});
+  const { data: people } = useRealtime(allowedEmailListQueryService, {});
 
   return (
     <MonthListSection title={`A pagar em ${monthName(month)}`}>
@@ -37,13 +40,14 @@ export function SharedMonthBills({ month }: ISharedMonthBillsProps) {
           color={theme.colors.primary}
         />
       ) : null}
-      {summary?.toPay.map(({ bill, dueDate }) => (
+      {summary?.toPay.map(({ bill, name, tagId, dueDate, contributions, remainingCents }) => (
         <BillToPayItem
           key={bill.id}
-          name={bill.name}
-          expectedCents={bill.expectedAmountCents}
+          name={name}
+          remainingCents={remainingCents}
           dueDay={dayOf(dueDate)}
-          tag={findTag(bill.tagId, tags)}
+          contributionsSupport={contributionsSupportOf(contributions, people ?? [])}
+          tag={findTag(tagId, tags)}
           onPress={() =>
             router.push({ pathname: '/recurring-bills/[id]/pay', params: { id: bill.id, month, shared: '1' } })
           }
