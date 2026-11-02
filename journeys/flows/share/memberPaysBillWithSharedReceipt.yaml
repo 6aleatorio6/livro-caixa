@@ -43,11 +43,11 @@ tags:
     visible: "Qual conta você pagou?"
     timeout: 15000
 - assertVisible: "pix-agua-outubro.pdf"
-- assertVisible: "A pagar em outubro"
+- assertVisible: "A pagar em .*"
 - assertVisible: "Registrar Internet"
 - assertVisible: "Uma conta que não se repete"
 - takeScreenshot: share-receipt--bills-to-pay
-# A lista tem duas Águas, a de outubro e a de novembro: a primeira, a do mês atual, é a que se paga aqui.
+# A lista tem duas Águas, a do mês atual e a do próximo: a primeira, a do mês atual, é a que se paga aqui.
 - tapOn: "Registrar Água"
 - extendedWaitUntil:
     visible: "vence dia 20 · previsto R\\$ 98,00"

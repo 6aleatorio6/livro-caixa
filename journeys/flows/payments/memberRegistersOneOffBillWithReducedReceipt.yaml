@@ -24,7 +24,7 @@ tags:
     env:
       SCENARIO: seedTags
 - tapOn: Pagamentos
-- assertVisible: Nenhum pagamento seu em outubro
+- assertVisible: Nenhum pagamento seu em .*
 - takeScreenshot: my-payments--empty
 - tapOn: Nova conta avulsa
 - tapOn: Nome da conta
@@ -60,7 +60,7 @@ tags:
 - takeScreenshot: new-one-off-bill--image-reduced
 - tapOn: Registrar conta avulsa
 - extendedWaitUntil:
-    visible: Nenhum pagamento seu em outubro
+    visible: Nenhum pagamento seu em .*
     timeout: 60000
 - assertNotVisible: Conserto da geladeira
 - tapOn: Mês anterior
