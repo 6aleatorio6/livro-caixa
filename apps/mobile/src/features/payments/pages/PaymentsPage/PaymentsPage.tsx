@@ -24,6 +24,7 @@ import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
+import { signedInUid } from '@/shared/utils/auth/signedInUid';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { monthName } from '@/shared/utils/date/monthName';
 import { memberPartsOf } from '@/shared/utils/entry/memberPartsOf';
@@ -37,8 +38,7 @@ import { tagDisplayOf } from '@/shared/utils/tag/tagDisplayOf';
  * avulsa.
  */
 export function PaymentsPage() {
-  const authState = useAuthState();
-  const uid = authState.status === 'signedIn' ? authState.user.uid : null;
+  const uid = signedInUid(useAuthState());
   const [month, setMonth] = useState(currentMonth);
   // A `key` do chip escolhido, independente do mês; antes de tocar num chip, vale quem está logado, o chip "Você".
   const [chosenKey, setChosenKey] = useState<string>();

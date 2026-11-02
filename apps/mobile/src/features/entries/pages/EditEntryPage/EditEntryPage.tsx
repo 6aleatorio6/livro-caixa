@@ -16,6 +16,7 @@ import { ScreenContent } from '@/shared/components/Screen/ScreenContent';
 import { TopBar } from '@/shared/components/TopBar/TopBar';
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
+import { signedInUid } from '@/shared/utils/auth/signedInUid';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { entryQueryService } from '@/shared/services/entry/query/entryQueryService';
@@ -66,7 +67,7 @@ export function EditEntryPage() {
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
   const { status: tagsStatus, data: tags } = useRealtime(tagListQueryService, {});
 
-  const isAuthor = entry && authState.status === 'signedIn' && authState.user.uid === entry.paidBy;
+  const isAuthor = entry && signedInUid(authState) === entry.paidBy;
   // O formulário nasce com o que o comprovante é: só depois que o registro chegou (ou que se sabe que não existe).
   const isReceiptKnown = fileStatus === 'success' || fileStatus === 'cached';
   // A contribuição recebe um lançamento do mês: o formulário espera a leitura do mês para saber qual.

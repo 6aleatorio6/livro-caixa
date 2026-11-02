@@ -12,6 +12,7 @@ import { DetailRow } from '@/shared/components/DetailRow/DetailRow';
 import { ReceiptSummary } from '@/shared/components/ReceiptSummary/ReceiptSummary';
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
+import { signedInUid } from '@/shared/utils/auth/signedInUid';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { receiptFileQueryService } from '@/shared/services/file/query/receiptFileQueryService';
@@ -45,7 +46,7 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
   const { data: monthEntries } = useRealtime(entryMonthQueryService, { month: entry.month });
 
   const isPayment = entry.kind === 'recurringPayment';
-  const isAuthor = authState.status === 'signedIn' && authState.user.uid === entry.paidBy;
+  const isAuthor = signedInUid(authState) === entry.paidBy;
   const authorName = memberNameOf(entry.paidBy, people ?? []);
   // Uma tag apagada (só pelo SDK) deixa a conta sem a linha da tag.
   const tag = findTag(entry.tagId, tags);
