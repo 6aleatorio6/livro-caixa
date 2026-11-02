@@ -316,6 +316,17 @@ export const entryMonthQueryScenarios = {
     input: { month: '2026-10' },
     result: [CONTRIBUTION, PAYMENT],
   },
+  // A Luz do Bruno já recebeu da Ana tudo o que ele pagou: não falta nada.
+  monthWithFullyContributedPayment: {
+    signedInAs: BRUNO,
+    given: {
+      ...BOTH_IN_THE_LIST,
+      'entries/2026-10_electricity': PAYMENT_DOCUMENT,
+      'entries/c-ana': { ...CONTRIBUTION_DOCUMENT, amountCents: PAYMENT_DOCUMENT.amountCents },
+    },
+    input: { month: '2026-10' },
+    result: [{ ...CONTRIBUTION, amountCents: PAYMENT_DOCUMENT.amountCents }, PAYMENT],
+  },
   // A Internet de outubro sem dono, com a contribuição de R$ 50,00 da Ana, registrada dois dias depois: vem primeiro.
   monthWithContributionToUnownedPayment: {
     signedInAs: BRUNO,

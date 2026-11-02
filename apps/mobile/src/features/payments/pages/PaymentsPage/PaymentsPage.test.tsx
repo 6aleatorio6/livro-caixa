@@ -80,7 +80,7 @@ describe('PaymentsPage', () => {
     mockRealtime(october, threeTags, family);
     await render(<PaymentsPage />);
 
-    expect(screen.getByText('Você registrou em outubro')).toBeOnTheScreen();
+    expect(screen.getByText('Sua parte em outubro')).toBeOnTheScreen();
     // Bruno: R$ 89,90 de R$ 354,90 da família.
     expect(screen.getByText('1 lançamento · 25% do que a família pagou')).toBeOnTheScreen();
     // No cartão, no total do grupo Casa e na linha da Farmácia.
@@ -147,8 +147,10 @@ describe('PaymentsPage', () => {
     await render(<PaymentsPage />);
 
     expect(screen.getByText('Nenhum pagamento seu em outubro')).toBeOnTheScreen();
-    expect(screen.getByText('Quando você registrar um pagamento ou uma conta avulsa, ele aparece aqui.')).toBeOnTheScreen();
-    expect(screen.queryByText('Você registrou em outubro')).not.toBeOnTheScreen();
+    expect(
+      screen.getByText('Quando você registrar um pagamento ou uma conta avulsa, ele aparece aqui.'),
+    ).toBeOnTheScreen();
+    expect(screen.queryByText('Sua parte em outubro')).not.toBeOnTheScreen();
   });
 
   it('Should read the previous month when the previous month is pressed', async () => {
@@ -161,7 +163,7 @@ describe('PaymentsPage', () => {
 
     expect(screen.getByText('Setembro de 2026')).toBeOnTheScreen();
     expect(screen.getByText('Gráfica')).toBeOnTheScreen();
-    expect(screen.getByText('Você registrou em setembro')).toBeOnTheScreen();
+    expect(screen.getByText('Sua parte em setembro')).toBeOnTheScreen();
     expect(screen.queryByText('Farmácia')).not.toBeOnTheScreen();
   });
 
@@ -203,7 +205,7 @@ describe('PaymentsPage', () => {
     mockRealtime({ service: entryMonthQueryService, status: 'loading' }, threeTags, family);
     await render(<PaymentsPage />);
 
-    expect(screen.queryByText('Você registrou em outubro')).not.toBeOnTheScreen();
+    expect(screen.queryByText('Sua parte em outubro')).not.toBeOnTheScreen();
     expect(screen.queryByText('Nenhum pagamento seu em outubro')).not.toBeOnTheScreen();
     expect(screen.queryByText('Não deu para carregar a lista.')).not.toBeOnTheScreen();
   });
@@ -270,7 +272,7 @@ describe('PaymentsPage', () => {
 
       expect(screen.getByRole('button', { name: 'Ana' })).toBeSelected();
       // Ana: Mercado (Serviços, R$ 250,00) e Estacionamento (sem tag, R$ 15,00), de R$ 354,90 da família.
-      expect(screen.getByText('Ana registrou em outubro')).toBeOnTheScreen();
+      expect(screen.getByText('Parte de Ana em outubro')).toBeOnTheScreen();
       expect(screen.getByText('2 lançamentos · 74% do que a família pagou')).toBeOnTheScreen();
       const headers = screen.getAllByText(/^(Casa|Serviços|Sem tag)$/).map((node) => node.props.children);
       expect(headers).toEqual(['Serviços', 'Sem tag']);
@@ -298,7 +300,7 @@ describe('PaymentsPage', () => {
 
       expect(screen.getByText('Nenhum pagamento de Clara em outubro')).toBeOnTheScreen();
       expect(screen.queryByText(/Quando você registrar/)).not.toBeOnTheScreen();
-      expect(screen.queryByText('Clara registrou em outubro')).not.toBeOnTheScreen();
+      expect(screen.queryByText('Parte de Clara em outubro')).not.toBeOnTheScreen();
     });
 
     it('Should keep the chosen person when the month changes', async () => {
@@ -333,7 +335,7 @@ describe('PaymentsPage', () => {
 
     expect(screen.queryByRole('button', { name: 'Clara' })).not.toBeOnTheScreen();
     expect(screen.getByRole('button', { name: 'Você' })).toBeSelected();
-    expect(screen.getByText('Você registrou em outubro')).toBeOnTheScreen();
+    expect(screen.getByText('Sua parte em outubro')).toBeOnTheScreen();
   });
 
   it('Should wait for the tags before listing, so no entry shows as untagged', async () => {
@@ -360,5 +362,79 @@ describe('PaymentsPage', () => {
     await userEvent.setup().press(screen.getByRole('button', { name: 'Nova conta avulsa' }));
 
     expect(router.push).toHaveBeenCalledWith('/one-off-bills/new');
+  });
+
+  // A Luz de R$ 187,35 que o Bruno pagou, com R$ 40,00 da Ana; o Bruno está logado.
+  describe('Contributions', () => {
+    const lightWithContribution = {
+      service: entryMonthQueryService,
+      scenario: entryMonthQueryScenarios.monthWithContributionToPayment,
+    };
+
+    async function renderWithContribution() {
+      mockRealtime(lightWithContribution, threeTags, family);
+      await render(<PaymentsPage />);
+      return userEvent.setup();
+    }
+
+    it('Should show each bill once, with the amount paid, under Todos', async () => {
+      const user = await renderWithContribution();
+
+      await user.press(screen.getByRole('button', { name: 'Todos' }));
+
+      expect(screen.getAllByText('Luz')).toHaveLength(1);
+      expect(screen.getAllByText('R$ 187,35').length).toBeGreaterThan(0);
+      expect(screen.getByText('pago em 10/10 · Bruno · previsto R$ 210,00')).toBeOnTheScreen();
+      expect(screen.queryByText('Sua parte')).not.toBeOnTheScreen();
+      expect(screen.queryByText('Ana · contribuição')).not.toBeOnTheScreen();
+    });
+
+    it("Should expand an entry with the member's part and the others' under a member chip, and total the member's parts on the card", async () => {
+      await renderWithContribution();
+
+      expect(screen.getByText('Sua parte em outubro')).toBeOnTheScreen();
+      expect(screen.getByText('1 lançamento · 78% do que a família pagou')).toBeOnTheScreen();
+      expect(screen.getByText('Sua parte')).toBeOnTheScreen();
+      expect(screen.getByText('Ana · contribuição')).toBeOnTheScreen();
+      expect(screen.getByText('R$ 40,00')).toBeOnTheScreen();
+      // O cartão, o total da tag e a parte: os três são a parte do Bruno.
+      expect(screen.getAllByText('R$ 147,35')).toHaveLength(3);
+    });
+
+    it("Should show a contribution as the member's part of the payer's entry", async () => {
+      const user = await renderWithContribution();
+
+      await user.press(screen.getByRole('button', { name: 'Ana' }));
+
+      expect(screen.getByText('Parte de Ana em outubro')).toBeOnTheScreen();
+      expect(screen.getByText('paga por Bruno em 10/10')).toBeOnTheScreen();
+      expect(screen.getByText('Ana · contribuição')).toBeOnTheScreen();
+      expect(screen.getByText('Bruno · pagou a conta')).toBeOnTheScreen();
+      expect(screen.getAllByText('R$ 40,00').length).toBeGreaterThan(1);
+    });
+
+    it('Should show a lone contribution to a month with no owner under the member chip, and open it', async () => {
+      mockRealtime(
+        { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithContributionToUnownedPayment },
+        threeTags,
+        family,
+      );
+      await render(<PaymentsPage />);
+      const user = userEvent.setup();
+      await user.press(screen.getByRole('button', { name: 'Ana' }));
+
+      await user.press(screen.getByRole('button', { name: 'Ana · contribuição, R$ 50,00' }));
+
+      expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]', params: { id: 'c-ana' } });
+    });
+
+    it("Should open the contribution's details from the member's part under their chip", async () => {
+      const user = await renderWithContribution();
+      await user.press(screen.getByRole('button', { name: 'Ana' }));
+
+      await user.press(screen.getByRole('button', { name: 'Ana · contribuição, R$ 40,00' }));
+
+      expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]', params: { id: 'c-ana' } });
+    });
   });
 });

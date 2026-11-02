@@ -6,12 +6,12 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import monthClosed from '@/assets/images/month-closed.png';
 import { EntryTagGroup } from '@/features/payments/components/EntryTagGroup/EntryTagGroup';
+import { PaymentRow } from '@/features/payments/components/PaymentRow/PaymentRow';
 import { entryGroupsByTag } from '@/features/payments/utils/entryGroupsByTag';
 import { memberChoicesOf } from '@/features/payments/utils/memberChoicesOf';
-import { paymentEntrySupportOf } from '@/features/payments/utils/paymentEntrySupportOf';
+import { paymentRowsOf } from '@/features/payments/utils/paymentRowsOf';
 import { AppText } from '@/shared/components/AppText/AppText';
 import { EmptyState } from '@/shared/components/EmptyState/EmptyState';
-import { EntryItem } from '@/shared/components/EntryItem/EntryItem';
 import { ExtendedFab } from '@/shared/components/ExtendedFab/ExtendedFab';
 import { FilterChip } from '@/shared/components/FilterChip/FilterChip';
 import { LoadingState } from '@/shared/components/LoadingState/LoadingState';
@@ -23,16 +23,18 @@ import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
-import { isOwnedEntry } from '@/shared/utils/entry/isOwnedEntry';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { monthName } from '@/shared/utils/date/monthName';
-import { memberNameOf } from '@/shared/utils/person/memberNameOf';
+import { memberPartsOf } from '@/shared/utils/entry/memberPartsOf';
+import { sumCents } from '@/shared/utils/entry/sumCents';
 import { tagDisplayOf } from '@/shared/utils/tag/tagDisplayOf';
 
 /**
- * Os lançamentos de uma pessoa da família por vez, ou de todos, escolhidos nos chips (abre em quem está logado), mês a
- * mês e agrupados por tag, com o total no mês; o botão registra uma conta avulsa.
+ * As contas de uma pessoa da família por vez, ou de todos, escolhidas nos chips (abre em quem está logado), mês a mês e
+ * agrupadas por tag, com o total no mês. No chip de um membro, a conta em que ele tem parte conta só a parte dele e,
+ * com contribuições, mostra as partes de cada um; em "Todos", cada conta aparece uma vez. O botão registra uma conta
+ * avulsa.
  */
 export function PaymentsPage() {
   const authState = useAuthState();
@@ -40,9 +42,7 @@ export function PaymentsPage() {
   const [month, setMonth] = useState(currentMonth);
   // A `key` do chip escolhido, independente do mês; antes de tocar num chip, vale quem está logado, o chip "Você".
   const [chosenKey, setChosenKey] = useState<string>();
-  const { status, data: monthEntries } = useRealtime(entryMonthQueryService, { month });
-  // Até a lista conhecer as contribuições, ela mostra só a conta avulsa e o pagamento com dono.
-  const entries = monthEntries?.filter(isOwnedEntry);
+  const { status, data: entries } = useRealtime(entryMonthQueryService, { month });
   const { status: tagsStatus, data: tags } = useRealtime(tagListQueryService, {});
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
 
@@ -51,12 +51,14 @@ export function PaymentsPage() {
   const chosen = choices.find((choice) => choice.key === chosenKey) ?? choices.find((choice) => choice.key === uid);
   const isEveryone = chosen?.kind === 'everyone';
   const isMine = chosen?.key === uid;
-  // A leitura traz o mês da família inteira; a lista é a da pessoa escolhida, ou toda no chip "Todos". Sem as tags, todo
-  // lançamento cairia no grupo sem tag: a lista as espera.
-  const theirs = chosen?.kind === 'member' ? entries?.filter((entry) => entry.paidBy === chosen.uid) : entries;
-  const groups = theirs && tags ? entryGroupsByTag(theirs, tags) : null;
+  const chosenUid = chosen?.kind === 'member' ? chosen.uid : null;
+  // A leitura traz o mês da família inteira; a lista é a das contas em que a pessoa escolhida tem parte, ou todas no
+  // chip "Todos". Sem as tags, toda conta cairia no grupo sem tag: a lista as espera.
+  const rows = entries && chosen ? paymentRowsOf(entries, chosenUid) : null;
+  const groups = rows && tags ? entryGroupsByTag(rows, tags) : null;
   const hasError = status === 'error' || tagsStatus === 'error';
-  const familyAmountCents = entries?.reduce((sum, entry) => sum + entry.amountCents, 0) ?? 0;
+  // A base da porcentagem é o mesmo pago do Início: a soma das partes de todos.
+  const familyAmountCents = entries ? sumCents(memberPartsOf(entries)) : 0;
 
   return (
     <Screen>
@@ -92,29 +94,23 @@ export function PaymentsPage() {
         ) : (
           <>
             <MonthTotalCard
-              ownerName={isEveryone ? 'A família' : chosen.name}
-              month={month}
+              title={totalTitleOf(chosen.name, month, { isMine, isEveryone })}
               amountCents={groups.reduce((sum, group) => sum + group.totalCents, 0)}
-              entryCount={groups.reduce((count, group) => count + group.entries.length, 0)}
+              entryCount={groups.reduce((count, group) => count + group.rows.length, 0)}
               familyAmountCents={isEveryone ? undefined : familyAmountCents}
             />
             <View style={styles.groups}>
-              {groups.map(({ tag, totalCents, entries: groupEntries }) => {
+              {groups.map(({ tag, totalCents, rows: groupRows }) => {
                 const { key, name, color } = tagDisplayOf(tag);
                 return (
                   <EntryTagGroup key={key} name={name} color={color} totalCents={totalCents}>
-                    {groupEntries.map((entry) => (
-                      <EntryItem
-                        key={entry.id}
-                        kind={entry.kind === 'recurringPayment' ? 'payment' : 'oneOff'}
-                        name={entry.name}
-                        amountCents={entry.amountCents}
-                        onPress={() => router.push({ pathname: '/entries/[id]', params: { id: entry.id } })}
-                        // No chip "Todos" nenhum chip diz de quem é o lançamento: a linha diz.
-                        support={paymentEntrySupportOf(
-                          entry,
-                          isEveryone ? memberNameOf(entry.paidBy, people ?? []) : undefined,
-                        )}
+                    {groupRows.map((row) => (
+                      <PaymentRow
+                        key={row.entry.id}
+                        row={row}
+                        people={people ?? []}
+                        chosenUid={chosenUid}
+                        signedInUid={uid}
                       />
                     ))}
                   </EntryTagGroup>
@@ -130,6 +126,12 @@ export function PaymentsPage() {
       <ExtendedFab icon={Plus} label="Nova conta avulsa" onPress={() => router.push('/one-off-bills/new')} />
     </Screen>
   );
+}
+
+/** O título do cartão do total: "Sua parte em outubro", "Parte de Bruno em outubro" ou "A família registrou em outubro". */
+function totalTitleOf(name: string, month: string, { isMine, isEveryone }: { isMine: boolean; isEveryone: boolean }) {
+  if (isEveryone) return `A família registrou em ${monthName(month)}`;
+  return `${isMine ? 'Sua parte' : `Parte de ${name}`} em ${monthName(month)}`;
 }
 
 /** O título do mês sem lançamentos: "Nenhum pagamento seu em outubro", "… de Bruno …" ou, no chip "Todos", de ninguém. */

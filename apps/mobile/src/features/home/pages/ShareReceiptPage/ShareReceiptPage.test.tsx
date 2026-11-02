@@ -5,6 +5,9 @@ import { BackHandler } from 'react-native';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 
 import { useSharedReceipt } from '@/features/home/hooks/useSharedReceipt/useSharedReceipt';
+import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
+import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
+import { signedInAuthState } from '@/shared/testing/signedInAuthState';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService.scenarios';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
@@ -22,7 +25,10 @@ import { ShareReceiptPage } from './ShareReceiptPage';
 
 // Mocks com fábrica: o módulo real carregaria o React Native Firebase, que não roda no Jest.
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
-jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({ allowedEmailListQueryService: {} }));
+jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jest.fn() }));
+jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({
+  allowedEmailListQueryService: {},
+}));
 jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entryMonthQueryService: {} }));
 jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService', () => ({ recurringBillListQueryService: {} }));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
@@ -64,6 +70,8 @@ beforeEach(() => {
     doNotFake: ['setTimeout', 'setInterval', 'setImmediate', 'queueMicrotask', 'nextTick'],
   });
   shareIs({ status: 'ready', receipt: sharedPdf });
+  // O Bruno compartilha: as contas que ele mesmo pagou não aparecem entre as pagas por outros.
+  jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn));
 });
 
 afterEach(() => {
@@ -94,6 +102,9 @@ describe('ShareReceiptPage', () => {
       'Luz, Serviços',
       'Internet, Serviços',
       'Água, Serviços',
+      // Por último, as já pagas por outros: o Aluguel e a Luz da Ana.
+      'Aluguel, Casa',
+      'Luz, Serviços',
     ]);
   });
 
@@ -209,11 +220,10 @@ describe('ShareReceiptPage', () => {
   });
 
   it('Should show a loader in place of the bills, with "Conta avulsa", while the month loads', async () => {
-    mockRealtime(family, 
-      { service: recurringBillListQueryService, status: 'loading' },
-      threeTags,
-      { service: entryMonthQueryService, status: 'loading' },
-    );
+    mockRealtime(family, { service: recurringBillListQueryService, status: 'loading' }, threeTags, {
+      service: entryMonthQueryService,
+      status: 'loading',
+    });
     await render(<ShareReceiptPage />);
 
     expect(screen.getAllByLabelText('Carregando as contas')).toHaveLength(2);
@@ -259,5 +269,44 @@ describe('ShareReceiptPage', () => {
     await userEvent.setup().press(screen.getByRole('button', { name: 'Conta avulsa' }));
 
     expect(useSharedReceiptStore.getState().receipt).toBe(sharedPdf);
+  });
+
+  describe('Bills paid by others', () => {
+    it('Should list bills paid by others below the bills to pay when sharing', async () => {
+      mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
+      await render(<ShareReceiptPage />);
+
+      // Em outubro, a Ana pagou o Aluguel e a Luz; o Condomínio de novembro é do próprio Bruno.
+      const titles = screen.getAllByRole('header').map((node) => node.props.children);
+      expect(titles.slice(-1)).toEqual(['Já pagas por outros em outubro']);
+      expect(screen.getByText('R$ 1.800,00 · pago por Ana')).toBeOnTheScreen();
+      expect(screen.getByText('R$ 187,35 · pago por Ana')).toBeOnTheScreen();
+      expect(screen.queryByText(/pago por Bruno/)).not.toBeOnTheScreen();
+    });
+
+    it('Should open the contribution to the bill with the shared receipt', async () => {
+      mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
+      await render(<ShareReceiptPage />);
+
+      await userEvent.setup().press(screen.getByRole('button', { name: 'Contribuir em Luz' }));
+
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/entries/[id]/contribute',
+        params: { id: '2026-10_electricity', shared: '1' },
+      });
+    });
+
+    it('Should leave out a bill with nothing left to receive', async () => {
+      jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.adminSignsIn));
+      const fullyContributed = {
+        service: entryMonthQueryService,
+        scenario: entryMonthQueryScenarios.monthWithFullyContributedPayment,
+      };
+      mockRealtime(family, fiveBills, threeTags, fullyContributed, novemberPaidEarly);
+      await render(<ShareReceiptPage />);
+
+      expect(screen.queryByText('Já pagas por outros em outubro')).not.toBeOnTheScreen();
+      expect(screen.queryByRole('button', { name: 'Contribuir em Luz' })).not.toBeOnTheScreen();
+    });
   });
 });

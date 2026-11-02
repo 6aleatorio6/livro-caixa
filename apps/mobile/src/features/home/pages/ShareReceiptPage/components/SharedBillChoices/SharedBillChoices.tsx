@@ -7,10 +7,12 @@ import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { shiftMonth } from '@/shared/utils/date/shiftMonth';
 
 import { SharedMonthBills } from '../SharedMonthBills/SharedMonthBills';
+import { SharedPaidByOthers } from '../SharedPaidByOthers/SharedPaidByOthers';
 
 /**
  * O que escolher para o comprovante compartilhado: "Conta avulsa" primeiro, depois as contas a pagar do mês atual e
- * as do próximo, que já pode ser pago. Só é montado com o arquivo pronto: as leituras do mês não abrem enquanto ele é
+ * as do próximo, que já pode ser pago, e por fim as contas dos dois meses já pagas por outros membros, que recebem
+ * contribuições. Só é montado com o arquivo pronto: as leituras do mês não abrem enquanto ele é
  * lido nem quando é recusado.
  */
 export function SharedBillChoices() {
@@ -27,6 +29,8 @@ export function SharedBillChoices() {
       />
       <SharedMonthBills month={month} />
       <SharedMonthBills month={shiftMonth(month, 1)} />
+      <SharedPaidByOthers month={month} />
+      <SharedPaidByOthers month={shiftMonth(month, 1)} />
     </>
   );
 }

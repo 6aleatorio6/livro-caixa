@@ -2,16 +2,13 @@ import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
-import { monthName } from '@/shared/utils/date/monthName';
 import { formatCents } from '@/shared/utils/format/formatCents';
 import { pluralize } from '@/shared/utils/format/pluralize';
 
 export interface IMonthTotalCardProps {
-  /** Quem registrou: "Você", o primeiro nome de outro membro ou "A família". */
-  ownerName: string;
-  /** O mês do total, 'AAAA-MM'. */
-  month: string;
-  /** Quanto a pessoa registrou no mês, em centavos. */
+  /** O que o total é, com o mês: "Sua parte em outubro", "Parte de Bruno em outubro", "A família registrou em outubro". */
+  title: string;
+  /** O total, em centavos. */
   amountCents: number;
   entryCount: number;
   /** Quanto a família pagou no mês, em centavos; a base da porcentagem. Sem ele, não há porcentagem. */
@@ -19,10 +16,10 @@ export interface IMonthTotalCardProps {
 }
 
 /**
- * O total registrado no mês: o valor grande e "2 lançamentos · 71% do que a família pagou"; o da família inteira, só
+ * O total do mês: o valor grande e "2 lançamentos · 71% do que a família pagou"; o da família inteira, só
  * "4 lançamentos".
  */
-export function MonthTotalCard({ ownerName, month, amountCents, entryCount, familyAmountCents }: IMonthTotalCardProps) {
+export function MonthTotalCard({ title, amountCents, entryCount, familyAmountCents }: IMonthTotalCardProps) {
   const percent = familyAmountCents ? Math.floor((amountCents / familyAmountCents) * 100) : 0;
   const detail = [
     pluralize(entryCount, 'lançamento', 'lançamentos'),
@@ -34,7 +31,7 @@ export function MonthTotalCard({ ownerName, month, amountCents, entryCount, fami
   return (
     <View style={styles.card}>
       <AppText variant="labelLarge" color="onSurfaceVariant">
-        {ownerName} registrou em {monthName(month)}
+        {title}
       </AppText>
       <AppText variant="headlineLargeEmphasized" color="primary">
         {formatCents(amountCents)}
