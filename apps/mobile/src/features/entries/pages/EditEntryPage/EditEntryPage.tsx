@@ -126,11 +126,12 @@ export function EditEntryPage() {
             />
           )
         ) : null}
-        {isAuthor && isReceiptKnown && entry.kind === 'oneOffBill' ? (
+        {isAuthor && isReceiptKnown && monthEntries && entry.kind === 'oneOffBill' ? (
           <OneOffBillForm
             tags={tags ?? []}
             hasTagsError={tagsStatus === 'error'}
             initialValues={{ name: entry.name, amountCents: entry.amountCents, date: entry.date, tagId: entry.tagId }}
+            contributedCents={otherContributedCents}
             currentReceipt={file ?? undefined}
             entryId={entry.id}
             submitLabel="Salvar alterações"

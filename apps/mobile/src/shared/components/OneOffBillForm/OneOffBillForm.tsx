@@ -15,7 +15,10 @@ import type { IOneOffBillInput } from '@/shared/types/entry/OneOffBillInput';
 import type { IReceipt } from '@/shared/types/file/Receipt';
 import type { IReceiptFile } from '@/shared/types/file/ReceiptFile';
 import type { ITag } from '@/shared/types/tag/Tag';
+import { monthName } from '@/shared/utils/date/monthName';
+import { monthOf } from '@/shared/utils/date/monthOf';
 import { toIsoDate } from '@/shared/utils/date/toIsoDate';
+import { formatCents } from '@/shared/utils/format/formatCents';
 import { oneOffBillInputOf } from '@/shared/utils/entry/oneOffBillInputOf';
 
 /** O que o formulário entrega: com um comprovante já salvo, o comprovante pode vir `null` (fica o que está). */
@@ -42,6 +45,8 @@ export interface IOneOffBillFormProps<TCurrentReceipt extends IReceiptFile | und
   notice?: ReactNode;
   /** O que vem depois do botão (o "Excluir" da alteração), centralizado. */
   footer?: ReactNode;
+  /** Na alteração, a soma das contribuições que a conta recebeu: o valor não fica abaixo dela, e a data, no mês dela. */
+  contributedCents?: number;
   /** Recebe a entrada já convertida; o formulário fica ocupado até a promessa terminar. */
   onSubmit: (input: IOneOffBillSubmission<TCurrentReceipt>) => Promise<void>;
 }
@@ -57,10 +62,12 @@ export function OneOffBillForm<TCurrentReceipt extends IReceiptFile | undefined 
   dateSupportText = 'Hoje, por padrão. A data define o mês em que a conta entra.',
   notice,
   footer,
+  contributedCents = 0,
   onSubmit,
 }: IOneOffBillFormProps<TCurrentReceipt>) {
+  const lockedMonth = contributedCents > 0 && initialValues?.date ? monthOf(initialValues.date) : null;
   const form = useOneOffBillForm(
-    { hasCurrentReceipt: Boolean(currentReceipt) },
+    { hasCurrentReceipt: Boolean(currentReceipt), contributedCents, lockedMonth },
     { date: toIsoDate(new Date()), ...initialValues },
   );
   const { control, handleSubmit, formState } = form;
@@ -72,12 +79,17 @@ export function OneOffBillForm<TCurrentReceipt extends IReceiptFile | undefined 
   return (
     <View style={styles.form}>
       <TextFieldSmart control={control} name="name" label="Nome da conta" autoCapitalize="sentences" />
-      <AmountPaidFieldSmart form={form} />
+      <AmountPaidFieldSmart
+        form={form}
+        supportText={
+          contributedCents > 0 ? `Mínimo de ${formatCents(contributedCents)}, a soma das contribuições.` : undefined
+        }
+      />
       <DateFieldSmart
         control={control}
         name="date"
         label="Data"
-        supportText={dateSupportText}
+        supportText={lockedMonth ? `Com contribuições, a data fica em ${monthName(lockedMonth)}.` : dateSupportText}
         maximumDate={new Date()}
       />
 
