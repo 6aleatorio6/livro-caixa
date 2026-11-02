@@ -7,8 +7,12 @@ import { MoneyFieldSmart } from '@/shared/components/inputs/MoneyFieldSmart/Mone
 
 export interface IAmountPaidFieldSmartProps<TValues extends IAmountAndReceiptValues, TContext> {
   form: UseFormReturn<TValues, TContext>;
+  /** O rótulo do campo; a contribuição troca o "Valor pago" por "Quanto você pagou". */
+  label?: string;
   /** O texto de apoio enquanto o valor mostrado não é o lido no comprovante. */
   supportText?: string;
+  /** O aviso enquanto o valor mostrado é o lido no comprovante; sem ele, o do pagamento. */
+  receiptNote?: string;
 }
 
 /**
@@ -17,14 +21,16 @@ export interface IAmountPaidFieldSmartProps<TValues extends IAmountAndReceiptVal
  */
 export function AmountPaidFieldSmart<TValues extends IAmountAndReceiptValues, TContext>({
   form,
+  label = 'Valor pago',
   supportText,
+  receiptNote,
 }: IAmountPaidFieldSmartProps<TValues, TContext>) {
-  const receiptAmountNote = useAmountFromReceipt(form);
+  const receiptAmountNote = useAmountFromReceipt(form, receiptNote);
   return (
     <MoneyFieldSmart
       control={form.control}
       name={'amountCents' as FieldPath<TValues>}
-      label="Valor pago"
+      label={label}
       supportText={receiptAmountNote ?? supportText}
     />
   );

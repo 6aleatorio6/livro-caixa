@@ -7,11 +7,16 @@ import { ScreenContent } from '@/shared/components/Screen/ScreenContent';
 import { TopBar } from '@/shared/components/TopBar/TopBar';
 import { useSharedReceiptOpening } from '@/shared/hooks/useSharedReceiptOpening/useSharedReceiptOpening';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
+import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
-import { isOwnedEntry } from '@/shared/utils/entry/isOwnedEntry';
 import { recurringBillListQueryService } from '@/shared/services/recurringBill/query/recurringBillListQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
+import type { IBillEntry } from '@/shared/types/entry/BillEntry';
+import { doAddContribution } from '@/shared/utils/actions/doAddContribution';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
+import { contributionsOf } from '@/shared/utils/entry/contributionsOf';
+import { contributionsSupportOf } from '@/shared/utils/entry/contributionsSupportOf';
+import { sumCents } from '@/shared/utils/entry/sumCents';
 import { findTag } from '@/shared/utils/tag/findTag';
 
 import { isMonthToPay } from '@/features/home/utils/isMonthToPay';
@@ -32,8 +37,16 @@ export function PayRecurringBillPage() {
   const { status: entriesStatus, data: entries } = useRealtime(entryMonthQueryService, {
     month: isToPay ? month : currentMonth(),
   });
-  // Até o pagamento conhecer as contribuições, só o pagamento com dono conta como pago, como no Início.
-  const isPaid = isToPay && entries?.some((entry) => isOwnedEntry(entry) && entry.kind === 'recurringPayment' && entry.recurringBillId === id);
+  const { data: people } = useRealtime(allowedEmailListQueryService, {});
+  // O pagamento do mês, com dono ou sem, e as contribuições nele: o mês está pago com o dono, ou quando elas alcançam o
+  // previsto do mês, como no Início.
+  const payment = entries?.find(
+    (entry): entry is Extract<IBillEntry, { kind: 'recurringPayment' }> =>
+      entry.kind === 'recurringPayment' && entry.recurringBillId === id,
+  );
+  const contributions = payment && entries ? contributionsOf(payment.id, entries) : [];
+  const contributedCents = sumCents(contributions);
+  const isPaid = isToPay && payment !== undefined && (payment.paidBy !== null || contributedCents >= payment.expectedAmountCents);
 
   return (
     <Screen>
@@ -49,15 +62,24 @@ export function PayRecurringBillPage() {
             Esta conta já foi paga neste mês.
           </AppText>
         ) : null}
-        {bill && isToPay && entries && (isSubmitted || !isPaid) ? (
+        {monthBill && isToPay && entries && (isSubmitted || !isPaid) ? (
           <PayRecurringBillForm
-            bill={bill}
+            bill={monthBill}
             month={month}
-            tag={findTag(bill.tagId, tags)}
+            expectedCents={monthBill.expectedAmountCents}
+            contributedCents={contributedCents}
+            contributionsSupport={contributionsSupportOf(contributions, people ?? [])}
+            tag={findTag(monthBill.tagId, tags)}
             initialValues={{ receipt: initialReceipt }}
-            onSubmit={async (input) => {
+            onSubmit={async (input, isContribution) => {
               setIsSubmitted(true);
-              const { error } = await doPayRecurringBill(input);
+              const { error } = isContribution
+                ? await doAddContribution({
+                    target: { bill: monthBill, month },
+                    amountCents: input.amountCents,
+                    receipt: input.receipt,
+                  })
+                : await doPayRecurringBill(input);
               if (error) setIsSubmitted(false);
               else finish();
             }}

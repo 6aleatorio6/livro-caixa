@@ -5,11 +5,15 @@ import { StyleSheet } from 'react-native';
 import { showToast } from '@/core/utils/storeActions/showToast';
 
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
+import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
+import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService.scenarios';
 import { allowedEmailQueryService } from '@/shared/services/allowedEmail/query/allowedEmailQueryService';
 import { allowedEmailQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailQueryService.scenarios';
 import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { entryMonthQueryScenarios } from '@/shared/services/entry/query/entryMonthQueryService.scenarios';
+import { addContributionService } from '@/shared/services/entry/add/addContributionService';
+import { addContributionScenarios } from '@/shared/services/entry/add/addContributionService.scenarios';
 import { payRecurringBillService } from '@/shared/services/entry/add/payRecurringBillService';
 import {
   payRecurringBillRejectedScenarios,
@@ -36,10 +40,14 @@ jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jes
 jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entryMonthQueryService: {} }));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailQueryService', () => ({ allowedEmailQueryService: {} }));
+jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({
+  allowedEmailListQueryService: {},
+}));
 jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService', () => ({
   recurringBillListQueryService: {},
 }));
 jest.mock('@/shared/services/entry/add/payRecurringBillService', () => ({ payRecurringBillService: jest.fn() }));
+jest.mock('@/shared/services/entry/add/addContributionService', () => ({ addContributionService: jest.fn() }));
 jest.mock('@/shared/utils/file/pickReceiptFile', () => ({ pickReceiptFile: jest.fn() }));
 jest.mock('@/shared/utils/file/prepareReceipt', () => ({ prepareReceipt: jest.fn() }));
 // O aviso se esconde num timer de 4 s, que seguraria o Jest depois do teste.
@@ -91,6 +99,7 @@ describe('PayRecurringBillPage', () => {
       { service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.fiveBills },
       { service: tagListQueryService, scenario: tagListQueryScenarios.threeTags },
       { service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailInList },
+      { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyList },
     );
     await render(<PayRecurringBillPage />);
     // O rótulo do campo já preenchido sobe animado ao abrir: a animação termina dentro do `act`.
@@ -183,6 +192,103 @@ describe('PayRecurringBillPage', () => {
 
     expect(await screen.findByText('Preencha este campo.')).toBeOnTheScreen();
     expect(payRecurringBillService).not.toHaveBeenCalled();
+  });
+
+  describe('Paguei só uma parte', () => {
+    const SWITCH = { name: 'Paguei só uma parte' };
+
+    it('Should turn the switch on and disable it below 30% of the expected amount', async () => {
+      const user = await renderPage();
+
+      // A Internet prevista em R$ 119,90: 30% são R$ 35,97, e R$ 30,00 fica abaixo.
+      const field = screen.getByLabelText('Valor pago');
+      await user.clear(field);
+      await user.type(field, '3000');
+
+      expect(screen.getByRole('switch', SWITCH)).toBeChecked();
+      expect(screen.getByRole('switch', SWITCH)).toBeDisabled();
+      expect(screen.getByText('Abaixo de 30% do previsto (R$ 35,97), só pode ser uma contribuição.')).toBeOnTheScreen();
+      expect(screen.getByRole('button', { name: 'Registrar contribuição' })).toBeOnTheScreen();
+      expect(screen.getByLabelText('Quanto você pagou')).toBeOnTheScreen();
+    });
+
+    it('Should leave the switch free at 30% of the expected amount', async () => {
+      const user = await renderPage();
+
+      const field = screen.getByLabelText('Valor pago');
+      await user.clear(field);
+      await user.type(field, '3597');
+
+      expect(screen.getByRole('switch', SWITCH)).not.toBeChecked();
+      expect(screen.getByRole('switch', SWITCH)).toBeEnabled();
+    });
+
+    it('Should send a contribution when the switch is on, say so and go back', async () => {
+      const contribution = addContributionScenarios.memberContributesToMonthWithoutPayment;
+      const [input] = contribution.input;
+      mockServiceScenario(addContributionService, contribution);
+      jest.mocked(prepareReceipt).mockResolvedValue(input.receipt);
+      const user = await renderPage();
+
+      const field = screen.getByLabelText('Valor pago');
+      await user.clear(field);
+      await user.type(field, String(input.amountCents));
+      await user.press(screen.getByRole('switch', SWITCH));
+      await user.press(screen.getByRole('button', { name: RECEIPT_BUTTON }));
+      await user.press(screen.getByRole('button', { name: 'Registrar contribuição' }));
+
+      expect(addContributionService).toHaveBeenCalledWith(...contribution.input);
+      expect(payRecurringBillService).not.toHaveBeenCalled();
+      expect(showToast).toHaveBeenCalledWith('Contribuição registrada.', 'success');
+      expect(router.back).toHaveBeenCalledTimes(1);
+    });
+
+    it('Should send a payment when the switch is turned on and off again', async () => {
+      mockServiceScenario(payRecurringBillService, scenario);
+      const user = await renderPage();
+
+      await user.press(screen.getByRole('switch', SWITCH));
+      await user.press(screen.getByRole('switch', SWITCH));
+      await user.press(screen.getByRole('button', { name: RECEIPT_BUTTON }));
+      await user.press(screen.getByRole('button', { name: SUBMIT }));
+
+      expect(payRecurringBillService).toHaveBeenCalledWith(paymentOfScenario);
+      expect(addContributionService).not.toHaveBeenCalled();
+    });
+  });
+
+  // A Luz de novembro tem R$ 100,00 da Ana de R$ 200,00 previstos no pagamento sem dono (a conta de hoje prevê R$ 210,00).
+  describe('A month with contributions', () => {
+    const openMonth = { month: '2026-11', entriesScenario: entryMonthQueryScenarios.monthWithContributions };
+
+    it('Should start at the whole bill and say what is left and how much the payer keeps', async () => {
+      await renderPage('electricity', openMonth);
+
+      // O vencimento é a cópia do pagamento sem dono (dia 20), não o da conta de hoje (dia 10): o mês não segue a conta.
+      expect(screen.getByText('vence dia 20 · faltam R$ 100,00')).toBeOnTheScreen();
+      expect(screen.getByDisplayValue('R$ 200,00')).toBeOnTheScreen();
+      expect(screen.getByText('A conta inteira, com os R$ 100,00 de Ana. Você fica com R$ 100,00.')).toBeOnTheScreen();
+    });
+
+    it('Should refuse a payment below the sum of the contributions', async () => {
+      const user = await renderPage('electricity', openMonth);
+
+      const field = screen.getByLabelText('Valor pago');
+      await user.clear(field);
+      await user.type(field, '9000');
+      await user.press(screen.getByRole('button', { name: RECEIPT_BUTTON }));
+      await user.press(screen.getByRole('button', { name: SUBMIT }));
+
+      expect(await screen.findByText('O pagamento não fica abaixo das contribuições, de R$ 100,00.')).toBeOnTheScreen();
+      expect(payRecurringBillService).not.toHaveBeenCalled();
+    });
+
+    it('Should say the bill was already paid when the contributions reached the expected amount', async () => {
+      await renderPage('rent', openMonth);
+
+      expect(screen.getByText('Esta conta já foi paga neste mês.')).toBeOnTheScreen();
+      expect(screen.queryByRole('button', { name: SUBMIT })).not.toBeOnTheScreen();
+    });
   });
 
   it('Should say the payment stays in the name of the person and not ask who paid', async () => {

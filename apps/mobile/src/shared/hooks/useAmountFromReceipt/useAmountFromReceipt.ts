@@ -10,10 +10,11 @@ const RECEIPT_AMOUNT_NOTE = 'Veio do comprovante. Corrija se pagou outro valor.'
  * Põe no valor pago o valor que o OCR leu no comprovante anexado, enquanto o membro não digitou no campo. Quando o
  * comprovante sai, ou chega um sem valor lido, o campo volta ao valor com que o formulário abriu (o previsto, o salvo
  * ou o vazio). Roda também ao abrir, o que cobre o comprovante compartilhado. Devolve o aviso discreto do texto de
- * apoio enquanto o valor mostrado é o lido, e `undefined` quando não é.
+ * apoio enquanto o valor mostrado é o lido (`receiptNote`, que a contribuição troca), e `undefined` quando não é.
  */
 export function useAmountFromReceipt<TValues extends IAmountAndReceiptValues, TContext>(
   form: UseFormReturn<TValues, TContext>,
+  receiptNote = RECEIPT_AMOUNT_NOTE,
 ): string | undefined {
   const { control, getValues, resetField, setValue } = form;
   // O RHF não deduz que `TValues` tem os dois campos: os caminhos vêm do tipo de cima.
@@ -46,5 +47,5 @@ export function useAmountFromReceipt<TValues extends IAmountAndReceiptValues, TC
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [receipt]);
 
-  return readAmountCents !== null && amountCents === readAmountCents ? RECEIPT_AMOUNT_NOTE : undefined;
+  return readAmountCents !== null && amountCents === readAmountCents ? receiptNote : undefined;
 }
