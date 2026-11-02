@@ -1,4 +1,4 @@
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 
 import type { IBillToPay } from './BillToPay';
 
@@ -6,7 +6,7 @@ import type { IBillToPay } from './BillToPay';
 export interface IMonthSummary {
   /** As contas a pagar, do vencimento mais próximo para o mais distante. */
   toPay: IBillToPay[];
-  paid: IEntry[];
+  paid: IOwnedEntry[];
   /** A soma dos valores previstos das contas a pagar. */
   toPayCents: number;
   /** A soma dos valores pagos (pode passar do previsto). */

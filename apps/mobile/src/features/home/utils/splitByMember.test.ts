@@ -1,5 +1,5 @@
 import type { IAllowedEmailListItem } from '@/shared/types/allowedEmail/AllowedEmailListItem';
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 
 import { splitByMember } from './splitByMember';
 
@@ -12,7 +12,7 @@ const person = (overrides: Partial<IAllowedEmailListItem>): IAllowedEmailListIte
   ...overrides,
 });
 
-const entry = (paidBy: string, amountCents: number): IEntry => ({
+const entry = (paidBy: string, amountCents: number): IOwnedEntry => ({
   id: `${paidBy}-${amountCents}`,
   kind: 'oneOffBill',
   date: '2026-10-12',

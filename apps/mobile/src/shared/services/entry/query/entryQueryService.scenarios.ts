@@ -1,11 +1,15 @@
 import {
   BOTH_IN_THE_LIST,
   BRUNO,
+  CONTRIBUTION,
+  CONTRIBUTION_DOCUMENT,
   ONE_OFF_BILL,
   ONE_OFF_BILL_DOCUMENT,
   ONE_OFF_BILL_WITHOUT_TAG_DOCUMENT,
   PAYMENT,
   PAYMENT_DOCUMENT,
+  UNOWNED_PAYMENT,
+  UNOWNED_PAYMENT_DOCUMENT,
 } from '@/shared/testing/entryFixtures';
 import { entryOf } from '@/shared/testing/entryOf';
 import type { IEntry } from '@/shared/types/entry/Entry';
@@ -36,6 +40,20 @@ export const entryQueryScenarios = {
     given: { ...BOTH_IN_THE_LIST, 'entries/fridge': ONE_OFF_BILL_WITHOUT_TAG_DOCUMENT },
     input: { id: 'fridge' },
     result: entryOf('fridge', ONE_OFF_BILL_WITHOUT_TAG_DOCUMENT),
+  },
+  // A contribuição chega com o lançamento que ela recebe (`entryId`), sem nome nem tag.
+  contribution: {
+    signedInAs: BRUNO,
+    given: { ...BOTH_IN_THE_LIST, 'entries/c-ana': CONTRIBUTION_DOCUMENT },
+    input: { id: 'c-ana' },
+    result: CONTRIBUTION,
+  },
+  // O pagamento sem dono chega com quem pagou, o valor e o comprovante em `null`; as cópias da conta ficam.
+  unownedPayment: {
+    signedInAs: BRUNO,
+    given: { ...BOTH_IN_THE_LIST, 'entries/2026-10_internet': UNOWNED_PAYMENT_DOCUMENT },
+    input: { id: '2026-10_internet' },
+    result: UNOWNED_PAYMENT,
   },
   // O autor exclui o lançamento com a folha aberta em outro aparelho: a leitura passa a entregar `null`.
   deletedEntry: {

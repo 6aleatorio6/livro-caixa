@@ -10,7 +10,7 @@ import { ReceiptFieldSmart } from '@/shared/components/inputs/ReceiptFieldSmart/
 import { Notice } from '@/shared/components/Notice/Notice';
 import { TagChip } from '@/shared/components/TagChip/TagChip';
 import { usePayRecurringBillForm } from '@/shared/hooks/usePayRecurringBillForm/usePayRecurringBillForm';
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { IUpdateEntryInput } from '@/shared/types/entry/UpdateEntryInput';
 import type { IReceiptFile } from '@/shared/types/file/ReceiptFile';
 import type { ITag } from '@/shared/types/tag/Tag';
@@ -19,7 +19,7 @@ import { monthName } from '@/shared/utils/date/monthName';
 import { formatCents } from '@/shared/utils/format/formatCents';
 
 export interface IEditPaymentFormProps {
-  entry: Extract<IEntry, { kind: 'recurringPayment' }>;
+  entry: Extract<IOwnedEntry, { kind: 'recurringPayment' }>;
   /** A tag da conta, se ela ainda existe; sem ela o chip some. */
   tag?: ITag;
   /** O comprovante já salvo: enquanto nenhum arquivo novo for escolhido, ele fica e o campo não é obrigatório. */

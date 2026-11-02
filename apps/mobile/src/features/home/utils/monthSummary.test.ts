@@ -1,4 +1,4 @@
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 
 import { monthSummary } from './monthSummary';
@@ -13,7 +13,7 @@ const bill = (overrides: Partial<IRecurringBill> = {}): IRecurringBill => ({
   ...overrides,
 });
 
-const payment = (overrides: Partial<Extract<IEntry, { kind: 'recurringPayment' }>> = {}): IEntry => ({
+const payment = (overrides: Partial<Extract<IOwnedEntry, { kind: 'recurringPayment' }>> = {}): IOwnedEntry => ({
   id: '2026-10_rent',
   kind: 'recurringPayment',
   recurringBillId: 'rent',
@@ -30,7 +30,7 @@ const payment = (overrides: Partial<Extract<IEntry, { kind: 'recurringPayment' }
   ...overrides,
 });
 
-const oneOff = (overrides: Partial<Extract<IEntry, { kind: 'oneOffBill' }>> = {}): IEntry => ({
+const oneOff = (overrides: Partial<Extract<IOwnedEntry, { kind: 'oneOffBill' }>> = {}): IOwnedEntry => ({
   id: 'e1',
   kind: 'oneOffBill',
   date: '2026-10-12',

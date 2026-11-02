@@ -1,4 +1,4 @@
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { ITag } from '@/shared/types/tag/Tag';
 
 import type { IEntryTagGroup } from '../types/EntryTagGroup';
@@ -8,8 +8,8 @@ import type { IEntryTagGroup } from '../types/EntryTagGroup';
  * que não está na lista). Dentro do grupo, os lançamentos ficam na ordem em que chegaram: o serviço do mês já os traz
  * do mais recente para o mais antigo.
  */
-export function entryGroupsByTag(entries: IEntry[], tags: ITag[]): IEntryTagGroup[] {
-  const groupsByTagId = new Map(tags.map((tag) => [tag.id, { tag, totalCents: 0, entries: [] as IEntry[] }]));
+export function entryGroupsByTag(entries: IOwnedEntry[], tags: ITag[]): IEntryTagGroup[] {
+  const groupsByTagId = new Map(tags.map((tag) => [tag.id, { tag, totalCents: 0, entries: [] as IOwnedEntry[] }]));
   const untagged: IEntryTagGroup = { tag: null, totalCents: 0, entries: [] };
   const groupOf = (tagId: string | null) => (tagId === null ? undefined : groupsByTagId.get(tagId)) ?? untagged;
 

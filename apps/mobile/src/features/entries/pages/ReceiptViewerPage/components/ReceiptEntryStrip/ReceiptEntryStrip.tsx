@@ -2,13 +2,13 @@ import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import { formatIsoDate } from '@/shared/utils/date/formatIsoDate';
 import { formatPaymentTitle } from '@/shared/utils/date/formatPaymentTitle';
 import { formatCents } from '@/shared/utils/format/formatCents';
 
 export interface IReceiptEntryStripProps {
-  entry: IEntry;
+  entry: IOwnedEntry;
   /** O primeiro nome de quem registrou. */
   authorName: string;
 }

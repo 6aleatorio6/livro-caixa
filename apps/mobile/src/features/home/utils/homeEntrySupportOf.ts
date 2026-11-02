@@ -1,4 +1,4 @@
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import { paymentTailOf } from '@/shared/utils/entry/paymentTailOf';
 import { formatDayMonth } from '@/shared/utils/date/formatDayMonth';
 
@@ -7,7 +7,7 @@ import { formatDayMonth } from '@/shared/utils/date/formatDayMonth';
  * "dia 5 · Ana" (o vencimento, quem pagou e o previsto, se o pago foi outro valor); a conta avulsa,
  * "12/10 · avulsa · Bruno".
  */
-export function homeEntrySupportOf(entry: IEntry, memberName: string) {
+export function homeEntrySupportOf(entry: IOwnedEntry, memberName: string) {
   const parts =
     entry.kind === 'recurringPayment'
       ? [`dia ${entry.dueDay}`, memberName, paymentTailOf(entry)]

@@ -1,10 +1,10 @@
 import { doDeleteEntry } from '@/features/entries/utils/actions/doDeleteEntry';
 import { DeleteWithConfirm } from '@/shared/components/DeleteWithConfirm/DeleteWithConfirm';
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import { monthName } from '@/shared/utils/date/monthName';
 
 export interface IDeleteEntryButtonProps {
-  entry: IEntry;
+  entry: IOwnedEntry;
   /** O rótulo do botão: "Excluir" na folha, "Excluir pagamento" ou "Excluir conta avulsa" na tela de alterar. */
   label: string;
   /** Chamado depois que a exclusão deu certo: cada tela sai do seu jeito. */

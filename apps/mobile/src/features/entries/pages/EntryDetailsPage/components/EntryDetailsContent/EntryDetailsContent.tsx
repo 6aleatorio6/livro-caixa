@@ -15,7 +15,7 @@ import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { receiptFileQueryService } from '@/shared/services/file/query/receiptFileQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import { formatIsoDate } from '@/shared/utils/date/formatIsoDate';
 import { formatPaymentTitle } from '@/shared/utils/date/formatPaymentTitle';
 import { entryMarkOf } from '@/shared/utils/entry/entryMarkOf';
@@ -24,7 +24,7 @@ import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 import { findTag } from '@/shared/utils/tag/findTag';
 
 export interface IEntryDetailsContentProps {
-  entry: IEntry;
+  entry: IOwnedEntry;
 }
 
 /** O corpo da folha: o cabeçalho, o valor, as linhas, o comprovante e, no fim, as ações do autor ou o aviso de quem pode mudar. */

@@ -1,4 +1,5 @@
 import type { IEntry } from '@/shared/types/entry/Entry';
+import { isOwnedEntry } from '@/shared/utils/entry/isOwnedEntry';
 import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 import { dueDateInMonth } from '@/shared/utils/recurringBill/dueDateInMonth';
 import { isDueInMonth } from '@/shared/utils/recurringBill/isDueInMonth';
@@ -12,7 +13,7 @@ import type { IMonthSummary } from '../types/MonthSummary';
  * Não olha quem está logado.
  */
 export function monthSummary({ month, bills, entries }: { month: string; bills: IRecurringBill[]; entries: IEntry[] }): IMonthSummary {
-  const paid = entries.filter((entry) => entry.month === month);
+  const paid = entries.filter(isOwnedEntry).filter((entry) => entry.month === month);
   const paidBillIds = new Set(paid.flatMap((entry) => (entry.kind === 'recurringPayment' ? [entry.recurringBillId] : [])));
 
   const toPay = bills

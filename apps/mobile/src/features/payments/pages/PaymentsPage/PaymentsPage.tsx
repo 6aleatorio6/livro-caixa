@@ -23,6 +23,7 @@ import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
+import { isOwnedEntry } from '@/shared/utils/entry/isOwnedEntry';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { monthName } from '@/shared/utils/date/monthName';
@@ -39,7 +40,9 @@ export function PaymentsPage() {
   const [month, setMonth] = useState(currentMonth);
   // A `key` do chip escolhido, independente do mês; antes de tocar num chip, vale quem está logado, o chip "Você".
   const [chosenKey, setChosenKey] = useState<string>();
-  const { status, data: entries } = useRealtime(entryMonthQueryService, { month });
+  const { status, data: monthEntries } = useRealtime(entryMonthQueryService, { month });
+  // Até a lista conhecer as contribuições, ela mostra só a conta avulsa e o pagamento com dono.
+  const entries = monthEntries?.filter(isOwnedEntry);
   const { status: tagsStatus, data: tags } = useRealtime(tagListQueryService, {});
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
 

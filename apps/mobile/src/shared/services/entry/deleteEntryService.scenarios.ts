@@ -11,7 +11,7 @@ import {
 import { entryOf } from '@/shared/testing/entryOf';
 import { receiptOf } from '@/shared/testing/receiptOf';
 import { testAccountUid } from '@/shared/testing/testAccountUid';
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 
 export const deleteEntryScenarios = {
@@ -57,7 +57,7 @@ export const deleteEntryScenarios = {
     input: [ONE_OFF_BILL],
     result: undefined,
   },
-} satisfies Record<string, IServiceScenario<[IEntry], void>>;
+} satisfies Record<string, IServiceScenario<[IOwnedEntry], void>>;
 
 /** Os casos recusados: o serviço lança `AppError`, a `result` é o que o erro carrega e nada muda. */
 export const deleteEntryRejectedScenarios = {
@@ -81,4 +81,4 @@ export const deleteEntryRejectedScenarios = {
     input: [PAYMENT],
     result: { code: 'ENTRY_DELETE_DENIED', userMessage: 'Não deu para excluir o lançamento.' },
   },
-} satisfies Record<string, IServiceScenario<[IEntry], { code: string; userMessage: string }>>;
+} satisfies Record<string, IServiceScenario<[IOwnedEntry], { code: string; userMessage: string }>>;

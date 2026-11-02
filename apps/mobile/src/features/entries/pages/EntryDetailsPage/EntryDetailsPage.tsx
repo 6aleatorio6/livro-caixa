@@ -4,13 +4,16 @@ import { EntryProblem } from '@/features/entries/components/EntryProblem/EntryPr
 import { BottomSheet } from '@/shared/components/BottomSheet/BottomSheet';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { entryQueryService } from '@/shared/services/entry/query/entryQueryService';
+import { isOwnedEntry } from '@/shared/utils/entry/isOwnedEntry';
 
 import { EntryDetailsContent } from './components/EntryDetailsContent/EntryDetailsContent';
 
 /** Os detalhes de um lançamento da família numa folha de baixo: qualquer membro os vê, só o autor altera e exclui. */
 export function EntryDetailsPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { status, data: entry } = useRealtime(entryQueryService, { id });
+  const { status, data } = useRealtime(entryQueryService, { id });
+  // Até a folha conhecer a contribuição e o pagamento sem dono, os dois abrem como o lançamento que não existe.
+  const entry = data && isOwnedEntry(data) ? data : null;
 
   return (
     <BottomSheet onClose={() => router.back()}>

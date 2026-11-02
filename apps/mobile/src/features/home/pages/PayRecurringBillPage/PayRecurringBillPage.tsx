@@ -8,6 +8,7 @@ import { TopBar } from '@/shared/components/TopBar/TopBar';
 import { useSharedReceiptOpening } from '@/shared/hooks/useSharedReceiptOpening/useSharedReceiptOpening';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
+import { isOwnedEntry } from '@/shared/utils/entry/isOwnedEntry';
 import { recurringBillListQueryService } from '@/shared/services/recurringBill/query/recurringBillListQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
@@ -31,7 +32,8 @@ export function PayRecurringBillPage() {
   const { status: entriesStatus, data: entries } = useRealtime(entryMonthQueryService, {
     month: isToPay ? month : currentMonth(),
   });
-  const isPaid = isToPay && entries?.some((entry) => entry.kind === 'recurringPayment' && entry.recurringBillId === id);
+  // Até o pagamento conhecer as contribuições, só o pagamento com dono conta como pago, como no Início.
+  const isPaid = isToPay && entries?.some((entry) => isOwnedEntry(entry) && entry.kind === 'recurringPayment' && entry.recurringBillId === id);
 
   return (
     <Screen>

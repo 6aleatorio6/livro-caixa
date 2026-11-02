@@ -13,6 +13,7 @@ import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { entryQueryService } from '@/shared/services/entry/query/entryQueryService';
+import { isOwnedEntry } from '@/shared/utils/entry/isOwnedEntry';
 import { receiptFileQueryService } from '@/shared/services/file/query/receiptFileQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { memberNameOf } from '@/shared/utils/person/memberNameOf';
@@ -26,7 +27,9 @@ import { findTag } from '@/shared/utils/tag/findTag';
 export function EditEntryPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const authState = useAuthState();
-  const { status: entryStatus, data: entry } = useRealtime(entryQueryService, { id });
+  const { status: entryStatus, data } = useRealtime(entryQueryService, { id });
+  // Até Alterar conhecer a contribuição e o pagamento sem dono, os dois abrem como o lançamento que não existe.
+  const entry = data && isOwnedEntry(data) ? data : null;
   const { status: fileStatus, data: file } = useRealtime(receiptFileQueryService, { id: entry?.receiptFileId ?? null });
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
   const { status: tagsStatus, data: tags } = useRealtime(tagListQueryService, {});

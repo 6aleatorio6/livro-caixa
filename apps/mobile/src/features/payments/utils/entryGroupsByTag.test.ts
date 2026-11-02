@@ -1,4 +1,4 @@
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { ITag } from '@/shared/types/tag/Tag';
 
 import { entryGroupsByTag } from './entryGroupsByTag';
@@ -8,7 +8,7 @@ const water = tag('water', 'Água');
 const home = tag('home', 'Casa');
 const utilities = tag('utilities', 'Serviços');
 
-const oneOff = (id: string, tagId: string | null, amountCents: number): IEntry => ({
+const oneOff = (id: string, tagId: string | null, amountCents: number): IOwnedEntry => ({
   id,
   kind: 'oneOffBill',
   date: '2026-10-12',

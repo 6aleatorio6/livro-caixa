@@ -7,13 +7,13 @@ import { readCollectionWithoutRules } from '@/shared/testing/contract/readCollec
 import { readContentWithoutRules } from '@/shared/testing/contract/readContentWithoutRules';
 import { scenarioEntries } from '@/shared/testing/contract/scenarioEntries';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 
 import { deleteEntryService } from './deleteEntryService';
 import { deleteEntryRejectedScenarios, deleteEntryScenarios } from './deleteEntryService.scenarios';
 
 describe('deleteEntryService', () => {
-  it.each(scenarioEntries<[IEntry], void>(deleteEntryScenarios))(
+  it.each(scenarioEntries<[IOwnedEntry], void>(deleteEntryScenarios))(
     'Should delete the entry of the scenario %s',
     async (_name, scenario) => {
       await arrangeScenario(scenario);
@@ -29,7 +29,7 @@ describe('deleteEntryService', () => {
     },
   );
 
-  it.each(scenarioEntries<[IEntry], { code: string; userMessage: string }>(deleteEntryRejectedScenarios))(
+  it.each(scenarioEntries<[IOwnedEntry], { code: string; userMessage: string }>(deleteEntryRejectedScenarios))(
     'Should refuse the deletion of the scenario %s',
     async (_name, scenario) => {
       await arrangeScenario(scenario);

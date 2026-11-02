@@ -1,8 +1,8 @@
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 
 import { paymentTailOf } from './paymentTailOf';
 
-const payment = (overrides: Partial<Extract<IEntry, { kind: 'recurringPayment' }>> = {}): IEntry => ({
+const payment = (overrides: Partial<Extract<IOwnedEntry, { kind: 'recurringPayment' }>> = {}): IOwnedEntry => ({
   id: '2026-10_luz',
   kind: 'recurringPayment',
   month: '2026-10',
@@ -29,7 +29,7 @@ describe('paymentTailOf', () => {
   });
 
   it('Should give nothing for a one-off bill', () => {
-    const oneOff: IEntry = {
+    const oneOff: IOwnedEntry = {
       id: 'a',
       kind: 'oneOffBill',
       month: '2026-10',

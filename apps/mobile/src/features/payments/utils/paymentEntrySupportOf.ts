@@ -1,4 +1,4 @@
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import { paymentTailOf } from '@/shared/utils/entry/paymentTailOf';
 import { formatDayMonth } from '@/shared/utils/date/formatDayMonth';
 
@@ -7,7 +7,7 @@ import { formatDayMonth } from '@/shared/utils/date/formatDayMonth';
  * previsto, quando o pago foi outro valor); a conta avulsa, "12/10 · avulsa". Quem pagou entra só no chip "Todos"
  * ("pago em 05/10 · Ana"): nos outros, o chip marcado já diz.
  */
-export function paymentEntrySupportOf(entry: IEntry, memberName?: string) {
+export function paymentEntrySupportOf(entry: IOwnedEntry, memberName?: string) {
   const parts =
     entry.kind === 'recurringPayment'
       ? [`pago em ${formatDayMonth(entry.paidOn)}`, memberName, paymentTailOf(entry)]

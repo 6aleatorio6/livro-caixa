@@ -1,4 +1,4 @@
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { IReceipt } from '@/shared/types/file/Receipt';
 
 /** O que o pagamento de conta recorrente deixa mudar: só o valor pago. */
@@ -21,7 +21,7 @@ interface IOneOffBillChanges {
  * para manter o que já tem.
  */
 export interface IUpdateEntryInput {
-  entry: IEntry;
+  entry: IOwnedEntry;
   changes: IPaymentChanges | IOneOffBillChanges;
   receipt: IReceipt | null;
 }
