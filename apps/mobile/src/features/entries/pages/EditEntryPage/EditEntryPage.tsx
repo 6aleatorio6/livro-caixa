@@ -94,10 +94,7 @@ export function EditEntryPage() {
             contributedCents={otherContributedCents}
             tag={findTag(entry.tagId, tags)}
             currentReceipt={file ?? undefined}
-            onSubmit={async (input) => {
-              const { error } = await doUpdateEntry(input);
-              if (!error) router.back();
-            }}
+            onSubmit={update}
             onConvert={convert}
             // O pagamento excluído não tem o que mostrar: sai da tela e da folha dos detalhes.
             onDeleted={leaveEditAndDetails}
@@ -148,10 +145,7 @@ export function EditEntryPage() {
                 onDeleted={leaveEditAndDetails}
               />
             }
-            onSubmit={async ({ receipt, ...changes }) => {
-              const { error } = await doUpdateEntry({ entry, changes, receipt });
-              if (!error) router.back();
-            }}
+            onSubmit={({ receipt, ...changes }) => update({ entry, changes, receipt })}
           />
         ) : null}
         {/* O lançamento que a contribuição recebe saiu do mês (apagado, ou com a data trocada numa corrida): ela não tem
