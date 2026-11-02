@@ -1,7 +1,7 @@
 # Comprovantes
 
-Todo [pagamento](03-pagamento-de-conta-recorrente.md) e toda [conta avulsa](04-conta-avulsa.md) tem
-um comprovante: uma imagem ou um PDF. O membro escolhe o arquivo dentro do app ou o compartilha a
+Todo [pagamento](03-pagamento-de-conta-recorrente.md), toda [conta avulsa](04-conta-avulsa.md) e toda
+[contribuição](08-contribuicao.md) tem um comprovante: uma imagem ou um PDF. O membro escolhe o arquivo dentro do app ou o compartilha a
 partir de outro app do Android. Ao anexá-lo, o app lê nele o valor pago e preenche o valor do
 lançamento ([O valor lido do comprovante](#o-valor-lido-do-comprovante)).
 
@@ -41,6 +41,10 @@ câmera nem a galeria.
    abaixo, as do próximo mês, que já pode ser pago.
 3. O membro escolhe a conta que está pagando e segue no
    [pagamento](03-pagamento-de-conta-recorrente.md) daquele mês.
+
+Abaixo das contas a pagar, a lista mostra as contas já pagas por outros membros, do mês atual e do
+próximo. Tocar numa delas abre a [contribuição](08-contribuicao.md) nela, com o comprovante anexado.
+Ficam de fora as que não têm mais nada a receber: a soma das contribuições já chegou ao valor pago.
 
 Quem compartilha sem estar logado faz o login pelo Google e perde o arquivo: precisa
 compartilhá-lo de novo depois de entrar.
@@ -99,6 +103,8 @@ Antes de salvar, o membro também abre o comprovante anexado, para conferir o va
 - [ ] O app abre a escolha da conta com o comprovante anexado: "Conta avulsa" primeiro, depois as
       contas a pagar do mês atual e as do próximo mês.
 - [ ] Escolhida uma conta da lista do próximo mês, o pagamento é desse mês.
+- [ ] A lista mostra, abaixo das contas a pagar, as contas já pagas por outros membros, e tocar
+      numa delas abre a contribuição.
 - [ ] Uma imagem de até 900 KB é salva como está.
 - [ ] Uma imagem acima de 900 KB é salva em WebP, no primeiro degrau que cabe, baixando a qualidade
       antes do lado maior.

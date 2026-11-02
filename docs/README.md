@@ -24,6 +24,7 @@ App de celular para controlar o financeiro de uma família.
 - [Comprovantes](03-funcionalidades/01-principal/05-comprovantes.md)
 - [Pagamentos](03-funcionalidades/01-principal/06-pagamentos.md)
 - [Detalhes do Lançamento](03-funcionalidades/01-principal/07-detalhes-do-lancamento.md)
+- [Contribuição](03-funcionalidades/01-principal/08-contribuicao.md)
 
 **Suporte**
 
