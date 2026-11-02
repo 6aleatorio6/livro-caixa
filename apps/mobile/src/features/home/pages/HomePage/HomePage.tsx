@@ -50,7 +50,7 @@ export function HomePage() {
   return (
     <Screen>
       <ScreenContent gap="extraLarge">
-        <MonthSwitcher month={month} onMonthChange={setMonth} />
+        <MonthSwitcher label="Início" month={month} onMonthChange={setMonth} />
 
         {hasError ? (
           <AppText variant="bodyMedium" color="onSurfaceVariant">
