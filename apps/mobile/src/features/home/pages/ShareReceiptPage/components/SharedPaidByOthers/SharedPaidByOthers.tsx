@@ -2,16 +2,13 @@ import { router } from 'expo-router';
 import { Check } from 'lucide-react-native';
 
 import { MonthListSection } from '@/features/home/components/MonthListSection/MonthListSection';
-import { useMonthSummary } from '@/features/home/hooks/useMonthSummary/useMonthSummary';
+import type { IMonthSummary } from '@/features/home/types/MonthSummary';
 import { paidRowsOf } from '@/features/home/utils/paidRowsOf';
 import { Button } from '@/shared/components/Button/Button';
 import { ListItem } from '@/shared/components/ListItem/ListItem';
-import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
-import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
-import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
-import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
+import type { IAllowedEmailListItem } from '@/shared/types/allowedEmail/AllowedEmailListItem';
 import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
-import { signedInUid } from '@/shared/utils/auth/signedInUid';
+import type { ITag } from '@/shared/types/tag/Tag';
 import { monthName } from '@/shared/utils/date/monthName';
 import { isFullyContributed } from '@/shared/utils/entry/isFullyContributed';
 import { isOwnedEntry } from '@/shared/utils/entry/isOwnedEntry';
@@ -22,6 +19,12 @@ import { findTag } from '@/shared/utils/tag/findTag';
 export interface ISharedPaidByOthersProps {
   /** O mês da lista, 'AAAA-MM'. */
   month: string;
+  /** O resumo do mês; `null` enquanto as leituras não chegam. */
+  summary: IMonthSummary | null;
+  tags: ITag[] | null;
+  people: IAllowedEmailListItem[] | null;
+  /** Quem compartilha: as contas que ele mesmo pagou ficam de fora. */
+  uid: string | null;
 }
 
 /**
@@ -29,12 +32,7 @@ export interface ISharedPaidByOthersProps {
  * contribuição: o toque segue na contribuição, com o comprovante. Ficam de fora as de quem compartilha e as que já
  * receberam tudo; sem nenhuma, a lista não aparece.
  */
-export function SharedPaidByOthers({ month }: ISharedPaidByOthersProps) {
-  const uid = signedInUid(useAuthState());
-  const { summary } = useMonthSummary(month);
-  const { data: tags } = useRealtime(tagListQueryService, {});
-  const { data: people } = useRealtime(allowedEmailListQueryService, {});
-
+export function SharedPaidByOthers({ month, summary, tags, people, uid }: ISharedPaidByOthersProps) {
   const entries = summary?.entries ?? [];
   // Na ordem das contas pagas do Início: pelo dia, e no mesmo dia pelo nome.
   const bills = paidRowsOf(summary?.paid ?? []).filter(
