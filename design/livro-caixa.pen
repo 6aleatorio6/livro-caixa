@@ -21701,7 +21701,7 @@
       "type": "frame",
       "id": "HcPh2",
       "x": 4058,
-      "y": 14656,
+      "y": 13377,
       "name": "09 Telas",
       "width": 2000,
       "fill": "#FFFFFF",
@@ -21967,6 +21967,49 @@
             },
             {
               "type": "frame",
+              "id": "cAiD7",
+              "name": "Tela · Início, com contribuições",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "e53wGN",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Início, com contribuições",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "sZ32X",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Nas Pagas, a Luz de Ana diz quanto veio de contribuições (R$ 40,00 de Bruno), e o Aluguel pago só com as contribuições de Bruno e Carla tem a marca de pessoas. Na A pagar, a Água mostra o que falta e de quem veio a contribuição, e o total a pagar e a tag Serviços já a contam. Nenhuma contribuição vira linha própria.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
               "id": "o0gnuR",
               "name": "Tela · Início, escuro",
               "width": "fill_container",
@@ -22086,7 +22129,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Aberta pelo botão Registrar. O valor vem preenchido com o previsto e pode ser corrigido; o comprovante é obrigatório; o pagamento fica no nome de quem está logado.",
+                  "content": "Aberta pelo botão Registrar. O valor vem preenchido com o previsto e pode ser corrigido; embaixo dele, Paguei só uma parte transforma o registro numa contribuição; o comprovante é obrigatório; o pagamento fica no nome de quem está logado.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -22139,6 +22182,92 @@
             },
             {
               "type": "frame",
+              "id": "Zr4LG",
+              "name": "Estado · Registrar pagamento, abaixo de 30% do previsto",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Y6FJZ",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Estado · Registrar pagamento, abaixo de 30% do previsto",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "SySuI",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Bruno pagou R$ 500,00 do Aluguel de R$ 2.000,00: abaixo de 30% do previsto, Paguei só uma parte vem ligado e desabilitado, e o registro só pode ser uma contribuição. Acima disso, a pessoa liga o interruptor se pagou só uma parte.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Z2rJWa",
+              "name": "Tela · Registrar pagamento, com contribuições",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "o92cc",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Registrar pagamento, com contribuições",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "rSpND",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Ana paga o Aluguel que já tem R$ 500,00 de Bruno. O valor pago é a conta inteira, e o texto de apoio diz quanto fica no nome dela.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
               "id": "V6KjH",
               "name": "Tela · Compartilhar comprovante",
               "width": "fill_container",
@@ -22173,6 +22302,49 @@
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
                   "content": "Onde cai quem compartilha uma imagem ou um PDF de outro app: o comprovante que chegou, \"Conta avulsa\" logo abaixo dele, e as contas a pagar do mês atual e, depois, as do próximo mês, que já pode ser pago. Escolher a conta segue no pagamento com o comprovante anexado.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "sHsU6",
+              "name": "Tela · Compartilhar comprovante, fim da lista",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "e5mNl",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Compartilhar comprovante, fim da lista",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "idwkp",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Abaixo das contas a pagar, as contas do mês já pagas por outros membros, com Contribuir: o comprovante compartilhado vira uma contribuição na conta escolhida.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -22235,7 +22407,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "A aba do meio: os pagamentos e as contas avulsas do mês de uma pessoa por vez, escolhida nos chips com os membros da família. Abre em Você, com o botão Nova conta avulsa. A lista se agrupa por tag (as tags em ordem alfabética, Sem tag por último), cada grupo com o total dele, e dentro do grupo vai do mais recente para o mais antigo. Tocar num lançamento abre os detalhes, com o comprovante; Alterar e Excluir só nos de quem está logado.",
+                  "content": "A aba do meio: os pagamentos e as contas avulsas do mês de uma pessoa por vez, escolhida nos chips com os membros da família. Abre em Você, com o botão Nova conta avulsa. A lista se agrupa por tag (as tags em ordem alfabética, Sem tag por último), cada grupo com o total dele, e dentro do grupo vai do mais recente para o mais antigo. Tocar num lançamento abre os detalhes, com o comprovante; Alterar e Excluir só nos de quem está logado. Em 02/11/2026 ganhou as contribuições: a Luz que Ana pagou, com R$ 40,00 de Bruno, aparece com o valor pago e, embaixo, a parte dela e a contribuição; o cartão passa a dizer Sua parte.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -22278,7 +22450,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "O chip de outro membro marcado: os lançamentos dele no mês, com o total e a parte do que a família pagou. Tocar num lançamento abre os detalhes de outro membro, sem Alterar nem Excluir.",
+                  "content": "O chip de outro membro marcado: os lançamentos dele no mês, com o total e a parte do que a família pagou. Tocar num lançamento abre os detalhes de outro membro, sem Alterar nem Excluir. Em 02/11/2026 ganhou as contribuições: a Luz de Ana em que Bruno contribuiu aparece expandida, com a parte dele em destaque e a de Ana embaixo, e o cartão passa a dizer Parte de Bruno.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -22536,7 +22708,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Ana toca na Luz em Meus pagamentos. A folha mostra tudo do pagamento e o comprovante; como foi ela que registrou, vê Alterar e Excluir. A conta avulsa usa a mesma folha, com a data no lugar do vencimento.",
+                  "content": "Ana toca na Luz em Pagamentos. A folha mostra tudo do pagamento, com quanto fica com ela (R$ 147,35), o comprovante e a contribuição de Bruno; como foi ela que registrou, vê Alterar, e o Excluir fica desabilitado enquanto houver contribuições, com o motivo embaixo. A conta avulsa usa a mesma folha, com a data no lugar do vencimento.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -22580,6 +22752,178 @@
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
                   "content": "Bruno toca na Luz no Início. Vê os mesmos detalhes e o comprovante, mas não muda nada: a folha diz quem pode.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "fUk4Y",
+              "name": "Tela · Detalhes, com contribuições",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "YIVku",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Detalhes, com contribuições",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "fQuFy",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Bruno abre a Internet que Ana pagou e em que ele contribuiu: a folha mostra com quanto Ana fica, cada contribuição como um comprovante que abre pelo Ver, e o botão Contribuir.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "FapuB",
+              "name": "Tela · Contribuir num lançamento pago",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "epfph",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Contribuir num lançamento pago",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "ESdnp",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Aberta pelo Contribuir dos detalhes: diz de quem é o pagamento, o valor e com quanto Ana fica, e a contribuição de Bruno entra com o comprovante.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "dX7rl",
+              "name": "Tela · Detalhes, paga sem comprovante da conta",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "K8ci0g",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Detalhes, paga sem comprovante da conta",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "z8MPd",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "O Aluguel foi pago com R$ 1.000,00 de Bruno e R$ 1.000,00 de Carla, e ninguém anexou o comprovante da conta inteira. A folha é a de um pagamento, com a marca de pessoas, paga por várias, e diz por que não cabe outra contribuição. Cada contribuição mostra o seu comprovante, e Anexar o comprovante da conta abre o pagamento do mês, que fica no nome de quem anexou.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "o41Z2",
+              "name": "Tela · Detalhes, contribuição",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "hYASF",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Detalhes, contribuição",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "Z9O51E",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Bruno toca na contribuição dele em Pagamentos. A folha é a do pagamento, com a marca de moedas, o valor, a conta para onde foi (na Luz de R$ 187,35, paga por Ana), o comprovante e, para ele, Alterar e Excluir. Só se chega a ela por Pagamentos: na lista de contribuições de um lançamento, o cartão só abre o comprovante.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -22728,7 +23072,93 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Os campos do registro, preenchidos. Só quem registrou chega aqui, pelos detalhes; Excluir pagamento pede confirmação.",
+                  "content": "Os campos do registro, preenchidos. Só quem registrou chega aqui, pelos detalhes; Excluir pagamento pede confirmação. O interruptor Paguei só uma parte transforma o pagamento numa contribuição, para quem esqueceu de ligá-lo ao registrar.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "eul5O",
+              "name": "Tela · Alterar pagamento, com contribuições",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "UDKPX",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Alterar pagamento, com contribuições",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "mTWvy",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Ana altera a Luz que tem R$ 40,00 de Bruno: o valor não pode ficar abaixo da soma das contribuições, e o Excluir fica desabilitado, com o motivo embaixo.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "C6oTfJ",
+              "name": "Tela · Alterar contribuição",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "y0AX0",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Alterar contribuição",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "fCmCV",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Ana abre a contribuição dela na Luz. Altera o valor e o comprovante, e desligar Paguei só uma parte transforma a contribuição no pagamento do mês, se ninguém pagou a conta ainda.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -22814,7 +23244,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "A confirmação antes de excluir, com o que acontece com o mês e com o comprovante.",
+                  "content": "A confirmação antes de excluir, com o que acontece com o mês e com o comprovante. O exemplo é o Aluguel, que não tem contribuições: com elas, o Excluir fica desabilitado.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -23866,6 +24296,40 @@
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
                   "content": "O que o app mostra e nenhum frame desenha, visto na conferência de 29/10/2026: “Esta conta já foi paga neste mês.” no lugar do formulário de pagar; o carregando das listas (Meus pagamentos, Contas recorrentes, Tags); a folha de uma conta avulsa e o diálogo de excluí-la (“A conta avulsa sai do mês, e o comprovante é apagado.”); Configurações de um membro, sem a seção do admin; Contas recorrentes vazia (R$ 0,00, “Nenhuma conta recorrente”); e as telas fora do Início no tema escuro. Em aberto: o botão desabilitado, que no app é o botão inteiro a 38% e aqui é cinza, sem decisão registrada.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "lg38l",
+              "name": "Contribuições",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "cIxir",
+                  "name": "Rótulo",
+                  "fill": "#6B6B66",
+                  "content": "Contribuições",
+                  "lineHeight": 1.3,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "OPunG",
+                  "name": "Texto",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "O pagamento e a contribuição são o mesmo formulário, então não há troca entre duas telas: embaixo do valor, o interruptor Paguei só uma parte transforma o registro numa contribuição, e o texto de apoio e o botão mudam com ela. O valor sozinho não decide, porque a Luz paga abaixo do previsto continua sendo um pagamento; mas abaixo de 30% do previsto, regra de Leonardo (02/11/2026), o interruptor vem ligado e desabilitado, e o registro só pode ser uma contribuição. Quem esqueceu de ligá-lo corrige em Alterar pagamento, que tem o mesmo interruptor; Alterar contribuição o tem desligável, e a contribuição vira o pagamento do mês. No pagamento de um mês com contribuições, o valor é a conta inteira, e o texto de apoio diz com quanto quem paga fica. O Contribuir dos detalhes abre o mesmo formulário sem a opção, com o lançamento de quem pagou no topo. Nos detalhes, a parte de quem pagou é uma linha (Fica com Ana), e cada contribuição é um comprovante com quem, quando e quanto, que só abre o comprovante, pelo Ver; os detalhes da contribuição, a mesma folha do pagamento, só se abrem por Pagamentos, a pedido de Leonardo (02/11/2026); o botão tonal Contribuir fica para quem não registrou. A conta que as contribuições pagaram sem o comprovante da conta inteira não ganha nome próprio, a pedido de Leonardo (02/11/2026), que achou ruins Coberta, Quitada e Paga pelas contribuições: ela é um pagamento como os outros, com a marca de pessoas (users-round em primary-container: paga por várias pessoas), um aviso que diz que as contribuições já somam o previsto e por isso não cabe outra, e o botão Anexar o comprovante da conta, escolhido por ele. No Início, a linha a pagar diz o que falta e de quem veio a contribuição. Em Pagamentos, a pedido de Leonardo (02/11/2026), Todos mostra cada conta uma vez, com o valor pago, e o chip de um membro mostra expandido o lançamento em que ele tem parte: o valor pago e, embaixo, a parte dele em destaque e a dos outros; o total da tag e o cartão, que passa a dizer Sua parte, contam só a parte dele. No compartilhamento, as contas já pagas por outros ficam abaixo das a pagar, com Contribuir no lugar de Registrar. As marcas não usam tertiary-container, que é a cor do a pagar: a contribuição é dinheiro pago, e o ícone diz que é uma parte; a conta sem o comprovante da conta inteira não tem pagamento próprio, e a marca de pessoas a separa do check de quem pagou sozinho e das moedas de uma contribuição. O check vazado foi descartado por Leonardo, que o achou ruim. Escolhas da IA a pedido de Leonardo (02/11/2026), seguindo as regras das contribuições, ainda em rascunho; a troca Paguei a conta / Contribuí com parte foi descartada por Leonardo, que a viu como duas páginas iguais.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 16,
@@ -27932,6 +28396,98 @@
               }
             },
             {
+              "type": "frame",
+              "id": "OAh1v",
+              "name": "Só uma parte",
+              "width": "fill_container",
+              "gap": 12,
+              "padding": 4,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "REUBy",
+                  "name": "Textos",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "snIpm",
+                      "name": "Título",
+                      "fill": "$on-surface",
+                      "content": "Paguei só uma parte",
+                      "lineHeight": "$body-large-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-large-size",
+                      "fontWeight": "$body-large-weight",
+                      "letterSpacing": "$body-large-tracking"
+                    },
+                    {
+                      "type": "text",
+                      "id": "eh68N",
+                      "name": "Apoio",
+                      "fill": "$on-surface-variant",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Vira uma contribuição, e a conta continua a pagar pelo que faltar.",
+                      "lineHeight": "$body-small-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-small-size",
+                      "fontWeight": "$body-small-weight",
+                      "letterSpacing": "$body-small-tracking"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "S4Mg4H",
+                  "name": "Interruptor",
+                  "width": 52,
+                  "height": 32,
+                  "fill": "$surface-container-highest",
+                  "cornerRadius": 16,
+                  "stroke": "$outline",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "inner",
+                  "padding": [
+                    0,
+                    6
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "MCThy",
+                      "name": "Alça",
+                      "width": 16,
+                      "height": 16,
+                      "fill": "$outline",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "dsosC",
+                          "x": 0,
+                          "y": 0,
+                          "name": "Marca",
+                          "enabled": false,
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$on-primary-container"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "id": "E87DP5",
               "type": "ref",
               "ref": "mDfYD",
@@ -28821,7 +29377,7 @@
                   "id": "gigxC",
                   "name": "Rótulo",
                   "fill": "$on-surface-variant",
-                  "content": "Você registrou em outubro",
+                  "content": "Sua parte em outubro",
                   "lineHeight": "$label-large-line-height",
                   "fontFamily": "$font-family",
                   "fontSize": "$label-large-size",
@@ -28833,7 +29389,7 @@
                   "id": "PmmFa",
                   "name": "Valor",
                   "fill": "$primary",
-                  "content": "R$ 1.987,35",
+                  "content": "R$ 1.947,35",
                   "lineHeight": "$headline-large-emphasized-line-height",
                   "fontFamily": "$font-family",
                   "fontSize": "$headline-large-emphasized-size",
@@ -28845,7 +29401,7 @@
                   "id": "henqj",
                   "name": "Detalhe",
                   "fill": "$on-surface-variant",
-                  "content": "2 lançamentos · 71% do que a família pagou",
+                  "content": "2 lançamentos · 69% do que a família pagou",
                   "lineHeight": "$body-small-line-height",
                   "fontFamily": "$font-family",
                   "fontSize": "$body-small-size",
@@ -29014,7 +29570,7 @@
                           "id": "j1iMiR",
                           "name": "Total",
                           "fill": "$on-surface-variant",
-                          "content": "R$ 187,35",
+                          "content": "R$ 147,35",
                           "lineHeight": "$label-large-line-height",
                           "fontFamily": "$font-family",
                           "fontSize": "$label-large-size",
@@ -29051,6 +29607,90 @@
                           "enabled": false
                         }
                       }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "W0GBS",
+                      "name": "Partes",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "padding": [
+                        0,
+                        16,
+                        8,
+                        72
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "WDOHd",
+                          "name": "Sua parte",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "rBp2X",
+                              "name": "Quem",
+                              "fill": "$on-surface",
+                              "content": "Sua parte",
+                              "lineHeight": "$body-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-small-size",
+                              "fontWeight": "$body-small-weight",
+                              "letterSpacing": "$body-small-tracking"
+                            },
+                            {
+                              "type": "text",
+                              "id": "FusCo",
+                              "name": "Quanto",
+                              "fill": "$on-surface",
+                              "content": "R$ 147,35",
+                              "lineHeight": "$body-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-small-size",
+                              "fontWeight": "$body-small-weight",
+                              "letterSpacing": "$body-small-tracking"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ESf8y",
+                          "name": "Bruno · contribuição",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "uszri",
+                              "name": "Quem",
+                              "fill": "$on-surface-variant",
+                              "content": "Bruno · contribuição",
+                              "lineHeight": "$body-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-small-size",
+                              "fontWeight": "$body-small-weight",
+                              "letterSpacing": "$body-small-tracking"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Y1O5z",
+                              "name": "Quanto",
+                              "fill": "$on-surface-variant",
+                              "content": "R$ 40,00",
+                              "lineHeight": "$body-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-small-size",
+                              "fontWeight": "$body-small-weight",
+                              "letterSpacing": "$body-small-tracking"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
@@ -29524,7 +30164,7 @@
           "type": "frame",
           "id": "lWLEA",
           "x": 0,
-          "y": 365,
+          "y": 165,
           "name": "Folha",
           "width": 412,
           "fill": "$surface-container-low",
@@ -29674,6 +30314,21 @@
                   }
                 },
                 {
+                  "id": "C6v2C2",
+                  "type": "ref",
+                  "ref": "WsaLD",
+                  "name": "Fica com",
+                  "width": "fill_container",
+                  "descendants": {
+                    "xO3rf": {
+                      "content": "Fica com você"
+                    },
+                    "kFvt8": {
+                      "content": "R$ 147,35"
+                    }
+                  }
+                },
+                {
                   "id": "YIcXK",
                   "type": "ref",
                   "ref": "WsaLD",
@@ -29750,6 +30405,74 @@
             },
             {
               "type": "frame",
+              "id": "JuZTL",
+              "name": "Contribuições",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "winGF",
+                  "name": "Título",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "hjAwR",
+                      "name": "Texto",
+                      "fill": "$on-surface",
+                      "content": "Contribuições",
+                      "lineHeight": "$title-medium-emphasized-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-medium-emphasized-size",
+                      "fontWeight": "$title-medium-emphasized-weight",
+                      "letterSpacing": "$title-medium-emphasized-tracking"
+                    },
+                    {
+                      "type": "text",
+                      "id": "E3iaFD",
+                      "name": "Total",
+                      "fill": "$on-surface-variant",
+                      "content": "(R$ 40,00)",
+                      "lineHeight": "$title-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-medium-size",
+                      "fontWeight": "$title-medium-weight",
+                      "letterSpacing": "$title-medium-tracking"
+                    }
+                  ]
+                },
+                {
+                  "id": "yEm3u",
+                  "type": "ref",
+                  "ref": "mDfYD",
+                  "name": "Contribuição de Bruno",
+                  "width": "fill_container",
+                  "descendants": {
+                    "Rsmc9": {
+                      "fill": "$primary-container"
+                    },
+                    "sLrD8": {
+                      "icon": "hand-coins",
+                      "fill": "$on-primary-container"
+                    },
+                    "JqtR3": {
+                      "content": "Bruno · 12/10 · R$ 40,00"
+                    },
+                    "u0fr1G": {
+                      "content": "pix-luz-bruno.jpg"
+                    },
+                    "G5Zcc": {
+                      "content": "Ver"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
               "id": "MKiDq",
               "name": "Ações",
               "width": "fill_container",
@@ -29762,6 +30485,7 @@
                   "ref": "MILQK",
                   "name": "Excluir",
                   "width": "fit_content",
+                  "opacity": 0.38,
                   "descendants": {
                     "a8tkEj": {
                       "fill": "$error"
@@ -29791,6 +30515,18 @@
                   }
                 }
               ]
+            },
+            {
+              "type": "text",
+              "id": "YFUme",
+              "name": "Motivo do Excluir",
+              "fill": "$on-surface-variant",
+              "content": "Com contribuições, o pagamento não pode ser excluído.",
+              "lineHeight": "$body-small-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$body-small-size",
+              "fontWeight": "$body-small-weight",
+              "letterSpacing": "$body-small-tracking"
             }
           ]
         }
@@ -34259,6 +34995,98 @@
               }
             },
             {
+              "type": "frame",
+              "id": "dMMrv",
+              "name": "Só uma parte",
+              "width": "fill_container",
+              "gap": 12,
+              "padding": 4,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "BWuXs",
+                  "name": "Textos",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "x1zQtz",
+                      "name": "Título",
+                      "fill": "$on-surface",
+                      "content": "Paguei só uma parte",
+                      "lineHeight": "$body-large-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-large-size",
+                      "fontWeight": "$body-large-weight",
+                      "letterSpacing": "$body-large-tracking"
+                    },
+                    {
+                      "type": "text",
+                      "id": "tqqVs",
+                      "name": "Apoio",
+                      "fill": "$on-surface-variant",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Transforma este pagamento numa contribuição.",
+                      "lineHeight": "$body-small-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-small-size",
+                      "fontWeight": "$body-small-weight",
+                      "letterSpacing": "$body-small-tracking"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "RJ4j3",
+                  "name": "Interruptor",
+                  "width": 52,
+                  "height": 32,
+                  "fill": "$surface-container-highest",
+                  "cornerRadius": 16,
+                  "stroke": "$outline",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "inner",
+                  "padding": [
+                    0,
+                    6
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "YHGuJ",
+                      "name": "Alça",
+                      "width": 16,
+                      "height": 16,
+                      "fill": "$outline",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "dUf0w",
+                          "x": 0,
+                          "y": 0,
+                          "name": "Marca",
+                          "enabled": false,
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$on-primary-container"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "id": "nQCIp",
               "type": "ref",
               "ref": "mDfYD",
@@ -34744,7 +35572,51 @@
           "ref": "jShvw",
           "name": "Tela de fundo",
           "x": 0,
-          "y": 0
+          "y": 0,
+          "descendants": {
+            "lWLEA": {
+              "y": 385
+            },
+            "pzUR7": {
+              "content": "Aluguel"
+            },
+            "uu0C1": {
+              "content": "R$ 1.800,00"
+            },
+            "EExJq": {
+              "enabled": false
+            },
+            "C6v2C2": {
+              "enabled": false
+            },
+            "YIcXK/kFvt8": {
+              "content": "04/10/2026"
+            },
+            "P6qHS/kFvt8": {
+              "content": "dia 5"
+            },
+            "SYVWi/QpqRv": {
+              "fill": "$tag-wood"
+            },
+            "SYVWi/kFvt8": {
+              "content": "Casa"
+            },
+            "LTQkC/JqtR3": {
+              "content": "PDF · 64 KB"
+            },
+            "LTQkC/u0fr1G": {
+              "content": "comprovante-aluguel.pdf"
+            },
+            "JuZTL": {
+              "enabled": false
+            },
+            "aDq76": {
+              "opacity": 1
+            },
+            "YFUme": {
+              "enabled": false
+            }
+          }
         },
         {
           "type": "rectangle",
@@ -34766,10 +35638,10 @@
           "y": 320,
           "descendants": {
             "WqK7N": {
-              "content": "Excluir o pagamento da Luz?"
+              "content": "Excluir o pagamento do Aluguel?"
             },
             "fk2KD": {
-              "content": "A Luz de outubro volta a aparecer como a pagar no Início, e o comprovante é apagado."
+              "content": "O Aluguel de outubro volta a aparecer como a pagar no Início, e o comprovante é apagado."
             },
             "es7Xa/FRXkf": {
               "content": "Excluir"
@@ -37874,7 +38746,7 @@
                   "id": "cjDXI",
                   "name": "Rótulo",
                   "fill": "$on-surface-variant",
-                  "content": "Bruno registrou em outubro",
+                  "content": "Parte de Bruno em outubro",
                   "lineHeight": "$label-large-line-height",
                   "fontFamily": "$font-family",
                   "fontSize": "$label-large-size",
@@ -37886,7 +38758,7 @@
                   "id": "OvleW",
                   "name": "Valor",
                   "fill": "$primary",
-                  "content": "R$ 800,00",
+                  "content": "R$ 840,00",
                   "lineHeight": "$headline-large-emphasized-line-height",
                   "fontFamily": "$font-family",
                   "fontSize": "$headline-large-emphasized-size",
@@ -37898,7 +38770,7 @@
                   "id": "SKXvC",
                   "name": "Detalhe",
                   "fill": "$on-surface-variant",
-                  "content": "2 lançamentos · 28% do que a família pagou",
+                  "content": "3 lançamentos · 30% do que a família pagou",
                   "lineHeight": "$body-small-line-height",
                   "fontFamily": "$font-family",
                   "fontSize": "$body-small-size",
@@ -38008,6 +38880,186 @@
                           "enabled": false
                         }
                       }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "vfSO1",
+                  "name": "Serviços",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "s4xTTk",
+                      "name": "Cabeçalho da tag",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        4,
+                        0
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "luD03",
+                          "name": "Tag",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "q6LiF",
+                              "name": "Cor",
+                              "fill": "$tag-blue",
+                              "width": 10,
+                              "height": 10
+                            },
+                            {
+                              "type": "text",
+                              "id": "qkY12",
+                              "name": "Nome",
+                              "fill": "$on-surface-variant",
+                              "content": "Serviços",
+                              "lineHeight": "$label-large-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-large-size",
+                              "fontWeight": "$label-large-weight",
+                              "letterSpacing": "$label-large-tracking"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "aRbc8",
+                          "name": "Total",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 40,00",
+                          "lineHeight": "$label-large-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$label-large-size",
+                          "fontWeight": "$label-large-weight",
+                          "letterSpacing": "$label-large-tracking"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "YLBai",
+                      "type": "ref",
+                      "ref": "EuVW1",
+                      "name": "Luz",
+                      "width": "fill_container",
+                      "descendants": {
+                        "tzq6I": {
+                          "fill": "$primary-container"
+                        },
+                        "fqUT8": {
+                          "icon": "check",
+                          "fill": "$on-primary-container"
+                        },
+                        "CqyUL": {
+                          "content": "Luz"
+                        },
+                        "OSPYw": {
+                          "content": "paga por Ana em 11/10"
+                        },
+                        "x7N4T1": {
+                          "enabled": true,
+                          "content": "R$ 187,35"
+                        },
+                        "r4mDrJ": {
+                          "enabled": false
+                        }
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "lhzOK",
+                      "name": "Partes",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "padding": [
+                        0,
+                        16,
+                        8,
+                        72
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "a9Pnxj",
+                          "name": "Sua parte",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "gD8bO",
+                              "name": "Quem",
+                              "fill": "$on-surface",
+                              "content": "Bruno · contribuição",
+                              "lineHeight": "$body-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-small-size",
+                              "fontWeight": "$body-small-weight",
+                              "letterSpacing": "$body-small-tracking"
+                            },
+                            {
+                              "type": "text",
+                              "id": "eFXPG",
+                              "name": "Quanto",
+                              "fill": "$on-surface",
+                              "content": "R$ 40,00",
+                              "lineHeight": "$body-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-small-size",
+                              "fontWeight": "$body-small-weight",
+                              "letterSpacing": "$body-small-tracking"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "W4eGq",
+                          "name": "Bruno · contribuição",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "DXXc1",
+                              "name": "Quem",
+                              "fill": "$on-surface-variant",
+                              "content": "Ana · pagou a conta",
+                              "lineHeight": "$body-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-small-size",
+                              "fontWeight": "$body-small-weight",
+                              "letterSpacing": "$body-small-tracking"
+                            },
+                            {
+                              "type": "text",
+                              "id": "gXqf0",
+                              "name": "Quanto",
+                              "fill": "$on-surface-variant",
+                              "content": "R$ 147,35",
+                              "lineHeight": "$body-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-small-size",
+                              "fontWeight": "$body-small-weight",
+                              "letterSpacing": "$body-small-tracking"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 },
@@ -39316,6 +40368,3011 @@
               "content": "Pagamentos"
             }
           }
+        }
+      ]
+    },
+    {
+      "id": "X100d3",
+      "type": "ref",
+      "ref": "q56Jr",
+      "name": "Estado · Registrar pagamento, abaixo de 30% do previsto",
+      "x": 7676,
+      "y": 19326,
+      "descendants": {
+        "whOfj/QgaRn": {
+          "content": "Registrar pagamento"
+        },
+        "G8Gwq": {
+          "content": "Conta de novembro"
+        },
+        "Q5G9E2": {
+          "content": "Aluguel"
+        },
+        "OD5O8/olBfv": {
+          "fill": "$tag-wood"
+        },
+        "OD5O8/PooxK": {
+          "content": "Casa"
+        },
+        "R30in": {
+          "content": "vence dia 5 · previsto R$ 2.000,00"
+        },
+        "ZNBgf/VN2cR": {
+          "content": "R$ 500,00"
+        },
+        "ZNBgf/vfVG1": {
+          "content": "Veio do comprovante. Corrija se contribuiu com outro valor."
+        },
+        "ZNBgf/BLbJj": {
+          "content": "Quanto você pagou"
+        },
+        "eh68N": {
+          "content": "Abaixo de 30% do previsto (R$ 600,00), só pode ser uma contribuição."
+        },
+        "S4Mg4H": {
+          "fill": "$primary",
+          "stroke": {
+            "type": "color",
+            "color": "$primary",
+            "enabled": false
+          },
+          "padding": [
+            0,
+            4
+          ],
+          "justifyContent": "end",
+          "opacity": 0.38
+        },
+        "MCThy": {
+          "width": 24,
+          "height": 24,
+          "fill": "$on-primary"
+        },
+        "dsosC": {
+          "enabled": true
+        },
+        "E87DP5/JqtR3": {
+          "content": "Imagem · 96 KB"
+        },
+        "E87DP5/u0fr1G": {
+          "content": "pix-aluguel-bruno.jpg"
+        },
+        "b8F0c": {
+          "content": "Fica no seu nome, Bruno. O Aluguel continua a pagar pelo que faltar."
+        },
+        "WOETt/E0Y5Tt": {
+          "content": "Registrar contribuição"
+        }
+      }
+    },
+    {
+      "id": "MGBEz",
+      "type": "ref",
+      "ref": "q56Jr",
+      "name": "Tela · Registrar pagamento, com contribuições",
+      "x": 8184,
+      "y": 19326,
+      "descendants": {
+        "G8Gwq": {
+          "content": "Conta de novembro"
+        },
+        "Q5G9E2": {
+          "content": "Aluguel"
+        },
+        "OD5O8/olBfv": {
+          "fill": "$tag-wood"
+        },
+        "OD5O8/PooxK": {
+          "content": "Casa"
+        },
+        "R30in": {
+          "content": "vence dia 5 · faltam R$ 1.500,00"
+        },
+        "ZNBgf/VN2cR": {
+          "content": "R$ 2.000,00"
+        },
+        "ZNBgf/vfVG1": {
+          "content": "A conta inteira, com os R$ 500,00 de Bruno. Você fica com R$ 1.500,00."
+        },
+        "E87DP5/u0fr1G": {
+          "content": "comprovante-aluguel.pdf"
+        }
+      }
+    },
+    {
+      "type": "frame",
+      "id": "EIXOC",
+      "x": 9708,
+      "y": 20800,
+      "name": "Tela · Detalhes, com contribuições",
+      "theme": {
+        "mode": "light"
+      },
+      "clip": true,
+      "width": 412,
+      "height": 915,
+      "fill": "$surface",
+      "cornerRadius": 28,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#0000001A",
+        "offset": {
+          "x": 0,
+          "y": 8
+        },
+        "blur": 32
+      },
+      "layout": "none",
+      "children": [
+        {
+          "id": "V4zrAo",
+          "type": "ref",
+          "ref": "aGben",
+          "x": 0,
+          "y": 0,
+          "name": "Tela de fundo"
+        },
+        {
+          "type": "rectangle",
+          "id": "vNh1u",
+          "x": 0,
+          "y": 0,
+          "name": "Scrim",
+          "opacity": 0.32,
+          "fill": "$scrim",
+          "width": 412,
+          "height": 915
+        },
+        {
+          "type": "frame",
+          "id": "kJX6p",
+          "x": 0,
+          "y": 139,
+          "name": "Folha",
+          "width": 412,
+          "fill": "$surface-container-low",
+          "cornerRadius": [
+            28,
+            28,
+            0,
+            0
+          ],
+          "layout": "vertical",
+          "gap": 16,
+          "padding": [
+            0,
+            20,
+            28,
+            20
+          ],
+          "children": [
+            {
+              "id": "R7LEr",
+              "type": "ref",
+              "ref": "X4rrO",
+              "name": "Alça",
+              "width": "fill_container"
+            },
+            {
+              "type": "frame",
+              "id": "T9Wu7",
+              "name": "Cabeçalho",
+              "width": "fill_container",
+              "gap": 14,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "nqDRy",
+                  "name": "Marca",
+                  "width": 40,
+                  "height": 40,
+                  "fill": "$primary-container",
+                  "cornerRadius": 20,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "wN745",
+                      "name": "Ícone",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "check",
+                      "library": "lucide",
+                      "fill": "$on-primary-container"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "XPYb9",
+                  "name": "Título",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "tKUbt",
+                      "name": "Conta",
+                      "fill": "$on-surface",
+                      "content": "Internet",
+                      "lineHeight": "$title-large-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-large-size",
+                      "fontWeight": "$title-large-weight",
+                      "letterSpacing": "$title-large-tracking"
+                    },
+                    {
+                      "type": "text",
+                      "id": "M3dlM",
+                      "name": "Tipo",
+                      "fill": "$on-surface-variant",
+                      "content": "Pagamento de novembro de 2026",
+                      "lineHeight": "$body-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-medium-size",
+                      "fontWeight": "$body-medium-weight",
+                      "letterSpacing": "$body-medium-tracking"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "hN0yW",
+              "name": "Valor",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 2,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "iiJjP",
+                  "name": "Pago",
+                  "fill": "$on-surface",
+                  "content": "R$ 120,00",
+                  "lineHeight": "$headline-medium-emphasized-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$headline-medium-emphasized-size",
+                  "fontWeight": "$headline-medium-emphasized-weight",
+                  "letterSpacing": "$headline-medium-emphasized-tracking"
+                },
+                {
+                  "type": "text",
+                  "id": "JMlEr",
+                  "name": "Previsto",
+                  "fill": "$on-surface-variant",
+                  "content": "previsto R$ 120,00",
+                  "lineHeight": "$body-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$body-small-size",
+                  "fontWeight": "$body-small-weight",
+                  "letterSpacing": "$body-small-tracking"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "WA18G",
+              "name": "Detalhes",
+              "width": "fill_container",
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "Fwg4y",
+                  "type": "ref",
+                  "ref": "WsaLD",
+                  "name": "Pago por",
+                  "width": "fill_container",
+                  "descendants": {
+                    "xO3rf": {
+                      "content": "Pago por"
+                    },
+                    "kFvt8": {
+                      "content": "Ana"
+                    }
+                  }
+                },
+                {
+                  "id": "n3bwP6",
+                  "type": "ref",
+                  "ref": "WsaLD",
+                  "name": "Parte de quem pagou",
+                  "width": "fill_container",
+                  "descendants": {
+                    "xO3rf": {
+                      "content": "Fica com Ana"
+                    },
+                    "kFvt8": {
+                      "content": "R$ 80,00"
+                    }
+                  }
+                },
+                {
+                  "id": "jguAS",
+                  "type": "ref",
+                  "ref": "WsaLD",
+                  "name": "Registrado em",
+                  "width": "fill_container",
+                  "descendants": {
+                    "xO3rf": {
+                      "content": "Registrado em"
+                    },
+                    "kFvt8": {
+                      "content": "15/11/2026"
+                    }
+                  }
+                },
+                {
+                  "id": "su2K1",
+                  "type": "ref",
+                  "ref": "WsaLD",
+                  "name": "Vencimento",
+                  "width": "fill_container",
+                  "descendants": {
+                    "xO3rf": {
+                      "content": "Vencimento"
+                    },
+                    "kFvt8": {
+                      "content": "dia 15"
+                    }
+                  }
+                },
+                {
+                  "id": "t8cs37",
+                  "type": "ref",
+                  "ref": "WsaLD",
+                  "name": "Tag",
+                  "width": "fill_container",
+                  "descendants": {
+                    "xO3rf": {
+                      "content": "Tag"
+                    },
+                    "QpqRv": {
+                      "enabled": true
+                    },
+                    "kFvt8": {
+                      "content": "Serviços"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "cp0db",
+              "type": "ref",
+              "ref": "mDfYD",
+              "name": "Comprovante",
+              "width": "fill_container",
+              "descendants": {
+                "Rsmc9": {
+                  "fill": "$primary-container"
+                },
+                "sLrD8": {
+                  "icon": "image",
+                  "fill": "$on-primary-container"
+                },
+                "JqtR3": {
+                  "content": "PDF · 48 KB"
+                },
+                "u0fr1G": {
+                  "content": "comprovante-internet.pdf"
+                },
+                "G5Zcc": {
+                  "content": "Ver"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "R38MJK",
+              "name": "Contribuições",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "NMJ7W",
+                  "name": "Título",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "HkvnN",
+                      "name": "Texto",
+                      "fill": "$on-surface",
+                      "content": "Contribuições",
+                      "lineHeight": "$title-medium-emphasized-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-medium-emphasized-size",
+                      "fontWeight": "$title-medium-emphasized-weight",
+                      "letterSpacing": "$title-medium-emphasized-tracking"
+                    },
+                    {
+                      "type": "text",
+                      "id": "pzMLY",
+                      "name": "Total",
+                      "fill": "$on-surface-variant",
+                      "content": "(R$ 40,00)",
+                      "lineHeight": "$title-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-medium-size",
+                      "fontWeight": "$title-medium-weight",
+                      "letterSpacing": "$title-medium-tracking"
+                    }
+                  ]
+                },
+                {
+                  "id": "rqfQI",
+                  "type": "ref",
+                  "ref": "mDfYD",
+                  "name": "Contribuição de Bruno",
+                  "width": "fill_container",
+                  "descendants": {
+                    "Rsmc9": {
+                      "fill": "$primary-container"
+                    },
+                    "sLrD8": {
+                      "icon": "hand-coins",
+                      "fill": "$on-primary-container"
+                    },
+                    "JqtR3": {
+                      "content": "Bruno · 16/11 · R$ 40,00"
+                    },
+                    "u0fr1G": {
+                      "content": "pix-internet-bruno.jpg"
+                    },
+                    "G5Zcc": {
+                      "content": "Ver"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "o7bME",
+              "type": "ref",
+              "ref": "GNq86",
+              "name": "Contribuir",
+              "width": "fill_container",
+              "descendants": {
+                "xwIAv": {
+                  "icon": "hand-coins"
+                },
+                "iT4pd": {
+                  "content": "Contribuir"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "RGgwq",
+              "name": "Quem pode mudar",
+              "width": "fill_container",
+              "fill": "$surface-container",
+              "cornerRadius": 12,
+              "gap": 10,
+              "padding": [
+                12,
+                14
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "cBwX1",
+                  "name": "Ícone",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "lock",
+                  "library": "lucide",
+                  "fill": "$on-surface-variant"
+                },
+                {
+                  "type": "text",
+                  "id": "BjRFB",
+                  "name": "Texto",
+                  "fill": "$on-surface-variant",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Só Ana pode alterar ou excluir este pagamento.",
+                  "lineHeight": "$body-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$body-small-size",
+                  "fontWeight": "$body-small-weight",
+                  "letterSpacing": "$body-small-tracking"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "y0bTn",
+      "x": 10216,
+      "y": 20800,
+      "name": "Tela · Detalhes, paga sem comprovante da conta",
+      "theme": {
+        "mode": "light"
+      },
+      "clip": true,
+      "width": 412,
+      "height": 915,
+      "fill": "$surface",
+      "cornerRadius": 28,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#0000001A",
+        "offset": {
+          "x": 0,
+          "y": 8
+        },
+        "blur": 32
+      },
+      "layout": "none",
+      "children": [
+        {
+          "id": "r2HkA",
+          "type": "ref",
+          "ref": "aGben",
+          "x": 0,
+          "y": 0,
+          "name": "Tela de fundo"
+        },
+        {
+          "type": "rectangle",
+          "id": "R8ePm",
+          "x": 0,
+          "y": 0,
+          "name": "Scrim",
+          "opacity": 0.32,
+          "fill": "$scrim",
+          "width": 412,
+          "height": 915
+        },
+        {
+          "type": "frame",
+          "id": "RL9pA",
+          "x": 0,
+          "y": 89,
+          "name": "Folha",
+          "width": 412,
+          "fill": "$surface-container-low",
+          "cornerRadius": [
+            28,
+            28,
+            0,
+            0
+          ],
+          "layout": "vertical",
+          "gap": 16,
+          "padding": [
+            0,
+            20,
+            28,
+            20
+          ],
+          "children": [
+            {
+              "id": "PjQxO",
+              "type": "ref",
+              "ref": "X4rrO",
+              "name": "Alça",
+              "width": "fill_container"
+            },
+            {
+              "type": "frame",
+              "id": "hTsGH",
+              "name": "Cabeçalho",
+              "width": "fill_container",
+              "gap": 14,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Lz6BL",
+                  "name": "Marca",
+                  "width": 40,
+                  "height": 40,
+                  "fill": "$primary-container",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "type": "color",
+                    "color": "$primary",
+                    "enabled": false
+                  },
+                  "strokeWidth": 1.5,
+                  "strokeAlignment": "inner",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "jWyCX",
+                      "name": "Ícone",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "users-round",
+                      "library": "lucide",
+                      "fill": "$on-primary-container"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Oa2iY",
+                  "name": "Título",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "eeGU5",
+                      "name": "Conta",
+                      "fill": "$on-surface",
+                      "content": "Aluguel",
+                      "lineHeight": "$title-large-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-large-size",
+                      "fontWeight": "$title-large-weight",
+                      "letterSpacing": "$title-large-tracking"
+                    },
+                    {
+                      "type": "text",
+                      "id": "l1tvDv",
+                      "name": "Tipo",
+                      "fill": "$on-surface-variant",
+                      "content": "Pagamento de novembro de 2026",
+                      "lineHeight": "$body-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-medium-size",
+                      "fontWeight": "$body-medium-weight",
+                      "letterSpacing": "$body-medium-tracking"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "gMA6w",
+              "name": "Valor",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 2,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "M0OZx",
+                  "name": "Pago",
+                  "fill": "$on-surface",
+                  "content": "R$ 2.000,00",
+                  "lineHeight": "$headline-medium-emphasized-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$headline-medium-emphasized-size",
+                  "fontWeight": "$headline-medium-emphasized-weight",
+                  "letterSpacing": "$headline-medium-emphasized-tracking"
+                },
+                {
+                  "type": "text",
+                  "id": "pyaOk",
+                  "name": "Previsto",
+                  "fill": "$on-surface-variant",
+                  "content": "previsto R$ 2.000,00",
+                  "lineHeight": "$body-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$body-small-size",
+                  "fontWeight": "$body-small-weight",
+                  "letterSpacing": "$body-small-tracking"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "rY6zw",
+              "name": "Detalhes",
+              "width": "fill_container",
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "RYh7H",
+                  "type": "ref",
+                  "ref": "WsaLD",
+                  "name": "Pago por",
+                  "width": "fill_container",
+                  "descendants": {
+                    "xO3rf": {
+                      "content": "Pago por"
+                    },
+                    "kFvt8": {
+                      "content": "Bruno e Carla"
+                    }
+                  }
+                },
+                {
+                  "id": "A1GfN",
+                  "type": "ref",
+                  "ref": "WsaLD",
+                  "name": "Registrado em",
+                  "width": "fill_container",
+                  "descendants": {
+                    "xO3rf": {
+                      "content": "Paga em"
+                    },
+                    "kFvt8": {
+                      "content": "05/11/2026"
+                    }
+                  }
+                },
+                {
+                  "id": "R4mHf2",
+                  "type": "ref",
+                  "ref": "WsaLD",
+                  "name": "Vencimento",
+                  "width": "fill_container",
+                  "descendants": {
+                    "xO3rf": {
+                      "content": "Vencimento"
+                    },
+                    "kFvt8": {
+                      "content": "dia 5"
+                    }
+                  }
+                },
+                {
+                  "id": "IMXFd",
+                  "type": "ref",
+                  "ref": "WsaLD",
+                  "name": "Tag",
+                  "width": "fill_container",
+                  "descendants": {
+                    "xO3rf": {
+                      "content": "Tag"
+                    },
+                    "QpqRv": {
+                      "enabled": true,
+                      "fill": "$tag-wood"
+                    },
+                    "kFvt8": {
+                      "content": "Casa"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "SGciA",
+              "name": "Contribuições",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "kJrTE",
+                  "name": "Título",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "HXIQS",
+                      "name": "Texto",
+                      "fill": "$on-surface",
+                      "content": "Contribuições",
+                      "lineHeight": "$title-medium-emphasized-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-medium-emphasized-size",
+                      "fontWeight": "$title-medium-emphasized-weight",
+                      "letterSpacing": "$title-medium-emphasized-tracking"
+                    },
+                    {
+                      "type": "text",
+                      "id": "gaP3K",
+                      "name": "Total",
+                      "fill": "$on-surface-variant",
+                      "content": "(R$ 2.000,00)",
+                      "lineHeight": "$title-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-medium-size",
+                      "fontWeight": "$title-medium-weight",
+                      "letterSpacing": "$title-medium-tracking"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "m9g0j",
+                  "name": "Motivo",
+                  "fill": "$on-surface-variant",
+                  "content": "Chegaram ao previsto, então não dá para contribuir mais.",
+                  "lineHeight": "$body-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$body-small-size",
+                  "fontWeight": "$body-small-weight",
+                  "letterSpacing": "$body-small-tracking"
+                },
+                {
+                  "id": "uQNol",
+                  "type": "ref",
+                  "ref": "mDfYD",
+                  "name": "Contribuição de Bruno",
+                  "width": "fill_container",
+                  "descendants": {
+                    "Rsmc9": {
+                      "fill": "$primary-container"
+                    },
+                    "sLrD8": {
+                      "icon": "hand-coins",
+                      "fill": "$on-primary-container"
+                    },
+                    "JqtR3": {
+                      "content": "Bruno · 04/11 · R$ 1.000,00"
+                    },
+                    "u0fr1G": {
+                      "content": "pix-aluguel-bruno.jpg"
+                    },
+                    "G5Zcc": {
+                      "content": "Ver"
+                    }
+                  }
+                },
+                {
+                  "id": "yPoQl",
+                  "type": "ref",
+                  "ref": "mDfYD",
+                  "name": "Contribuição de Carla",
+                  "width": "fill_container",
+                  "descendants": {
+                    "Rsmc9": {
+                      "fill": "$primary-container"
+                    },
+                    "sLrD8": {
+                      "icon": "hand-coins",
+                      "fill": "$on-primary-container"
+                    },
+                    "JqtR3": {
+                      "content": "Carla · 05/11 · R$ 1.000,00"
+                    },
+                    "u0fr1G": {
+                      "content": "pix-aluguel-carla.pdf"
+                    },
+                    "G5Zcc": {
+                      "content": "Ver"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "z5hekr",
+              "type": "ref",
+              "ref": "GNq86",
+              "name": "Contribuir",
+              "width": "fill_container",
+              "opacity": 0.38,
+              "descendants": {
+                "xwIAv": {
+                  "icon": "hand-coins"
+                },
+                "iT4pd": {
+                  "content": "Contribuir"
+                }
+              }
+            },
+            {
+              "id": "XCGEm",
+              "type": "ref",
+              "ref": "GNq86",
+              "name": "Anexar o comprovante da conta",
+              "width": "fill_container",
+              "descendants": {
+                "xwIAv": {
+                  "icon": "paperclip"
+                },
+                "iT4pd": {
+                  "content": "Anexar o comprovante da conta"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "s44tXO",
+              "name": "Quem pode mudar",
+              "width": "fill_container",
+              "fill": "$surface-container",
+              "cornerRadius": 12,
+              "gap": 10,
+              "padding": [
+                12,
+                14
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "NvUal",
+                  "name": "Ícone",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "info",
+                  "library": "lucide",
+                  "fill": "$on-surface-variant"
+                },
+                {
+                  "type": "text",
+                  "id": "YT9DG",
+                  "name": "Texto",
+                  "fill": "$on-surface-variant",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Quem anexar o comprovante da conta fica como quem pagou.",
+                  "lineHeight": "$body-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$body-small-size",
+                  "fontWeight": "$body-small-weight",
+                  "letterSpacing": "$body-small-tracking"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "BQNRZ",
+      "x": 7168,
+      "y": 18211,
+      "name": "Tela · Compartilhar comprovante, fim da lista",
+      "theme": {
+        "mode": "light"
+      },
+      "clip": true,
+      "width": 412,
+      "height": 915,
+      "fill": "$surface",
+      "cornerRadius": 28,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#0000001A",
+        "offset": {
+          "x": 0,
+          "y": 8
+        },
+        "blur": 32
+      },
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "X3Twq2",
+          "name": "Barra de status",
+          "width": "fill_container",
+          "height": 36,
+          "padding": [
+            0,
+            20
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "usJSY",
+              "name": "Hora",
+              "fill": "$on-surface",
+              "content": "10:24",
+              "lineHeight": "$label-large-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$label-large-size",
+              "fontWeight": "$label-large-weight",
+              "letterSpacing": "$label-large-tracking"
+            },
+            {
+              "type": "frame",
+              "id": "R8eIWR",
+              "name": "Ícones",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "bG2YN",
+                  "name": "signal",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                },
+                {
+                  "type": "icon",
+                  "id": "S1IokZ",
+                  "name": "wifi",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                },
+                {
+                  "type": "icon",
+                  "id": "GP7Mo",
+                  "name": "battery-full",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "O4VBP",
+          "type": "ref",
+          "ref": "ovMSg",
+          "name": "Barra superior",
+          "width": "fill_container",
+          "descendants": {
+            "aCkcd/uRzVL": {
+              "icon": "x"
+            },
+            "QgaRn": {
+              "content": "Qual conta você pagou?"
+            }
+          }
+        },
+        {
+          "type": "frame",
+          "id": "X0hE6X",
+          "name": "Conteúdo",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            8,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "RZeQU",
+              "name": "A pagar no próximo mês",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 2,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "C7xUr",
+                  "name": "Título",
+                  "fill": "$on-surface",
+                  "content": "A pagar em novembro",
+                  "lineHeight": "$title-medium-emphasized-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$title-medium-emphasized-size",
+                  "fontWeight": "$title-medium-emphasized-weight",
+                  "letterSpacing": "$title-medium-emphasized-tracking"
+                },
+                {
+                  "id": "rkLtq",
+                  "type": "ref",
+                  "ref": "EuVW1",
+                  "name": "Aluguel",
+                  "width": "fill_container",
+                  "descendants": {
+                    "CqyUL": {
+                      "content": "Aluguel"
+                    },
+                    "OSPYw": {
+                      "type": "frame",
+                      "id": "aNP3T",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "sotua",
+                          "name": "Cor da tag",
+                          "fill": "$tag-wood",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "HNh4S",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 1.800,00 · vence dia 5",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "id": "RwaGe",
+                  "type": "ref",
+                  "ref": "EuVW1",
+                  "name": "Condomínio",
+                  "width": "fill_container",
+                  "descendants": {
+                    "CqyUL": {
+                      "content": "Condomínio"
+                    },
+                    "OSPYw": {
+                      "type": "frame",
+                      "id": "efmoY",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "KxGLM",
+                          "name": "Cor da tag",
+                          "fill": "$tag-wood",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "Xk0xd",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 450,00 · vence dia 8",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "id": "f9u8MN",
+                  "type": "ref",
+                  "ref": "EuVW1",
+                  "name": "Luz",
+                  "width": "fill_container",
+                  "descendants": {
+                    "CqyUL": {
+                      "content": "Luz"
+                    },
+                    "OSPYw": {
+                      "type": "frame",
+                      "id": "ck4Bq",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "Ardx1",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "qIBC6",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 210,00 · vence dia 10",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "id": "UKv3W",
+                  "type": "ref",
+                  "ref": "EuVW1",
+                  "name": "Internet",
+                  "width": "fill_container",
+                  "descendants": {
+                    "CqyUL": {
+                      "content": "Internet"
+                    },
+                    "OSPYw": {
+                      "type": "frame",
+                      "id": "bKxxp",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "S6tKaY",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "BvRzj",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 119,90 · vence dia 15",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "id": "DDV3K",
+                  "type": "ref",
+                  "ref": "EuVW1",
+                  "name": "Água",
+                  "width": "fill_container",
+                  "descendants": {
+                    "CqyUL": {
+                      "content": "Água"
+                    },
+                    "OSPYw": {
+                      "type": "frame",
+                      "id": "mfRSM",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "g28g4s",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "apRt7",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 98,00 · vence dia 20",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "s1uOq",
+              "name": "Já pagas por outros",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 2,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "dBLSt",
+                  "name": "Título",
+                  "fill": "$on-surface",
+                  "content": "Já pagas por outros em outubro",
+                  "lineHeight": "$title-medium-emphasized-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$title-medium-emphasized-size",
+                  "fontWeight": "$title-medium-emphasized-weight",
+                  "letterSpacing": "$title-medium-emphasized-tracking"
+                },
+                {
+                  "id": "mzpIt",
+                  "type": "ref",
+                  "ref": "EuVW1",
+                  "name": "Aluguel",
+                  "width": "fill_container",
+                  "descendants": {
+                    "tzq6I": {
+                      "fill": "$primary-container"
+                    },
+                    "fqUT8": {
+                      "icon": "check",
+                      "fill": "$on-primary-container"
+                    },
+                    "CqyUL": {
+                      "content": "Aluguel"
+                    },
+                    "OSPYw": {
+                      "type": "frame",
+                      "id": "Gq8nb",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "WQhmW",
+                          "name": "Cor da tag",
+                          "fill": "$tag-wood",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "WOZ2Y",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 1.800,00 · pago por Ana",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    },
+                    "r4mDrJ/WFjC4": {
+                      "content": "Contribuir"
+                    }
+                  }
+                },
+                {
+                  "id": "uzkJi",
+                  "type": "ref",
+                  "ref": "EuVW1",
+                  "name": "Luz",
+                  "width": "fill_container",
+                  "descendants": {
+                    "tzq6I": {
+                      "fill": "$primary-container"
+                    },
+                    "fqUT8": {
+                      "icon": "check",
+                      "fill": "$on-primary-container"
+                    },
+                    "CqyUL": {
+                      "content": "Luz"
+                    },
+                    "OSPYw": {
+                      "type": "frame",
+                      "id": "zWtT0",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "NdNqd",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "LJqSI",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 187,35 · pago por Ana",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    },
+                    "r4mDrJ/WFjC4": {
+                      "content": "Contribuir"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "RzZpB",
+      "type": "ref",
+      "ref": "q56Jr",
+      "name": "Tela · Contribuir num lançamento pago",
+      "x": 8692,
+      "y": 19326,
+      "descendants": {
+        "whOfj/QgaRn": {
+          "content": "Contribuir"
+        },
+        "G8Gwq": {
+          "content": "Pagamento de Ana · novembro"
+        },
+        "Q5G9E2": {
+          "content": "Internet"
+        },
+        "R30in": {
+          "content": "R$ 120,00 · Ana fica com R$ 80,00"
+        },
+        "ZNBgf/VN2cR": {
+          "content": "R$ 20,00"
+        },
+        "ZNBgf/vfVG1": {
+          "content": "Veio do comprovante. Corrija se contribuiu com outro valor."
+        },
+        "ZNBgf/BLbJj": {
+          "content": "Quanto você contribuiu"
+        },
+        "OAh1v": {
+          "enabled": false
+        },
+        "E87DP5/JqtR3": {
+          "content": "Imagem · 74 KB"
+        },
+        "E87DP5/u0fr1G": {
+          "content": "pix-internet-bruno.jpg"
+        },
+        "b8F0c": {
+          "content": "Fica no seu nome, Bruno. Ana passa a ficar com R$ 60,00."
+        },
+        "WOETt/E0Y5Tt": {
+          "content": "Registrar contribuição"
+        }
+      }
+    },
+    {
+      "id": "BOy9z",
+      "type": "ref",
+      "ref": "ghcdn",
+      "name": "Tela · Alterar contribuição",
+      "x": 5644,
+      "y": 21915,
+      "descendants": {
+        "S3KMB/QgaRn": {
+          "content": "Alterar contribuição"
+        },
+        "ZCjZu": {
+          "content": "Contribuição de novembro"
+        },
+        "Xel62": {
+          "content": "Luz"
+        },
+        "A2aDB8": {
+          "content": "vence dia 20 · previsto R$ 200,00"
+        },
+        "jO807/VN2cR": {
+          "content": "R$ 100,00"
+        },
+        "jO807/BLbJj": {
+          "content": "Quanto você pagou"
+        },
+        "tqqVs": {
+          "content": "Desligado, vira o pagamento da Luz de novembro."
+        },
+        "RJ4j3": {
+          "fill": "$primary",
+          "stroke": {
+            "type": "color",
+            "color": "$primary",
+            "enabled": false
+          },
+          "padding": [
+            0,
+            4
+          ],
+          "justifyContent": "end"
+        },
+        "YHGuJ": {
+          "width": 24,
+          "height": 24,
+          "fill": "$on-primary"
+        },
+        "dUf0w": {
+          "enabled": true
+        },
+        "nQCIp/u0fr1G": {
+          "content": "pix-luz-ana.jpg"
+        },
+        "TGnb2": {
+          "content": "Registrada por você em 08/11/2026. Só você pode alterar ou excluir."
+        },
+        "N5J0oH/FRXkf": {
+          "content": "Excluir contribuição"
+        }
+      }
+    },
+    {
+      "type": "frame",
+      "id": "wGGB4",
+      "x": 11740,
+      "y": 20800,
+      "name": "Tela · Detalhes, contribuição",
+      "theme": {
+        "mode": "light"
+      },
+      "clip": true,
+      "width": 412,
+      "height": 915,
+      "fill": "$surface",
+      "cornerRadius": 28,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#0000001A",
+        "offset": {
+          "x": 0,
+          "y": 8
+        },
+        "blur": 32
+      },
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "RkOAr",
+          "x": 0,
+          "y": 0,
+          "name": "Tela de fundo",
+          "theme": {
+            "mode": "light"
+          },
+          "clip": true,
+          "width": 412,
+          "height": 915,
+          "fill": "$surface",
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "enabled": false,
+            "color": "#000000"
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "z6ccb",
+              "name": "Barra de status",
+              "width": "fill_container",
+              "height": 36,
+              "padding": [
+                0,
+                20
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "A9RMq",
+                  "name": "Hora",
+                  "fill": "$on-surface",
+                  "content": "10:24",
+                  "lineHeight": "$label-large-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$label-large-size",
+                  "fontWeight": "$label-large-weight",
+                  "letterSpacing": "$label-large-tracking"
+                },
+                {
+                  "type": "frame",
+                  "id": "opmiD",
+                  "name": "Ícones",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "hGZWB",
+                      "name": "signal",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "signal",
+                      "library": "lucide",
+                      "fill": "$on-surface"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "GpWYq",
+                      "name": "wifi",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "wifi",
+                      "library": "lucide",
+                      "fill": "$on-surface"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "gmJBd",
+                      "name": "battery-full",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "battery-full",
+                      "library": "lucide",
+                      "fill": "$on-surface"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "I11XD3",
+              "name": "Conteúdo",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": [
+                8,
+                20,
+                24,
+                20
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ZRJt1",
+                  "name": "Cabeçalho",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "gj3x0",
+                      "name": "Mês",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "K8lg7w",
+                          "name": "Rótulo",
+                          "height": 20,
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "xfe53",
+                              "name": "Aba",
+                              "fill": "$on-surface-variant",
+                              "content": "Pagamentos",
+                              "lineHeight": "$label-medium-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-medium-size",
+                              "fontWeight": "$label-medium-weight",
+                              "letterSpacing": "$label-medium-tracking"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "k7yzRG",
+                              "name": "Selo do mês",
+                              "fill": "$primary-container",
+                              "cornerRadius": 9999,
+                              "padding": [
+                                2,
+                                8
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "BQIyk",
+                                  "name": "Texto",
+                                  "fill": "$on-primary-container",
+                                  "content": "Este mês",
+                                  "lineHeight": "$label-small-line-height",
+                                  "fontFamily": "$font-family",
+                                  "fontSize": "$label-small-size",
+                                  "fontWeight": "$label-small-weight",
+                                  "letterSpacing": "$label-small-tracking"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "imZbm",
+                          "name": "Mês atual",
+                          "fill": "$on-surface",
+                          "content": "Outubro de 2026",
+                          "lineHeight": "$headline-small-emphasized-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$headline-small-emphasized-size",
+                          "fontWeight": "$headline-small-emphasized-weight",
+                          "letterSpacing": "$headline-small-emphasized-tracking"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "u5SkU",
+                      "name": "Troca de mês",
+                      "children": [
+                        {
+                          "id": "Z7OwQL",
+                          "type": "ref",
+                          "ref": "m2ArK2",
+                          "name": "Mês anterior"
+                        },
+                        {
+                          "id": "LuziD",
+                          "type": "ref",
+                          "ref": "m2ArK2",
+                          "name": "Próximo mês",
+                          "descendants": {
+                            "uRzVL": {
+                              "icon": "chevron-right",
+                              "fill": "$outline-variant"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "c5jVDk",
+                  "name": "Pessoas",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "id": "HWxJU",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Todos",
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": false
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Todos",
+                          "fill": "$on-surface-variant"
+                        }
+                      }
+                    },
+                    {
+                      "id": "xEkw8",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Você",
+                      "fill": "$secondary-container",
+                      "strokeWidth": 0,
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": true
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Você",
+                          "fill": "$on-secondary-container"
+                        }
+                      }
+                    },
+                    {
+                      "id": "AyEmk",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Bruno",
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": false
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Ana",
+                          "fill": "$on-surface-variant"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "OKto4",
+                  "name": "Total do mês",
+                  "width": "fill_container",
+                  "fill": "$surface-container-low",
+                  "cornerRadius": 28,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "padding": 20,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ahcXN",
+                      "name": "Rótulo",
+                      "fill": "$on-surface-variant",
+                      "content": "Sua parte em outubro",
+                      "lineHeight": "$label-large-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$label-large-size",
+                      "fontWeight": "$label-large-weight",
+                      "letterSpacing": "$label-large-tracking"
+                    },
+                    {
+                      "type": "text",
+                      "id": "g8uu3a",
+                      "name": "Valor",
+                      "fill": "$primary",
+                      "content": "R$ 490,00",
+                      "lineHeight": "$headline-large-emphasized-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$headline-large-emphasized-size",
+                      "fontWeight": "$headline-large-emphasized-weight",
+                      "letterSpacing": "$headline-large-emphasized-tracking"
+                    },
+                    {
+                      "type": "text",
+                      "id": "q7D6R",
+                      "name": "Detalhe",
+                      "fill": "$on-surface-variant",
+                      "content": "2 lançamentos · 17% do que a família pagou",
+                      "lineHeight": "$body-small-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-small-size",
+                      "fontWeight": "$body-small-weight",
+                      "letterSpacing": "$body-small-tracking"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "TwISF",
+                  "name": "Lançamentos",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "sjZAG",
+                      "name": "Casa",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "c0161a",
+                          "name": "Cabeçalho da tag",
+                          "width": "fill_container",
+                          "padding": [
+                            0,
+                            0,
+                            4,
+                            0
+                          ],
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "Vzpab",
+                              "name": "Tag",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "FAUle",
+                                  "name": "Cor",
+                                  "fill": "$tag-wood",
+                                  "width": 10,
+                                  "height": 10
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "oaPRn",
+                                  "name": "Nome",
+                                  "fill": "$on-surface-variant",
+                                  "content": "Casa",
+                                  "lineHeight": "$label-large-line-height",
+                                  "fontFamily": "$font-family",
+                                  "fontSize": "$label-large-size",
+                                  "fontWeight": "$label-large-weight",
+                                  "letterSpacing": "$label-large-tracking"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "o7Dku",
+                              "name": "Total",
+                              "fill": "$on-surface-variant",
+                              "content": "R$ 450,00",
+                              "lineHeight": "$label-large-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-large-size",
+                              "fontWeight": "$label-large-weight",
+                              "letterSpacing": "$label-large-tracking"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "qzlYC",
+                          "type": "ref",
+                          "ref": "EuVW1",
+                          "name": "Aluguel",
+                          "width": "fill_container",
+                          "descendants": {
+                            "tzq6I": {
+                              "fill": "$primary-container"
+                            },
+                            "fqUT8": {
+                              "icon": "check",
+                              "fill": "$on-primary-container"
+                            },
+                            "CqyUL": {
+                              "content": "Condomínio"
+                            },
+                            "OSPYw": {
+                              "content": "pago em 08/10"
+                            },
+                            "x7N4T1": {
+                              "enabled": true,
+                              "content": "R$ 450,00"
+                            },
+                            "r4mDrJ": {
+                              "enabled": false
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "yIAup",
+                      "name": "Serviços",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "BTVs4",
+                          "name": "Cabeçalho da tag",
+                          "width": "fill_container",
+                          "padding": [
+                            0,
+                            0,
+                            4,
+                            0
+                          ],
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "yBKgD",
+                              "name": "Tag",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "y1u1f",
+                                  "name": "Cor",
+                                  "fill": "$tag-blue",
+                                  "width": 10,
+                                  "height": 10
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "inEZs",
+                                  "name": "Nome",
+                                  "fill": "$on-surface-variant",
+                                  "content": "Serviços",
+                                  "lineHeight": "$label-large-line-height",
+                                  "fontFamily": "$font-family",
+                                  "fontSize": "$label-large-size",
+                                  "fontWeight": "$label-large-weight",
+                                  "letterSpacing": "$label-large-tracking"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "P3dxM",
+                              "name": "Total",
+                              "fill": "$on-surface-variant",
+                              "content": "R$ 40,00",
+                              "lineHeight": "$label-large-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-large-size",
+                              "fontWeight": "$label-large-weight",
+                              "letterSpacing": "$label-large-tracking"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "pGs1a",
+                          "type": "ref",
+                          "ref": "EuVW1",
+                          "name": "Luz",
+                          "width": "fill_container",
+                          "descendants": {
+                            "tzq6I": {
+                              "fill": "$primary-container"
+                            },
+                            "fqUT8": {
+                              "icon": "check",
+                              "fill": "$on-primary-container"
+                            },
+                            "CqyUL": {
+                              "content": "Luz"
+                            },
+                            "OSPYw": {
+                              "content": "paga por Ana em 11/10"
+                            },
+                            "x7N4T1": {
+                              "enabled": true,
+                              "content": "R$ 187,35"
+                            },
+                            "r4mDrJ": {
+                              "enabled": false
+                            }
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "CW3z6",
+                          "name": "Partes",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "padding": [
+                            0,
+                            16,
+                            8,
+                            72
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "n79Vm",
+                              "name": "Sua parte",
+                              "width": "fill_container",
+                              "justifyContent": "space_between",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "MvUbS",
+                                  "name": "Quem",
+                                  "fill": "$on-surface",
+                                  "content": "Sua parte · contribuição",
+                                  "lineHeight": "$body-small-line-height",
+                                  "fontFamily": "$font-family",
+                                  "fontSize": "$body-small-size",
+                                  "fontWeight": "$body-small-weight",
+                                  "letterSpacing": "$body-small-tracking"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "NUANo",
+                                  "name": "Quanto",
+                                  "fill": "$on-surface",
+                                  "content": "R$ 40,00",
+                                  "lineHeight": "$body-small-line-height",
+                                  "fontFamily": "$font-family",
+                                  "fontSize": "$body-small-size",
+                                  "fontWeight": "$body-small-weight",
+                                  "letterSpacing": "$body-small-tracking"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "jKiXI",
+                              "name": "Bruno · contribuição",
+                              "width": "fill_container",
+                              "justifyContent": "space_between",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "FScp3",
+                                  "name": "Quem",
+                                  "fill": "$on-surface-variant",
+                                  "content": "Ana · pagou a conta",
+                                  "lineHeight": "$body-small-line-height",
+                                  "fontFamily": "$font-family",
+                                  "fontSize": "$body-small-size",
+                                  "fontWeight": "$body-small-weight",
+                                  "letterSpacing": "$body-small-tracking"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "CvZ8B",
+                                  "name": "Quanto",
+                                  "fill": "$on-surface-variant",
+                                  "content": "R$ 147,35",
+                                  "lineHeight": "$body-small-line-height",
+                                  "fontFamily": "$font-family",
+                                  "fontSize": "$body-small-size",
+                                  "fontWeight": "$body-small-weight",
+                                  "letterSpacing": "$body-small-tracking"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "CyC5g",
+                  "name": "Dica",
+                  "fill": "$on-surface-variant",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Toque num lançamento para ver os detalhes e o comprovante.",
+                  "lineHeight": "$body-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$body-small-size",
+                  "fontWeight": "$body-small-weight",
+                  "letterSpacing": "$body-small-tracking"
+                },
+                {
+                  "type": "frame",
+                  "id": "hbruQ",
+                  "name": "Espaço",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "layout": "vertical"
+                },
+                {
+                  "type": "frame",
+                  "id": "rVsTu",
+                  "name": "Ação",
+                  "width": "fill_container",
+                  "justifyContent": "end",
+                  "children": [
+                    {
+                      "id": "Bz1fb",
+                      "type": "ref",
+                      "ref": "PjSaD",
+                      "name": "Nova conta avulsa"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "z6PE5p",
+              "type": "ref",
+              "ref": "cryGB",
+              "name": "Navegação",
+              "width": "fill_container",
+              "descendants": {
+                "vNPLA": {
+                  "fill": "#00000000"
+                },
+                "S226JS": {
+                  "fill": "$on-surface-variant"
+                },
+                "p6wAH": {
+                  "fill": "$on-surface-variant",
+                  "fontWeight": "$label-medium-weight"
+                },
+                "gnkTX": {
+                  "fill": "$secondary-container"
+                },
+                "w8XD5": {
+                  "fill": "$on-secondary-container"
+                },
+                "LGDf2": {
+                  "fill": "$on-surface",
+                  "fontWeight": "$label-medium-emphasized-weight"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "rFUqY",
+          "x": 0,
+          "y": 0,
+          "name": "Scrim",
+          "opacity": 0.32,
+          "fill": "$scrim",
+          "width": 412,
+          "height": 915
+        },
+        {
+          "type": "frame",
+          "id": "yc4xm",
+          "x": 0,
+          "y": 365,
+          "name": "Folha",
+          "width": 412,
+          "fill": "$surface-container-low",
+          "cornerRadius": [
+            28,
+            28,
+            0,
+            0
+          ],
+          "layout": "vertical",
+          "gap": 16,
+          "padding": [
+            0,
+            20,
+            28,
+            20
+          ],
+          "children": [
+            {
+              "id": "pOL1g",
+              "type": "ref",
+              "ref": "X4rrO",
+              "name": "Alça",
+              "width": "fill_container"
+            },
+            {
+              "type": "frame",
+              "id": "MPwv2",
+              "name": "Cabeçalho",
+              "width": "fill_container",
+              "gap": 14,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Vmzfp",
+                  "name": "Marca",
+                  "width": 40,
+                  "height": 40,
+                  "fill": "$primary-container",
+                  "cornerRadius": 20,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "d5eu2V",
+                      "name": "Ícone",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "hand-coins",
+                      "library": "lucide",
+                      "fill": "$on-primary-container"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "SoqL4",
+                  "name": "Título",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "OCkjZ",
+                      "name": "Conta",
+                      "fill": "$on-surface",
+                      "content": "Luz",
+                      "lineHeight": "$title-large-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-large-size",
+                      "fontWeight": "$title-large-weight",
+                      "letterSpacing": "$title-large-tracking"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Fv3rG",
+                      "name": "Tipo",
+                      "fill": "$on-surface-variant",
+                      "content": "Contribuição em outubro de 2026",
+                      "lineHeight": "$body-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-medium-size",
+                      "fontWeight": "$body-medium-weight",
+                      "letterSpacing": "$body-medium-tracking"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "pBa9M",
+              "name": "Valor",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 2,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "JG4ii",
+                  "name": "Pago",
+                  "fill": "$on-surface",
+                  "content": "R$ 40,00",
+                  "lineHeight": "$headline-medium-emphasized-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$headline-medium-emphasized-size",
+                  "fontWeight": "$headline-medium-emphasized-weight",
+                  "letterSpacing": "$headline-medium-emphasized-tracking"
+                },
+                {
+                  "type": "text",
+                  "id": "Nh2eI",
+                  "name": "Previsto",
+                  "fill": "$on-surface-variant",
+                  "content": "na Luz de R$ 187,35, paga por Ana",
+                  "lineHeight": "$body-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$body-small-size",
+                  "fontWeight": "$body-small-weight",
+                  "letterSpacing": "$body-small-tracking"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "kweMY",
+              "name": "Detalhes",
+              "width": "fill_container",
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "oep2f",
+                  "type": "ref",
+                  "ref": "WsaLD",
+                  "name": "Pago por",
+                  "width": "fill_container",
+                  "descendants": {
+                    "xO3rf": {
+                      "content": "Contribuído por"
+                    },
+                    "kFvt8": {
+                      "content": "Bruno"
+                    }
+                  }
+                },
+                {
+                  "id": "D2Or9",
+                  "type": "ref",
+                  "ref": "WsaLD",
+                  "name": "Registrado em",
+                  "width": "fill_container",
+                  "descendants": {
+                    "xO3rf": {
+                      "content": "Registrada em"
+                    },
+                    "kFvt8": {
+                      "content": "12/10/2026"
+                    }
+                  }
+                },
+                {
+                  "id": "K1ysn",
+                  "type": "ref",
+                  "ref": "WsaLD",
+                  "name": "Vencimento",
+                  "width": "fill_container",
+                  "descendants": {
+                    "xO3rf": {
+                      "content": "Vencimento"
+                    },
+                    "kFvt8": {
+                      "content": "dia 10"
+                    }
+                  }
+                },
+                {
+                  "id": "XVSln",
+                  "type": "ref",
+                  "ref": "WsaLD",
+                  "name": "Tag",
+                  "width": "fill_container",
+                  "descendants": {
+                    "xO3rf": {
+                      "content": "Tag"
+                    },
+                    "QpqRv": {
+                      "enabled": true
+                    },
+                    "kFvt8": {
+                      "content": "Serviços"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "m4V2D",
+              "type": "ref",
+              "ref": "mDfYD",
+              "name": "Comprovante",
+              "width": "fill_container",
+              "descendants": {
+                "Rsmc9": {
+                  "fill": "$primary-container"
+                },
+                "sLrD8": {
+                  "icon": "image",
+                  "fill": "$on-primary-container"
+                },
+                "JqtR3": {
+                  "content": "Imagem · 74 KB"
+                },
+                "u0fr1G": {
+                  "content": "pix-luz-bruno.jpg"
+                },
+                "G5Zcc": {
+                  "content": "Ver"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "tsum9",
+              "name": "Ações",
+              "width": "fill_container",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "ZHdg0",
+                  "type": "ref",
+                  "ref": "MILQK",
+                  "name": "Excluir",
+                  "width": "fit_content",
+                  "descendants": {
+                    "a8tkEj": {
+                      "fill": "$error"
+                    },
+                    "FRXkf": {
+                      "content": "Excluir",
+                      "fill": "$error"
+                    }
+                  }
+                },
+                {
+                  "id": "cC7SG",
+                  "type": "ref",
+                  "ref": "GNq86",
+                  "name": "Alterar",
+                  "width": "fill_container",
+                  "descendants": {
+                    "iQYBW": {
+                      "width": 260
+                    },
+                    "xwIAv": {
+                      "icon": "pencil"
+                    },
+                    "iT4pd": {
+                      "content": "Alterar"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yJHTo",
+      "type": "ref",
+      "ref": "aGben",
+      "name": "Tela · Início, com contribuições",
+      "x": 8184,
+      "y": 18211,
+      "descendants": {
+        "IlXfh": {
+          "justifyContent": "end"
+        },
+        "K4XEJ/f4T1Vv": {
+          "content": "R$ 177,90"
+        },
+        "EbRv2/YuuRO": {
+          "content": "R$ 227,35"
+        },
+        "EbRv2/LelUm": {
+          "content": "e mais R$ 177,90 a pagar"
+        },
+        "pqoKI/fqUT8": {
+          "icon": "users-round"
+        },
+        "Qk78w": {
+          "content": "dia 5 · Bruno e Carla"
+        },
+        "MYoBV": {
+          "content": "dia 10 · Ana · R$ 40,00 de Bruno"
+        },
+        "XrPLM": {
+          "content": "2 contas · R$ 177,90"
+        },
+        "pKAem": {
+          "content": "faltam R$ 58,00 · R$ 40,00 de Bruno · dia 20"
+        },
+        "gofhW/x7N4T1": {
+          "enabled": false
+        }
+      }
+    },
+    {
+      "type": "frame",
+      "id": "F5ADk",
+      "x": 6152,
+      "y": 21915,
+      "name": "Tela · Alterar pagamento, com contribuições",
+      "theme": {
+        "mode": "light"
+      },
+      "clip": true,
+      "width": 412,
+      "height": 915,
+      "fill": "$surface",
+      "cornerRadius": 28,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#0000001A",
+        "offset": {
+          "x": 0,
+          "y": 8
+        },
+        "blur": 32
+      },
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "gIJSr",
+          "name": "Barra de status",
+          "width": "fill_container",
+          "height": 36,
+          "padding": [
+            0,
+            20
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "U0kcb",
+              "name": "Hora",
+              "fill": "$on-surface",
+              "content": "10:24",
+              "lineHeight": "$label-large-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$label-large-size",
+              "fontWeight": "$label-large-weight",
+              "letterSpacing": "$label-large-tracking"
+            },
+            {
+              "type": "frame",
+              "id": "UfQw4",
+              "name": "Ícones",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "bxHJP",
+                  "name": "signal",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                },
+                {
+                  "type": "icon",
+                  "id": "GeIef",
+                  "name": "wifi",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                },
+                {
+                  "type": "icon",
+                  "id": "tHFlg",
+                  "name": "battery-full",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "$on-surface"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "px2ju",
+          "type": "ref",
+          "ref": "ovMSg",
+          "name": "Barra superior",
+          "width": "fill_container",
+          "descendants": {
+            "QgaRn": {
+              "content": "Alterar pagamento"
+            }
+          }
+        },
+        {
+          "type": "frame",
+          "id": "gSyXB",
+          "name": "Conteúdo",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 20,
+          "padding": [
+            8,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "L7MuvA",
+              "name": "Conta",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "qsQnM",
+                  "name": "Rótulo",
+                  "fill": "$on-surface-variant",
+                  "content": "Pagamento de outubro",
+                  "lineHeight": "$label-medium-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$label-medium-size",
+                  "fontWeight": "$label-medium-weight",
+                  "letterSpacing": "$label-medium-tracking"
+                },
+                {
+                  "type": "text",
+                  "id": "jzXRR",
+                  "name": "Nome",
+                  "fill": "$on-surface",
+                  "content": "Luz",
+                  "lineHeight": "$headline-small-emphasized-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$headline-small-emphasized-size",
+                  "fontWeight": "$headline-small-emphasized-weight",
+                  "letterSpacing": "$headline-small-emphasized-tracking"
+                },
+                {
+                  "type": "frame",
+                  "id": "qAWwj",
+                  "name": "Detalhes",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "vryDb",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Serviços",
+                      "descendants": {
+                        "olBfv": {
+                          "fill": "$tag-blue"
+                        },
+                        "PooxK": {
+                          "content": "Serviços"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "kjoqK",
+                      "name": "Vencimento",
+                      "fill": "$on-surface-variant",
+                      "content": "vence dia 10 · previsto R$ 210,00",
+                      "lineHeight": "$body-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-medium-size",
+                      "fontWeight": "$body-medium-weight",
+                      "letterSpacing": "$body-medium-tracking"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "E6JAuU",
+              "type": "ref",
+              "ref": "YXXAl",
+              "name": "Valor pago",
+              "width": "fill_container",
+              "descendants": {
+                "iYkq6": {
+                  "stroke": "$primary",
+                  "strokeWidth": 1
+                },
+                "VN2cR": {
+                  "content": "R$ 187,35"
+                },
+                "vfVG1": {
+                  "content": "Mínimo de R$ 40,00, a soma das contribuições."
+                },
+                "BLbJj": {
+                  "content": "Valor pago"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "uZzP0",
+              "name": "Só uma parte",
+              "width": "fill_container",
+              "gap": 12,
+              "padding": 4,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "k2DsY",
+                  "name": "Textos",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Y1oDUu",
+                      "name": "Título",
+                      "fill": "$on-surface",
+                      "content": "Paguei só uma parte",
+                      "lineHeight": "$body-large-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-large-size",
+                      "fontWeight": "$body-large-weight",
+                      "letterSpacing": "$body-large-tracking"
+                    },
+                    {
+                      "type": "text",
+                      "id": "SGiH0",
+                      "name": "Apoio",
+                      "fill": "$on-surface-variant",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Transforma este pagamento numa contribuição.",
+                      "lineHeight": "$body-small-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-small-size",
+                      "fontWeight": "$body-small-weight",
+                      "letterSpacing": "$body-small-tracking"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "SyAxd",
+                  "name": "Interruptor",
+                  "width": 52,
+                  "height": 32,
+                  "fill": "$surface-container-highest",
+                  "cornerRadius": 16,
+                  "stroke": "$outline",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "inner",
+                  "padding": [
+                    0,
+                    6
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "W7xBsJ",
+                      "name": "Alça",
+                      "width": 16,
+                      "height": 16,
+                      "fill": "$outline",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "Z0d4U",
+                          "x": 0,
+                          "y": 0,
+                          "name": "Marca",
+                          "enabled": false,
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$on-primary-container"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "ahS4y",
+              "type": "ref",
+              "ref": "mDfYD",
+              "name": "Comprovante",
+              "width": "fill_container",
+              "descendants": {
+                "Rsmc9": {
+                  "fill": "$primary-container"
+                },
+                "sLrD8": {
+                  "icon": "image",
+                  "fill": "$on-primary-container"
+                },
+                "JqtR3": {
+                  "content": "Imagem · 182 KB"
+                },
+                "u0fr1G": {
+                  "content": "comprovante-luz.pdf"
+                },
+                "G5Zcc": {
+                  "content": "Trocar"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "BkEDK",
+              "name": "Aviso",
+              "width": "fill_container",
+              "fill": "$surface-container",
+              "cornerRadius": 12,
+              "gap": 10,
+              "padding": [
+                12,
+                14
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "eHBCN",
+                  "name": "Ícone",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "user-round",
+                  "library": "lucide",
+                  "fill": "$on-surface-variant"
+                },
+                {
+                  "type": "text",
+                  "id": "Zw3iT",
+                  "name": "Texto",
+                  "fill": "$on-surface-variant",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Registrado por você em 11/10/2026. Só você pode alterar ou excluir.",
+                  "lineHeight": "$body-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$body-small-size",
+                  "fontWeight": "$body-small-weight",
+                  "letterSpacing": "$body-small-tracking"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ruzMp",
+              "name": "Espaço",
+              "width": "fill_container",
+              "height": 16,
+              "layout": "vertical"
+            },
+            {
+              "id": "q9eJN",
+              "type": "ref",
+              "ref": "k9xma",
+              "name": "Salvar alterações",
+              "width": "fill_container",
+              "descendants": {
+                "u3Umir": {
+                  "width": 372
+                },
+                "E0Y5Tt": {
+                  "content": "Salvar alterações"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "YS94v",
+              "name": "Excluir pagamento",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "X3nEz",
+                  "type": "ref",
+                  "ref": "MILQK",
+                  "name": "Excluir pagamento",
+                  "width": "fit_content",
+                  "opacity": 0.38,
+                  "descendants": {
+                    "a8tkEj": {
+                      "fill": "$error"
+                    },
+                    "FRXkf": {
+                      "content": "Excluir pagamento",
+                      "fill": "$error"
+                    }
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "SbkF7",
+                  "name": "Motivo",
+                  "fill": "$on-surface-variant",
+                  "content": "Com contribuições, o pagamento não pode ser excluído.",
+                  "lineHeight": "$body-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$body-small-size",
+                  "fontWeight": "$body-small-weight",
+                  "letterSpacing": "$body-small-tracking"
+                }
+              ]
+            }
+          ]
         }
       ]
     }
