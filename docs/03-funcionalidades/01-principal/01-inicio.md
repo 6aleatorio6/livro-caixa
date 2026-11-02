@@ -18,8 +18,9 @@ Todo membro, ao abrir o app.
     pagamento no mês, pelo valor previsto.
 - **A separação por tag e por membro:** quanto foi em cada [tag](../02-suporte/02-tags.md) e quanto
   cada membro pagou.
-- **A lista do mês**, abaixo do gráfico: os lançamentos e as contas a pagar. Tocar num lançamento
-  abre os [detalhes](07-detalhes-do-lancamento.md) dele, para qualquer membro.
+- **A lista do mês**, abaixo do gráfico: os lançamentos e as contas a pagar. A tag de cada linha
+  aparece como uma bolinha da cor dela, a mesma da separação por tag, e não pelo nome. Tocar num
+  lançamento abre os [detalhes](07-detalhes-do-lancamento.md) dele, para qualquer membro.
 - **A troca de mês**, para ver os meses anteriores e o próximo mês. O Início abre no mês atual, e a
   troca para no próximo mês, que mostra as contas recorrentes dele a pagar e os pagamentos já
   feitos para ele. O mês atual leva o selo "Este mês", e o próximo, "Mês que vem"; os anteriores não

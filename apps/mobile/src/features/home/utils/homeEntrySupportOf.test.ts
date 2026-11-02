@@ -31,24 +31,17 @@ const oneOff: IEntry = {
 };
 
 describe('homeEntrySupportOf', () => {
-  it('Should write the due day, who paid and the tag of a payment', () => {
-    expect(homeEntrySupportOf(payment, { memberName: 'Ana', tagName: 'Casa' })).toBe('dia 5 · Ana · Casa');
+  it('Should write the due day and who paid a payment, without the tag', () => {
+    expect(homeEntrySupportOf(payment, 'Ana')).toBe('dia 5 · Ana');
   });
 
-  it('Should write the expected amount instead of the tag when the paid amount differs', () => {
-    expect(
-      homeEntrySupportOf(
-        { ...payment, amountCents: 18735, expectedAmountCents: 21000 },
-        { memberName: 'Ana', tagName: 'Casa' },
-      ),
-    ).toBe('dia 5 · Ana · previsto R$ 210,00');
+  it('Should add the expected amount when the paid amount differs', () => {
+    expect(homeEntrySupportOf({ ...payment, amountCents: 18735, expectedAmountCents: 21000 }, 'Ana')).toBe(
+      'dia 5 · Ana · previsto R$ 210,00',
+    );
   });
 
-  it('Should write the date, the one-off mark, who registered and the tag of a one-off bill', () => {
-    expect(homeEntrySupportOf(oneOff, { memberName: 'Bruno', tagName: 'Casa' })).toBe('12/10 · avulsa · Bruno · Casa');
-  });
-
-  it('Should leave the tag out when there is none', () => {
-    expect(homeEntrySupportOf(oneOff, { memberName: 'Bruno' })).toBe('12/10 · avulsa · Bruno');
+  it('Should write the date, the one-off mark and who registered a one-off bill, without the tag', () => {
+    expect(homeEntrySupportOf(oneOff, 'Bruno')).toBe('12/10 · avulsa · Bruno');
   });
 });

@@ -77,18 +77,19 @@ describe('ShareReceiptPage', () => {
     const titles = screen.getAllByRole('header').map((node) => node.props.children);
     expect(titles.filter((title) => /^A pagar em/.test(title))).toEqual(['A pagar em outubro', 'A pagar em novembro']);
     // O Aluguel foi pago em outubro e está a pagar em novembro; o Condomínio já foi pago nos dois.
-    expect(screen.getByText('R$ 1.800,00 · vence dia 5 · Casa')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 1.800,00 · vence dia 5')).toBeOnTheScreen();
     expect(screen.queryByText('Condomínio')).toBeNull();
 
-    const rows = screen.getAllByRole('button', { name: /^(Conta avulsa|Aluguel|Luz|Internet|Água)$/ });
+    // O rótulo de cada conta leva o nome da tag, que na tela é só a bolinha.
+    const rows = screen.getAllByRole('button', { name: /^(Conta avulsa|Aluguel|Luz|Internet|Água)(, .+)?$/ });
     expect(rows.map((row) => row.props.accessibilityLabel)).toEqual([
       'Conta avulsa',
-      'Internet',
-      'Água',
-      'Aluguel',
-      'Luz',
-      'Internet',
-      'Água',
+      'Internet, Serviços',
+      'Água, Serviços',
+      'Aluguel, Casa',
+      'Luz, Serviços',
+      'Internet, Serviços',
+      'Água, Serviços',
     ]);
   });
 

@@ -27,7 +27,7 @@ import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { dayOf } from '@/shared/utils/date/dayOf';
 import { formatCents } from '@/shared/utils/format/formatCents';
 import { tagDisplayOf } from '@/shared/utils/tag/tagDisplayOf';
-import { tagNameOf } from '@/shared/utils/tag/tagNameOf';
+import { findTag } from '@/shared/utils/tag/findTag';
 
 import { NoBillsPrompt } from './components/NoBillsPrompt/NoBillsPrompt';
 
@@ -109,7 +109,7 @@ export function HomePage() {
                     name={bill.name}
                     expectedCents={bill.expectedAmountCents}
                     dueDay={dayOf(dueDate)}
-                    tagName={tagNameOf(bill.tagId, tags)}
+                    tag={findTag(bill.tagId, tags)}
                     onPress={() =>
                       router.push({ pathname: '/recurring-bills/[id]/pay', params: { id: bill.id, month } })
                     }
@@ -125,12 +125,10 @@ export function HomePage() {
                     key={entry.id}
                     kind={entry.kind === 'recurringPayment' ? 'payment' : 'oneOff'}
                     name={entry.name}
+                    tag={findTag(entry.tagId, tags)}
                     amountCents={entry.amountCents}
                     onPress={() => router.push({ pathname: '/entries/[id]', params: { id: entry.id } })}
-                    support={homeEntrySupportOf(entry, {
-                      memberName: memberNameOf(entry.paidBy, people ?? []),
-                      tagName: tagNameOf(entry.tagId, tags),
-                    })}
+                    support={homeEntrySupportOf(entry, memberNameOf(entry.paidBy, people ?? []))}
                   />
                 ))}
               </MonthListSection>

@@ -15,6 +15,22 @@ describe('ListItem', () => {
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
+  // A tag aparece só como a bolinha da cor dela: quem não vê a cor ouve o nome dela depois do título.
+  it('Should add the tag name to the button label, without writing it', async () => {
+    await render(
+      <ListItem
+        icon={Tag}
+        title="Água"
+        support="R$ 98,00 · vence dia 20"
+        tag={{ id: 'caragua', name: 'Caraguá', nameKey: 'caragua', color: 'blue' }}
+        onPress={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Água, Caraguá' })).toBeOnTheScreen();
+    expect(screen.queryByText(/Caraguá/)).not.toBeOnTheScreen();
+  });
+
   it('Should be read only, with the support text, when it has no onPress', async () => {
     await render(<ListItem icon={Tag} title="Tags" support="Casa, Saúde" />);
 

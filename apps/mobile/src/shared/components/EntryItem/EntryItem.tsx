@@ -1,5 +1,6 @@
 import { ListItem } from '@/shared/components/ListItem/ListItem';
 import { AppText } from '@/shared/components/AppText/AppText';
+import type { ITag } from '@/shared/types/tag/Tag';
 import { entryMarkOf } from '@/shared/utils/entry/entryMarkOf';
 import { formatCents } from '@/shared/utils/format/formatCents';
 
@@ -9,18 +10,20 @@ export interface IEntryItemProps {
   name: string;
   /** O valor pago, em centavos. */
   amountCents: number;
-  /** O detalhe da linha, já escrito por quem chama ("dia 5 · Ana · Casa"). */
+  /** O detalhe da linha, já escrito por quem chama ("dia 5 · Ana"). */
   support: string;
-  /** Sem `onPress` a linha é só leitura; com ele é um botão cujo rótulo é o nome do lançamento. */
+  /** A tag, que abre o detalhe com a bolinha da cor dela (no Início); sem ela, o detalhe vem sozinho. */
+  tag?: ITag;
+  /** Sem `onPress` a linha é só leitura; com ele é um botão cujo rótulo é o nome do lançamento e o da tag. */
   onPress?: () => void;
 }
 
 /**
  * Um lançamento do mês numa lista. A conta avulsa leva a marca `secondaryContainer` e o recibo; o pagamento
  * de uma conta recorrente, a marca `primaryContainer` e o `check`. O detalhe vem pronto: aqui só se desenha
- * a marca, o nome e o valor.
+ * a marca, o nome, a bolinha da tag e o valor.
  */
-export function EntryItem({ kind, name, amountCents, support, onPress }: IEntryItemProps) {
+export function EntryItem({ kind, name, amountCents, support, tag, onPress }: IEntryItemProps) {
   const { icon, markColor, iconColor } = entryMarkOf(kind);
 
   return (
@@ -28,6 +31,7 @@ export function EntryItem({ kind, name, amountCents, support, onPress }: IEntryI
       icon={icon}
       title={name}
       support={support}
+      tag={tag}
       isCompact
       onPress={onPress}
       markColor={markColor}

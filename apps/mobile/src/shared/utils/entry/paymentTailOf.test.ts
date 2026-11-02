@@ -21,18 +21,14 @@ const payment = (overrides: Partial<Extract<IEntry, { kind: 'recurringPayment' }
 
 describe('paymentTailOf', () => {
   it('Should give the expected amount when the payment differs from it', () => {
-    expect(paymentTailOf(payment(), 'Casa')).toBe('previsto R$ 210,00');
+    expect(paymentTailOf(payment())).toBe('previsto R$ 210,00');
   });
 
-  it('Should give the tag when the payment is the expected amount', () => {
-    expect(paymentTailOf(payment({ amountCents: 21000 }), 'Casa')).toBe('Casa');
-  });
-
-  it('Should give nothing for a payment without tag and with the expected amount', () => {
+  it('Should give nothing when the payment is the expected amount', () => {
     expect(paymentTailOf(payment({ amountCents: 21000 }))).toBeUndefined();
   });
 
-  it('Should give the tag for a one-off bill', () => {
+  it('Should give nothing for a one-off bill', () => {
     const oneOff: IEntry = {
       id: 'a',
       kind: 'oneOffBill',
@@ -45,6 +41,6 @@ describe('paymentTailOf', () => {
       date: '2026-10-12',
     };
 
-    expect(paymentTailOf(oneOff, 'Casa')).toBe('Casa');
+    expect(paymentTailOf(oneOff)).toBeUndefined();
   });
 });

@@ -10,7 +10,7 @@ import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { dayOf } from '@/shared/utils/date/dayOf';
 import { monthName } from '@/shared/utils/date/monthName';
-import { tagNameOf } from '@/shared/utils/tag/tagNameOf';
+import { findTag } from '@/shared/utils/tag/findTag';
 
 export interface ISharedMonthBillsProps {
   /** O mês da lista, 'AAAA-MM'. */
@@ -43,7 +43,7 @@ export function SharedMonthBills({ month }: ISharedMonthBillsProps) {
           name={bill.name}
           expectedCents={bill.expectedAmountCents}
           dueDay={dayOf(dueDate)}
-          tagName={tagNameOf(bill.tagId, tags)}
+          tag={findTag(bill.tagId, tags)}
           onPress={() =>
             router.push({ pathname: '/recurring-bills/[id]/pay', params: { id: bill.id, month, shared: '1' } })
           }
