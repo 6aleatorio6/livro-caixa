@@ -21,6 +21,7 @@ import { formatPaymentTitle } from '@/shared/utils/date/formatPaymentTitle';
 import { entryMarkOf } from '@/shared/utils/entry/entryMarkOf';
 import { formatCents } from '@/shared/utils/format/formatCents';
 import { memberNameOf } from '@/shared/utils/person/memberNameOf';
+import { findTag } from '@/shared/utils/tag/findTag';
 
 export interface IEntryDetailsContentProps {
   entry: IEntry;
@@ -38,7 +39,7 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
   const isAuthor = authState.status === 'signedIn' && authState.user.uid === entry.paidBy;
   const authorName = memberNameOf(entry.paidBy, people ?? []);
   // Uma tag apagada (só pelo SDK) deixa a conta sem a linha da tag.
-  const tag = tags?.find((candidate) => candidate.id === entry.tagId);
+  const tag = findTag(entry.tagId, tags);
   const { icon: Icon, markColor, iconColor } = entryMarkOf(isPayment ? 'payment' : 'oneOff');
 
   return (

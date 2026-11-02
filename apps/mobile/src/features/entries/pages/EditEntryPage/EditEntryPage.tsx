@@ -16,6 +16,7 @@ import { entryQueryService } from '@/shared/services/entry/query/entryQueryServi
 import { receiptFileQueryService } from '@/shared/services/file/query/receiptFileQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { memberNameOf } from '@/shared/utils/person/memberNameOf';
+import { findTag } from '@/shared/utils/tag/findTag';
 
 /**
  * Onde quem registrou um lançamento corrige o que pode mudar nele: o valor e o comprovante do pagamento; o nome, o
@@ -45,7 +46,7 @@ export function EditEntryPage() {
         {isAuthor && isReceiptKnown && entry.kind === 'recurringPayment' ? (
           <EditPaymentForm
             entry={entry}
-            tag={tags?.find((candidate) => candidate.id === entry.tagId)}
+            tag={findTag(entry.tagId, tags)}
             currentReceipt={file ?? undefined}
             onSubmit={async (input) => {
               const { error } = await doUpdateEntry(input);

@@ -11,6 +11,7 @@ import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonth
 import { recurringBillListQueryService } from '@/shared/services/recurringBill/query/recurringBillListQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
+import { findTag } from '@/shared/utils/tag/findTag';
 
 import { isMonthToPay } from '@/features/home/utils/isMonthToPay';
 import { PayRecurringBillForm } from '@/features/home/components/PayRecurringBillForm/PayRecurringBillForm';
@@ -50,7 +51,7 @@ export function PayRecurringBillPage() {
           <PayRecurringBillForm
             bill={bill}
             month={month}
-            tag={tags?.find((candidate) => candidate.id === bill.tagId)}
+            tag={findTag(bill.tagId, tags)}
             initialValues={{ receipt: initialReceipt }}
             onSubmit={async (input) => {
               setIsSubmitted(true);
