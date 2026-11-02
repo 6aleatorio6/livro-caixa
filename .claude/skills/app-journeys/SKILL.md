@@ -18,16 +18,20 @@ allowed-tools: Bash(pnpm journeys:test *) Bash(pnpm journeys:inspect *) Bash(adb
 The Android emulator runs on the developer's PC: this container has no hardware acceleration.
 Everything else runs here. The container shares the PC's network (`--network host` in the
 claude-box launcher), so `localhost` here is the PC's: Maestro and adb talk to the PC's adb server
-on `localhost:5037`, and the app on the emulator reaches the stack on `10.0.2.2`, the PC's loopback.
+on `localhost:5037`, and the app reaches the stack on the device's own `127.0.0.1`, which `adb reverse`
+of 8081 (Metro), 9099 (Auth) and 8080 (Firestore) takes to the PC. The same path serves the AVD, a
+redroid container and a phone; `10.0.2.2` exists only on the AVD, and `apps/mobile/firebase.json`
+(`android_bypass_emulator_url_remap`) stops React Native Firebase from swapping `127.0.0.1` for it.
 Java, Maestro and the Android SDK's adb come from the PC: the claude-box mounts them and puts them
 on the `PATH`, outside this repository. A missing one is the box's to fix: tell the person.
 
 Three commands, all from the repository root:
 
 - `pnpm journeys:stack` (`journeys/stack.sh`): the stack.
-- `pnpm journeys:test [<flow> | tag:<name>]` (`journeys/test.ts`): prepares the emulator (app
-  drawing on, animations off: see the ATD trap), deletes old rounds, serves the test data and runs
-  Maestro.
+- `pnpm journeys:test [<flow> | tag:<name>]` (`journeys/test.ts`): picks the device (the
+  `ANDROID_SERIAL` one, or the only one on adb; with two and no variable it stops and lists the
+  serials), prepares it (app drawing on, animations off: see the ATD trap; the `adb reverse` of
+  the stack's ports), deletes old rounds, serves the test data and runs Maestro on that device.
 - `pnpm journeys:inspect [<selector>…]` (`journeys/inspect.ts`): the screen's nodes, in dp.
 
 Where each file goes, and when something becomes a step or a scenario: `journeys/CLAUDE.md`.
@@ -39,11 +43,17 @@ Where each file goes, and when something becomes a step or a scenario: `journeys
 "Pilha das jornadas de pé"; it refuses to start when one of its ports is taken, which means another
 stack or another Metro is up: never take it down. It needs:
 
-- the Android emulator open on the PC: the `Livro_Caixa_API_35` AVD (Android 15, the default
-  image without Google Play, Pixel 7 profile at density 420; Android 16 is a trap below). It has
-  the status and navigation bars, so `adb exec-out screencap -p` and Maestro's `takeScreenshot`
-  show them. The person opens it; `adb devices` shows it.
-- the debug APK installed on it. The debug build loads the JavaScript from Metro, so a JS change
+- an Android device on adb, opened by the person: the `Livro_Caixa_API_35` AVD (Android 15, the
+  default image without Google Play, Pixel 7 profile at density 420; Android 16 is a trap below),
+  or a redroid container (`127.0.0.1:5600`, the ezfacil script; `adb shell wm size 1080x2400` gives
+  it the Pixel 7's 411 × 914 dp), or a phone. All have the status and navigation bars, so
+  `adb exec-out screencap -p` and Maestro's `takeScreenshot` show them. With more than one on adb,
+  `ANDROID_SERIAL=<serial>` picks the device for `journeys:test`, `journeys:inspect` and every
+  `adb` call of this session.
+- the debug APK installed on it, built for its architecture: `pnpm android` builds only the
+  connected device's (`arm64-v8a` on a phone, `x86_64` on the AVD and redroid), and a build for
+  one crashes on the other (`couldn't find DSO to load: libreactnative.so`). For several devices,
+  `cd apps/mobile/android && ./gradlew assembleDebug -PreactNativeArchitectures=arm64-v8a,x86_64`. The debug build loads the JavaScript from Metro, so a JS change
   needs no new build: when the native code is unchanged, this session reinstalls the last build
   with `adb install -r apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk`. A native
   change (a new native package, `app.json`) needs `pnpm android --no-bundler` on the PC: without
@@ -85,7 +95,9 @@ stack or another Metro is up: never take it down. It needs:
    selector, every node with a text, label or id.
 5. Only when color or composition matter:
    `adb exec-out screencap -p > journeys/.local/captures/screen/<name>.png`. Every image read goes
-   linked in the answer.
+   linked in the answer. For the dark theme, `adb shell cmd uimode night yes` before the capture
+   and `adb shell cmd uimode night no` after: the app follows the phone's scheme when it comes back
+   to the front, with no new build.
 
 Selectors in a flow, in this order: the visible text or the accessibility label (`text` also
 matches the Android content description, so a `Button`'s `label` works), then a `testID` (`id:`)
@@ -220,7 +232,13 @@ throwaway flow before the round counts as passing.
 - **Metro serves an old bundle after a rebase** (the rebase rewrites the app's files one commit at a
   time, and Metro bundles one of the intermediate states: "Unable to resolve …" in the stack log, a
   Render Error on the device that the code at `HEAD` can't produce). Restart the stack after every
-  rebase, before a round.
+  rebase, before a round. The Firestore emulator can keep the rules of an intermediate commit the
+  same way: a write the current `firebase/firestore.rules` accepts fails with `PERMISSION_DENIED`
+  in the logcat (`Firestore` tag), and the screen only flashes an error toast. On 2026-10-30 the
+  #17 rebase left the #16 rules, which refuse a PDF receipt. When the stack is another session's,
+  reload the rules without taking it down: `PUT
+  http://localhost:8080/emulator/v1/projects/<project id>:securityRules` with the body
+  `{"rules":{"files":[{"name":"firestore.rules","content":"<the file>"}]}}`.
 - **The emulator loses its network** (`wlan0` NO-CARRIER, `ping 10.0.2.2` says "Network is
   unreachable"; Firestore fails with ENETUNREACH; twice in G4). Toggling wifi or airplane
   mode doesn't bring the virtual AP back; `adb reboot` does, without the person. Wait for
@@ -232,12 +250,12 @@ throwaway flow before the round counts as passing.
   `adb reverse` that `pnpm android` set, and `signInAs` fails waiting for "Entrar com Google".
   `adb reverse tcp:8081 tcp:8081`, then the flow again.
 - **The file picker's files live only on the device.** `home/memberPaysRecurringBill` picks
-  `recibo-pequeno.pdf` (one page: the app refuses a PDF of more) and
-  `payments/memberRegistersOneOffBillWithReducedReceipt` picks `foto-grande.jpg` (over 900 KB) from
+  `recibo-pequeno.pdf`, and `payments/memberRegistersOneOffBillWithReducedReceipt` picks
+  `recibo-grande.pdf` (over 900 KB, refused) and `foto-grande.jpg` (over 900 KB, reduced) from
   Downloads; a new AVD or image has none, and the flows fail on "Element not found". Rebuild them
-  from `data/fixtures/` (a copy of `pix-agua-outubro.pdf`; `recibo-conserto.jpg` with JPEG comment
-  segments, `FF FE`, after the `FF D8`, to 22 MB), then `adb push` each to `/sdcard/Download/` and
-  send `MEDIA_SCANNER_SCAN_FILE` for it.
+  from `data/fixtures/` (a copy of `pix-agua-outubro.pdf`; the same PDF padded with `%` comment
+  lines to 6 MB; `recibo-conserto.jpg` with JPEG comment segments, `FF FE`, after the `FF D8`, to
+  22 MB), then `adb push` each to `/sdcard/Download/` and send `MEDIA_SCANNER_SCAN_FILE` for it.
 - **The status and navigation bars take height:** a list item near the end of the Início (the
   Água) sits below the fold. Wait for the first item, or scroll to the one the flow needs.
 - **`clearState`** erases the session and the cached data: every flow signs in again.

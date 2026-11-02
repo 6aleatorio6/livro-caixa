@@ -40,23 +40,45 @@ describe('payRecurringBillService', () => {
         sizeBytes: RECEIPT_FIXTURE.sizeBytes,
         uploadedBy: uid,
       });
-      // Um lançamento só, com o id `{mês}_{conta}`; o nome, a tag (sem tag, sem o campo), o dia do vencimento e o previsto vêm da conta e o valor é o confirmado.
-      expect(await readCollectionWithoutRules('entries')).toEqual([
-        {
-          id: `${month}_${bill.id}`,
-          kind: 'recurringPayment',
-          month,
-          recurringBillId: bill.id,
-          name: bill.name,
-          ...(bill.tagId && { tagId: bill.tagId }),
-          amountCents,
-          dueDay: bill.dayOfMonth,
-          expectedAmountCents: bill.expectedAmountCents,
-          paidBy: uid,
-          createdAt: expect.any(Timestamp),
-          receiptFileId: file0.id,
-        },
-      ]);
+      // O lançamento tem o id `{mês}_{conta}`; o nome, a tag (sem tag, sem o campo), o dia do vencimento e o previsto vêm
+      // da conta, ou ficam os do pagamento sem dono que já estava, e o valor é o confirmado. Os outros lançamentos ficam.
+      const paymentId = `${month}_${bill.id}`;
+      const unownedCopies = Object.fromEntries(
+        Object.entries((scenario.given as Record<string, object>)[`entries/${paymentId}`] ?? {}).filter(
+          ([field]) => field !== 'createdAt',
+        ),
+      );
+      const copies =
+        Object.keys(unownedCopies).length > 0
+          ? unownedCopies
+          : {
+              kind: 'recurringPayment',
+              month,
+              recurringBillId: bill.id,
+              name: bill.name,
+              ...(bill.tagId && { tagId: bill.tagId }),
+              dueDay: bill.dayOfMonth,
+              expectedAmountCents: bill.expectedAmountCents,
+            };
+      const entries = await readCollectionWithoutRules('entries');
+      expect(entries.find(({ id }) => id === paymentId)).toEqual({
+        id: paymentId,
+        ...copies,
+        amountCents,
+        paidBy: uid,
+        createdAt: expect.any(Timestamp),
+        receiptFileId: file0.id,
+      });
+      expect(entries.map(({ id }) => id).sort()).toEqual(
+        [
+          ...new Set([
+            paymentId,
+            ...Object.keys(scenario.given)
+              .filter((path) => path.startsWith('entries/'))
+              .map((path) => path.slice(8)),
+          ]),
+        ].sort(),
+      );
       expect(await readWithoutRules(`allowedEmails/${scenario.signedInAs}`)).toMatchObject({ hasEntries: true });
       expect(await readContentWithoutRules(file0.id)).toEqual(RECEIPT_FIXTURE.bytes);
     },

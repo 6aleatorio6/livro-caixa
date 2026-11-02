@@ -4,10 +4,14 @@ import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import type { IRealtimeState } from '@/shared/types/realtime/RealtimeState';
 import type { IRealtimeMock } from '@/shared/types/testing/RealtimeMock';
 
+// As entradas são objetos pequenos e planos, como `{ month: '2026-10' }`.
+const isSameInput = (input: unknown, params: unknown) => JSON.stringify(input) === JSON.stringify(params);
+
 /**
  * Faz o `useRealtime`, mockado no teste com fábrica, entregar a cada serviço o resultado de um cenário
  * ou um estado sem dado. A tela tem de ler com os parâmetros do cenário: outros parâmetros, ou um
  * serviço sem mock, derrubam o teste, porque o contrato só conferiu o serviço com aquela entrada.
+ * Dois cenários do mesmo serviço, com entradas diferentes, atendem duas leituras dele (o mês atual e o próximo).
  */
 export function mockRealtime(...mocks: IRealtimeMock[]) {
   const changedServices = new Set<unknown>();
@@ -23,7 +27,10 @@ export function mockRealtime(...mocks: IRealtimeMock[]) {
       };
     }, []);
 
-    const mock = mocks.find((candidate) => candidate.service === service);
+    const serviceMocks = mocks.filter((candidate) => candidate.service === service);
+    const mock =
+      serviceMocks.find((candidate) => 'status' in candidate || isSameInput(candidate.scenario.input, params)) ??
+      serviceMocks[0];
     if (!mock) throw new Error(`O useRealtime não tem mock para a leitura com ${JSON.stringify(params)}.`);
     if ('status' in mock) return { status: mock.status, data: null };
     // A tela tem de ler com a entrada do cenário: o contrato só conferiu o serviço com ela.

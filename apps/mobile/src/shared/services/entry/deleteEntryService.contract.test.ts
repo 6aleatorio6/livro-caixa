@@ -7,13 +7,12 @@ import { readCollectionWithoutRules } from '@/shared/testing/contract/readCollec
 import { readContentWithoutRules } from '@/shared/testing/contract/readContentWithoutRules';
 import { scenarioEntries } from '@/shared/testing/contract/scenarioEntries';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
-import type { IEntry } from '@/shared/types/entry/Entry';
 
 import { deleteEntryService } from './deleteEntryService';
 import { deleteEntryRejectedScenarios, deleteEntryScenarios } from './deleteEntryService.scenarios';
 
 describe('deleteEntryService', () => {
-  it.each(scenarioEntries<[IEntry], void>(deleteEntryScenarios))(
+  it.each(scenarioEntries<Parameters<typeof deleteEntryService>, void>(deleteEntryScenarios))(
     'Should delete the entry of the scenario %s',
     async (_name, scenario) => {
       await arrangeScenario(scenario);
@@ -21,19 +20,24 @@ describe('deleteEntryService', () => {
 
       expect(await deleteEntryService(...scenario.input)).toBe(scenario.result);
 
-      // Somem o lançamento, o registro e o conteúdo do comprovante, e o mês deixa de trazer o lançamento.
-      expect(await readCollectionWithoutRules('entries')).toEqual([]);
+      // Somem o lançamento, o registro e o conteúdo do comprovante, e o mês deixa de trazer o lançamento; na última
+      // contribuição de um pagamento sem dono, o pagamento sai junto.
+      const remainingEntryIds = (scenario as { remainingEntryIds?: string[] }).remainingEntryIds ?? [];
+      expect((await readCollectionWithoutRules('entries')).map(({ id }) => id)).toEqual(remainingEntryIds);
       expect(await readCollectionWithoutRules('files')).toEqual([]);
       expect(await readContentWithoutRules(entry.receiptFileId)).toBeNull();
-      expect(await listenTo(entryMonthQueryService, { month: entry.month }).next()).toEqual([]);
+      const month = await listenTo(entryMonthQueryService, { month: entry.month }).next();
+      expect(month.map(({ id }) => id).sort()).toEqual([...remainingEntryIds].sort());
     },
   );
 
-  it.each(scenarioEntries<[IEntry], { code: string; userMessage: string }>(deleteEntryRejectedScenarios))(
-    'Should refuse the deletion of the scenario %s',
-    async (_name, scenario) => {
-      await arrangeScenario(scenario);
-      const refusal = deleteEntryService(...scenario.input);
+  it.each(
+    scenarioEntries<Parameters<typeof deleteEntryService>, { code: string; userMessage: string }>(
+      deleteEntryRejectedScenarios,
+    ),
+  )('Should refuse the deletion of the scenario %s', async (_name, scenario) => {
+    await arrangeScenario(scenario);
+    const refusal = deleteEntryService(...scenario.input);
 
       await expect(refusal).rejects.toBeInstanceOf(AppError);
       await expect(refusal).rejects.toMatchObject(scenario.result);

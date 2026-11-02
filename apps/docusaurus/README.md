@@ -57,12 +57,6 @@ pnpm --filter livro-caixa-docs build   # da raiz; ou `pnpm build` dentro de apps
 
 Gera o site estático em `build/`. Links quebrados **derrubam o build**.
 
-## Busca
-
-A busca é local (`@easyops-cn/docusaurus-search-local`): o índice é gerado no `build` e servido
-junto com o site, sem enviar conteúdo para nenhum serviço externo. No `pnpm start` a caixa de busca
-aparece, mas só responde depois de um build: teste com `pnpm build && pnpm serve`.
-
 ## Publicação (Netlify)
 
 A configuração está em `netlify.toml`, com os caminhos relativos à **raiz do repositório**. No

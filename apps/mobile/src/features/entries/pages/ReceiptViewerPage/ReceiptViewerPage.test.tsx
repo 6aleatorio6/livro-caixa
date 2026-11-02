@@ -1,6 +1,8 @@
 import { act, render, screen, userEvent } from '@testing-library/react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
+import { PdfPages } from '@/features/entries/components/PdfPages/PdfPages';
+import { ScrollableImage } from '@/features/entries/components/ScrollableImage/ScrollableImage';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService.scenarios';
 import { entryQueryService } from '@/shared/services/entry/query/entryQueryService';
@@ -17,7 +19,6 @@ import { mockServiceRejection } from '@/shared/testing/mockServiceRejection';
 import { mockServiceScenario } from '@/shared/testing/mockServiceScenario';
 import type { IRealtimeMock } from '@/shared/types/testing/RealtimeMock';
 
-import { ZoomableImage } from './components/ZoomableImage/ZoomableImage';
 import { ReceiptViewerPage } from './ReceiptViewerPage';
 
 // Mocks com fábrica: o módulo real carregaria o React Native Firebase, que não roda no Jest.
@@ -29,21 +30,25 @@ jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', (
 }));
 jest.mock('@/shared/services/file/getReceiptContentService', () => ({ getReceiptContentService: jest.fn() }));
 jest.mock('expo-router', () => ({ router: { back: jest.fn() }, useLocalSearchParams: jest.fn() }));
-// O zoom é dos gestos nativos e se confere no aparelho; o teste lê as props que a tela passa.
-jest.mock('./components/ZoomableImage/ZoomableImage', () => ({ ZoomableImage: jest.fn(() => null) }));
+// A carga e a rolagem da imagem se conferem no aparelho; o teste lê as props que a tela passa.
+jest.mock('@/features/entries/components/ScrollableImage/ScrollableImage', () => ({ ScrollableImage: jest.fn(() => null) }));
+// As páginas são desenhadas pelo módulo nativo da `react-native-pdf`; o teste lê as props que a tela passa.
+jest.mock('@/features/entries/components/PdfPages/PdfPages', () => ({ PdfPages: jest.fn(() => null) }));
 
 const family = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyList };
 const oneOffBill = { service: entryQueryService, scenario: entryQueryScenarios.oneOffBillOfTheMember };
 const payment = { service: entryQueryService, scenario: entryQueryScenarios.paymentOfTheMember };
 const imageReceipt = { service: receiptFileQueryService, scenario: receiptFileQueryScenarios.imageReceipt };
-const convertedPdfReceipt = {
+const pdfReceipt = {
   service: receiptFileQueryService,
-  scenario: receiptFileQueryScenarios.convertedPdfReceipt,
+  scenario: receiptFileQueryScenarios.pdfReceipt,
 };
 
 const imageContent = getReceiptContentScenarios.receiptOfAnotherMember;
+const pdfContent = getReceiptContentScenarios.pdfOfAnotherMember;
 
-const imageProps = () => jest.mocked(ZoomableImage).mock.calls.at(-1)![0];
+const imageProps = () => jest.mocked(ScrollableImage).mock.calls.at(-1)![0];
+const pdfProps = () => jest.mocked(PdfPages).mock.calls.at(-1)![0];
 
 // O mock do lançamento lido pelo id: o `id` do cenário é o da rota.
 type IEntryMock = IRealtimeMock & { scenario: { input: { id: string } } };
@@ -88,24 +93,53 @@ describe('ReceiptViewerPage', () => {
   });
 
   describe('The PDF', () => {
-    it('Should open a PDF as the image of its page, with the name chosen in the title', async () => {
-      mockServiceScenario(getReceiptContentService, imageContent);
+    it('Should open a PDF in its pages, with the content from Firestore written under the file id', async () => {
+      mockServiceScenario(getReceiptContentService, pdfContent);
 
-      await renderViewer(payment, convertedPdfReceipt, family);
+      await renderViewer(payment, pdfReceipt, family);
 
-      expect(getReceiptContentService).toHaveBeenCalledWith(convertedPdfReceipt.scenario.result.id, 'image/png');
-      expect(imageProps().uri).toBe(imageContent.result);
+      expect(getReceiptContentService).toHaveBeenCalledWith(pdfReceipt.scenario.result.id, 'application/pdf');
+      expect(pdfProps()).toMatchObject({ uri: pdfContent.result, cacheFileName: pdfReceipt.scenario.result.id });
+      expect(ScrollableImage).not.toHaveBeenCalled();
       expect(screen.getByText('comprovante-luz.pdf')).toBeOnTheScreen();
     });
 
-    it('Should show the payment below the image: the bill, the amount, the month, who registered it and when', async () => {
-      mockServiceScenario(getReceiptContentService, imageContent);
+    it('Should say it could not open the PDF and read it again on Tentar de novo', async () => {
+      mockServiceScenario(getReceiptContentService, pdfContent);
+      const user = await renderViewer(payment, pdfReceipt, family);
 
-      await renderViewer(payment, convertedPdfReceipt, family);
+      await act(async () => pdfProps().onError());
+      expect(screen.getByText('Não deu para abrir o comprovante.')).toBeOnTheScreen();
+      await user.press(screen.getByRole('button', { name: 'Tentar de novo' }));
+
+      expect(getReceiptContentService).toHaveBeenCalledTimes(2);
+      expect(screen.queryByText('Não deu para abrir o comprovante.')).not.toBeOnTheScreen();
+      expect(pdfProps().uri).toBe(pdfContent.result);
+    });
+
+    it('Should show the payment below the PDF: the bill, the amount, the month, who registered it and when', async () => {
+      mockServiceScenario(getReceiptContentService, pdfContent);
+
+      await renderViewer(payment, pdfReceipt, family);
 
       expect(screen.getByText('Luz · R$ 187,35')).toBeOnTheScreen();
       expect(screen.getByText('Pagamento de outubro de 2026 · registrado por Bruno em 10/10/2026')).toBeOnTheScreen();
     });
+  });
+
+  it("Should open a contribution's receipt, saying below that it is a contribution, who registered it and when", async () => {
+    jest.mocked(getReceiptContentService).mockReturnValue(new Promise(() => {}));
+    const contribution = { service: entryQueryService, scenario: entryQueryScenarios.contribution };
+    const contributionReceipt = {
+      service: receiptFileQueryService,
+      scenario: receiptFileQueryScenarios.contributionReceipt,
+    };
+
+    await renderViewer(contribution, contributionReceipt, family);
+
+    expect(screen.getByText('pix-luz-ana.jpg')).toBeOnTheScreen();
+    expect(screen.getByText('Contribuição · R$ 40,00')).toBeOnTheScreen();
+    expect(screen.getByText('Contribuição em outubro de 2026 · registrada por Ana em 11/10/2026')).toBeOnTheScreen();
   });
 
   describe('When there is nothing to show', () => {
@@ -145,7 +179,7 @@ describe('ReceiptViewerPage', () => {
 
       await renderViewer(oneOffBill, imageReceipt, family);
 
-      expect(ZoomableImage).not.toHaveBeenCalled();
+      expect(ScrollableImage).not.toHaveBeenCalled();
       expect(screen.queryByText('Não deu para abrir o comprovante.')).not.toBeOnTheScreen();
       expect(screen.getByText('Conserto da geladeira · R$ 350,00')).toBeOnTheScreen();
     });

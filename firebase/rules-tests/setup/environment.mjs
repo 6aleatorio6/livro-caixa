@@ -49,8 +49,8 @@ beforeEach(async () => {
 
 after(() => testEnvironment.cleanup());
 
-// O registro e o conteúdo de um comprovante, gravados juntos como o lote do app os deixa.
-function seedReceipt(firestore, id, overrides = {}) {
+/** O registro e o conteúdo de um comprovante, gravados juntos como o lote do app os deixa. */
+export function seedReceipt(firestore, id, overrides = {}) {
   const file = receiptFileOf(overrides);
   return Promise.all([setDoc(fileOf(firestore, id), file), setDoc(fileContentOf(firestore, id), receiptContentOf(file.sizeBytes))]);
 }

@@ -17,6 +17,7 @@ const RECEIPT: IOneOffBillInput['receipt'] = {
   sizeBytes: RECEIPT_FIXTURE.sizeBytes,
   type: 'image',
   wasReduced: false,
+  readAmountCents: null,
 };
 const FARMACIA = { name: 'Farmácia', amountCents: 8990, date: '2026-10-12', tagId: HOME_TAG_ID, receipt: RECEIPT };
 

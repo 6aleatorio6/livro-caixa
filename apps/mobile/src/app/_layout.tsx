@@ -33,11 +33,13 @@ export default function RootLayout() {
           <Stack.Screen name="recurring-bills/[id]/pay" />
           <Stack.Screen name="one-off-bills/new" />
           <Stack.Screen name="share-receipt" />
+          <Stack.Screen name="receipt-preview" options={{ animation: 'fade' }} />
           <Stack.Screen
             name="entries/[id]/index"
             options={{ presentation: 'transparentModal', animation: 'slide_from_bottom' }}
           />
           <Stack.Screen name="entries/[id]/edit" />
+          <Stack.Screen name="entries/[id]/contribute" />
           <Stack.Screen name="entries/[id]/receipt" options={{ animation: 'fade' }} />
           <Stack.Screen name="tags/index" />
           <Stack.Screen name="tags/new" />

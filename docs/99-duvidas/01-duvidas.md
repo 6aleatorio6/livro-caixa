@@ -12,24 +12,25 @@ tema aparece na documentação.
 | D-04 | Quem cadastra, altera e exclui contas recorrentes, e o que acontece com os meses já pagos? | 🟢 Respondido — qualquer membro; os meses pagos não mudam |
 | D-05 | Em que mês um lançamento conta? | 🟢 Respondido — o pagamento no mês da conta; a conta avulsa no mês da data dela |
 | D-06 | Uma conta recorrente pode ter mais de um pagamento no mesmo mês? | 🟢 Respondido — não: o mês fica com o primeiro que pagar |
-| D-07 | O que é o processamento de imagens acima de 5 MB, e o que acontece com um PDF grande? | 🟢 Respondido — o limite é 900 KB; a imagem é comprimida em degraus até caber, e o PDF de uma página vira imagem |
-| D-08 | O que o app mostra depois de receber um arquivo compartilhado pelo Android? | 🟢 Respondido — a lista das contas a pagar do mês, com "Conta avulsa" por último |
+| D-07 | O que é o processamento de imagens acima de 5 MB, e o que acontece com um PDF grande? | 🟢 Respondido — o limite é 900 KB; a imagem é comprimida em degraus até caber, e o PDF vai como está, recusado acima disso |
+| D-08 | O que o app mostra depois de receber um arquivo compartilhado pelo Android? | 🟢 Respondido — "Conta avulsa" e as contas a pagar do mês atual e do próximo |
 | D-09 | De onde o membro anexa o comprovante dentro do app? | 🟢 Respondido — só dos arquivos do celular |
-| D-10 | O que o Início mostra, além do gráfico do mês? | 🟢 Respondido — lista do mês, separação por tag e por membro, meses anteriores |
+| D-10 | O que o Início mostra, além do gráfico do mês? | 🟢 Respondido — lista do mês, separação por tag e por membro, meses anteriores e o próximo |
 | D-11 | Quem pode alterar ou excluir um pagamento ou uma conta avulsa? | 🟢 Respondido — só quem registrou |
 | D-12 | Quais são os campos de uma conta avulsa, e a tag é obrigatória? | 🟢 Respondido — nome, valor, data e comprovante; tag opcional |
 | D-13 | Uma tag pode ser alterada ou excluída? | 🟢 Respondido — qualquer membro altera; só se exclui sem uso; nome único |
 | D-14 | Como funciona a saída de um membro da lista de e-mails permitidos? | 🟢 Respondido — só sai quem não tem lançamento; um admin, sem verificação |
 | D-15 | O app é só em português e só em reais? | 🟢 Respondido — sim |
 | D-16 | Um mês que passou sem pagamento continua a pagar? | 🟢 Respondido — sim, só no próprio mês |
-| D-17 | Onde o easter egg do "Paia" aparece no app? | 🟢 Respondido — na arte da splash screen |
+| D-17 | Onde o easter egg do "Paia" aparece no app? | 🟢 Respondido — na logo, em todo lugar: splash, tela de entrada e ícone |
 | D-18 | Como o Maestro alcança o emulador do PC? | 🟢 Respondido — pela rede do PC, que o container divide |
 | D-19 | O JSON do Google falso leva o nome da pessoa? | 🟢 Respondido — sim, no campo `name` |
 | D-20 | Como a jornada do compartilhamento chega à tela de compartilhar? | 🟢 Respondido — por um comando do adb, antes do fluxo |
-| D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🟢 Respondido — Meus pagamentos, um mês por vez, com a troca de mês |
-| D-22 | O app lê o valor no comprovante? | 🟢 Respondido — fica para depois, com a leitura no celular |
-| D-23 | O comprovante em PDF abre dentro do app ou no leitor do celular? | 🟢 Respondido — dentro do app, já convertido em imagem |
-| D-24 | O app aceita PDF de mais de uma página? | 🟡 Parcial — por enquanto, não; falta decidir se e como volta |
+| D-21 | Como se chama a aba do meio, e ela mostra o mês ou todos os meses? | 🟢 Respondido — Pagamentos, um mês e uma pessoa (ou todos) por vez, agrupado por tag |
+| D-22 | O app lê o valor no comprovante? | 🟢 Respondido — sim, no celular, e preenche o valor pago |
+| D-23 | O comprovante em PDF abre dentro do app ou no leitor do celular? | 🟢 Respondido — dentro do app, com as páginas rolando |
+| D-24 | O app aceita PDF de mais de uma página? | 🟢 Respondido — sim, até 900 KB, guardado como está |
+| D-25 | Dá para pagar uma conta antes de o mês dela começar? | 🟢 Respondido — sim, só o próximo mês |
 
 <!-- Status: 🔴 Em aberto · 🟡 Parcial — o que falta · 🟢 Respondido — a resposta -->
 
@@ -89,19 +90,23 @@ recusado (modelo de um projeto anterior).
 **Resposta:** o comprovante tem até 900 KB, porque passou a morar num documento do Firestore, que
 tem no máximo 1 MiB. A imagem acima de 900 KB é comprimida em degraus: primeiro a qualidade, com o
 lado maior em 2560 pixels, depois o lado maior, até o piso de 1600 pixels com qualidade de 50%, e
-sai em WebP. O que não cabe nem no piso é recusado. O PDF de uma página vira a imagem dela e desce os
-mesmos degraus. Antes, o limite era de 5 MB no Cloud Storage: a imagem acima de 2 MB era reduzida
-para 2560 pixels, e o PDF ia como estava, recusado acima de 5 MB. O Cloud Storage saiu porque só
-funciona no plano Blaze, cuja ativação pedia um pagamento antecipado.
+sai em WebP. O que não cabe nem no piso é recusado. O PDF vai como está e é recusado acima de 900
+KB, porque não é comprimido. Antes, o limite era de 5 MB no Cloud Storage: a imagem acima de 2 MB era
+reduzida para 2560 pixels, e o PDF ia como estava, recusado acima de 5 MB. O Cloud Storage saiu porque
+só funciona no plano Blaze, cuja ativação pedia um pagamento antecipado. Por um tempo, o PDF de uma
+página virou a imagem dela antes de salvar. Voltou a ir como está porque a imagem ficava maior que o
+PDF que o banco gera: o de um Pix, com menos de 1 KB, virava 56 KB.
 
 **Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md),
 [Plataforma e Stack](../05-arquitetura/01-plataforma-e-stack.md).
 
 ## D-08 — Depois de compartilhar pelo Android
 
-**Resposta:** o app abre a lista das contas a pagar do mês, com o comprovante anexado. O membro
-escolhe a conta que está pagando; a última opção da lista é "Conta avulsa". Quem não está logado
-faz o login e precisa compartilhar o arquivo de novo.
+**Resposta:** o app abre a escolha da conta, com o comprovante anexado: primeiro "Conta avulsa",
+depois as contas a pagar do mês atual e as do próximo mês (D-25). O membro escolhe a conta que está
+pagando. Quem não está logado faz o login e precisa compartilhar o arquivo de novo. A "Conta avulsa"
+era a última opção e subiu para o topo, a pedido de Leonardo (29/10/2026), quando a lista ganhou o
+próximo mês.
 
 **Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).
 
@@ -114,8 +119,8 @@ faz o login e precisa compartilhar o arquivo de novo.
 ## D-10 — O que o Início mostra
 
 **Resposta:** além do gráfico do mês, a lista dos lançamentos e das contas a pagar do mês, a
-separação por tag e por membro, e a troca para os meses anteriores. O formato do gráfico fica para
-o design.
+separação por tag e por membro, e a troca para os meses anteriores e para o próximo mês (D-25). O
+formato do gráfico fica para o design.
 
 **Onde aparece:** [Início](../03-funcionalidades/01-principal/01-inicio.md).
 
@@ -172,8 +177,10 @@ mês mostra só as próprias contas.
 
 ## D-17 — O easter egg do "Paia"
 
-**Resposta:** o "Paia" aparece escondido na arte da splash screen, a tela de abertura do app. Como
-ele se esconde na arte fica para o design.
+**Resposta:** o "Paia" aparece escrito à mão na página da esquerda da logo, em todo lugar: na splash
+screen, na tela de entrada e no ícone do app. No ícone do launcher ele é maior e sem as duas pautas,
+para se ler a 48 dp; no ícone temático do Android 13, fica recortado na página. Antes ficava só na
+splash; Leonardo pediu a logo da splash em todo lugar (29/10/2026).
 
 **Onde aparece:** [Contexto](../01-visao-geral/01-contexto.md).
 
@@ -216,38 +223,62 @@ arquivo.
 **Resposta:** a aba se chama Meus pagamentos e mostra um mês por vez, com a troca de mês, como o
 Início. A sessão de design tinha usado "Meus lançamentos", pelo glossário (a conta é da família, e o
 que é de cada um são os lançamentos); Leonardo escolheu "Meus pagamentos", porque a conta avulsa
-também é um pagamento: não tem valor previsto e só é registrada junto com o comprovante.
+também é um pagamento: não tem valor previsto e só é registrada junto com o comprovante. Na barra
+de abas o rótulo passou a "Pagamentos" (29/10/2026): "Meus pagamentos" quebrava a linha em tela
+pequena. No mesmo dia, Leonardo pediu que a aba mostrasse também os lançamentos dos outros membros, e
+o nome da tela virou "Pagamentos": chips com os membros, abertos em "Você", e a lista agrupada por
+tag, com as tags em ordem alfabética e Sem tag por último. Sem chip "Todos", porque o Início já lista
+todos os lançamentos do mês com quem pagou. Em 02/11/2026, Leonardo pediu o chip "Todos": ele vem
+primeiro, a aba continua abrindo em "Você", a lista da família se agrupa por tag como as outras, com
+quem pagou em cada linha, e o total é o da família, sem a porcentagem.
 
-**Onde aparece:** [Meus Pagamentos](../03-funcionalidades/01-principal/06-meus-pagamentos.md).
+**Onde aparece:** [Pagamentos](../03-funcionalidades/01-principal/06-pagamentos.md).
 
 ## D-22 — Ler o valor no comprovante
 
-**Resposta:** fica como evolução futura, no Escopo Excluído. Quando entrar, a leitura é feita no
-próprio celular, com o reconhecimento de texto do ML Kit
-(`@infinitered/react-native-mlkit-text-recognition`). A sessão que pesquisou recomendou o Gemini,
-pelo Firebase AI Logic (`@react-native-firebase/ai`), que lê o PDF direto e devolve só o valor, mas
-envia o comprovante ao Google. A escolha foi a leitura no celular. Falta confirmar se o pacote do
-ML Kit funciona na nova arquitetura do React Native 0.88.
+**Resposta:** sim. Ao anexar o comprovante, o app lê o texto no próprio celular, com o
+reconhecimento de texto do ML Kit, e preenche o valor pago enquanto o membro não digitou no campo. O
+ML Kit roda num módulo Expo local, no lugar do pacote
+`@infinitered/react-native-mlkit-text-recognition`, que exigia o `expo-image` e puxava o ML Kit numa
+versão em aberto.
 
-**Onde aparece:** [Leitura do Valor pelo Comprovante](../04-escopo-excluido/07-leitura-do-valor-pelo-comprovante.md),
-[Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).
+Antes, a leitura ficava como evolução futura, no Escopo Excluído. A sessão que pesquisou tinha
+recomendado o Gemini, pelo Firebase AI Logic (`@react-native-firebase/ai`), que lê o PDF direto e
+devolve só o valor, mas envia o comprovante ao Google. A escolha foi a leitura no celular.
+
+**Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#o-valor-lido-do-comprovante),
+[Plataforma e Stack](../05-arquitetura/01-plataforma-e-stack.md).
 
 ## D-23 — O PDF dentro do app
 
-**Resposta:** o PDF abre dentro do app como a imagem, porque já é guardado como a imagem da sua
-página: em tela cheia, sobre fundo escuro, com zoom e, embaixo, de que lançamento ele é. A conversão
-é da `@dariyd/react-native-pdf-page-image`, quando o membro anexa o arquivo. Antes, o PDF era guardado
-como PDF e desenhado pela `react-native-pdf`, com rolagem entre as páginas; e, antes disso, a página
-dizia que o app o abria no leitor de PDF do celular.
+**Resposta:** o PDF abre dentro do app, desenhado pela `react-native-pdf`: em tela cheia, sobre fundo
+escuro, com as páginas rolando, o zoom de pinça do leitor e, embaixo, de que lançamento ele é. Antes,
+o PDF de uma página era guardado como a imagem dela, convertido pela
+`@dariyd/react-native-pdf-page-image`, e abria como a imagem; e, antes disso, a página dizia que o
+app o abria no leitor de PDF do celular.
 
 **Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md),
 [Plataforma e Stack](../05-arquitetura/01-plataforma-e-stack.md).
 
 ## D-24 — O PDF de mais de uma página
 
-**Resposta parcial:** por enquanto, o app recusa o PDF de mais de uma página, e o membro anexa a foto
-ou o print da página que tem o pagamento. Juntar as páginas numa imagem comprida esbarra no limite de
-bitmap do Android (uns 100 MB) e num zoom borrado, e guardar o PDF inteiro não caberia nos 900 KB do
-documento. Falta decidir se o PDF de várias páginas volta, e de que jeito.
+**Resposta:** sim. O PDF é guardado como está, com qualquer número de páginas, até 900 KB; o maior é
+recusado. O PDF que o banco gera tem poucos KB, então cabe com folga. Antes, quando o PDF virava a
+imagem da página, o de mais de uma página era recusado: juntar as páginas numa imagem comprida
+esbarrava no limite de bitmap do Android (uns 100 MB).
 
 **Onde aparece:** [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).
+
+## D-25 — Pagar o próximo mês
+
+**Resposta:** sim, só o próximo mês: pagar em outubro uma conta que vence no começo de novembro. A
+troca de mês do Início e de Pagamentos vai até o próximo mês, que mostra as contas recorrentes
+dele a pagar, e o compartilhamento do Android lista também as contas a pagar do próximo mês. O
+pagamento conta no mês da conta, e o mês continua pago quando começa. A conta avulsa não muda: ela
+nasce paga, com a data de até hoje. Qualquer mês futuro foi descartado, porque o pedido era o do
+começo do mês seguinte.
+
+**Onde aparece:** [Início](../03-funcionalidades/01-principal/01-inicio.md),
+[Pagamento de Conta Recorrente](../03-funcionalidades/01-principal/03-pagamento-de-conta-recorrente.md),
+[Pagamentos](../03-funcionalidades/01-principal/06-pagamentos.md),
+[Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).

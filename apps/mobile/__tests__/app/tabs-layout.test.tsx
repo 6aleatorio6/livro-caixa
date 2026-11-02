@@ -41,7 +41,7 @@ describe('TabsLayout', () => {
 
   it.each([
     ['Configurações', 'Página das configurações'],
-    ['Meus pagamentos', 'Página dos pagamentos'],
+    ['Pagamentos', 'Página dos pagamentos'],
   ])('Should show %s and mark its tab as selected when pressed', async (tabName, pageText) => {
     await renderTabs();
 

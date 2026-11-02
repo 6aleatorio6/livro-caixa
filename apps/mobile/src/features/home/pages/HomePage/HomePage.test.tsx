@@ -107,20 +107,20 @@ describe('HomePage', () => {
     mockRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);
 
-    expect(screen.getByText('R$ 119,90 · vence dia 15 · Serviços')).toBeOnTheScreen();
-    expect(screen.getByText('R$ 98,00 · vence dia 20 · Serviços')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 119,90 · vence dia 15')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 98,00 · vence dia 20')).toBeOnTheScreen();
     const titles = screen.getAllByRole('header').map((node) => node.props.children);
     expect(titles).toEqual(['A pagar', 'Pagas']);
   });
 
-  it('Should list the paid ones by day, with who paid, the tag or the expected amount', async () => {
+  it('Should list the paid ones by day, with who paid and the expected amount when it differs', async () => {
     mockRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);
 
-    expect(screen.getByText('dia 5 · Ana · Casa')).toBeOnTheScreen();
-    expect(screen.getByText('dia 8 · Bruno · Casa')).toBeOnTheScreen();
+    expect(screen.getByText('dia 5 · Ana')).toBeOnTheScreen();
+    expect(screen.getByText('dia 8 · Bruno')).toBeOnTheScreen();
     expect(screen.getByText('dia 10 · Ana · previsto R$ 210,00')).toBeOnTheScreen();
-    expect(screen.getByText('12/10 · avulsa · Bruno · Casa')).toBeOnTheScreen();
+    expect(screen.getByText('12/10 · avulsa · Bruno')).toBeOnTheScreen();
     const names = screen
       .getAllByText(/^(Aluguel|Condomínio|Luz|Conserto da geladeira)$/)
       .map((node) => node.props.children);
@@ -147,6 +147,27 @@ describe('HomePage', () => {
     // Na linha da tag Serviços e na da Luz.
     expect(screen.getAllByText('R$ 187,35')).toHaveLength(2);
     expect(screen.getByText('e mais R$ 217,90 a pagar')).toBeOnTheScreen();
+  });
+
+  it('Should show "Sem tag" last in the split by tag, with what has no tag', async () => {
+    mockRealtime(fiveBills, threeTags, family, {
+      service: entryMonthQueryService,
+      scenario: entryMonthQueryScenarios.monthWithEntries,
+    });
+    await render(<HomePage />);
+
+    // Serviços pagou R$ 250,00 e Casa R$ 89,90; o Estacionamento, sem tag, R$ 15,00, e mesmo assim vem por último.
+    const names = screen.getAllByText(/^(Casa|Serviços|Sem tag)$/).map((node) => node.props.children);
+    expect(names).toEqual(['Serviços', 'Casa', 'Sem tag']);
+    // Na linha Sem tag e na do Estacionamento, entre as pagas.
+    expect(screen.getAllByText('R$ 15,00')).toHaveLength(2);
+  });
+
+  it('Should not put everything in "Sem tag" while the tags load', async () => {
+    mockRealtime(fiveBills, { service: tagListQueryService, status: 'loading' }, family, familyMonth);
+    await render(<HomePage />);
+
+    expect(screen.queryByText('Sem tag')).not.toBeOnTheScreen();
   });
 
   it('Should split what was paid by member with the current name of the person', async () => {
@@ -176,6 +197,49 @@ describe('HomePage', () => {
     expect(screen.getByText('R$ 2.677,90')).toBeOnTheScreen();
     expect(screen.getByText('5 de 6 contas')).toBeOnTheScreen();
     expect(screen.getByText('1 conta · R$ 30,00')).toBeOnTheScreen();
+  });
+
+  it('Should show the bills to pay of the next month, and no month after it', async () => {
+    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    await render(<HomePage />);
+    mockRealtime(fiveBills, threeTags, family, {
+      service: entryMonthQueryService,
+      scenario: entryMonthQueryScenarios.nextMonthPaidEarly,
+    });
+
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Próximo mês' }));
+
+    // O Condomínio, pago em outubro, conta em novembro; as outras quatro contas estão a pagar.
+    expect(screen.getByText('Novembro de 2026')).toBeOnTheScreen();
+    expect(screen.getByText('4 de 5 contas')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 1.800,00 · vence dia 5')).toBeOnTheScreen();
+    expect(screen.getByText('dia 8 · Bruno')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Próximo mês' })).toBeDisabled();
+  });
+
+  // O exemplo de novembro da página Contribuição: R$ 2.300,00 pagos, com a Luz a pagar pelo que falta.
+  it('Should count the contributions in the month, in the rows and in the split by member', async () => {
+    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    await render(<HomePage />);
+    mockRealtime(fiveBills, threeTags, family, {
+      service: entryMonthQueryService,
+      scenario: entryMonthQueryScenarios.monthWithContributions,
+    });
+    const user = userEvent.setup();
+
+    await user.press(screen.getByRole('button', { name: 'Próximo mês' }));
+
+    expect(screen.getAllByText('R$ 2.300,00').length).toBeGreaterThan(0);
+    expect(screen.getByText('faltam R$ 100,00 · R$ 100,00 de Ana · dia 20')).toBeOnTheScreen();
+    expect(screen.getByText('dia 15 · Ana · R$ 40,00 de Bruno')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 2.000,00')).toBeOnTheScreen();
+
+    await user.press(screen.getByRole('tab', { name: 'Por membro' }));
+
+    // A Ana fica com R$ 80,00 da Internet, R$ 100,00 da Luz e R$ 50,00 da Farmácia; a Carla não está na lista.
+    expect(screen.getByText('R$ 230,00')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 1.040,00')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 1.030,00')).toBeOnTheScreen();
   });
 
   it('Should show all bills to pay and a zero paid when the month has no entries', async () => {
@@ -231,8 +295,8 @@ describe('HomePage', () => {
     await render(<HomePage />);
     const user = userEvent.setup();
 
-    await user.press(screen.getByRole('button', { name: 'Aluguel' }));
-    await user.press(screen.getByRole('button', { name: 'Conserto da geladeira' }));
+    await user.press(screen.getByRole('button', { name: 'Aluguel, Casa' }));
+    await user.press(screen.getByRole('button', { name: 'Conserto da geladeira, Casa' }));
 
     expect(router.push).toHaveBeenNthCalledWith(1, { pathname: '/entries/[id]', params: { id: '2026-10_rent' } });
     expect(router.push).toHaveBeenNthCalledWith(2, { pathname: '/entries/[id]', params: { id: 'fridge' } });
@@ -245,12 +309,12 @@ describe('HomePage', () => {
     });
     await render(<HomePage />);
     expect(screen.queryByRole('button', { name: 'Registrar Internet' })).not.toBeOnTheScreen();
-    expect(screen.getByText('dia 15 · Ana · Casa')).toBeOnTheScreen();
+    expect(screen.getByText('dia 15 · Ana')).toBeOnTheScreen();
 
     await act(async () => realtime.applyChange(entryMonthQueryService));
 
     expect(screen.getByRole('button', { name: 'Registrar Internet' })).toBeOnTheScreen();
-    expect(screen.queryByText('dia 15 · Ana · Casa')).not.toBeOnTheScreen();
+    expect(screen.queryByText('dia 15 · Ana')).not.toBeOnTheScreen();
   });
 
   it('Should not offer to add a one-off bill', async () => {
@@ -292,6 +356,6 @@ describe('HomePage', () => {
     await act(async () => realtime.applyChange(entryMonthQueryService));
 
     expect(screen.queryByRole('button', { name: 'Registrar Internet' })).not.toBeOnTheScreen();
-    expect(screen.getByText('dia 15 · Ana · Casa')).toBeOnTheScreen();
+    expect(screen.getByText('dia 15 · Ana')).toBeOnTheScreen();
   });
 });

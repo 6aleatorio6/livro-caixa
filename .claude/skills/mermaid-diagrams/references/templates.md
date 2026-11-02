@@ -151,7 +151,7 @@ classDiagram
 ## timeline and quadrantChart
 
 Put the title in the page's heading or lead-in sentence, not in the chart — text inside the SVG is
-not searchable.
+not in the built HTML.
 
 ```mermaid
 timeline

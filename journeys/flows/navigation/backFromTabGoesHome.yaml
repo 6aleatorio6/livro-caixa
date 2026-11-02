@@ -1,6 +1,6 @@
 # O voltar do Android numa aba leva ao Início, sem fechar o app.
 # Coberto por:
-# - A troca de abas: tabs-layout.test.tsx (as abas Meus pagamentos e Configurações).
+# - A troca de abas: tabs-layout.test.tsx (as abas Pagamentos e Configurações).
 # - O voltar ao Início: tabs-layout.test.tsx (Should go back to Início when Android back is pressed
 #   on another tab).
 appId: dev.leonardolf.livrocaixa
@@ -11,9 +11,9 @@ tags:
     file: ../../steps/startAs.yaml
     env:
       PROFILE: member
-- tapOn: Meus pagamentos
+- tapOn: Pagamentos
 - assertVisible:
-    text: Meus pagamentos
+    text: Pagamentos
     selected: true
 - tapOn: Configurações
 - assertVisible:

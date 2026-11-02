@@ -20,11 +20,13 @@ Qualquer membro, depois de pagar uma conta da família que não é uma
 
 ## Fluxo
 
-1. Em [Meus Pagamentos](06-meus-pagamentos.md), o membro toca em Nova conta avulsa, informa o
+1. Em [Pagamentos](06-pagamentos.md), o membro toca em Nova conta avulsa, informa o
    nome e o valor, e confere a data.
 2. Escolhe uma tag, se quiser.
 3. Anexa o comprovante. Quando o membro chega pelo compartilhamento do Android, escolhendo
-   "Conta avulsa" na lista de contas a pagar, o comprovante já vem anexado.
+   "Conta avulsa" na lista de contas a pagar, o comprovante já vem anexado. O valor lido nele
+   preenche o valor, se o membro não o tiver digitado
+   ([O valor lido do comprovante](05-comprovantes.md#o-valor-lido-do-comprovante)).
 4. Confirma. A conta passa a contar no que já foi pago no [Início](01-inicio.md), no mês da data
    dela.
 
@@ -33,10 +35,13 @@ Qualquer membro, depois de pagar uma conta da família que não é uma
 - A conta avulsa é sempre de quem está logado. Não há como registrá-la em nome de outro membro.
 - O comprovante é obrigatório.
 - Só quem registrou a conta avulsa pode alterá-la ou excluí-la.
+- Outros membros [contribuem](08-contribuicao.md) com parte dela. Com contribuições, ela não é
+  excluída, e a data só muda dentro do mesmo mês.
 
 ## Critérios de aceite
 
 - [ ] Sem comprovante, a conta avulsa não é salva.
+- [ ] Anexado um comprovante com o valor lido, o valor vem preenchido com ele.
 - [ ] A data vem preenchida com a data de hoje e pode ser trocada.
 - [ ] Uma conta avulsa com data de 30 de setembro, registrada em 2 de outubro, entra em setembro.
 - [ ] A conta avulsa é salva sem tag.

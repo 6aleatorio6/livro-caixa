@@ -43,6 +43,56 @@ describe('ReceiptSummary', () => {
     expect(onPress).not.toHaveBeenCalled();
   });
 
+  describe('When the row opens the file', () => {
+    it('Should open the file from the row and leave the action to its own target', async () => {
+      const onOpen = jest.fn();
+      const { onPress, user } = await renderSummary({ action: { label: 'Trocar', onPress: jest.fn() }, onOpen });
+
+      await user.press(screen.getByRole('button', { name: 'Comprovante: comprovante-luz.pdf. Ver' }));
+
+      expect(onOpen).toHaveBeenCalledTimes(1);
+      expect(onPress).not.toHaveBeenCalled();
+    });
+
+    it('Should run the action, not open the file, when the action is pressed', async () => {
+      const onOpen = jest.fn();
+      const onChange = jest.fn();
+      const user = userEvent.setup();
+      await render(<ReceiptSummary file={pdf} action={{ label: 'Trocar', onPress: onChange }} onOpen={onOpen} />);
+
+      await user.press(screen.getByRole('button', { name: 'Comprovante: comprovante-luz.pdf. Trocar' }));
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onOpen).not.toHaveBeenCalled();
+    });
+
+    it('Should neither open the file nor run the action while disabled', async () => {
+      const onOpen = jest.fn();
+      const onChange = jest.fn();
+      const user = userEvent.setup();
+      await render(
+        <ReceiptSummary file={pdf} action={{ label: 'Trocar', onPress: onChange }} onOpen={onOpen} disabled />,
+      );
+
+      await user.press(screen.getByRole('button', { name: /Ver$/ }));
+      await user.press(screen.getByRole('button', { name: /Trocar$/ }));
+
+      expect(onOpen).not.toHaveBeenCalled();
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('Should open the file from the whole row when there is no action', async () => {
+      const onOpen = jest.fn();
+      const user = userEvent.setup();
+      await render(<ReceiptSummary file={pdf} onOpen={onOpen} isShared />);
+
+      await user.press(screen.getByRole('button', { name: 'Comprovante: comprovante-luz.pdf. Ver' }));
+
+      expect(onOpen).toHaveBeenCalledTimes(1);
+      expect(screen.queryByText('Ver')).toBeNull();
+    });
+  });
+
   describe('When the file came from the Android share', () => {
     it('Should say where it came from, and be read-only without an action', async () => {
       await render(<ReceiptSummary file={pdf} isShared />);
@@ -55,13 +105,13 @@ describe('ReceiptSummary', () => {
       await render(
         <ReceiptSummary
           file={null}
-          errorMessage="O PDF tem mais de uma página."
+          errorMessage="O PDF passa de 900 KB. Escolha outro arquivo."
           rejectedFileName="Compartilhe outro arquivo."
           isShared
         />,
       );
 
-      expect(screen.getByText('O PDF tem mais de uma página.')).toBeOnTheScreen();
+      expect(screen.getByText('O PDF passa de 900 KB. Escolha outro arquivo.')).toBeOnTheScreen();
       expect(screen.queryByText(/Veio do compartilhamento/)).toBeNull();
     });
   });

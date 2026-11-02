@@ -6,4 +6,6 @@ export interface IPayRecurringBillFormValues {
   amountCents: number | null;
   /** O comprovante escolhido e conferido; `null` é o campo vazio. */
   receipt: IReceipt | null;
+  /** O interruptor Paguei só uma parte: ligado, o registro é uma contribuição. */
+  isPartial: boolean;
 }

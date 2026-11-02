@@ -17,6 +17,7 @@ const SCREEN_CAPTURES = join(CAPTURES, 'screen');
 const GOOGLE_SERVICES = fileURLToPath(new URL('../apps/mobile/google-services.json', import.meta.url));
 const FIREBASE_CONFIG = fileURLToPath(new URL('../firebase.json', import.meta.url));
 const DATA_PORT = 4020;
+const METRO_PORT = 8081;
 // Como em um projeto anterior: as últimas rodadas bastam para comparar com a anterior, e o resto só ocupa disco. A
 // conta é por pasta, e só pega nomes de rodada: o que a conferência guarda com outro nome fica.
 const KEPT_ROUNDS = 5;
@@ -31,9 +32,30 @@ function readProjectInfo(): { project_id: string } {
   return JSON.parse(readFileSync(GOOGLE_SERVICES, 'utf8')).project_info;
 }
 
-function readFirestorePort() {
+function readEmulatorPorts() {
   const { emulators } = JSON.parse(readFileSync(FIREBASE_CONFIG, 'utf8'));
-  return emulators.firestore.port as number;
+  return { auth: emulators.auth.port as number, firestore: emulators.firestore.port as number };
+}
+
+/**
+ * O aparelho da rodada: o do `ANDROID_SERIAL`, ou o único no adb (o AVD, o redroid, um celular). Com mais de um e sem
+ * a variável, a rodada não começa: o adb e o Maestro não saberiam em qual tocar.
+ */
+function chooseDevice() {
+  if (process.env.ANDROID_SERIAL) return process.env.ANDROID_SERIAL;
+  const { stdout } = spawnSync('adb', ['devices'], { encoding: 'utf8' });
+  const serials = stdout
+    .split('\n')
+    .slice(1)
+    .map((row) => row.split('\t'))
+    .filter(([, state]) => state === 'device')
+    .map(([serial]) => serial);
+  if (serials.length === 1) return serials[0];
+  throw new Error(
+    serials.length === 0
+      ? 'Nenhum aparelho no adb: abra o emulador ou conecte o celular.'
+      : `Mais de um aparelho no adb (${serials.join(', ')}): escolha um com ANDROID_SERIAL=<serial>.`,
+  );
 }
 
 /** O nome da pasta da rodada, como `2026-10-24-210255`: o Node daqui vem sem os dados de locale. */
@@ -71,12 +93,17 @@ function deleteOldScreenCaptures() {
 
 // Liga o desenho dos apps, que a imagem ATD desliga a cada boot: sem ele, a tela e toda captura saem
 // pretas. Vale para o app aberto depois daqui, e os fluxos o reabrem com `clearState`. E desliga as
-// animações: cada transição de tela pesa em todo fluxo. Sem o emulador aberto, só avisa: o Maestro
-// diz o resto.
-function prepareEmulator() {
+// animações: cada transição de tela pesa em todo fluxo. E refaz o `adb reverse` do Metro e dos emuladores do
+// Firebase, que o app procura no 127.0.0.1 do aparelho e que um novo boot apaga. Sem o aparelho, só avisa: o
+// Maestro diz o resto.
+function prepareDevice() {
   const commands = ['setprop debug.hwui.drawing_enabled 1', ...ANIMATION_SETTINGS.map((setting) => `settings put global ${setting} 0`)];
   const { status } = spawnSync('adb', ['shell', commands.join('; ')], { stdio: 'ignore' });
-  if (status !== 0) console.warn('Emulador não preparado: ele está aberto?');
+  if (status !== 0) console.warn('Aparelho não preparado: ele está conectado?');
+  const { auth, firestore } = readEmulatorPorts();
+  for (const port of [METRO_PORT, auth, firestore]) {
+    spawnSync('adb', ['reverse', `tcp:${port}`, `tcp:${port}`], { stdio: 'ignore' });
+  }
 }
 
 /** Os avisos do servidor de dados no fim do resumo: uma repetição ou um cenário que falhou não passa em silêncio. */
@@ -86,12 +113,15 @@ function printDataServerWarnings(warnings: string[]) {
 }
 
 async function runRound(target: string | undefined) {
+  // O adb dos passos, do servidor de dados e do Maestro vai todo para o mesmo aparelho.
+  const device = chooseDevice();
+  process.env.ANDROID_SERIAL = device;
   // O servidor primeiro: com a porta ocupada, outra rodada está no ar, e nada aqui pode começar.
   const projectInfo = readProjectInfo();
   const dataServer = await startDataServer({
     port: DATA_PORT,
     firebaseProject: projectInfo.project_id,
-    firestorePort: readFirestorePort(),
+    firestorePort: readEmulatorPorts().firestore,
   });
   try {
     // Os fluxos descartáveis da exploração rodam à parte, sem empurrar para fora as rodadas que contam.
@@ -100,14 +130,14 @@ async function runRound(target: string | undefined) {
     mkdirSync(round, { recursive: true });
     deleteOldRounds(roundsFolder);
     deleteOldScreenCaptures();
-    prepareEmulator();
+    prepareDevice();
 
     // Com `spawn`, e não `spawnSync`: o servidor de dados roda neste processo e responde durante a
     // rodada. O JUnit guarda o tempo de cada fluxo, que decide quando a suíte precisa rodar em paralelo.
     // O Maestro grava cada `takeScreenshot` em <rodada>/<sessão>/<fluxo>/takeScreenshot/.
     const maestro = spawn(
       'maestro',
-      ['test', '--test-output-dir', round, '--format', 'junit', '--output', join(round, 'report.xml'), ...toMaestroSelection(target)],
+      ['--device', device, 'test', '--test-output-dir', round, '--format', 'junit', '--output', join(round, 'report.xml'), ...toMaestroSelection(target)],
       {
         stdio: 'inherit',
         env: {

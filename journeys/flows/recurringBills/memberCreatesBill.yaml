@@ -42,12 +42,12 @@ tags:
 - hideKeyboard
 # O toque cai no meio do campo, em cima do texto da data: é ali que o `TextInput` pegava o toque e o
 # calendário não abria.
-- tapOn: Vale a partir de, 01/10/2026
+- tapOn: "Vale a partir de, 01/../...."
 - assertVisible: OK
 - tapOn: "3"
 - tapOn: OK
-- assertVisible: 03/10/2026
-- assertNotVisible: 01/10/2026
+- assertVisible: "03/../...."
+- assertNotVisible: "01/../...."
 - tapOn: Casa
 - takeScreenshot: new-recurring-bill--filled
 - tapOn: Cadastrar conta

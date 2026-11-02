@@ -6,9 +6,24 @@ import { MonthCard } from './MonthCard';
 
 const bill = { id: 'x', name: 'Conta', expectedAmountCents: 0, dayOfMonth: 5, startsOn: '2026-01-01', tagId: null };
 
-const summaryOf = ({ paidCents, totalCents, toPayCents, toPayCount, billCount }: Record<string, number>): IMonthSummary => ({
-  toPay: Array.from({ length: toPayCount }, () => ({ bill, dueDate: '2026-10-05' })),
+const summaryOf = ({
+  paidCents,
+  totalCents,
+  toPayCents,
+  toPayCount,
+  billCount,
+}: Record<string, number>): IMonthSummary => ({
+  toPay: Array.from({ length: toPayCount }, () => ({
+    bill,
+    name: bill.name,
+    tagId: null,
+    dueDate: '2026-10-05',
+    payment: null,
+    contributions: [],
+    remainingCents: 0,
+  })),
   paid: [],
+  entries: [],
   paidCents,
   totalCents,
   toPayCents,

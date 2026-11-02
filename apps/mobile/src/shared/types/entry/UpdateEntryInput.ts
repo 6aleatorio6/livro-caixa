@@ -1,7 +1,7 @@
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IAuthoredEntry } from '@/shared/types/entry/AuthoredEntry';
 import type { IReceipt } from '@/shared/types/file/Receipt';
 
-/** O que o pagamento de conta recorrente deixa mudar: só o valor pago. */
+/** O que o pagamento de conta recorrente e a contribuição deixam mudar: só o valor. */
 interface IPaymentChanges {
   amountCents: number;
 }
@@ -17,11 +17,11 @@ interface IOneOffBillChanges {
 
 /**
  * O que a tela envia ao alterar um lançamento: o lançamento como está, os campos que o tipo dele deixa
- * mudar (`IPaymentChanges` no pagamento, `IOneOffBillChanges` na avulsa) e o comprovante novo, ou `null`
+ * mudar (`IPaymentChanges` no pagamento e na contribuição, `IOneOffBillChanges` na avulsa) e o comprovante novo, ou `null`
  * para manter o que já tem.
  */
 export interface IUpdateEntryInput {
-  entry: IEntry;
+  entry: IAuthoredEntry;
   changes: IPaymentChanges | IOneOffBillChanges;
   receipt: IReceipt | null;
 }

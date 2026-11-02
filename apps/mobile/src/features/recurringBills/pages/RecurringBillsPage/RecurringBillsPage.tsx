@@ -16,6 +16,7 @@ import { tagListQueryService } from '@/shared/services/tag/query/tagListQuerySer
 import { formatCents } from '@/shared/utils/format/formatCents';
 import { recurringBillCount } from '@/shared/utils/format/recurringBillCount';
 import { totalExpectedCents } from '@/shared/utils/recurringBill/totalExpectedCents';
+import { findTag } from '@/shared/utils/tag/findTag';
 
 /** As contas recorrentes da família, com o previsto por mês; o toque numa conta abre a alteração. */
 export function RecurringBillsPage() {
@@ -59,7 +60,7 @@ export function RecurringBillsPage() {
                 amountCents={bill.expectedAmountCents}
                 dayOfMonth={bill.dayOfMonth}
                 // Uma conta com a tag apagada (só pelo SDK) mostra só o dia.
-                tagName={tags?.find((tag) => tag.id === bill.tagId)?.name}
+                tagName={findTag(bill.tagId, tags)?.name}
                 onPress={() => router.push(`/recurring-bills/${bill.id}`)}
               />
             ))}

@@ -1,54 +1,71 @@
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IAllowedEmailListItem } from '@/shared/types/allowedEmail/AllowedEmailListItem';
+import { contributionOf } from '@/shared/testing/contributionOf';
+import { ownedPaymentOf } from '@/shared/testing/ownedPaymentOf';
+import { unownedPaymentOf } from '@/shared/testing/unownedPaymentOf';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 
 import { homeEntrySupportOf } from './homeEntrySupportOf';
 
-const payment: IEntry = {
-  id: '2026-10_aluguel',
-  kind: 'recurringPayment',
-  month: '2026-10',
-  name: 'Aluguel',
-  amountCents: 180000,
-  tagId: 'casa',
-  paidBy: 'u1',
-  receiptFileId: 'f1',
-  recurringBillId: 'aluguel',
-  dueDay: 5,
-  expectedAmountCents: 180000,
-  date: null,
-  paidOn: '2026-10-05',
-};
+const person = (uid: string, name: string): IAllowedEmailListItem => ({
+  email: `${uid}@example.com`,
+  name,
+  uid,
+  isAdmin: false,
+  hasEntries: true,
+});
+const people = [person('ana', 'Ana'), person('bruno', 'Bruno'), person('carla', 'Carla')];
 
-const oneOff: IEntry = {
+const payment = ownedPaymentOf({ amountCents: 180000, expectedAmountCents: 180000 });
+
+const oneOff: IOwnedEntry = {
   id: 'a',
   kind: 'oneOffBill',
   month: '2026-10',
   name: 'Conserto',
   amountCents: 35000,
   tagId: 'casa',
-  paidBy: 'u2',
+  paidBy: 'bruno',
   receiptFileId: 'f1',
   date: '2026-10-12',
 };
 
 describe('homeEntrySupportOf', () => {
-  it('Should write the due day, who paid and the tag of a payment', () => {
-    expect(homeEntrySupportOf(payment, { memberName: 'Ana', tagName: 'Casa' })).toBe('dia 5 · Ana · Casa');
+  it('Should write the due day and who paid a payment, without the tag', () => {
+    expect(homeEntrySupportOf(payment, [payment], people)).toBe('dia 5 · Ana');
   });
 
-  it('Should write the expected amount instead of the tag when the paid amount differs', () => {
-    expect(
-      homeEntrySupportOf(
-        { ...payment, amountCents: 18735, expectedAmountCents: 21000 },
-        { memberName: 'Ana', tagName: 'Casa' },
-      ),
-    ).toBe('dia 5 · Ana · previsto R$ 210,00');
+  it('Should add the expected amount when the paid amount differs', () => {
+    const electricity = { ...payment, amountCents: 18735, expectedAmountCents: 21000 };
+
+    expect(homeEntrySupportOf(electricity, [electricity], people)).toBe('dia 5 · Ana · previsto R$ 210,00');
   });
 
-  it('Should write the date, the one-off mark, who registered and the tag of a one-off bill', () => {
-    expect(homeEntrySupportOf(oneOff, { memberName: 'Bruno', tagName: 'Casa' })).toBe('12/10 · avulsa · Bruno · Casa');
+  it('Should write the date, the one-off mark and who registered a one-off bill, without the tag', () => {
+    expect(homeEntrySupportOf(oneOff, [oneOff], people)).toBe('12/10 · avulsa · Bruno');
   });
 
-  it('Should leave the tag out when there is none', () => {
-    expect(homeEntrySupportOf(oneOff, { memberName: 'Bruno' })).toBe('12/10 · avulsa · Bruno');
+  it('Should say how much came from contributions and from whom, in place of the expected amount', () => {
+    const electricity = { ...payment, amountCents: 18735, expectedAmountCents: 21000 };
+    // Como a leitura do mês os entrega: a contribuição mais nova (a da Carla) primeiro.
+    const entries = [
+      contributionOf(electricity.id, 'carla', 2000),
+      contributionOf(electricity.id, 'bruno', 2000),
+      electricity,
+    ];
+
+    expect(homeEntrySupportOf(electricity, entries, people)).toBe('dia 5 · Ana · R$ 40,00 de Bruno e Carla');
+  });
+
+  it('Should add the contributions to a one-off bill', () => {
+    expect(homeEntrySupportOf(oneOff, [oneOff, contributionOf(oneOff.id, 'carla', 3000)], people)).toBe(
+      '12/10 · avulsa · Bruno · R$ 30,00 de Carla',
+    );
+  });
+
+  it('Should name who contributed to a bill paid only by contributions', () => {
+    const rent = unownedPaymentOf({ id: '2026-10_rent', dueDay: 5 });
+    const entries = [contributionOf(rent.id, 'carla', 100000), contributionOf(rent.id, 'bruno', 100000), rent];
+
+    expect(homeEntrySupportOf(rent, entries, people)).toBe('dia 5 · Bruno e Carla');
   });
 });

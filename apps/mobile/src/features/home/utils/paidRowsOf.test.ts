@@ -1,8 +1,8 @@
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 
 import { paidRowsOf } from './paidRowsOf';
 
-const payment = (name: string, dueDay: number): IEntry => ({
+const payment = (name: string, dueDay: number): IOwnedEntry => ({
   id: `2026-10_${name}`,
   kind: 'recurringPayment',
   month: '2026-10',
@@ -18,7 +18,7 @@ const payment = (name: string, dueDay: number): IEntry => ({
   paidOn: '2026-10-25',
 });
 
-const oneOff = (name: string, date: string): IEntry => ({
+const oneOff = (name: string, date: string): IOwnedEntry => ({
   id: name,
   kind: 'oneOffBill',
   month: '2026-10',

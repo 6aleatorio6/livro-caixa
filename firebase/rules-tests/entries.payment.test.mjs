@@ -1,6 +1,6 @@
 import { describe } from 'node:test';
 
-import { OUTSIDERS, addPaymentBatch, asOwner, assertAccess, itEach, receiptFileOf, recurringPaymentOf, signedInAs } from './setup/index.mjs';
+import { OUTSIDERS, addPaymentBatch, asOwner, assertAccess, itEach, monthFromNow, receiptFileOf, recurringPaymentOf, signedInAs } from './setup/index.mjs';
 
 const bruno = () => signedInAs('bruno@gmail.com');
 const ana = () => signedInAs('ana@gmail.com');
@@ -85,6 +85,8 @@ describe('recurringPayment create by a member', () => {
       entry: { month: '2030-01' },
       batch: { entryId: '2030-01_internet' },
     }),
+    row('Should let a member create a recurring payment of the next month', true, { entry: { month: monthFromNow(1) } }),
+    row('Should not let a member create a recurring payment of the month after the next', false, { entry: { month: monthFromNow(2) } }),
     row('Should let a member create a recurring payment of a past month', true, {
       entry: { month: '2026-01' },
       batch: { entryId: '2026-01_internet' },

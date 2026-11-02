@@ -1,4 +1,4 @@
-import { ANA, BOTH_IN_THE_LIST, BRUNO, RECEIPT_FILE_ID } from '@/shared/testing/entryFixtures';
+import { ANA, BOTH_IN_THE_LIST, BRUNO, CONTRIBUTION_FILE_ID, RECEIPT_FILE_ID } from '@/shared/testing/entryFixtures';
 import { receiptOf } from '@/shared/testing/receiptOf';
 import { testAccountUid } from '@/shared/testing/testAccountUid';
 import type { IReceiptFile } from '@/shared/types/file/ReceiptFile';
@@ -12,13 +12,22 @@ const IMAGE_FILE = {
   sizeBytes: 120000,
   uploadedBy: testAccountUid(BRUNO),
 } as const;
-// O PDF de uma página chega como a imagem da página, com o nome que a pessoa escolheu.
-const CONVERTED_PDF_FILE = {
+// O PDF é guardado como está.
+const PDF_FILE = {
   name: 'comprovante-luz.pdf',
-  type: 'image',
-  contentType: 'image/png',
+  type: 'pdf',
+  contentType: 'application/pdf',
   sizeBytes: 90000,
   uploadedBy: testAccountUid(BRUNO),
+} as const;
+
+// O print do Pix da contribuição da Ana.
+const CONTRIBUTION_FILE = {
+  name: 'pix-luz-ana.jpg',
+  type: 'image',
+  contentType: 'image/jpeg',
+  sizeBytes: 76000,
+  uploadedBy: testAccountUid(ANA),
 } as const;
 
 const toReceiptFile = (id: string, { uploadedBy: _uploadedBy, ...file }: Record<string, unknown>) =>
@@ -28,6 +37,13 @@ const toReceiptFile = (id: string, { uploadedBy: _uploadedBy, ...file }: Record<
 const RECEIPT_TO_CHANGE_FILE = receiptOf(RECEIPT_FILE_ID, BRUNO).fileDocuments[`files/${RECEIPT_FILE_ID}`];
 
 export const receiptFileQueryScenarios = {
+  // O Bruno lê o comprovante da contribuição que a Ana fez na Luz dele.
+  contributionReceipt: {
+    signedInAs: BRUNO,
+    given: { ...BOTH_IN_THE_LIST, [`files/${CONTRIBUTION_FILE_ID}`]: CONTRIBUTION_FILE },
+    input: { id: CONTRIBUTION_FILE_ID },
+    result: toReceiptFile(CONTRIBUTION_FILE_ID, CONTRIBUTION_FILE),
+  },
   // A Ana lê o registro do comprovante que o Bruno enviou.
   imageReceipt: {
     signedInAs: ANA,
@@ -35,11 +51,11 @@ export const receiptFileQueryScenarios = {
     input: { id: RECEIPT_FILE_ID },
     result: toReceiptFile(RECEIPT_FILE_ID, IMAGE_FILE),
   },
-  convertedPdfReceipt: {
+  pdfReceipt: {
     signedInAs: ANA,
-    given: { ...BOTH_IN_THE_LIST, [`files/${RECEIPT_FILE_ID}`]: CONVERTED_PDF_FILE },
+    given: { ...BOTH_IN_THE_LIST, [`files/${RECEIPT_FILE_ID}`]: PDF_FILE },
     input: { id: RECEIPT_FILE_ID },
-    result: toReceiptFile(RECEIPT_FILE_ID, CONVERTED_PDF_FILE),
+    result: toReceiptFile(RECEIPT_FILE_ID, PDF_FILE),
   },
   // O Bruno lê o registro do comprovante dos próprios lançamentos que as telas de alterar abrem.
   receiptToChange: {

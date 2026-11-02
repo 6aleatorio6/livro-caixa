@@ -30,7 +30,7 @@ describe('updateEntryService', () => {
 
       expect(await updateEntryService(input)).toBe(scenario.result);
 
-      const [entryAfter] = await readCollectionWithoutRules('entries');
+      const entryAfter = (await readCollectionWithoutRules('entries')).find(({ id }) => id === entry.id)!;
       expect(entryAfter).toEqual({
         id: entry.id,
         ...scenario.expectedEntry,

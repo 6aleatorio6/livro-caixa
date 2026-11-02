@@ -10,7 +10,7 @@ import { monthOf } from '@/shared/utils/date/monthOf';
 import { isPermissionDenied } from '@/shared/utils/handlerError/isPermissionDenied';
 
 /**
- * Altera um lançamento de quem está logado. O pagamento muda o valor; a conta avulsa, o nome, o valor, a data (o
+ * Altera um lançamento de quem está logado. O pagamento e a contribuição mudam o valor; a conta avulsa, o nome, o valor, a data (o
  * `month` sai dela) e a tag (`null` tira o campo). Sem comprovante novo é um `updateDoc`. Com ele, lê o
  * arquivo (falha: `RECEIPT_UNREADABLE`, nada muda) e grava num lote só o registro e o conteúdo novos, o lançamento
  * com o `receiptFileId` novo e a exclusão do registro e do conteúdo antigos. A recusa das regras (outra pessoa, ou o lançamento já

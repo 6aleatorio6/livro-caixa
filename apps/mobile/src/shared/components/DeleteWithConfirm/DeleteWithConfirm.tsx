@@ -15,12 +15,22 @@ export interface IDeleteWithConfirmProps {
   /** Desliga o botão; com o `disabledReason`, o texto abaixo diz por quê. */
   disabled?: boolean;
   disabledReason?: string;
+  /** Mostra o motivo embaixo do botão; quem põe o botão numa linha com outros o mostra embaixo da linha. */
+  shouldShowReason?: boolean;
   /** Chamado depois que o diálogo fecha, com a exclusão confirmada. */
   onConfirm: () => void | Promise<void>;
 }
 
 /** O botão de excluir que abre a confirmação; confirmada, o diálogo fecha e `onConfirm` faz a exclusão. */
-export function DeleteWithConfirm({ label, dialogTitle, dialogMessage, disabled = false, disabledReason, onConfirm }: IDeleteWithConfirmProps) {
+export function DeleteWithConfirm({
+  label,
+  dialogTitle,
+  dialogMessage,
+  disabled = false,
+  disabledReason,
+  shouldShowReason = true,
+  onConfirm,
+}: IDeleteWithConfirmProps) {
   const [isConfirming, setIsConfirming] = useState(false);
 
   async function confirm() {
@@ -31,7 +41,7 @@ export function DeleteWithConfirm({ label, dialogTitle, dialogMessage, disabled 
   return (
     <View style={styles.section}>
       <Button label={label} variant="textDestructive" disabled={disabled} onPress={() => setIsConfirming(true)} />
-      {disabled && disabledReason ? (
+      {disabled && disabledReason && shouldShowReason ? (
         <AppText variant="bodySmall" color="onSurfaceVariant" style={styles.reason}>
           {disabledReason}
         </AppText>

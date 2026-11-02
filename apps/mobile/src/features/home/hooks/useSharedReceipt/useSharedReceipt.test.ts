@@ -2,9 +2,7 @@ import { renderHook, waitFor } from '@testing-library/react-native';
 import { File } from 'expo-file-system';
 import { useIncomingShare } from 'expo-sharing';
 
-import { AppError } from '@/shared/exceptions/AppError';
 import { useSharedReceiptStore } from '@/shared/store/sharedReceipt.store';
-import { pdfToImage } from '@/shared/utils/file/pdfToImage';
 import { reduceImage } from '@/shared/utils/file/reduceImage';
 import { clearSharedReceipt } from '@/shared/utils/sharedReceipt/clearSharedReceipt';
 
@@ -14,10 +12,6 @@ jest.mock('expo-sharing', () => ({ useIncomingShare: jest.fn() }));
 jest.mock('expo-file-system', () => ({ File: jest.fn() }));
 // A redução da imagem usa o módulo nativo de manipulação, que não roda no Jest.
 jest.mock('@/shared/utils/file/reduceImage', () => ({ reduceImage: jest.fn(async (file) => file) }));
-// A conversão do PDF também: aqui a página sai como um PNG do mesmo tamanho.
-jest.mock('@/shared/utils/file/pdfToImage', () => ({
-  pdfToImage: jest.fn(async (file) => ({ ...file, uri: `${file.uri}.png`, contentType: 'image/png' })),
-}));
 
 const clearSharedPayloads = jest.fn();
 
@@ -53,14 +47,20 @@ describe('useSharedReceipt', () => {
     clearSharedReceipt();
   });
 
-  it('Should prepare a shared PDF as the image of its page, keep it in the store and clear the shared payloads', async () => {
+  it('Should keep a shared PDF as a PDF, keep it in the store and clear the shared payloads', async () => {
     shareOf({ name: 'pix-agua-outubro.pdf', type: 'application/pdf', size: 120_000 });
 
     const { result } = await renderHook(() => useSharedReceipt());
 
     await waitFor(() => expect(result.current.status).toBe('ready'));
     expect(result.current).toMatchObject({
-      receipt: { name: 'pix-agua-outubro.pdf', type: 'image', contentType: 'image/png', sizeBytes: 120_000 },
+      receipt: {
+        name: 'pix-agua-outubro.pdf',
+        type: 'pdf',
+        contentType: 'application/pdf',
+        sizeBytes: 120_000,
+        wasReduced: false,
+      },
     });
     expect(useSharedReceiptStore.getState().receipt?.name).toBe('pix-agua-outubro.pdf');
     expect(clearSharedPayloads).toHaveBeenCalledTimes(1);
@@ -75,24 +75,13 @@ describe('useSharedReceipt', () => {
     expect(result.current).toMatchObject({ receipt: { type: 'image' } });
   });
 
-  it('Should reject a PDF of more than one page with the message of the rule', async () => {
-    jest
-      .mocked(pdfToImage)
-      .mockRejectedValueOnce(
-        new AppError(
-          'Receipt PDF has more than one page',
-          'O PDF tem mais de uma página. Por enquanto, só dá para anexar PDF de uma página.',
-          'RECEIPT_PDF_MULTIPAGE',
-        ),
-      );
-    shareOf({ name: 'fatura.pdf', type: 'application/pdf', size: 300_000 });
+  it('Should reject a PDF over 900 KB with the message of the rule', async () => {
+    shareOf({ name: 'fatura.pdf', type: 'application/pdf', size: 900 * 1024 + 1 });
 
     const { result } = await renderHook(() => useSharedReceipt());
 
     await waitFor(() => expect(result.current.status).toBe('rejected'));
-    expect(result.current).toMatchObject({
-      message: 'O PDF tem mais de uma página. Por enquanto, só dá para anexar PDF de uma página.',
-    });
+    expect(result.current).toMatchObject({ message: 'O PDF passa de 900 KB. Escolha outro arquivo.' });
     expect(useSharedReceiptStore.getState().receipt).toBeNull();
   });
 

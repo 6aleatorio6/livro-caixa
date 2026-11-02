@@ -38,6 +38,14 @@ export const allowedEmailListQueryScenarios = {
     input: {},
     result: [{ ...ANA_ITEM, name: 'Ana Paula Souza' }, BRUNO_ITEM, CLARA_ITEM],
   },
+  // O admin tira a Clara da lista com a tela aberta: a leitura entrega a lista sem ela.
+  personRemovedWhileOpen: {
+    signedInAs: ANA,
+    given: FAMILY,
+    input: {},
+    result: [ANA_ITEM, BRUNO_ITEM, CLARA_ITEM],
+    afterChange: { write: { [`allowedEmails/${CLARA}`]: null }, result: [ANA_ITEM, BRUNO_ITEM] },
+  },
   personAddedWhileOpen: {
     signedInAs: ANA,
     given: FAMILY,

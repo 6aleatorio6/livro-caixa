@@ -10,8 +10,9 @@ journeys/
   package.json             only "type": "module", so Node and tsc read the .ts files as ES modules
   tsconfig.json            pnpm typecheck:journeys: test.ts, inspect.ts and data/
   stack.sh                 pnpm journeys:stack: the Firebase emulators and Metro
-  test.ts                  pnpm journeys:test: prepares the emulator, deletes old rounds, serves
-                           the test data and runs Maestro
+  test.ts                  pnpm journeys:test: picks and prepares the device (ANDROID_SERIAL or
+                           the only one on adb; adb reverse of the stack's ports), deletes old
+                           rounds, serves the test data and runs Maestro
   inspect.ts               pnpm journeys:inspect: the screen's nodes, in dp, through adb
   flows/                   the journeys: only journeys (config.yaml runs every */*)
     config.yaml
@@ -28,10 +29,12 @@ journeys/
                            (@firebase/rules-unit-testing): deleteAll
     share.ts               shareFixture: pushes a fixture to the phone's Downloads and shares it with the
                            app through adb (the shareReceipt scenario)
+    fixtures.ts            a fixture's path, bytes and content type (by extension), for scenarios.ts
+                           and share.ts
     fixtures/              the small committed files scenarios read: the receipt contents a scenario
-                           writes to fileContents (comprovante-luz.png, recibo-conserto.jpg) and the
-                           files shareFixture pushes to the phone (pix-agua-outubro.pdf, one page;
-                           comprovante-luz.pdf, two pages, the one the app refuses)
+                           writes to fileContents (comprovante-luz.pdf, two pages; recibo-conserto.jpg)
+                           and the files shareFixture pushes to the phone (pix-agua-outubro.pdf, one
+                           page; pix-internet-outubro.pdf, one page of R$ 125,50 for the OCR to read)
     request.js             the Maestro side (runScript): asks for a scenario, copies the answer to output
   .local/                  (outside Git)
     explore/               throwaway flows, run like any other
@@ -71,7 +74,6 @@ only content.
   runs is `data/request.js`.
 - **A receipt a scenario writes has real bytes in `fileContents/{id}`**, next to the `files/{id}`
   record and the entry that points to it, so the viewer reads it as it would in production. The
-  bytes come from a file of `data/fixtures/`, never inline. A PDF is stored as the image of its
-  page with the PDF's name, as the app converts it: the fixture is that image
-  (`comprovante-luz.png` for `comprovante-luz.pdf`).
+  bytes come from a file of `data/fixtures/`, never inline. A PDF is stored as it is, as the app
+  stores it.
 - **Nothing new loose at the root.** A new tool or configuration file enters the tree above.

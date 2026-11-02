@@ -18,15 +18,16 @@ back-end, sem servidor próprio.
 - **Acesso:** login com a conta Google, restrito a uma lista de e-mails que o administrador mantém
   no próprio app. Quem sai da lista perde o acesso na hora, mesmo com o app aberto.
 - **Início:** o mês em tempo real, com o que falta pagar, o que já foi pago, a divisão por tag e por
-  membro, e a navegação pelos meses anteriores.
+  membro, e a navegação pelos meses anteriores e pelo próximo, que já pode ser pago.
 - **Contas recorrentes:** cadastradas uma vez, com valor previsto e dia de vencimento, aparecem a
   pagar todo mês. Dia 31 vira o último dia nos meses mais curtos.
 - **Pagamento:** o valor vem do previsto e pode ser corrigido, com o comprovante (foto ou PDF)
   anexado. Uma conta só pode ser paga uma vez por mês, e as regras do Firestore garantem isso
   também com duas pessoas pagando ao mesmo tempo.
 - **Contas avulsas:** gastos que não se repetem, com nome, valor, data, tag e comprovante.
-- **Comprovantes:** a foto é comprimida no celular antes de salvar, e o PDF de uma página vira
-  imagem. Abrem em tela cheia, com zoom.
+- **Comprovantes:** a foto é comprimida no celular antes de salvar, e o PDF vai como está, até
+  900 KB. Abrem em tela cheia: a imagem na largura da tela, rolando, e o PDF com as páginas
+  rolando.
 - **Compartilhar do Android:** o comprovante enviado por outro app (o do banco, por exemplo) abre
   direto a escolha da conta paga, mesmo com o app fechado.
 - **Autoria:** só quem registrou um lançamento pode alterá-lo ou excluí-lo.
@@ -79,11 +80,10 @@ back-end, sem servidor próprio.
   autorização.
 - **UI:** componentes próprios sobre os do React Native, sem biblioteca de componentes. O estilo
   usa o Unistyles 3, com os papéis de cor do Material 3 nos temas claro e escuro, e os ícones vêm
-  do Lucide. O gráfico é feito com `react-native-svg`, e o zoom com Gesture Handler e Reanimated.
+  do Lucide. O gráfico é feito com `react-native-svg`.
 - **Formulários:** react-hook-form e Yup. **Estado local:** Zustand.
-- **Comprovantes:** `expo-image-manipulator`, `@dariyd/react-native-pdf-page-image` (PDF → imagem
-  com o `PdfRenderer` do Android), `expo-document-picker` e `expo-sharing` (receber arquivos de
-  outros apps).
+- **Comprovantes:** `expo-image-manipulator`, `react-native-pdf` (o PDF dentro do app),
+  `expo-document-picker` e `expo-sharing` (receber arquivos de outros apps).
 - **Testes:** Jest (jest-expo) com a React Native Testing Library, os emuladores do Firebase e o
   Maestro.
 

@@ -40,7 +40,7 @@ mesma cuida dele.
   como quem ainda não entrou.
 - O e-mail não se repete na lista: um e-mail que já está nela é recusado.
 - Um e-mail só pode ser removido enquanto a pessoa não tem nenhum lançamento. A partir do primeiro
-  pagamento ou conta avulsa, ela não sai mais da lista.
+  pagamento, conta avulsa ou contribuição, ela não sai mais da lista.
 
 ## O próprio nome
 
@@ -72,3 +72,4 @@ mesma cuida dele.
 - [ ] Só o admin vê a tela de e-mails permitidos.
 - [ ] O admin remove o e-mail de uma pessoa que ainda não tem lançamentos, e ela deixa de entrar.
 - [ ] O app não deixa remover o e-mail de quem já tem um pagamento ou uma conta avulsa.
+- [ ] O app não deixa remover o e-mail de quem só tem contribuições.

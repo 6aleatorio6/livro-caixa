@@ -37,7 +37,7 @@ const config = {
 
   onBrokenLinks: 'throw',
 
-  // Interface em português do Brasil (Anterior/Próximo, busca, etc.)
+  // Interface em português do Brasil (Anterior/Próximo, etc.)
   i18n: {
     defaultLocale: 'pt-BR',
     locales: ['pt-BR'],
@@ -65,29 +65,6 @@ const config = {
   themes: [
     // Renderização de diagramas Mermaid (fluxogramas, máquina de estados).
     '@docusaurus/theme-mermaid',
-    // Busca offline: o índice é gerado no `build` e servido junto com o site.
-    // Nenhum conteúdo sai para serviço externo (Algolia).
-    [
-      '@easyops-cn/docusaurus-search-local',
-      {
-        // Português primeiro (stemmer/stop words); inglês para os termos
-        // técnicos que aparecem no meio do texto.
-        language: ['pt', 'en'],
-        // Os docs estão na raiz do site (`routeBasePath: '/'`) e vêm de fora
-        // do app (`docsDir` é usado para calcular o hash do índice).
-        docsRouteBasePath: '/',
-        docsDir: '../../docs',
-        indexDocs: true,
-        indexBlog: false,
-        indexPages: false,
-        // Nome do índice com hash: evita servir índice velho de cache.
-        hashed: true,
-        // Destaca os termos buscados ao abrir o resultado.
-        highlightSearchTermsOnTargetPage: true,
-        // Mostra o caminho (seção > subseção) de cada resultado.
-        explicitSearchResultPath: true,
-      },
-    ],
   ],
 
   // Grava os erros de cada compilação em `compile-errors.log`, para quem não vê o terminal do
@@ -144,10 +121,6 @@ const config = {
             sidebarId: 'docs',
             position: 'left',
             label: 'Documentação',
-          },
-          {
-            type: 'search',
-            position: 'right',
           },
         ],
       },

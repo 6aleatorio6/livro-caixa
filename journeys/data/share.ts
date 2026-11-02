@@ -1,16 +1,11 @@
 // O compartilhamento de um arquivo com o app, pelo adb: o que o Android faz quando a pessoa escolhe o Livro-Caixa
 // no "Compartilhar" de outro app. O servidor de dados roda neste container, que tem o adb; o Maestro, não.
 import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+
+import { contentTypeOf, fixturePath } from './fixtures.ts';
 
 const APP = 'dev.leonardolf.livrocaixa';
 const DOWNLOADS = '/sdcard/Download';
-const CONTENT_TYPES: Record<string, string> = {
-  pdf: 'application/pdf',
-  jpg: 'image/jpeg',
-  jpeg: 'image/jpeg',
-  png: 'image/png',
-};
 
 function adb(...args: string[]) {
   const result = spawnSync('adb', args, { encoding: 'utf8' });
@@ -38,9 +33,8 @@ function findDownloadId(fileName: string) {
  * isso o app recebe a intent e falha com "has no access to content://…".
  */
 export function shareFixture(fileName: string, { cold }: { cold: boolean }) {
-  const contentType = CONTENT_TYPES[fileName.split('.').pop()?.toLowerCase() ?? ''];
-  if (!contentType) throw new Error(`Sem tipo conhecido para ${fileName}.`);
-  adb('push', fileURLToPath(new URL(`fixtures/${fileName}`, import.meta.url)), `${DOWNLOADS}/${fileName}`);
+  const contentType = contentTypeOf(fileName);
+  adb('push', fixturePath(fileName), `${DOWNLOADS}/${fileName}`);
   adb('shell', 'am', 'broadcast', '-a', 'android.intent.action.MEDIA_SCANNER_SCAN_FILE', '-d', `file://${DOWNLOADS}/${fileName}`);
   const uri = `content://media/external/downloads/${findDownloadId(fileName)}`;
   if (cold) adb('shell', 'am', 'force-stop', APP);

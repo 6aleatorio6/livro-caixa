@@ -7,7 +7,7 @@ import { mockServiceScenario } from '@/shared/testing/mockServiceScenario';
 
 import { TestSignInPage } from './TestSignInPage';
 
-let mockEmulatorHost: string | null = '10.0.2.2';
+let mockEmulatorHost: string | null = '127.0.0.1';
 
 jest.mock('expo-router', () => ({ Redirect: jest.fn(() => null), useLocalSearchParams: jest.fn() }));
 jest.mock('@/shared/services/firebase/emulatorHost', () => ({
@@ -28,7 +28,7 @@ beforeEach(() => {
 
 describe('TestSignInPage', () => {
   it('Should sign in with the e-mail and the name from the link when the app talks to the emulators', async () => {
-    mockEmulatorHost = '10.0.2.2';
+    mockEmulatorHost = '127.0.0.1';
 
     await render(<TestSignInPage />);
 
@@ -46,7 +46,7 @@ describe('TestSignInPage', () => {
   });
 
   it('Should go back to sign-in without signing in when the link has no e-mail', async () => {
-    mockEmulatorHost = '10.0.2.2';
+    mockEmulatorHost = '127.0.0.1';
     (useLocalSearchParams as jest.Mock).mockReturnValue({});
 
     await render(<TestSignInPage />);
@@ -56,7 +56,7 @@ describe('TestSignInPage', () => {
   });
 
   it('Should use the e-mail as the name when the link has no name', async () => {
-    mockEmulatorHost = '10.0.2.2';
+    mockEmulatorHost = '127.0.0.1';
     (useLocalSearchParams as jest.Mock).mockReturnValue({ email: 'bruno.souza@exemplo.com' });
 
     await render(<TestSignInPage />);

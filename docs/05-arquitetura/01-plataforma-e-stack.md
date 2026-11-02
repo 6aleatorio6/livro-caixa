@@ -36,17 +36,26 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   `fileContents`, que só o visualizador lê, uma vez. Os dois entram e saem no mesmo lote do
   lançamento, então não sobra arquivo sem lançamento nem lançamento sem arquivo. Um documento tem no
   máximo 1 MiB, e o comprovante fica em até 900 KB (921.600 bytes), com o resto de folga. As regras
-  do Firestore conferem o autor, o tipo (só imagem) e que o tamanho dos bytes é o do registro.
+  do Firestore conferem o autor, o tipo (imagem ou PDF, com o `contentType` que combina) e que o
+  tamanho dos bytes é o do registro.
 - **Imagens comprimidas com o `expo-image-manipulator`**, do próprio Expo, no celular e antes de
   salvar ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#formatos-e-tamanho)).
   A imagem acima de 900 KB desce uma escada: primeiro a qualidade, depois o lado maior, até um piso
   de 1600 px com qualidade 0,5, que ainda deixa ler uma nota. O que não cabe nem no piso é recusado.
-- **PDF de uma página convertido em imagem com a `@dariyd/react-native-pdf-page-image`**, antes de
-  salvar. Ela desenha a página com o `PdfRenderer` do próprio Android, sem motor embutido, e diz
-  quantas páginas o PDF tem, o que serve para recusar o de mais de uma. É um módulo nativo em Kotlin
-  escrito à mão, sem código gerado, então compila com o Kotlin 2.4. A página sai com o lado maior em
-  2560 px e passa pela mesma escada das fotos. Defeitos: ela trabalha na thread do módulo e não
-  captura falta de memória, o que o lado maior de 2560 px limita a uns 37 MB de bitmap.
+- **PDF guardado como está e mostrado dentro do app com a `react-native-pdf`**, até 900 KB e com
+  qualquer número de páginas ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#formatos-e-tamanho)).
+  O leitor rola as páginas e tem zoom de pinça. Ele embute o PDFium, com cerca de 5 MB no APK, e
+  pede o `react-native-blob-util`, que grava num arquivo o PDF lido do Firestore. O app grava esse
+  arquivo a cada abertura, sem o `cache` da biblioteca, porque ela não apaga o arquivo que não
+  conseguiu abrir.
+- **O valor do comprovante lido no celular pelo ML Kit**, o reconhecimento de texto do Google, num
+  módulo Expo local, `apps/mobile/modules/receipt-ocr`
+  ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#o-valor-lido-do-comprovante)).
+  O módulo lê a imagem, ou desenha a primeira página do PDF com o `PdfRenderer` do Android, e devolve
+  as linhas de texto com a posição de cada uma. Os parsers do app acham nelas o valor pago. O modelo
+  vai embutido no APK, com cerca de 4 MB em cada uma das 4 arquiteturas, e lê desde o primeiro
+  comprovante, sem internet. O modelo baixado pelo Google Play Services teria uns 260 KB, mas a
+  leitura feita antes de o download terminar não devolveria nada.
 - **Jornadas de teste com o Maestro**, no emulador Android do PC de quem desenvolve, contra os
   emuladores do Firebase ([Jornadas de Teste](02-jornadas-de-teste.md)).
 - **Testes de página com mocks conferidos por testes de contrato:** o teste de página mocka a
@@ -64,10 +73,11 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   traço, sem versão preenchida: o item ativo da navegação se destaca pela cor e pelo fundo, não por
   um ícone cheio. O ícone do app e as ilustrações não são ícones de pacote: são desenhados para a
   marca.
-- **Zoom da imagem do comprovante escrito à mão, com o `react-native-gesture-handler` 3 e a
-  Reanimated 4**, que o app já tem ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md)).
-  A pinça aproxima de 1× a 4×, dois toques alternam 1× e 2×, e só com zoom a imagem se arrasta; são
-  umas 40 linhas de gestos. O app tem a raiz dos gestos (`GestureHandlerRootView`) no `AppContainer`.
+- **A imagem do comprovante na largura da tela, com rolagem**, num `ScrollView` do React Native, sem
+  biblioteca ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#ver-o-comprovante)).
+  A altura sai da proporção da imagem, que chega quando ela carrega. Não há zoom. Do zoom que havia
+  antes, ficaram o `react-native-gesture-handler` e a raiz dos gestos (`GestureHandlerRootView`) no
+  `AppContainer`, sem uso.
 - **A folha de baixo dos detalhes do lançamento é uma rota em modal transparente do expo-router**,
   e não um componente dentro de cada lista: o "Ver" (o comprovante em tela cheia) e o "Alterar"
   empilham por cima da folha e voltam para ela, e as duas listas só fazem a navegação. A
@@ -106,18 +116,27 @@ Ficaram de fora:
   marca é passada componente a componente, sem um tema próprio global, e o layout dentro dele segue
   as regras do Compose, não as do React Native.
 - **Material Symbols:** no React Native, o pacote oficial só desenha os ícones dentro do Expo UI.
-- **Bibliotecas de zoom de imagem:** o `maximumZoomScale` do `ScrollView` é só do iOS; a
-  `react-native-zoom-toolkit` não foi testada com o `react-native-gesture-handler` 3; e a
-  `@likashefqet/react-native-image-zoom` está parada desde 2024.
+- **Zoom da imagem do comprovante:** foi escrito à mão, com o `react-native-gesture-handler` 3 e a
+  Reanimated 4, porque o `maximumZoomScale` do `ScrollView` é só do iOS e as bibliotecas de zoom
+  estavam paradas ou não foram testadas com o Gesture Handler 3. Saiu a pedido: a imagem na largura
+  da tela, rolando, lê melhor um print longo. A foto com letra miúda perde a ampliação.
 - **Cloud Storage no plano Blaze:** guarda arquivos de qualquer tamanho, mas pede uma conta de
   faturamento, e a ativação pedia um pagamento antecipado.
 - **Cloudinary:** sem um servidor, o celular só envia por um *preset* sem assinatura, que qualquer
   um que abra o APK pode usar; a leitura privada e a exclusão pedem uma chave secreta, que não pode
   ficar no app. A função que assinaria os pedidos, se fosse uma Cloud Function, também pediria o
   Blaze.
-- **`react-native-pdf`:** mostrava o PDF dentro do app, com zoom e rolagem entre as páginas. Saiu
-  porque nenhum comprovante novo é PDF, e com ela saem o PDFium (cerca de 5 MB no APK) e o
-  `react-native-blob-util`.
+- **`@dariyd/react-native-pdf-page-image`:** desenhava a página do PDF com o `PdfRenderer` do
+  próprio Android, para guardar o PDF de uma página como imagem, e compila com o Kotlin 2.4, porque é
+  um módulo nativo escrito à mão. Deixou de ser usada porque a imagem sai maior que o PDF que o banco
+  gera: o de um Pix, com menos de 1 KB, virava uma imagem de 56 KB. A leitura do valor desenha a
+  página no próprio módulo, com o mesmo `PdfRenderer`, e a biblioteca saiu do app.
+- **`@infinitered/react-native-mlkit-text-recognition`, `expo-mlkit-ocr` e `expo-text-extractor`,**
+  para a leitura do valor: o primeiro exige o `expo-image`, que o app não tem, e puxa o ML Kit numa
+  versão em aberto; o segundo ainda está na versão 0.x, com pouco uso; o terceiro devolve só o texto,
+  sem a posição de cada linha.
+- **Gemini, pelo Firebase AI Logic,** para a leitura do valor: lê o PDF direto e devolve só o valor,
+  mas envia o comprovante ao Google.
 - **`react-native-better-pdf`:** desenha o PDF com o `PdfRenderer` do próprio Android e gera a
   imagem de cada página. Mas o código que o `nitrogen` 0.37.1 gera para ela não compila no Kotlin
   2.4, que o React Native Firebase 27 pede: o Kotlin 2.4 transformou em erro um teste de tipo que

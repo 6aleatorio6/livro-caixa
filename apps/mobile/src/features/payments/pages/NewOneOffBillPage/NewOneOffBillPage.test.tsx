@@ -177,6 +177,16 @@ describe('NewOneOffBillPage', () => {
     expect(router.back).not.toHaveBeenCalled();
   });
 
+  it('Should fill the amount paid with the one read from the receipt and say where it came from', async () => {
+    jest.mocked(prepareReceipt).mockResolvedValue({ ...bill.receipt, readAmountCents: 8990 });
+    const user = await renderPage();
+
+    await user.press(screen.getByRole('button', { name: RECEIPT_BUTTON }));
+
+    expect(screen.getByDisplayValue('R$ 89,90')).toBeOnTheScreen();
+    expect(screen.getByText('Veio do comprovante. Corrija se pagou outro valor.')).toBeOnTheScreen();
+  });
+
   it('Should refuse the empty name and amount', async () => {
     const user = await renderPage();
 
@@ -184,6 +194,19 @@ describe('NewOneOffBillPage', () => {
 
     expect(await screen.findAllByText('Preencha este campo.')).toHaveLength(2);
     expect(addOneOffBillService).not.toHaveBeenCalled();
+  });
+
+  it('Should keep refusing the empty amount after a receipt with no amount read is attached', async () => {
+    const user = await renderPage();
+    await user.press(screen.getByRole('button', { name: SUBMIT }));
+    expect(await screen.findAllByText('Preencha este campo.')).toHaveLength(2);
+
+    await user.press(
+      screen.getByRole('button', { name: 'Comprovante: Anexe o comprovante. Nenhum arquivo anexado. Escolher' }),
+    );
+
+    expect(screen.getByText(bill.receipt.name)).toBeOnTheScreen();
+    expect(screen.getAllByText('Preencha este campo.')).toHaveLength(2);
   });
 
   it('Should offer the tags of the list as chips, none of them chosen', async () => {

@@ -7,13 +7,18 @@ import type { IColorRole } from '@/core/types/ColorRole';
 
 import { AppText } from '@/shared/components/AppText/AppText';
 import { CircleMark } from '@/shared/components/CircleMark/CircleMark';
+import { ColorDot } from '@/shared/components/ColorDot/ColorDot';
 import { Decorative } from '@/shared/components/Decorative/Decorative';
+import type { ITag } from '@/shared/types/tag/Tag';
+import { tagColorRoles } from '@/shared/utils/tag/tagColorRoles';
 
 export interface IListItemProps {
   icon: LucideIcon;
   title: string;
   /** O texto sob o título, em uma linha só: o que passa disso vira reticências. */
   support?: string;
+  /** A tag de uma conta no Início: a bolinha da cor dela abre o apoio, e o leitor de tela lê o nome depois do título. */
+  tag?: ITag;
   /** A cor da marca (o círculo do ícone). */
   markColor?: IColorRole;
   /** A cor do ícone, que combina com a da marca. */
@@ -31,6 +36,7 @@ export function ListItem({
   icon: Icon,
   title,
   support,
+  tag,
   markColor = 'secondaryContainer',
   iconColor = 'onSecondaryContainer',
   trailing,
@@ -47,9 +53,12 @@ export function ListItem({
       <View style={styles.texts}>
         <AppText variant={isCompact ? 'titleMedium' : 'bodyLarge'}>{title}</AppText>
         {support ? (
-          <AppText variant="bodySmall" color="onSurfaceVariant" numberOfLines={1}>
-            {support}
-          </AppText>
+          <View style={styles.support}>
+            {tag ? <ColorDot color={tagColorRoles(tag.color).mainRole} isSmall /> : null}
+            <AppText variant="bodySmall" color="onSurfaceVariant" numberOfLines={1} style={styles.supportText}>
+              {support}
+            </AppText>
+          </View>
         ) : null}
       </View>
       {trailing}
@@ -65,7 +74,7 @@ export function ListItem({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={title}
+      accessibilityLabel={tag ? `${title}, ${tag.name}` : title}
       onPress={onPress}
       style={({ pressed }) => styles.row(pressed, isCompact)}
     >
@@ -83,4 +92,6 @@ const styles = StyleSheet.create((theme) => ({
     opacity: isPressed ? theme.opacity.pressed : 1,
   }),
   texts: { flex: 1, gap: theme.spacing.extraExtraSmall },
+  support: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.extraSmallIncreased },
+  supportText: { flexShrink: 1 },
 }));

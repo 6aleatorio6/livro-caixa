@@ -1,4 +1,6 @@
-import type { IEntry } from '@/shared/types/entry/Entry';
+import { contributionOf } from '@/shared/testing/contributionOf';
+import { unownedPaymentOf } from '@/shared/testing/unownedPaymentOf';
+import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 import type { ITag } from '@/shared/types/tag/Tag';
 
@@ -19,7 +21,7 @@ const bill = (id: string, tagId: string | null, expectedAmountCents: number): IR
   tagId,
 });
 
-const oneOff = (id: string, tagId: string | null, amountCents: number): IEntry => ({
+const oneOff = (id: string, tagId: string | null, amountCents: number): IOwnedEntry => ({
   id,
   kind: 'oneOffBill',
   date: '2026-10-12',
@@ -48,24 +50,73 @@ describe('splitByTag', () => {
   it('Should keep a tag with only to pay and break a tie by name', () => {
     const summary = monthSummary({ month: '2026-10', bills: [bill('a', 'health', 500), bill('b', 'home', 700)], entries: [] });
 
-    expect(splitByTag(summary, [health, home]).map(({ tag: { name } }) => name)).toEqual(['Casa', 'Saúde']);
+    expect(splitByTag(summary, [health, home]).map(({ tag }) => tag?.name)).toEqual(['Casa', 'Saúde']);
   });
 
-  it('Should leave out the untagged entries and bills', () => {
-    const summary = monthSummary({ month: '2026-10', bills: [bill('a', null, 500)], entries: [oneOff('x', null, 300)] });
+  // Cada conta tem no máximo uma tag: com a linha sem tag, as linhas somam o mês inteiro.
+  it('Should put what has no tag in the last row, with tag null, even when it paid the most', () => {
+    const summary = monthSummary({
+      month: '2026-10',
+      bills: [bill('a', null, 500), bill('rent', 'home', 100000)],
+      entries: [oneOff('x', null, 300), oneOff('y', 'home', 100)],
+    });
 
-    expect(splitByTag(summary, [home])).toEqual([]);
+    expect(splitByTag(summary, [home, health])).toEqual([
+      { tag: home, paidCents: 100, toPayCents: 100000 },
+      { tag: null, paidCents: 300, toPayCents: 500 },
+    ]);
   });
 
-  it('Should leave out a tagId that is not in the tags list', () => {
+  it('Should put an entry or a bill whose tag is not in the list in the untagged row', () => {
     const summary = monthSummary({ month: '2026-10', bills: [bill('a', 'gone', 500)], entries: [oneOff('x', 'gone', 300)] });
 
+    expect(splitByTag(summary, [home])).toEqual([{ tag: null, paidCents: 300, toPayCents: 500 }]);
+  });
+
+  it('Should be empty when the month has nothing', () => {
+    const summary = monthSummary({ month: '2026-10', bills: [], entries: [] });
+
     expect(splitByTag(summary, [home])).toEqual([]);
   });
 
-  it('Should be empty without tags', () => {
-    const summary = monthSummary({ month: '2026-10', bills: [], entries: [oneOff('x', 'home', 300)] });
+  it('Should keep the tag split unchanged by contributions, counting them in the tag of their bill', () => {
+    const electricity = unownedPaymentOf({
+      id: '2026-10_light',
+      recurringBillId: 'light',
+      tagId: 'home',
+      expectedAmountCents: 20000,
+    });
+    const pharmacy = oneOff('pharmacy', 'health', 8000);
+    const summary = monthSummary({
+      month: '2026-10',
+      bills: [bill('light', 'home', 25000)],
+      entries: [
+        pharmacy,
+        contributionOf(pharmacy.id, 'bruno', 3000),
+        electricity,
+        contributionOf(electricity.id, 'bruno', 5000),
+      ],
+    });
 
-    expect(splitByTag(summary, [])).toEqual([]);
+    expect(splitByTag(summary, [home, health])).toEqual([
+      { tag: health, paidCents: 8000, toPayCents: 0 },
+      { tag: home, paidCents: 5000, toPayCents: 15000 },
+    ]);
+  });
+
+  it('Should keep a month with contributions in the tag it froze, even with no tag, when the bill gets one later', () => {
+    const light = unownedPaymentOf({
+      id: '2026-10_light',
+      recurringBillId: 'light',
+      tagId: null,
+      expectedAmountCents: 20000,
+    });
+    const summary = monthSummary({
+      month: '2026-10',
+      bills: [bill('light', 'home', 20000)],
+      entries: [light, contributionOf(light.id, 'bruno', 5000)],
+    });
+
+    expect(splitByTag(summary, [home])).toEqual([{ tag: null, paidCents: 5000, toPayCents: 15000 }]);
   });
 });

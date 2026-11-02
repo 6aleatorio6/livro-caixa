@@ -1,11 +1,9 @@
+import { MAX_AMOUNT_CENTS } from '@/shared/constants/maxAmountCents';
 import { formatCents } from '@/shared/utils/format/formatCents';
 
 import type { IInputMinimalProps } from '@/shared/types/form/InputMinimalProps';
 
 import { type ITextFieldProps, TextField } from '@/shared/components/inputs/TextField/TextField';
-
-// Até R$ 9.999.999,99: o que passa disso é erro de digitação.
-const MAX_CENTS = 999_999_999;
 
 export interface IMoneyFieldProps
   extends IInputMinimalProps<number | null>, Pick<ITextFieldProps, 'label' | 'supportText' | 'surfaceColor'> {}
@@ -28,7 +26,7 @@ export function MoneyField({ value, onValueChange, ...fieldProps }: IMoneyFieldP
       onValueChange(null);
       return;
     }
-    if (cents <= MAX_CENTS) onValueChange(cents);
+    if (cents <= MAX_AMOUNT_CENTS) onValueChange(cents);
   };
 
   return (

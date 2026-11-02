@@ -1,14 +1,14 @@
 # O Bruno paga a Internet de outubro com o valor corrigido (R$ 125,00) e um PDF escolhido no seletor de
 # arquivos do Android; o Início passa a Internet de "A pagar" para "Pagas" e o anel muda; o pagamento aparece
-# em Meus pagamentos com o previsto; a Ana, abrindo a mesma conta pela rota do mês, vê o aviso de que já foi paga, sem o formulário.
+# em Pagamentos com o previsto; a Ana, abrindo a mesma conta pela rota do mês, vê o aviso de que já foi paga, sem o formulário.
 # Coberto por:
-# - O PDF escolhido no seletor do Android, convertido em imagem e gravado em `fileContents`: só esta jornada prova a
-#   conversão pela biblioteca nativa (@dariyd/react-native-pdf-page-image) e o lote pelo React Native Firebase no
-#   aparelho; pdfToImage.test.ts e ReceiptField.test.tsx cobrem o que o app faz com a resposta dela.
+# - O PDF escolhido no seletor do Android, gravado como está em `fileContents`: só esta jornada prova a leitura do
+#   arquivo escolhido e o lote pelo React Native Firebase no aparelho; prepareReceipt.test.ts e ReceiptField.test.tsx
+#   cobrem o que o app faz com o arquivo.
 # - O valor vem do previsto e a correção vale: PayRecurringBillPage.test.tsx e o contrato do
 #   payRecurringBillService (memberPaysWithCorrectedAmount).
 # - A conta sai do "A pagar", entra nas "Pagas" e o anel muda: HomePage.test.tsx e monthSummary.test.ts.
-# - "pago em … · previsto R$ 119,90" em Meus pagamentos: MyPaymentsPage.test.tsx.
+# - "pago em … · previsto R$ 119,90" em Pagamentos: PaymentsPage.test.tsx.
 # - Mês já pago: a tela mostra o aviso e não oferece o formulário: PayRecurringBillPage.test.tsx; a
 #   corrida do segundo lote, no contrato (billAlreadyPaidByAnother) e nas regras do pagamento
 #   (entries.payment.test.mjs).
@@ -46,7 +46,7 @@ tags:
 - tapOn: Downloads
 - tapOn: recibo-pequeno.pdf
 - extendedWaitUntil:
-    visible: "Imagem · comprimida para .*"
+    visible: "PDF · .*"
     timeout: 30000
 - takeScreenshot: pay-recurring-bill--filled
 # O título da tela também diz "Registrar pagamento": o botão é o que fica abaixo do aviso.
@@ -65,8 +65,8 @@ tags:
 - scrollUntilVisible:
     element: "R\\$ 125,00"
 - assertVisible: "R\\$ 125,00"
-# Meus pagamentos: o pagamento com o previsto, no nome dele.
-- tapOn: Meus pagamentos
+# Pagamentos: o pagamento com o previsto, no nome dele.
+- tapOn: Pagamentos
 - assertVisible: "pago em ../.. · previsto R\\$ 119,90"
 - assertVisible: "R\\$ 125,00"
 - takeScreenshot: my-payments--recurring-payment

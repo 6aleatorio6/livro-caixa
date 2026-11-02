@@ -24,19 +24,21 @@ flowchart TD
   end
   subgraph pc["PC de quem desenvolve"]
     adb["Servidor do adb"]
-    app["App no emulador Android"]
+    app["App no aparelho Android"]
   end
   maestro -->|"comanda por localhost:5037"| adb
   inspect -->|"lê os nós e captura por localhost:5037"| adb
   adb -->|"toca, digita e lê a tela"| app
   maestro -->|"pede um cenário por localhost:4020"| data
   data -->|"zera e grava os dados por localhost:8080"| firebase
-  app -->|"baixa o JavaScript por 10.0.2.2:8081"| metro
-  app -->|"entra, lê e grava por 10.0.2.2"| firebase
+  app -->|"baixa o JavaScript por 127.0.0.1:8081, levado pelo adb"| metro
+  app -->|"entra, lê e grava por 127.0.0.1, levado pelo adb"| firebase
 ```
 
-- **No PC, só o emulador Android, com o app.** O container não roda um emulador, porque não tem
-  aceleração de hardware.
+- **No PC, só o aparelho Android, com o app:** o emulador Android, um container do redroid ou um
+  celular conectado. O container não roda um emulador, porque não tem aceleração de hardware. Com mais
+  de um aparelho no adb, a variável `ANDROID_SERIAL` escolhe o da rodada; sem ela, a rodada para e lista
+  os aparelhos.
 - **No container, o Maestro, o Metro e os emuladores do Firebase** (Auth na porta 9099 e Firestore
   na 8080). O Java, o Maestro e o adb são os do PC, emprestados ao container.
 - **O servidor de dados existe só durante a rodada**, na porta 4020. O Maestro roda os scripts dos
@@ -45,8 +47,11 @@ flowchart TD
   que quer: zerar os dados, liberar um e-mail, tirar a marca de admin.
 - **A leitura da tela** (`pnpm journeys:inspect`) e as capturas usam o adb direto, sem o Maestro.
 - **O container divide a rede com o PC**, então o `localhost` de um é o do outro. O Maestro chega
-  ao emulador Android pelo servidor do adb do PC, e o app, de dentro do emulador, chega ao PC, e
-  por ele ao Metro e aos emuladores do Firebase, pelo endereço `10.0.2.2`.
+  ao aparelho pelo servidor do adb do PC. O app procura o Metro e os emuladores do Firebase no
+  `127.0.0.1` do próprio aparelho, e o `adb reverse` de cada porta, que a rodada refaz, os leva ao PC.
+  Assim o mesmo caminho serve ao emulador, ao redroid e ao celular. O `10.0.2.2`, o endereço do PC
+  visto de dentro do emulador, não existe no redroid nem no celular, e o `apps/mobile/firebase.json`
+  impede o React Native Firebase de trocar o `127.0.0.1` por ele.
 - **O app é o build de debug**, que não traz o JavaScript dentro dele: a cada abertura, baixa o
   código do Metro. Mudar o código do app não pede um build novo; mudar o código nativo pede.
 - **Contra os emuladores do Firebase**, com dados de teste, e não contra o projeto real.

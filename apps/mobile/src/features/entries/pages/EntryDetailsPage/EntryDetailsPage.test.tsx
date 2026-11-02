@@ -12,6 +12,8 @@ import {
   deleteEntryRejectedScenarios,
   deleteEntryScenarios,
 } from '@/shared/services/entry/deleteEntryService.scenarios';
+import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
+import { entryMonthQueryScenarios } from '@/shared/services/entry/query/entryMonthQueryService.scenarios';
 import { entryQueryService } from '@/shared/services/entry/query/entryQueryService';
 import { entryQueryScenarios } from '@/shared/services/entry/query/entryQueryService.scenarios';
 import { receiptFileQueryService } from '@/shared/services/file/query/receiptFileQueryService';
@@ -30,6 +32,7 @@ import { EntryDetailsPage } from './EntryDetailsPage';
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
 jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jest.fn() }));
 jest.mock('@/shared/services/entry/query/entryQueryService', () => ({ entryQueryService: {} }));
+jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entryMonthQueryService: {} }));
 jest.mock('@/shared/services/file/query/receiptFileQueryService', () => ({ receiptFileQueryService: {} }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({ allowedEmailListQueryService: {} }));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
@@ -40,10 +43,20 @@ jest.mock('expo-router', () => ({ router: { back: jest.fn(), push: jest.fn() }, 
 
 const family = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyList };
 const threeTags = { service: tagListQueryService, scenario: tagListQueryScenarios.threeTags };
-const convertedPdfReceipt = { service: receiptFileQueryService, scenario: receiptFileQueryScenarios.convertedPdfReceipt };
+const pdfReceipt = { service: receiptFileQueryService, scenario: receiptFileQueryScenarios.pdfReceipt };
 const imageReceipt = { service: receiptFileQueryService, scenario: receiptFileQueryScenarios.imageReceipt };
 const payment = { service: entryQueryService, scenario: entryQueryScenarios.paymentOfTheMember };
 const oneOffBill = { service: entryQueryService, scenario: entryQueryScenarios.oneOffBillOfTheMember };
+// O mês do lançamento, sem contribuições: o padrão de toda folha que não diz outro.
+const monthWithoutContributions = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth };
+const monthWithContribution = {
+  service: entryMonthQueryService,
+  scenario: entryMonthQueryScenarios.monthWithContributionToPayment,
+};
+const contributionReceipt = {
+  service: receiptFileQueryService,
+  scenario: receiptFileQueryScenarios.contributionReceipt,
+};
 
 // O mock do lançamento lido pelo id: o `id` do cenário é o da rota.
 type IEntryMock = IRealtimeMock & { scenario: { input: { id: string } } };
@@ -59,7 +72,8 @@ beforeEach(() => {
 describe('EntryDetailsPage', () => {
   async function renderDetails(entry: IEntryMock, ...others: Parameters<typeof mockRealtime>) {
     jest.mocked(useLocalSearchParams).mockReturnValue({ id: entry.scenario.input.id });
-    const realtime = mockRealtime(entry, ...others);
+    // O mês sem contribuições vai por último: o mês que o teste dá, com a mesma entrada, vem antes e vale.
+    const realtime = mockRealtime(entry, ...others, monthWithoutContributions);
     await render(<EntryDetailsPage />);
     return { user: userEvent.setup(), realtime };
   }
@@ -71,7 +85,7 @@ describe('EntryDetailsPage', () => {
 
   describe('The payment', () => {
     it('Should show the bill, the month, the paid and the expected amount, who paid, when, the due day and the tag', async () => {
-      await renderDetails(payment, convertedPdfReceipt, family, threeTags);
+      await renderDetails(payment, pdfReceipt, family, threeTags);
 
       expect(screen.getByText('Luz')).toBeOnTheScreen();
       expect(screen.getByText('Pagamento de outubro de 2026')).toBeOnTheScreen();
@@ -86,9 +100,9 @@ describe('EntryDetailsPage', () => {
 
     it('Should show the receipt of another member and let anyone open it', async () => {
       jest.mocked(useAuthState).mockReturnValue(signedInAuthState(ana));
-      const { user } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
+      const { user } = await renderDetails(payment, pdfReceipt, family, threeTags);
 
-      expect(screen.getByText('Imagem · 88 KB')).toBeOnTheScreen();
+      expect(screen.getByText('PDF · 88 KB')).toBeOnTheScreen();
       expect(screen.getByText('comprovante-luz.pdf')).toBeOnTheScreen();
       await user.press(screen.getByRole('button', { name: /^Comprovante: comprovante-luz.pdf/ }));
 
@@ -96,7 +110,7 @@ describe('EntryDetailsPage', () => {
     });
 
     it('Should update the amount when the payment is corrected with the sheet open', async () => {
-      const { realtime } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
+      const { realtime } = await renderDetails(payment, pdfReceipt, family, threeTags);
       expect(screen.getByText('R$ 187,35')).toBeOnTheScreen();
 
       await act(async () => realtime.applyChange(entryQueryService));
@@ -149,7 +163,7 @@ describe('EntryDetailsPage', () => {
 
   describe('Who may change it', () => {
     it('Should offer Alterar and Excluir to whoever registered the payment', async () => {
-      await renderDetails(payment, convertedPdfReceipt, family, threeTags);
+      await renderDetails(payment, pdfReceipt, family, threeTags);
 
       expect(screen.getByRole('button', { name: 'Alterar' })).toBeOnTheScreen();
       expect(screen.getByRole('button', { name: 'Excluir' })).toBeOnTheScreen();
@@ -158,7 +172,7 @@ describe('EntryDetailsPage', () => {
 
     it('Should offer neither to another member and say who can, for a payment', async () => {
       jest.mocked(useAuthState).mockReturnValue(signedInAuthState(ana));
-      await renderDetails(payment, convertedPdfReceipt, family, threeTags);
+      await renderDetails(payment, pdfReceipt, family, threeTags);
 
       expect(screen.queryByRole('button', { name: 'Alterar' })).not.toBeOnTheScreen();
       expect(screen.queryByRole('button', { name: 'Excluir' })).not.toBeOnTheScreen();
@@ -175,7 +189,7 @@ describe('EntryDetailsPage', () => {
     });
 
     it('Should open the edit screen when Alterar is pressed', async () => {
-      const { user } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
+      const { user } = await renderDetails(payment, pdfReceipt, family, threeTags);
 
       await user.press(screen.getByRole('button', { name: 'Alterar' }));
 
@@ -187,7 +201,7 @@ describe('EntryDetailsPage', () => {
     it('Should ask first and call the service only after the dialog is confirmed', async () => {
       const scenario = deleteEntryScenarios.memberDeletesPayment;
       mockServiceScenario(deleteEntryService, scenario);
-      const { user } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
+      const { user } = await renderDetails(payment, pdfReceipt, family, threeTags);
 
       await user.press(screen.getByRole('button', { name: 'Excluir' }));
 
@@ -203,7 +217,7 @@ describe('EntryDetailsPage', () => {
     });
 
     it('Should not delete when the dialog is cancelled', async () => {
-      const { user } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
+      const { user } = await renderDetails(payment, pdfReceipt, family, threeTags);
 
       await user.press(screen.getByRole('button', { name: 'Excluir' }));
       await user.press(screen.getByRole('button', { name: 'Cancelar' }));
@@ -214,7 +228,7 @@ describe('EntryDetailsPage', () => {
 
     it('Should close the sheet and say the payment was deleted', async () => {
       mockServiceScenario(deleteEntryService, deleteEntryScenarios.memberDeletesPayment);
-      const { user } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
+      const { user } = await renderDetails(payment, pdfReceipt, family, threeTags);
 
       await confirmDeletion(user);
 
@@ -240,13 +254,162 @@ describe('EntryDetailsPage', () => {
     it('Should keep the sheet open and warn when the deletion is refused', async () => {
       const refusal = deleteEntryRejectedScenarios.memberDeletesEntryDeletedMeanwhile;
       mockServiceRejection(deleteEntryService, refusal);
-      const { user } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
+      const { user } = await renderDetails(payment, pdfReceipt, family, threeTags);
 
       await confirmDeletion(user);
 
       expect(deleteEntryService).toHaveBeenCalledWith(...refusal.input);
       expect(router.back).not.toHaveBeenCalled();
       expect(showToast).toHaveBeenCalledWith(refusal.result.userMessage, 'error');
+    });
+  });
+
+  describe('Contributions', () => {
+    it('Should show who contributed and how much the payer keeps in the details', async () => {
+      await renderDetails(payment, pdfReceipt, contributionReceipt, family, threeTags, monthWithContribution);
+
+      // A Luz de R$ 187,35 do Bruno, com R$ 40,00 da Ana.
+      expect(screen.getByText('Fica com você')).toBeOnTheScreen();
+      expect(screen.getByText('R$ 147,35')).toBeOnTheScreen();
+      expect(screen.getByRole('header', { name: 'Contribuições' })).toBeOnTheScreen();
+      expect(screen.getByText('(R$ 40,00)')).toBeOnTheScreen();
+      expect(screen.getByText('Ana · 11/10 · R$ 40,00')).toBeOnTheScreen();
+      expect(screen.getByText('pix-luz-ana.jpg')).toBeOnTheScreen();
+    });
+
+    it('Should not offer Contribuir to whoever registered the entry, and keep Excluir off while it has contributions', async () => {
+      await renderDetails(payment, pdfReceipt, contributionReceipt, family, threeTags, monthWithContribution);
+
+      expect(screen.queryByRole('button', { name: 'Contribuir' })).not.toBeOnTheScreen();
+      expect(screen.getByRole('button', { name: 'Excluir' })).toBeDisabled();
+      expect(screen.getByText('Com contribuições, o pagamento não pode ser excluído.')).toBeOnTheScreen();
+    });
+
+    it('Should offer Contribuir to another member and open the contribution to the entry', async () => {
+      jest.mocked(useAuthState).mockReturnValue(signedInAuthState(ana));
+      const { user } = await renderDetails(
+        payment,
+        pdfReceipt,
+        contributionReceipt,
+        family,
+        threeTags,
+        monthWithContribution,
+      );
+
+      expect(screen.getByText('Fica com Bruno')).toBeOnTheScreen();
+      await user.press(screen.getByRole('button', { name: 'Contribuir' }));
+
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/entries/[id]/contribute',
+        params: { id: '2026-10_electricity' },
+      });
+    });
+
+    it("Should keep Excluir off for the author until the month's entries arrive", async () => {
+      const monthLoading = { service: entryMonthQueryService, status: 'loading' as const };
+      await renderDetails(payment, pdfReceipt, family, threeTags, monthLoading);
+
+      expect(screen.getByRole('button', { name: 'Excluir' })).toBeDisabled();
+    });
+
+    it("Should open only the receipt from a contribution in an entry's details", async () => {
+      const { user } = await renderDetails(
+        payment,
+        pdfReceipt,
+        contributionReceipt,
+        family,
+        threeTags,
+        monthWithContribution,
+      );
+
+      await user.press(screen.getByRole('button', { name: /^Comprovante: pix-luz-ana.jpg/ }));
+
+      expect(router.push).toHaveBeenCalledTimes(1);
+      expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]/receipt', params: { id: 'c-ana' } });
+    });
+
+    describe('A bill paid only by contributions', () => {
+      const reachedRent = { service: entryQueryService, scenario: entryQueryScenarios.reachedUnownedPayment };
+      const november = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithContributions };
+      // Os comprovantes das contribuições ainda carregam: a folha não depende deles.
+      const receiptsLoading = { service: receiptFileQueryService, status: 'loading' as const };
+
+      it('Should disable Contribuir when the contributions reached the expected amount, and say why', async () => {
+        await renderDetails(reachedRent, receiptsLoading, family, threeTags, november);
+
+        expect(screen.getByText('R$ 2.000,00')).toBeOnTheScreen();
+        expect(screen.getByText('Chegaram ao previsto, então não dá para contribuir mais.')).toBeOnTheScreen();
+        expect(screen.getByRole('button', { name: 'Contribuir' })).toBeDisabled();
+        expect(screen.queryByRole('button', { name: 'Alterar' })).not.toBeOnTheScreen();
+        expect(screen.queryByRole('button', { name: 'Excluir' })).not.toBeOnTheScreen();
+      });
+
+      it('Should open the payment of the month from "Anexar o comprovante da conta"', async () => {
+        const { user } = await renderDetails(reachedRent, receiptsLoading, family, threeTags, november);
+
+        await user.press(screen.getByRole('button', { name: 'Anexar o comprovante da conta' }));
+
+        expect(router.push).toHaveBeenCalledWith({
+          pathname: '/recurring-bills/[id]/pay',
+          params: { id: 'rent', month: '2026-11', attach: '1' },
+        });
+      });
+    });
+
+    describe("A contribution's own details", () => {
+      const contribution = { service: entryQueryService, scenario: entryQueryScenarios.contribution };
+
+      it('Should show the contribution with the payment sheet, with Alterar and Excluir for its author', async () => {
+        jest.mocked(useAuthState).mockReturnValue(signedInAuthState(ana));
+        await renderDetails(contribution, contributionReceipt, family, threeTags, monthWithContribution);
+
+        expect(screen.getByText('Luz')).toBeOnTheScreen();
+        expect(screen.getByText('Contribuição em outubro de 2026')).toBeOnTheScreen();
+        expect(screen.getByText('R$ 40,00')).toBeOnTheScreen();
+        expect(screen.getByText('na conta Luz de R$ 187,35, paga por Bruno')).toBeOnTheScreen();
+        expect(screen.getByText('Contribuído por')).toBeOnTheScreen();
+        expect(screen.getByText('dia 10')).toBeOnTheScreen();
+        expect(screen.getByRole('button', { name: 'Alterar' })).toBeOnTheScreen();
+        expect(screen.getByRole('button', { name: 'Excluir' })).toBeEnabled();
+      });
+
+      it('Should say the bill is still to pay when the contribution went to a month with no owner', async () => {
+        await renderDetails(
+          { service: entryQueryService, scenario: entryQueryScenarios.contributionToUnownedPayment },
+          contributionReceipt,
+          family,
+          threeTags,
+          { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithContributionToUnownedPayment },
+        );
+
+        expect(screen.getByText('na conta Internet de R$ 120,00, ainda a pagar')).toBeOnTheScreen();
+      });
+
+      it('Should say who can change it to another member', async () => {
+        await renderDetails(contribution, contributionReceipt, family, threeTags, monthWithContribution);
+
+        expect(screen.getByText('Só Ana pode alterar ou excluir esta contribuição.')).toBeOnTheScreen();
+        expect(screen.queryByRole('button', { name: 'Alterar' })).not.toBeOnTheScreen();
+      });
+
+      it("Should delete the contribution with the month's entries and say so", async () => {
+        jest.mocked(useAuthState).mockReturnValue(signedInAuthState(ana));
+        const deletion = deleteEntryScenarios.memberDeletesContributionToPaidEntry;
+        mockServiceScenario(deleteEntryService, deletion);
+        const { user } = await renderDetails(
+          contribution,
+          contributionReceipt,
+          family,
+          threeTags,
+          monthWithContribution,
+        );
+
+        await confirmDeletion(user);
+
+        expect(deleteEntryService).toHaveBeenCalledWith(...deletion.input);
+        expect(showToast).toHaveBeenCalledWith('Contribuição excluída.', 'success');
+        expect(router.back).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
@@ -292,7 +455,7 @@ describe('EntryDetailsPage', () => {
   });
 
   it('Should close the sheet when the scrim is pressed', async () => {
-    const { user } = await renderDetails(payment, convertedPdfReceipt, family, threeTags);
+    const { user } = await renderDetails(payment, pdfReceipt, family, threeTags);
 
     await user.press(screen.getByRole('button', { name: 'Fechar' }));
 

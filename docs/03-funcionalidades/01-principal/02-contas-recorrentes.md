@@ -2,7 +2,7 @@
 
 As contas que a família paga todo mês. Cada conta recorrente é da família, não de um membro, e pode
 ter uma tag. Ela é cadastrada uma vez, e cada mês em que vale aparece como a pagar até alguém registrar
-o pagamento. Por enquanto a única recorrência é a mensal.
+o pagamento ou as [contribuições](08-contribuicao.md) alcançarem o valor previsto. Por enquanto a única recorrência é a mensal.
 
 ## Quem usa e quando
 
@@ -29,6 +29,8 @@ A conta vale até ser excluída: não há data de fim.
 - Num mês mais curto, o dia cai no último dia do mês: uma conta do dia 31 vence no dia 30 em abril
   e no último dia de fevereiro.
 - Cada mês da conta tem no máximo um pagamento, e fica com o primeiro membro que pagar.
+- Um mês com [contribuições](08-contribuicao.md) abaixo do valor previsto continua a pagar, pelo que
+  falta. Quando elas alcançam o valor previsto, o mês está pago.
 - Um mês que passou sem pagamento continua a pagar naquele mês. Ele não passa para o mês seguinte:
   o [Início](01-inicio.md) de cada mês mostra só as contas daquele mês.
 - A recorrência é mensal. Outras recorrências ficam de fora por enquanto
@@ -36,10 +38,12 @@ A conta vale até ser excluída: não há data de fim.
 
 ## Alterar e excluir
 
-- Alterar a conta muda todos os meses que ainda não têm pagamento, passados ou futuros. Os meses
-  já pagos não mudam.
-- Excluir a conta tira os meses que ainda não têm pagamento. Os pagamentos já registrados
-  continuam, com a referência à conta. Excluir pede confirmação.
+- Alterar a conta muda todos os meses que ainda não têm pagamento nem contribuição, passados ou
+  futuros. Os meses já pagos e os meses com contribuições não mudam: desde a primeira contribuição,
+  o mês guarda o valor previsto daquele momento.
+- Excluir a conta tira os meses que ainda não têm pagamento nem contribuição. Os pagamentos já
+  registrados continuam, com a referência à conta, e os meses com contribuições também, com a soma
+  delas. Excluir pede confirmação.
 
 ## Critérios de aceite
 
@@ -50,5 +54,8 @@ A conta vale até ser excluída: não há data de fim.
       pagos mantêm o valor do pagamento.
 - [ ] Depois de excluir a conta, os pagamentos já feitos continuam, e a conta deixa de aparecer
       como a pagar.
+- [ ] Depois de alterar o valor previsto, um mês com contribuições mantém o valor previsto que
+      tinha.
+- [ ] Depois de excluir a conta, as contribuições de um mês ainda a pagar continuam contando nele.
 - [ ] Uma conta recorrente é salva sem tag.
 - [ ] Qualquer membro, não só o admin, cadastra, altera e exclui uma conta recorrente.

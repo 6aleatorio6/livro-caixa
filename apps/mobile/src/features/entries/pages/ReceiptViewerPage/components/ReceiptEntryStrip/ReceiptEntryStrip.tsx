@@ -2,13 +2,14 @@ import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IAuthoredEntry } from '@/shared/types/entry/AuthoredEntry';
+import { formatContributionTitle } from '@/shared/utils/date/formatContributionTitle';
 import { formatIsoDate } from '@/shared/utils/date/formatIsoDate';
 import { formatPaymentTitle } from '@/shared/utils/date/formatPaymentTitle';
 import { formatCents } from '@/shared/utils/format/formatCents';
 
 export interface IReceiptEntryStripProps {
-  entry: IEntry;
+  entry: IAuthoredEntry;
   /** O primeiro nome de quem registrou. */
   authorName: string;
 }
@@ -18,11 +19,15 @@ export function ReceiptEntryStrip({ entry, authorName }: IReceiptEntryStripProps
   const origin =
     entry.kind === 'recurringPayment'
       ? `${formatPaymentTitle(entry.month)} · registrado por ${authorName} em ${formatIsoDate(entry.paidOn)}`
-      : `Conta avulsa de ${formatIsoDate(entry.date)} · registrada por ${authorName}`;
+      : entry.kind === 'oneOffBill'
+        ? `Conta avulsa de ${formatIsoDate(entry.date)} · registrada por ${authorName}`
+        : `${formatContributionTitle(entry.month)} · registrada por ${authorName} em ${formatIsoDate(entry.paidOn)}`;
+  // A contribuição não tem nome: a faixa diz que é uma, e o nome da conta fica nos detalhes dela.
+  const title = entry.kind === 'contribution' ? 'Contribuição' : entry.name;
 
   return (
     <View style={styles.strip}>
-      <AppText variant="titleMedium">{`${entry.name} · ${formatCents(entry.amountCents)}`}</AppText>
+      <AppText variant="titleMedium">{`${title} · ${formatCents(entry.amountCents)}`}</AppText>
       <AppText variant="bodySmall" color="onSurfaceVariant">
         {origin}
       </AppText>

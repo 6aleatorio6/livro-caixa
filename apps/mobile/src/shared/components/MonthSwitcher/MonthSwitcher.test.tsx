@@ -18,12 +18,25 @@ describe('MonthSwitcher', () => {
     expect(screen.getByText('Outubro de 2026')).toBeOnTheScreen();
   });
 
-  it('Should show only the month title without a label', async () => {
-    await render(<MonthSwitcher month="2026-10" onMonthChange={jest.fn()} />);
+  it('Should mark the current month', async () => {
+    await render(<MonthSwitcher label="Início" month="2026-10" onMonthChange={jest.fn()} />);
 
-    expect(screen.getByText('Outubro de 2026')).toBeOnTheScreen();
-    expect(screen.queryByText('Meus pagamentos')).not.toBeOnTheScreen();
-    expect(screen.getByRole('button', { name: 'Mês anterior' })).toBeOnTheScreen();
+    expect(screen.getByText('Este mês')).toBeOnTheScreen();
+    expect(screen.queryByText('Mês que vem')).not.toBeOnTheScreen();
+  });
+
+  it('Should mark the next month', async () => {
+    await render(<MonthSwitcher label="Início" month="2026-11" onMonthChange={jest.fn()} />);
+
+    expect(screen.getByText('Mês que vem')).toBeOnTheScreen();
+    expect(screen.queryByText('Este mês')).not.toBeOnTheScreen();
+  });
+
+  it('Should not mark an earlier month', async () => {
+    await render(<MonthSwitcher label="Início" month="2026-09" onMonthChange={jest.fn()} />);
+
+    expect(screen.queryByText('Este mês')).not.toBeOnTheScreen();
+    expect(screen.queryByText('Mês que vem')).not.toBeOnTheScreen();
   });
 
   it('Should ask for the previous month, even across a year', async () => {
@@ -35,15 +48,24 @@ describe('MonthSwitcher', () => {
     expect(onMonthChange).toHaveBeenCalledWith('2025-12');
   });
 
-  it('Should disable the next month on the current month', async () => {
+  it('Should disable the next month on the month after the current one', async () => {
     const onMonthChange = jest.fn();
-    await render(<MonthSwitcher label="Meus pagamentos" month="2026-10" onMonthChange={onMonthChange} />);
+    await render(<MonthSwitcher label="Meus pagamentos" month="2026-11" onMonthChange={onMonthChange} />);
 
     const next = screen.getByRole('button', { name: 'Próximo mês' });
     await userEvent.setup().press(next);
 
     expect(next).toBeDisabled();
     expect(onMonthChange).not.toHaveBeenCalled();
+  });
+
+  it('Should ask for the next month on the current month, so it can be paid before it starts', async () => {
+    const onMonthChange = jest.fn();
+    await render(<MonthSwitcher label="Meus pagamentos" month="2026-10" onMonthChange={onMonthChange} />);
+
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Próximo mês' }));
+
+    expect(onMonthChange).toHaveBeenCalledWith('2026-11');
   });
 
   it('Should ask for the next month on an earlier month', async () => {

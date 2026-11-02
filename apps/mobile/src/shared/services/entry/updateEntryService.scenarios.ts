@@ -2,6 +2,11 @@ import {
   ANA,
   BOTH_IN_THE_LIST,
   BRUNO,
+  CONTRIBUTION,
+  CONTRIBUTION_DOCUMENT,
+  CONTRIBUTION_FILE_ID,
+  CONTRIBUTION_TO_UNOWNED,
+  CONTRIBUTION_TO_UNOWNED_DOCUMENT,
   NEW_RECEIPT,
   ONE_OFF_BILL,
   ONE_OFF_BILL_DOCUMENT,
@@ -9,6 +14,7 @@ import {
   PAYMENT,
   PAYMENT_DOCUMENT,
   RECEIPT_FILE_ID,
+  UNOWNED_PAYMENT_DOCUMENT,
 } from '@/shared/testing/entryFixtures';
 import { MISSING_RECEIPT_URI } from '@/shared/testing/contract/fixtures/receiptFixture';
 import { entryOf } from '@/shared/testing/entryOf';
@@ -42,6 +48,16 @@ const ONE_OFF_BILL_SETUP = (email = BRUNO) => ({
   },
   fileContentsGiven: receiptOf(RECEIPT_FILE_ID, email).fileContentIds,
 });
+// A contribuição da Ana na Luz do Bruno: a Luz existe, porque a regra confere o lançamento que recebe a contribuição.
+const CONTRIBUTION_SETUP = {
+  given: {
+    ...BOTH_IN_THE_LIST,
+    'entries/2026-10_electricity': PAYMENT_DOCUMENT,
+    'entries/c-ana': CONTRIBUTION_DOCUMENT,
+    ...receiptOf(CONTRIBUTION_FILE_ID, ANA).fileDocuments,
+  },
+  fileContentsGiven: receiptOf(CONTRIBUTION_FILE_ID, ANA).fileContentIds,
+};
 const ONE_OFF_BILL_CHANGES = { name: 'Conserto do freezer', amountCents: 40000, date: '2026-09-28', tagId: null };
 
 export const updateEntryScenarios = {
@@ -71,6 +87,38 @@ export const updateEntryScenarios = {
     result: undefined,
     expectedEntry: PAYMENT_DOCUMENT,
     wasReceiptReplaced: true,
+  },
+  // A Ana corrige a contribuição para R$ 30,00; o comprovante fica.
+  memberChangesContributionAmount: {
+    signedInAs: ANA,
+    ...CONTRIBUTION_SETUP,
+    input: [{ entry: CONTRIBUTION, changes: { amountCents: 3000 }, receipt: null }],
+    result: undefined,
+    expectedEntry: { ...CONTRIBUTION_DOCUMENT, amountCents: 3000 },
+    wasReceiptReplaced: false,
+  },
+  memberReplacesContributionReceipt: {
+    signedInAs: ANA,
+    ...CONTRIBUTION_SETUP,
+    input: [{ entry: CONTRIBUTION, changes: { amountCents: 4000 }, receipt: NEW_RECEIPT }],
+    result: undefined,
+    expectedEntry: CONTRIBUTION_DOCUMENT,
+    wasReceiptReplaced: true,
+  },
+  // A Ana baixa a contribuição na Internet sem dono para R$ 30,00, abaixo de 30% do previsto: continua contribuição.
+  memberChangesMonthContributionAmount: {
+    signedInAs: ANA,
+    given: {
+      ...BOTH_IN_THE_LIST,
+      'entries/2026-10_internet': UNOWNED_PAYMENT_DOCUMENT,
+      'entries/c-ana': CONTRIBUTION_TO_UNOWNED_DOCUMENT,
+      ...receiptOf(CONTRIBUTION_FILE_ID, ANA).fileDocuments,
+    },
+    fileContentsGiven: receiptOf(CONTRIBUTION_FILE_ID, ANA).fileContentIds,
+    input: [{ entry: CONTRIBUTION_TO_UNOWNED, changes: { amountCents: 3000 }, receipt: null }],
+    result: undefined,
+    expectedEntry: { ...CONTRIBUTION_TO_UNOWNED_DOCUMENT, amountCents: 3000 },
+    wasReceiptReplaced: false,
   },
   // Nome, valor, a data em setembro (o `month` muda com ela) e a tag tirada (o campo some).
   memberChangesOneOffBill: {

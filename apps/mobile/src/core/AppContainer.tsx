@@ -26,5 +26,6 @@ export function AppContainer({ children }: IAppContainerProps) {
   );
 }
 
-// O RNGH 3 pede a raiz para os gestos do zoom do comprovante.
+// Nenhuma tela usa gesto do RNGH desde que o zoom do comprovante saiu; a raiz fica até a biblioteca sair, uma mudança
+// nativa à parte.
 const styles = StyleSheet.create({ root: { flex: 1 } });

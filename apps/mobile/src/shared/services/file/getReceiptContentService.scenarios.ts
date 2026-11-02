@@ -14,6 +14,15 @@ export const getReceiptContentScenarios = {
     input: [RECEIPT_FILE_ID, 'image/png'],
     result: RECEIPT_URI,
   },
+  // O PDF sai rotulado com o `contentType` do registro. Os bytes são os do PNG dos contratos: o serviço não lê o
+  // conteúdo, só o entrega.
+  pdfOfAnotherMember: {
+    signedInAs: ANA,
+    given: BOTH_IN_THE_LIST,
+    fileContentsGiven: [RECEIPT_FILE_ID],
+    input: [RECEIPT_FILE_ID, 'application/pdf'],
+    result: `data:application/pdf;base64,${RECEIPT_FIXTURE.base64}`,
+  },
 } satisfies Record<string, IServiceScenario<[string, string], string>>;
 
 /** Os casos recusados: o serviço lança `AppError`, e a `result` é o que o erro carrega. */

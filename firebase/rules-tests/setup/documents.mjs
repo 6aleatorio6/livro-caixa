@@ -49,6 +49,48 @@ export function recurringPaymentOf(overrides = {}) {
   });
 }
 
+/**
+ * A contribuição válida do Bruno (no aluguel de 2026-10, pago pela Ana), com os campos trocados em `overrides`. Não
+ * tem nome, data nem tag: vêm do lançamento que ela recebe (`entryId`).
+ */
+export function contributionOf(overrides = {}) {
+  return withoutUndefined({
+    kind: 'contribution',
+    month: '2026-10',
+    entryId: '2026-10_aluguel',
+    amountCents: 50000,
+    paidBy: 'uid-bruno',
+    createdAt: serverTimestamp(),
+    receiptFileId: 'f1',
+    ...overrides,
+  });
+}
+
+/**
+ * O pagamento sem dono da internet de 2026-10: as cópias da conta, sem `paidBy`, `amountCents` e `receiptFileId`,
+ * gravado na primeira contribuição de um mês sem pagamento. Os campos trocados vêm em `overrides`.
+ */
+export function unownedPaymentOf(overrides = {}) {
+  return withoutUndefined({
+    kind: 'recurringPayment',
+    month: '2026-10',
+    recurringBillId: 'internet',
+    name: 'Internet',
+    dueDay: 15,
+    expectedAmountCents: 11990,
+    tagId: 't1',
+    createdAt: serverTimestamp(),
+    ...overrides,
+  });
+}
+
+/** O mês `AAAA-MM` a `offset` meses do mês atual, em UTC: o relógio do `request.time` da regra. */
+export function monthFromNow(offset) {
+  const now = new Date();
+  const index = now.getUTCFullYear() * 12 + now.getUTCMonth() + offset;
+  return `${Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, '0')}`;
+}
+
 /** O tamanho do comprovante dos casos: pequeno, para o emulador não carregar quase 1 MiB a cada lote. */
 export const RECEIPT_SIZE_BYTES = 1234;
 

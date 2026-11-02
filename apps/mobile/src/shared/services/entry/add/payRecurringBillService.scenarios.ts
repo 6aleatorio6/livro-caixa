@@ -17,6 +17,7 @@ const RECEIPT: IRecurringPaymentInput['receipt'] = {
   sizeBytes: RECEIPT_FIXTURE.sizeBytes,
   type: 'image',
   wasReduced: false,
+  readAmountCents: null,
 };
 // A Internet da lista de contas (dia 15, Serviços): a tela lê a conta dela, e a regra exige que a conta exista.
 const INTERNET_BILL = recurringBillListQueryScenarios.fiveBills.result.find(({ id }) => id === 'internet')!;
@@ -54,6 +55,43 @@ export const payRecurringBillScenarios = {
     signedInAs: BRUNO,
     given: BRUNO_WITHOUT_ENTRIES,
     input: [{ ...INTERNET, amountCents: 12550 }],
+    result: undefined,
+  },
+  // O OCR leu R$ 125,50 no comprovante, e o valor pago é o lido; o valor lido não vai para o Firestore.
+  memberPaysWithAmountReadFromReceipt: {
+    signedInAs: BRUNO,
+    given: BRUNO_WITHOUT_ENTRIES,
+    input: [{ ...INTERNET, amountCents: 12550, receipt: { ...RECEIPT, readAmountCents: 12550 } }],
+    result: undefined,
+  },
+  // A Internet de outubro tem a contribuição da Ana, e o pagamento sem dono guardou o previsto de R$ 120,00 (a conta
+  // mudou depois): o Bruno paga o mês, o mesmo documento ganha o dono, e as cópias e a contribuição ficam.
+  memberPaysMonthWithContributions: {
+    signedInAs: BRUNO,
+    given: {
+      ...BRUNO_WITHOUT_ENTRIES,
+      [`allowedEmails/${ANA}`]: { name: 'Ana Souza', isAdmin: true, hasEntries: true },
+      'entries/2026-10_internet': {
+        kind: 'recurringPayment',
+        month: '2026-10',
+        recurringBillId: 'internet',
+        name: 'Internet',
+        dueDay: 15,
+        expectedAmountCents: 12000,
+        tagId: UTILITIES_TAG_ID,
+        createdAt: new Date('2026-10-08T12:00:00Z'),
+      },
+      'entries/c-ana': {
+        kind: 'contribution',
+        month: '2026-10',
+        entryId: '2026-10_internet',
+        amountCents: 4000,
+        paidBy: testAccountUid(ANA),
+        createdAt: new Date('2026-10-08T12:00:00Z'),
+        receiptFileId: 'f-ana',
+      },
+    },
+    input: [{ ...INTERNET, amountCents: 12000 }],
     result: undefined,
   },
 } satisfies Record<string, IServiceScenario<[IRecurringPaymentInput], void>>;

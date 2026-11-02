@@ -14,8 +14,8 @@ ser pago.
 ## O nome
 
 O app se chama **Livro-Caixa**, o livro em que se anota o que entra e o que sai, aqui o das contas
-da família. "Paia" fica fora do nome e aparece escondido na arte da splash screen, a tela de
-abertura do app, como easter egg. Como ele se esconde na arte fica para o design.
+da família. "Paia" fica fora do nome e aparece como easter egg, escrito à mão na página da esquerda
+da logo: na splash screen, a tela de abertura do app, na tela de entrada e no ícone do app.
 
 ## Os limites do produto
 

@@ -1,5 +1,6 @@
 import type { IAllowedEmailListItem } from '@/shared/types/allowedEmail/AllowedEmailListItem';
-import type { IEntry } from '@/shared/types/entry/Entry';
+import type { IMemberPart } from '@/shared/types/entry/MemberPart';
+import { ownedPaymentOf } from '@/shared/testing/ownedPaymentOf';
 
 import { splitByMember } from './splitByMember';
 
@@ -12,16 +13,12 @@ const person = (overrides: Partial<IAllowedEmailListItem>): IAllowedEmailListIte
   ...overrides,
 });
 
-const entry = (paidBy: string, amountCents: number): IEntry => ({
-  id: `${paidBy}-${amountCents}`,
-  kind: 'oneOffBill',
-  date: '2026-10-12',
-  month: '2026-10',
-  name: 'Conta',
+// A parte de um membro numa conta: o `splitByMember` só soma as partes, quem as calcula é o `memberPartsOf`.
+const entry = (uid: string, amountCents: number): IMemberPart => ({
+  entry: ownedPaymentOf(),
+  uid,
   amountCents,
-  tagId: null,
-  paidBy,
-  receiptFileId: 'f1',
+  contribution: null,
 });
 
 describe('splitByMember', () => {
