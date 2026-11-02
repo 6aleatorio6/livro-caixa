@@ -23,6 +23,7 @@
 Enum EntryKind {
   recurringPayment [note: 'Pagamento de uma conta recorrente num mês']
   oneOffBill [note: 'Conta avulsa']
+  contribution [note: 'Contribuição: parte do valor de um pagamento ou de uma conta avulsa, posta por outro membro']
 }
 
 Enum FileType {
@@ -61,19 +62,20 @@ Table recurringBills {
 }
 
 Table entries {
-  id varchar [pk, note: 'No pagamento, month + "_" + recurringBillId: o segundo pagamento do mês encontra o documento existente, e as regras recusam a escrita para qualquer pessoa, o autor inclusive. Na conta avulsa, um id gerado, que as regras não deixam ter a forma do pagamento (AAAA-MM_...), para ela não ocupar o id de uma conta recorrente']
+  id varchar [pk, note: 'No pagamento, month + "_" + recurringBillId: o segundo pagamento do mês encontra o documento existente, e as regras recusam a escrita para qualquer pessoa, o autor inclusive. Na conta avulsa e na contribuição, um id gerado, que as regras não deixam ter a forma do pagamento (AAAA-MM_...), para elas não ocuparem o id de uma conta recorrente']
   kind EntryKind [not null]
   month varchar [not null, note: 'AAAA-MM. Os lançamentos do Início vêm de uma consulta por este campo']
+  entryId varchar [ref: > entries.id, note: 'Só na contribuição: o lançamento que ela recebe, o pagamento do mês (com dono ou sem) ou a conta avulsa. As regras exigem que ele exista ao fim do lote, com o mesmo month. A contribuição não tem name, date, tagId, dueDay nem expectedAmountCents: vêm desse lançamento']
   recurringBillId varchar [ref: > recurringBills.id, note: 'Só no pagamento. As regras exigem que a conta exista na hora do pagamento; depois pode ficar apontando para uma conta já excluída']
-  name varchar [not null, note: 'No pagamento, cópia do nome da conta no momento do pagamento']
-  amountCents int [not null, note: 'No pagamento, começa com o valor previsto e pode ser corrigido']
+  name varchar [note: 'Na conta avulsa e no pagamento; no pagamento, cópia do nome da conta no momento do pagamento ou da primeira contribuição']
+  amountCents int [note: 'No pagamento, começa com o valor previsto e pode ser corrigido. Vazio no pagamento sem dono, cujo total é a soma das contribuições, calculada pelo app']
   dueDay int [note: 'Só no pagamento: o dia (1 a 31) em que a conta vencia naquele mês, cópia no momento do pagamento (o dia 31 vira 30 num mês de 30 dias)']
-  expectedAmountCents int [note: 'Só no pagamento: cópia do valor previsto da conta no momento do pagamento, para o pagamento não mudar quando a conta mudar']
+  expectedAmountCents int [note: 'Só no pagamento: cópia do valor previsto da conta no momento do pagamento ou da primeira contribuição, para o mês não mudar quando a conta mudar. O pagamento sem dono está pago quando a soma das contribuições alcança este valor']
   date varchar [note: 'Só na conta avulsa: AAAA-MM-DD, preenchida com hoje. Trocar a data para outro mês muda o month junto']
   tagId varchar [ref: > tags.id, note: 'Opcional. No pagamento, cópia da tag da conta no momento do pagamento']
-  paidBy varchar [not null, ref: > allowedEmails.uid, note: 'O uid do login de quem registrou. As regras exigem o uid de quem grava (request.auth.uid) e só deixam o autor alterar ou excluir. O nome não é copiado: o app o acha na lista pelo uid, e uma troca de nome chega aos lançamentos antigos']
+  paidBy varchar [ref: > allowedEmails.uid, note: 'O uid do login de quem registrou. Vazio só no pagamento sem dono, gravado na primeira contribuição de um mês sem pagamento; pagar esse mês é preencher o paidBy, o amountCents e o receiptFileId, por qualquer membro. As regras exigem o uid de quem grava (request.auth.uid) e só deixam o autor alterar ou excluir. O nome não é copiado: o app o acha na lista pelo uid, e uma troca de nome chega aos lançamentos antigos']
   createdAt timestamp [not null, note: 'Quando o lançamento foi registrado, gravado pelo servidor (serverTimestamp). Aparece nos detalhes do lançamento']
-  receiptFileId varchar [not null, ref: - files.id, note: 'O comprovante. As regras exigem que o registro exista ao fim do lote (getAfter) e tenha sido enviado por quem grava o lançamento']
+  receiptFileId varchar [ref: - files.id, note: 'O comprovante, vazio só no pagamento sem dono. As regras exigem que o registro exista ao fim do lote (getAfter) e tenha sido enviado por quem grava o lançamento']
 
   indexes {
     (month, recurringBillId) [unique, note: 'Garantido pelo id do documento, não por um índice: o Firestore não tem índice único']
@@ -81,7 +83,7 @@ Table entries {
     tagId
   }
 
-  Note: 'Os lançamentos, pagamentos e contas avulsas, numa coleção só: uma consulta traz o mês inteiro. Só o autor altera: no pagamento, o valor pago e o comprovante; na conta avulsa, o nome, o valor, a data (e o month com ela), a tag e o comprovante. Trocar o comprovante é um lote: cria o files e o fileContents novos, atualiza o lançamento e apaga os antigos. Excluir é um lote que apaga o lançamento, o files e o fileContents dele. Excluir não desfaz o hasEntries.'
+  Note: 'Os lançamentos, pagamentos, contas avulsas e contribuições, numa coleção só: uma consulta traz o mês inteiro, e o app calcula com ela o que falta e a parte de cada membro, sem totais gravados. O pagamento sem dono nasce no lote da primeira contribuição de um mês sem pagamento, e qualquer membro o cria e apaga; a contribuição que vira pagamento, ou o contrário, é um lote só, com o mesmo comprovante. Só o autor altera: no pagamento, o valor pago e o comprovante; na conta avulsa, o nome, o valor, a data (e o month com ela), a tag e o comprovante. Trocar o comprovante é um lote: cria o files e o fileContents novos, atualiza o lançamento e apaga os antigos. Excluir é um lote que apaga o lançamento, o files e o fileContents dele. Excluir não desfaz o hasEntries.'
 }
 
 Table files {
