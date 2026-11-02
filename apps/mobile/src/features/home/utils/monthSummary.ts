@@ -18,7 +18,15 @@ import type { IMonthSummary } from '../types/MonthSummary';
  * contribuição) e não o da conta; a pagar, ela conta pelo que falta. Os lançamentos com dono e os pagamentos sem dono
  * que alcançaram o previsto estão pagos, e o pago é a soma das partes de cada membro. Não olha quem está logado.
  */
-export function monthSummary({ month, bills, entries }: { month: string; bills: IRecurringBill[]; entries: IEntry[] }): IMonthSummary {
+export function monthSummary({
+  month,
+  bills,
+  entries,
+}: {
+  month: string;
+  bills: IRecurringBill[];
+  entries: IEntry[];
+}): IMonthSummary {
   const monthEntries = entries.filter((entry) => entry.month === month);
   const unownedByBillId = new Map(
     monthEntries.filter(isUnownedPayment).map((payment) => [payment.recurringBillId, payment]),

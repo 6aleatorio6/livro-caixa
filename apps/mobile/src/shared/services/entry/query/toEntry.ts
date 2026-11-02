@@ -10,7 +10,20 @@ import { toIsoDate } from '@/shared/utils/date/toIsoDate';
  * `tagId` `null`. Um `kind` que o app não conhece chega como `null`, e quem lê o deixa de fora.
  */
 export function toEntry(entry: DocumentData & { id: string }): IEntry | null {
-  const { id, kind, month, name, amountCents, date, recurringBillId, dueDay, expectedAmountCents, tagId, paidBy, receiptFileId } = entry;
+  const {
+    id,
+    kind,
+    month,
+    name,
+    amountCents,
+    date,
+    recurringBillId,
+    dueDay,
+    expectedAmountCents,
+    tagId,
+    paidBy,
+    receiptFileId,
+  } = entry;
   const paidOn = toIsoDate(entry.createdAt?.toDate() ?? new Date());
   if (kind === 'contribution')
     return { id, kind, month, entryId: entry.entryId, amountCents, paidBy, receiptFileId, paidOn };
