@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # A pilha das jornadas, neste container: os emuladores do Firebase e o Metro servindo o app apontado
-# para eles. O app, no emulador do Android do PC, chega aos dois por 10.0.2.2, o localhost do PC, que
-# este container divide. O Java dos emuladores chega no PATH pelo claude-box.
+# para eles. O app, no aparelho, chega aos dois pelo próprio 127.0.0.1, que o `adb reverse` da rodada leva ao
+# localhost do PC, que este container divide. O Java dos emuladores chega no PATH pelo claude-box.
 set -euo pipefail
 REPO=$(cd "$(dirname "$0")/.." && pwd)
 cd "$REPO"

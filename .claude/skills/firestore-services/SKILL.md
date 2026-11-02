@@ -28,7 +28,7 @@ next to its `files/{id}` record and written in the entry's batch (`addReceiptToB
 `deleteReceiptFromBatch`). The record is read in realtime; the bytes only by the viewer, once.
 
 With `EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true`, each instance connects to its emulator on the PC
-(`EMULATOR_HOST`, `10.0.2.2` from the Android emulator). The emulators run with
+(`EMULATOR_HOST`, the device's `127.0.0.1`, taken to the PC by `adb reverse`). The emulators run with
 `pnpm firebase:emulators`, or inside the journeys' stack (`pnpm journeys:stack`).
 
 ## One service per operation

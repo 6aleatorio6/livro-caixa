@@ -10,8 +10,9 @@ journeys/
   package.json             only "type": "module", so Node and tsc read the .ts files as ES modules
   tsconfig.json            pnpm typecheck:journeys: test.ts, inspect.ts and data/
   stack.sh                 pnpm journeys:stack: the Firebase emulators and Metro
-  test.ts                  pnpm journeys:test: prepares the emulator, deletes old rounds, serves
-                           the test data and runs Maestro
+  test.ts                  pnpm journeys:test: picks and prepares the device (ANDROID_SERIAL or
+                           the only one on adb; adb reverse of the stack's ports), deletes old
+                           rounds, serves the test data and runs Maestro
   inspect.ts               pnpm journeys:inspect: the screen's nodes, in dp, through adb
   flows/                   the journeys: only journeys (config.yaml runs every */*)
     config.yaml

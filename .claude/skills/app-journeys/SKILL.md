@@ -18,16 +18,20 @@ allowed-tools: Bash(pnpm journeys:test *) Bash(pnpm journeys:inspect *) Bash(adb
 The Android emulator runs on the developer's PC: this container has no hardware acceleration.
 Everything else runs here. The container shares the PC's network (`--network host` in the
 claude-box launcher), so `localhost` here is the PC's: Maestro and adb talk to the PC's adb server
-on `localhost:5037`, and the app on the emulator reaches the stack on `10.0.2.2`, the PC's loopback.
+on `localhost:5037`, and the app reaches the stack on the device's own `127.0.0.1`, which `adb reverse`
+of 8081 (Metro), 9099 (Auth) and 8080 (Firestore) takes to the PC. The same path serves the AVD, a
+redroid container and a phone; `10.0.2.2` exists only on the AVD, and `apps/mobile/firebase.json`
+(`android_bypass_emulator_url_remap`) stops React Native Firebase from swapping `127.0.0.1` for it.
 Java, Maestro and the Android SDK's adb come from the PC: the claude-box mounts them and puts them
 on the `PATH`, outside this repository. A missing one is the box's to fix: tell the person.
 
 Three commands, all from the repository root:
 
 - `pnpm journeys:stack` (`journeys/stack.sh`): the stack.
-- `pnpm journeys:test [<flow> | tag:<name>]` (`journeys/test.ts`): prepares the emulator (app
-  drawing on, animations off: see the ATD trap), deletes old rounds, serves the test data and runs
-  Maestro.
+- `pnpm journeys:test [<flow> | tag:<name>]` (`journeys/test.ts`): picks the device (the
+  `ANDROID_SERIAL` one, or the only one on adb; with two and no variable it stops and lists the
+  serials), prepares it (app drawing on, animations off: see the ATD trap; the `adb reverse` of
+  the stack's ports), deletes old rounds, serves the test data and runs Maestro on that device.
 - `pnpm journeys:inspect [<selector>…]` (`journeys/inspect.ts`): the screen's nodes, in dp.
 
 Where each file goes, and when something becomes a step or a scenario: `journeys/CLAUDE.md`.
@@ -39,11 +43,17 @@ Where each file goes, and when something becomes a step or a scenario: `journeys
 "Pilha das jornadas de pé"; it refuses to start when one of its ports is taken, which means another
 stack or another Metro is up: never take it down. It needs:
 
-- the Android emulator open on the PC: the `Livro_Caixa_API_35` AVD (Android 15, the default
-  image without Google Play, Pixel 7 profile at density 420; Android 16 is a trap below). It has
-  the status and navigation bars, so `adb exec-out screencap -p` and Maestro's `takeScreenshot`
-  show them. The person opens it; `adb devices` shows it.
-- the debug APK installed on it. The debug build loads the JavaScript from Metro, so a JS change
+- an Android device on adb, opened by the person: the `Livro_Caixa_API_35` AVD (Android 15, the
+  default image without Google Play, Pixel 7 profile at density 420; Android 16 is a trap below),
+  or a redroid container (`127.0.0.1:5600`, the ezfacil script; `adb shell wm size 1080x2400` gives
+  it the Pixel 7's 411 × 914 dp), or a phone. All have the status and navigation bars, so
+  `adb exec-out screencap -p` and Maestro's `takeScreenshot` show them. With more than one on adb,
+  `ANDROID_SERIAL=<serial>` picks the device for `journeys:test`, `journeys:inspect` and every
+  `adb` call of this session.
+- the debug APK installed on it, built for its architecture: `pnpm android` builds only the
+  connected device's (`arm64-v8a` on a phone, `x86_64` on the AVD and redroid), and a build for
+  one crashes on the other (`couldn't find DSO to load: libreactnative.so`). For several devices,
+  `cd apps/mobile/android && ./gradlew assembleDebug -PreactNativeArchitectures=arm64-v8a,x86_64`. The debug build loads the JavaScript from Metro, so a JS change
   needs no new build: when the native code is unchanged, this session reinstalls the last build
   with `adb install -r apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk`. A native
   change (a new native package, `app.json`) needs `pnpm android --no-bundler` on the PC: without
