@@ -71,5 +71,7 @@ const styles = StyleSheet.create((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     gap: theme.spacing.extraExtraSmall,
+    // O traço do anel mais um respiro, para o texto não encostar nele (o `f2z9U` do design).
+    padding: STROKE_WIDTH + theme.spacing.large,
   },
 }));

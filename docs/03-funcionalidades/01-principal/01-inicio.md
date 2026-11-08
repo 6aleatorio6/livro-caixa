@@ -73,3 +73,5 @@ O formato do gráfico fica para o design.
 - [ ] As contribuições não mudam o total do mês nem a separação por tag.
 - [ ] Uma conta com contribuições abaixo do previsto aparece a pagar pelo que falta, com quem
       contribuiu.
+- [ ] Com R$ 2.677,90 a pagar, o valor fica dentro do anel; um valor maior diminui até caber numa
+      linha.
