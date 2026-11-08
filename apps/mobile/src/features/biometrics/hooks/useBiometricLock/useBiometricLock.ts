@@ -22,17 +22,17 @@ export function useBiometricLock(): boolean {
   const isLocked = useBiometricLockStore((state) => state.isLocked);
 
   useEffect(() => {
-    let backgroundedAt: number | null = null;
+    let backgroundedAtMs: number | null = null;
 
     const subscription = AppState.addEventListener('change', (nextState) => {
-      if (nextState === 'background') backgroundedAt = Date.now();
+      if (nextState === 'background') backgroundedAtMs = Date.now();
       if (nextState !== 'active') return;
 
-      if (shouldLockOnReturn(useBiometricLockStore.getState().isEnabled, backgroundedAt, Date.now())) lockApp();
+      if (shouldLockOnReturn(useBiometricLockStore.getState().isEnabled, backgroundedAtMs, Date.now())) lockApp();
       // A hora da saída é consumida valha ela ou não: aquela saída já foi julgada. Sem isso, a volta à tela depois do
       // pedido do sistema (que tira o app de `active` e o devolve) julgaria a mesma saída de novo e bloquearia o app
       // logo depois do desbloqueio, em laço.
-      backgroundedAt = null;
+      backgroundedAtMs = null;
     });
     return () => subscription.remove();
   }, []);

@@ -50,13 +50,13 @@ export async function prepareReceipt(file: ILocalFile): Promise<IReceipt> {
     );
   }
 
-  const deadlineAt = Date.now() + OCR_DEADLINE_MS;
+  const deadlineAtMs = Date.now() + OCR_DEADLINE_MS;
   return {
     ...prepared,
     type: isPdf ? 'pdf' : 'image',
     wasReduced: prepared.uri !== file.uri,
     readAmountCents: await resultWithinDeadline(
-      findPaidAmount(prepared.uri, isPdf, deadlineAt),
+      findPaidAmount(prepared.uri, isPdf, deadlineAtMs),
       OCR_DEADLINE_MS,
       warnReadingOverran,
     ),
@@ -68,13 +68,13 @@ function warnReadingOverran() {
   console.warn(`A leitura do comprovante passou de ${OCR_DEADLINE_MS / 1000} s e segue sem o valor lido.`);
 }
 
-async function findPaidAmount(uri: string, isPdf: boolean, deadlineAt: number): Promise<number | null> {
+async function findPaidAmount(uri: string, isPdf: boolean, deadlineAtMs: number): Promise<number | null> {
   const pagesToRead = isPdf ? MAX_OCR_PAGES : 1;
   try {
     for (let pageIndex = 0; pageIndex < pagesToRead; pageIndex += 1) {
       // A chamada nativa já em andamento não se cancela, mas as páginas seguintes não valem o trabalho: ninguém
       // espera mais pelo resultado.
-      if (Date.now() >= deadlineAt) return null;
+      if (Date.now() >= deadlineAtMs) return null;
       // Em sequência de propósito: a página seguinte só é lida quando esta não mostra valor.
       const lines = await recognizeReceiptText(uri, isPdf, pageIndex);
       if (lines === null) return null;
