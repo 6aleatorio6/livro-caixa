@@ -1,5 +1,5 @@
 import { act, render, screen, userEvent } from '@testing-library/react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { getSharedPayloads } from 'expo-sharing';
 
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
@@ -14,6 +14,7 @@ import { tagListQueryService } from '@/shared/services/tag/query/tagListQuerySer
 import { tagListQueryScenarios } from '@/shared/services/tag/query/tagListQueryService.scenarios';
 import { mockRealtime } from '@/shared/testing/mockRealtime';
 import { signedInAuthState } from '@/shared/testing/signedInAuthState';
+import { checkAppVersion } from '@/shared/utils/version/checkAppVersion';
 
 import { HomePage } from './HomePage';
 
@@ -24,7 +25,9 @@ jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entry
 jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService', () => ({ recurringBillListQueryService: {} }));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({ allowedEmailListQueryService: {} }));
-jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
+jest.mock('expo-router', () => ({ router: { push: jest.fn() }, useFocusEffect: jest.fn() }));
+// A conferência da versão tem teste próprio e carregaria o serviço de leitura; é assíncrona, como a verdadeira.
+jest.mock('@/shared/utils/version/checkAppVersion', () => ({ checkAppVersion: jest.fn(() => Promise.resolve()) }));
 // O compartilhamento que o Android deixou para o app, lido pelo Início ao abrir.
 jest.mock('expo-sharing', () => ({ getSharedPayloads: jest.fn(() => []) }));
 
@@ -52,6 +55,28 @@ afterEach(() => {
 });
 
 describe('HomePage', () => {
+  describe('The app version check', () => {
+    it('Should check the app version each time the home gains focus', async () => {
+      mockRealtime(fiveBills, threeTags, family, familyMonth);
+      await render(<HomePage />);
+      const onFocus = jest.mocked(useFocusEffect).mock.lastCall![0];
+
+      onFocus();
+      onFocus();
+
+      expect(checkAppVersion).toHaveBeenCalledTimes(2);
+    });
+
+    // O `useFocusEffect` só aceita uma função ou nada de volta: a promessa da conferência avisaria no console.
+    it('Should return nothing to the focus effect, which warns about a promise', async () => {
+      mockRealtime(fiveBills, threeTags, family, familyMonth);
+      await render(<HomePage />);
+      const onFocus = jest.mocked(useFocusEffect).mock.lastCall![0];
+
+      expect(onFocus()).toBeUndefined();
+    });
+  });
+
   describe('A file shared to the app', () => {
     it('Should open the share screen when a shared file is waiting', async () => {
       jest.mocked(getSharedPayloads).mockReturnValue([

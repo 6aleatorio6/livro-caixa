@@ -3,18 +3,24 @@ import { router } from 'expo-router';
 import { renderRouter, screen } from 'expo-router/testing-library';
 import { Text } from 'react-native';
 import { useState } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
 import { clearSharedPayloads, getSharedPayloads } from 'expo-sharing';
 
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { allowedEmailQueryService } from '@/shared/services/allowedEmail/query/allowedEmailQueryService';
 import { allowedEmailQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailQueryService.scenarios';
+import { findMinimumAppVersionService } from '@/shared/services/appSettings/findMinimumAppVersionService';
+import { findMinimumAppVersionScenarios } from '@/shared/services/appSettings/findMinimumAppVersionService.scenarios';
 import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
+import { useAppVersionLockStore } from '@/shared/store/appVersionLock.store';
 import { mockRealtime } from '@/shared/testing/mockRealtime';
+import { mockServiceScenario } from '@/shared/testing/mockServiceScenario';
 import { signedInAuthState } from '@/shared/testing/signedInAuthState';
 import type { IAllowedEmail } from '@/shared/types/allowedEmail/AllowedEmail';
 import type { IAuthState } from '@/shared/types/auth/AuthState';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
+import { checkAppVersion } from '@/shared/utils/version/checkAppVersion';
 
 import TabsLayout from '@/app/(tabs)/_layout';
 import RootLayout from '@/app/_layout';
@@ -23,6 +29,19 @@ import RootLayout from '@/app/_layout';
 jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jest.fn() }));
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailQueryService', () => ({ allowedEmailQueryService: {} }));
+// A versão mínima que o layout lê na abertura; cada teste escolhe o cenário.
+jest.mock('@/shared/services/appSettings/findMinimumAppVersionService', () => ({
+  findMinimumAppVersionService: jest.fn(),
+}));
+// A versão instalada muda por teste: o `get` lê o valor na hora do uso, e o nome com `mock` o libera na fábrica.
+let mockInstalledVersion = '0.4.0';
+jest.mock('@/shared/constants/appVersion', () => ({
+  get APP_VERSION() {
+    return mockInstalledVersion;
+  },
+}));
+// A splash do Expo é nativa: o teste só confere quando o layout manda escondê-la.
+jest.mock('expo-splash-screen', () => ({ preventAutoHideAsync: jest.fn(), hide: jest.fn() }));
 // O compartilhamento que o Android deixou para o app, lido pelo layout na abertura.
 jest.mock('expo-sharing', () => ({ getSharedPayloads: jest.fn(() => []), clearSharedPayloads: jest.fn() }));
 // O layout das abas chama o hook do nome, que tem teste próprio e carregaria o serviço de escrita.
@@ -38,6 +57,7 @@ const ROUTES = {
     '(tabs)/settings': () => <Text>Página das configurações</Text>,
     'sign-in': () => <Text>Entrar</Text>,
     'no-access': () => <Text>Sem acesso</Text>,
+    'update-required': () => <Text>Atualização obrigatória</Text>,
     'test-sign-in': () => <Text>Entrada de teste</Text>,
     'allowed-emails': () => <Text>Página dos e-mails permitidos</Text>,
     'change-name': () => <Text>Página do seu nome</Text>,
@@ -71,6 +91,13 @@ async function renderAppAs(
   await renderRouter(ROUTES, { initialUrl });
   return realtime;
 }
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockInstalledVersion = '0.4.0';
+  useAppVersionLockStore.setState({ requiredVersion: null });
+  mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.noAppSettings);
+});
 
 describe('RootLayout', () => {
   it('Should show the sign-in screen to a signed-out person', async () => {
@@ -123,6 +150,99 @@ describe('RootLayout', () => {
     expect(await screen.findByText('Página do início')).toBeOnTheScreen();
     expect(screen.queryByText('Sem acesso')).not.toBeOnTheScreen();
     expect(screen.queryByText('Entrar')).not.toBeOnTheScreen();
+  });
+
+  describe('The version lock', () => {
+    const memberInList = {
+      authState: signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn),
+      allowedEmail: allowedEmailQueryScenarios.emailInList,
+    };
+
+    it.each([
+      { who: 'an allowed member', ...memberInList },
+      { who: 'a signed-out person', authState: SIGNED_OUT, allowedEmail: null },
+      {
+        who: 'an e-mail outside the allowed list',
+        authState: signedInAuthState(signInWithFakeGoogleScenarios.outsiderSignsIn),
+        allowedEmail: allowedEmailQueryScenarios.emailOutsideList,
+      },
+    ])(
+      'Should show only the update screen to $who when the app is below the minimum',
+      async ({ authState, allowedEmail }) => {
+        mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.minimumVersionSet);
+
+        await renderAppAs(authState, allowedEmail);
+
+        expect(screen.getByText('Atualização obrigatória')).toBeOnTheScreen();
+        expect(screen.queryByText('Página do início')).not.toBeOnTheScreen();
+        expect(screen.queryByText('Entrar')).not.toBeOnTheScreen();
+        expect(screen.queryByText('Sem acesso')).not.toBeOnTheScreen();
+      },
+    );
+
+    it('Should keep an allowed member on the update screen when opening another screen of the app', async () => {
+      mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.minimumVersionSet);
+
+      await renderAppAs(memberInList.authState, memberInList.allowedEmail, '/tags');
+
+      expect(screen.getByText('Atualização obrigatória')).toBeOnTheScreen();
+      expect(screen.queryByText('Página das tags')).not.toBeOnTheScreen();
+    });
+
+    it('Should open the app as before when the installed version is the minimum', async () => {
+      mockInstalledVersion = '0.5.0';
+      mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.minimumVersionSet);
+
+      await renderAppAs(memberInList.authState, memberInList.allowedEmail);
+
+      expect(screen.getByText('Página do início')).toBeOnTheScreen();
+      expect(screen.queryByText('Atualização obrigatória')).not.toBeOnTheScreen();
+    });
+
+    it('Should take an allowed member from the open app to the update screen when the check finds a higher minimum', async () => {
+      await renderAppAs(memberInList.authState, memberInList.allowedEmail);
+      expect(screen.getByText('Página do início')).toBeOnTheScreen();
+
+      mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.minimumVersionSet);
+      await act(async () => checkAppVersion());
+
+      expect(await screen.findByText('Atualização obrigatória')).toBeOnTheScreen();
+      expect(screen.queryByText('Página do início')).not.toBeOnTheScreen();
+    });
+
+    // Quem está logado e cuja leitura do e-mail falha esperaria na splash por 30 s (ou para sempre, sem rede) sobre uma
+    // tela de atualização que não depende do acesso.
+    it('Should show the update screen while the access is still loading', async () => {
+      mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.minimumVersionSet);
+
+      await renderAppAs({ status: 'loading' }, null);
+
+      expect(SplashScreen.hide).toHaveBeenCalled();
+      expect(screen.getByText('Atualização obrigatória')).toBeOnTheScreen();
+      expect(screen.queryByText('Entrar')).not.toBeOnTheScreen();
+    });
+
+    it("Should keep the splash while the access loads when the app isn't locked", async () => {
+      await renderAppAs({ status: 'loading' }, null);
+
+      expect(SplashScreen.hide).not.toHaveBeenCalled();
+    });
+
+    it('Should hold the splash until the first check ends', async () => {
+      let answerCheck!: (minimumVersion: string | null) => void;
+      jest.mocked(findMinimumAppVersionService).mockReturnValue(
+        new Promise((resolve) => {
+          answerCheck = resolve;
+        }),
+      );
+
+      await renderAppAs(memberInList.authState, memberInList.allowedEmail);
+      expect(SplashScreen.hide).not.toHaveBeenCalled();
+
+      await act(async () => answerCheck(null));
+
+      expect(SplashScreen.hide).toHaveBeenCalled();
+    });
   });
 
   describe('The change-name screen', () => {

@@ -1,10 +1,13 @@
 import { Stack, type UnknownOutputParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect, useState } from 'react';
 
 import { AppContainer } from '@/core/AppContainer';
 import { SplashScreenController } from '@/core/components/SplashScreenController/SplashScreenController';
 import { useAccess } from '@/features/auth/hooks/useAccess/useAccess';
 import { useDiscardShareWithoutAccess } from '@/features/home/hooks/useDiscardShareWithoutAccess/useDiscardShareWithoutAccess';
+import { useAppVersionLockStore } from '@/shared/store/appVersionLock.store';
+import { checkAppVersion } from '@/shared/utils/version/checkAppVersion';
 
 /**
  * O id de tela única que `dangerouslySingular` daria (a rota com os segmentos dinâmicos preenchidos, como
@@ -22,22 +25,34 @@ function singularUnlessShared(name: string, params: UnknownOutputParams) {
 export default function RootLayout() {
   const { status: accessStatus, isAdmin } = useAccess();
   useDiscardShareWithoutAccess(accessStatus);
+  const requiredVersion = useAppVersionLockStore((state) => state.requiredVersion);
+  const isUpdateRequired = requiredVersion !== null;
+  // Abaixo do mínimo, nenhuma guarda de acesso abre: só a tela de atualização, até para quem está logado e liberado.
+  const guardedStatus = isUpdateRequired ? null : accessStatus;
+  const [hasCheckedVersion, setHasCheckedVersion] = useState(false);
+  useEffect(() => {
+    checkAppVersion().then(() => setHasCheckedVersion(true));
+  }, []);
 
-  // Enquanto a sessão carrega, a splash cobre a tela de login, que é a única liberada.
+  // A splash espera a primeira conferência e, com o app liberado, a sessão: ela cobre a tela de login, que é a única
+  // liberada enquanto o acesso carrega. Com o app travado a sessão não conta, a tela de atualização não depende dela.
   return (
     <AppContainer>
       {/* Os ícones da barra seguem o tema do telefone, como o `adaptiveThemes`; o comprovante em tela cheia põe o dele. */}
       <StatusBar style="auto" />
-      <SplashScreenController isLoading={accessStatus === 'loading'} />
+      <SplashScreenController isLoading={!hasCheckedVersion || (!isUpdateRequired && accessStatus === 'loading')} />
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Protected guard={accessStatus === 'signedOut' || accessStatus === 'loading'}>
+        <Stack.Protected guard={isUpdateRequired}>
+          <Stack.Screen name="update-required" />
+        </Stack.Protected>
+        <Stack.Protected guard={guardedStatus === 'signedOut' || guardedStatus === 'loading'}>
           <Stack.Screen name="sign-in" />
           <Stack.Screen name="test-sign-in" />
         </Stack.Protected>
-        <Stack.Protected guard={accessStatus === 'denied'}>
+        <Stack.Protected guard={guardedStatus === 'denied'}>
           <Stack.Screen name="no-access" />
         </Stack.Protected>
-        <Stack.Protected guard={accessStatus === 'allowed'}>
+        <Stack.Protected guard={guardedStatus === 'allowed'}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="change-name" dangerouslySingular />
           <Stack.Screen name="recurring-bills/index" />
