@@ -25,7 +25,11 @@ export function SegmentedToggle<TValue extends string>({ options, value, onChang
             onPress={() => onChange(option.value)}
             style={({ pressed }) => styles.segment(isActive, pressed)}
           >
-            <AppText variant="labelLarge" color={isActive ? 'onSecondaryContainer' : 'onSurfaceVariant'}>
+            <AppText
+              variant="labelLarge"
+              color={isActive ? 'onSecondaryContainer' : 'onSurfaceVariant'}
+              style={styles.label}
+            >
               {option.label}
             </AppText>
           </Pressable>
@@ -38,7 +42,8 @@ export function SegmentedToggle<TValue extends string>({ options, value, onChang
 const styles = StyleSheet.create((theme) => ({
   track: {
     flexDirection: 'row',
-    height: 44, // a altura do design, sem token
+    // A altura do design, sem token; com a fonte grande do Android, o rótulo quebra e a alternância cresce.
+    minHeight: 44,
     padding: theme.spacing.extraSmall,
     borderRadius: theme.radii.full,
     backgroundColor: theme.colors.surfaceContainerHigh,
@@ -47,8 +52,10 @@ const styles = StyleSheet.create((theme) => ({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    padding: theme.spacing.small,
     borderRadius: theme.radii.full,
     backgroundColor: isActive ? theme.colors.secondaryContainer : 'transparent',
     opacity: isPressed ? theme.opacity.pressed : 1,
   }),
+  label: { textAlign: 'center' },
 }));
