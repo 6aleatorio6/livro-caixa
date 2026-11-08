@@ -1,20 +1,17 @@
 import { useState } from 'react';
 import { LogIn } from 'lucide-react-native';
-import { Image, View } from 'react-native';
-import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { View } from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
+import { BrandMark } from '@/shared/components/BrandMark/BrandMark';
 import { Button } from '@/shared/components/Button/Button';
-import { Decorative } from '@/shared/components/Decorative/Decorative';
 import { Screen } from '@/shared/components/Screen/Screen';
-import markDark from '@/assets/images/sign-in-mark-dark.png';
-import markLight from '@/assets/images/sign-in-mark.png';
 import { APP_VERSION } from '@/shared/constants/appVersion';
 
 import { doSignInWithGoogle } from '@/features/auth/pages/SignInPage/utils/actions/doSignInWithGoogle';
 
 export function SignInPage() {
-  const { rt } = useUnistyles();
   const [isSigningIn, setIsSigningIn] = useState(false);
 
   async function signIn() {
@@ -26,10 +23,7 @@ export function SignInPage() {
   return (
     <Screen>
       <View style={styles.content}>
-        <Decorative>
-          <Image source={rt.themeName === 'dark' ? markDark : markLight} style={styles.mark} />
-        </Decorative>
-        <AppText variant="displaySmallEmphasized">Livro-Caixa</AppText>
+        <BrandMark />
         <AppText variant="bodyLarge" color="onSurfaceVariant">
           As contas da família, cada uma com o comprovante.
         </AppText>
@@ -54,7 +48,6 @@ const styles = StyleSheet.create((theme) => ({
     paddingHorizontal: theme.spacing.extraExtraLarge,
     paddingBottom: theme.spacing.extraExtraExtraLarge,
   },
-  mark: { width: 96, height: 96 },
   space: { height: theme.spacing.extraLarge },
   version: { textAlign: 'center', paddingBottom: theme.spacing.extraLarge },
 }));
