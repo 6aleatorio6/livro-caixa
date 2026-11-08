@@ -15,6 +15,7 @@ import { recurringBillListQueryService } from '@/shared/services/recurringBill/q
 import { recurringBillListQueryScenarios } from '@/shared/services/recurringBill/query/recurringBillListQueryService.scenarios';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { tagListQueryScenarios } from '@/shared/services/tag/query/tagListQueryService.scenarios';
+import { mockAppState } from '@/shared/testing/mockAppState';
 import { mockRealtime } from '@/shared/testing/mockRealtime';
 import { mockServiceScenario } from '@/shared/testing/mockServiceScenario';
 import { signedInAuthState } from '@/shared/testing/signedInAuthState';
@@ -239,6 +240,19 @@ describe('SettingsPage', () => {
         await render(<SettingsPage />);
 
         expect(await screen.findByRole('switch', { name: 'Entrar com biometria' })).toBeChecked();
+      });
+
+      // A aba continua montada: quem cadastra a digital no Android e volta ao app tem de ver a opção sem reabrir o app.
+      it('Should show the section when a fingerprint is registered while the app is in the background', async () => {
+        const appState = mockAppState();
+        await render(<SettingsPage />);
+        expect(screen.queryByText('Neste celular')).not.toBeOnTheScreen();
+
+        allowBiometrics();
+        await act(() => appState.change('background'));
+        await act(() => appState.change('active'));
+
+        expect(await screen.findByRole('switch', { name: 'Entrar com biometria' })).not.toBeChecked();
       });
 
       // O bloqueio continua pedindo (pelo PIN do aparelho) com a opção ligada: sem a linha, a pessoa não a desliga.
