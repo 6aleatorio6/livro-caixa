@@ -52,8 +52,8 @@ describe('AppLockedScreen', () => {
     expect(useBiometricLockStore.getState().isLocked).toBe(false);
   });
 
-  // Só `not_enrolled` abre o app (a biometria sumiu do celular): qualquer outro fim do pedido deixa o app trancado e a
-  // opção como estava, para a pessoa tentar de novo.
+  // Só `not_enrolled` abre o app (o celular ficou sem bloqueio de tela): qualquer outro fim do pedido deixa o app
+  // trancado e a opção como estava, para a pessoa tentar de novo.
   it.each(['lockout', 'not_available', 'app_cancel', 'unknown'] as const)(
     'Should stay locked and keep the option on when the prompt ends with %s',
     async (error) => {
