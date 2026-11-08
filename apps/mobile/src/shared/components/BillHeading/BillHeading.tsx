@@ -26,7 +26,7 @@ export function BillHeading({ label, name, tag, details }: IBillHeadingProps) {
       <AppText variant="headlineSmallEmphasized">{name}</AppText>
       <View style={styles.details}>
         {tag ? <TagChip name={tag.name} color={tag.color} /> : null}
-        <AppText variant="bodyMedium" color="onSurfaceVariant">
+        <AppText variant="bodyMedium" color="onSurfaceVariant" style={styles.detailsText}>
           {details}
         </AppText>
       </View>
@@ -36,5 +36,14 @@ export function BillHeading({ label, name, tag, details }: IBillHeadingProps) {
 
 const styles = StyleSheet.create((theme) => ({
   bill: { gap: theme.spacing.small },
-  details: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.medium },
+  // Com a fonte grande do Android, a linha não cabe ao lado do chip: desce para baixo dele e, se nem assim couber,
+  // quebra em vez de passar da borda.
+  details: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    columnGap: theme.spacing.medium,
+    rowGap: theme.spacing.small,
+  },
+  detailsText: { flexShrink: 1 },
 }));
