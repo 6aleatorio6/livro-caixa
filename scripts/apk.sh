@@ -3,7 +3,23 @@
 # para `apps/mobile/release/livro-caixa-<versão>.apk`. Aponta para o Firebase de verdade: a variável dos emuladores
 # sai do ambiente. O prebuild só aplica o `app.config.ts` à pasta `android` (fora do Git) e não a apaga. Assina com
 # a chave de `release/`, cuja senha vem do `RELEASE_KEYSTORE_PASSWORD` do `.env`.
+#
+# Por padrão, só `arm64-v8a`, a arquitetura dos celulares: cada uma soma ~40 MB de bibliotecas nativas (OCR e
+# PDFium incluídos), e as `x86` servem só ao emulador. `pnpm apk --all-abis` gera o APK com as quatro do
+# `gradle.properties`. O Gradle aplica o `-PreactNativeArchitectures` como `abiFilters`, que também filtra as
+# bibliotecas prontas das dependências.
 set -euo pipefail
+
+ARCHITECTURES=arm64-v8a
+for arg in "$@"; do
+  case "$arg" in
+    --all-abis) ARCHITECTURES=armeabi-v7a,arm64-v8a,x86,x86_64 ;;
+    *)
+      echo "Opção desconhecida: $arg. Uso: pnpm apk [--all-abis]" >&2
+      exit 1
+      ;;
+  esac
+done
 
 cd "$(dirname "$0")/../apps/mobile"
 unset EXPO_PUBLIC_USE_FIREBASE_EMULATOR
@@ -17,7 +33,7 @@ fi
 export RELEASE_KEYSTORE_PASSWORD
 
 npx expo prebuild --platform android --no-install
-(cd android && ./gradlew assembleRelease)
+(cd android && ./gradlew assembleRelease -PreactNativeArchitectures="$ARCHITECTURES")
 
 APK="release/livro-caixa-$(node -p "require('./package.json').version").apk"
 cp android/app/build/outputs/apk/release/app-release.apk "$APK"

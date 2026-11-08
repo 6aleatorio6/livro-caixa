@@ -162,7 +162,8 @@ pnpm test:contract           # serviços contra os emuladores do Firebase
 pnpm test:rules              # regras do Firestore
 pnpm firebase:emulators      # sobe Auth e Firestore locais (UI em :4001)
 pnpm android                 # build de debug no emulador Android
-pnpm apk                     # APK de release assinado (precisa da keystore)
+pnpm apk                     # APK de release assinado, só arm64-v8a (precisa da keystore)
+pnpm apk --all-abis          # o mesmo APK com as quatro arquiteturas
 pnpm dev:docs                # portal da documentação em :4000
 ```
 
