@@ -22422,7 +22422,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Onde cai quem compartilha uma imagem ou um PDF de outro app: o comprovante que chegou, \"Conta avulsa\" logo abaixo dele, que não depende do mês, e o filtro de mês, um alternador com Outubro e Novembro (aqui, Outubro). Do mês escolhido vêm as contas a pagar, com Registrar, e as já pagas por outros membros, com Contribuir: o comprovante compartilhado vira uma contribuição na conta escolhida. Escolher uma conta a pagar segue no pagamento com o comprovante anexado.",
+                  "content": "Onde cai quem compartilha uma imagem ou um PDF de outro app: o comprovante que chegou, \"Conta avulsa\" logo abaixo dele, que não depende do mês, e o filtro de mês, duas pílulas pequenas no estilo do selo do mês do cabeçalho, Este mês e Mês que vem (aqui, Este mês escolhido). Do mês escolhido vêm as contas a pagar, com Registrar, e as já pagas por outros membros, com Contribuir: o comprovante compartilhado vira uma contribuição na conta escolhida. Escolher uma conta a pagar segue no pagamento com o comprovante anexado.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -22465,7 +22465,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Novembro escolhido no filtro, o próximo mês, que já pode ser pago: as cinco contas a pagar, com Registrar. Nenhuma está paga por outro membro, então a seção Já pagas por outros, com Contribuir, não aparece.",
+                  "content": "Mês que vem escolhido no filtro, que já pode ser pago: as cinco contas a pagar, com Registrar. Nenhuma está paga por outro membro, então a seção Já pagas por outros, com Contribuir, não aparece.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -24527,7 +24527,7 @@
                   "fill": "#1C1C1A",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Um alternador segmentado com os dois meses: dois valores exclusivos, um toque; setas sugeririam navegar sem limite, e os chips agora marcam vários. Escolha da IA a pedido de Leonardo (08/11/2026).",
+                  "content": "Duas pílulas pequenas, no estilo do selo do mês do cabeçalho, discretas logo abaixo da linha Conta avulsa: a escolhida preenchida (Este mês em verde, Mês que vem em azul-claro) e a outra só com texto e um contorno fino. As palavras são relativas, Este mês e Mês que vem, porque com dois nomes de mês era fácil confundir qual é o atual. É uma escolha exclusiva, em um toque. Pedido de Leonardo (08/11/2026).",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 16,
@@ -29080,19 +29080,67 @@
               }
             },
             {
-              "id": "Spf8W",
-              "type": "ref",
-              "ref": "ZZ0J1",
+              "type": "frame",
+              "id": "UL15p",
               "name": "Filtro de mês",
               "width": "fill_container",
-              "descendants": {
-                "JZlaB": {
-                  "content": "Outubro"
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "hWNDL",
+                  "name": "Este mês",
+                  "fill": "$primary-container",
+                  "cornerRadius": 9999,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "e3pWzR",
+                      "name": "Texto",
+                      "fill": "$on-primary-container",
+                      "content": "Este mês",
+                      "lineHeight": "$label-small-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$label-small-size",
+                      "fontWeight": "$label-small-weight",
+                      "letterSpacing": "$label-small-tracking"
+                    }
+                  ]
                 },
-                "rn7Zt": {
-                  "content": "Novembro"
+                {
+                  "type": "frame",
+                  "id": "V99y9",
+                  "name": "Mês que vem",
+                  "cornerRadius": 9999,
+                  "stroke": "$outline-variant",
+                  "strokeWidth": 1,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "on4QR",
+                      "name": "Texto",
+                      "fill": "$on-surface-variant",
+                      "content": "Mês que vem",
+                      "lineHeight": "$label-small-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$label-small-size",
+                      "fontWeight": "$label-small-weight",
+                      "letterSpacing": "$label-small-tracking"
+                    }
+                  ]
                 }
-              }
+              ]
             },
             {
               "type": "frame",
@@ -41711,27 +41759,67 @@
               }
             },
             {
-              "id": "BgKdh",
-              "type": "ref",
-              "ref": "ZZ0J1",
+              "type": "frame",
+              "id": "ZLJDh",
               "name": "Filtro de mês",
               "width": "fill_container",
-              "descendants": {
-                "K45Yv": {
-                  "fill": "#00000000"
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "r2JFRa",
+                  "name": "Este mês",
+                  "cornerRadius": 9999,
+                  "stroke": "$outline-variant",
+                  "strokeWidth": 1,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "XinQA",
+                      "name": "Texto",
+                      "fill": "$on-surface-variant",
+                      "content": "Este mês",
+                      "lineHeight": "$label-small-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$label-small-size",
+                      "fontWeight": "$label-small-weight",
+                      "letterSpacing": "$label-small-tracking"
+                    }
+                  ]
                 },
-                "JZlaB": {
-                  "fill": "$on-surface-variant",
-                  "content": "Outubro"
-                },
-                "axKN3": {
-                  "fill": "$secondary-container"
-                },
-                "rn7Zt": {
-                  "fill": "$on-secondary-container",
-                  "content": "Novembro"
+                {
+                  "type": "frame",
+                  "id": "aHtrR",
+                  "name": "Mês que vem",
+                  "fill": "$tertiary-container",
+                  "cornerRadius": 9999,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ubOTe",
+                      "name": "Texto",
+                      "fill": "$on-tertiary-container",
+                      "content": "Mês que vem",
+                      "lineHeight": "$label-small-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$label-small-size",
+                      "fontWeight": "$label-small-weight",
+                      "letterSpacing": "$label-small-tracking"
+                    }
+                  ]
                 }
-              }
+              ]
             },
             {
               "type": "frame",
