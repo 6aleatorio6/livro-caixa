@@ -57,8 +57,8 @@ export function TagsPage() {
                   icon={Tag}
                   title={tag.name}
                   support={parts === null ? undefined : parts.length === 0 ? 'Sem uso' : parts.join(' · ')}
-                  markColor={colors.containerRole}
-                  iconColor={colors.onContainerRole}
+                  markColor={colors.mainRole}
+                  iconColor="onTag"
                   onPress={() => router.push(`/tags/${tag.id}`)}
                 />
               );

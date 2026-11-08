@@ -30,7 +30,7 @@ export function ColorSwatch({ option, isSelected, disabled = false, onPress }: I
       <View style={styles.circle(tagColorRoles(option.color).mainRole)}>
         {isSelected ? (
           <Decorative>
-            <Check size={20} color={theme.colors.surface} />
+            <Check size={20} color={theme.colors.onTag} />
           </Decorative>
         ) : null}
       </View>
