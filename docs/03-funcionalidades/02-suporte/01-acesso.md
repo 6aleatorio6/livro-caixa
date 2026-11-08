@@ -11,6 +11,9 @@ mesma cuida dele.
 - Todo membro, para mudar o próprio nome, em [Configurações](03-configuracoes.md).
 - Quem está com o app abaixo da versão mínima, ao abrir o app e ao voltar ao
   [Início](../01-principal/01-inicio.md) ([Versão mínima](#versão-mínima)).
+- Quem ligou a entrada com biometria em [Configurações](03-configuracoes.md#entrar-com-biometria),
+  ao abrir o app e ao voltar a ele depois de 10 minutos ou mais fora
+  ([Entrar com biometria](#entrar-com-biometria)).
 
 ## Login
 
@@ -90,6 +93,35 @@ O app tem uma versão mínima, guardada no documento `settings/app`, no campo `m
 - Quem cuida do app sobe o mínimo no console do Firebase só depois de o APK da versão nova chegar à
   família. Quem ficar para trás vê a tela de atualização até instalar.
 
+## Entrar com biometria
+
+Cada pessoa pode fazer o app pedir a digital ou o rosto antes de mostrar o que está nele. A opção se
+liga em [Configurações](03-configuracoes.md#entrar-com-biometria), vale só para aquele celular e vem
+desligada.
+
+- Com a opção ligada, o app pede a biometria quando abre do zero e quando volta do segundo plano
+  depois de 10 minutos ou mais fora. Voltar antes de 10 minutos não pede: quem atende uma ligação ou
+  olha outro app volta direto.
+- O pedido é o do sistema, com o título "Abrir o Livro-Caixa". O PIN, a senha ou o padrão do celular
+  são a alternativa que o próprio pedido oferece.
+- Enquanto está bloqueado, o app mostra a tela "App bloqueado": a marca, "Livro-Caixa", a frase "Use
+  a digital ou o rosto para abrir o app." e o botão Desbloquear. O pedido abre sozinho com a tela,
+  assim que o app está na frente: se a pessoa o manda para o segundo plano durante a abertura, o
+  pedido espera ela voltar e abre uma vez. Se a pessoa o cancela, ela continua nessa tela, e o
+  Desbloquear pede de novo. O botão Voltar do Android não sai dela.
+- O bloqueio vem depois da [versão mínima](#versão-mínima) e do [login](#login): a tela de
+  atualização, a de entrada e a de aguardando permissão aparecem na frente dele, e a tela "App
+  bloqueado" só cobre quem está logado e liberado. Quem abre o app sem estar logado e depois entra
+  vê o bloqueio assim que a entrada é liberada.
+- Desbloqueado, o app volta à mesma tela em que a pessoa estava, com o que ela estava preenchendo:
+  as telas abertas continuam por baixo do bloqueio.
+- Um comprovante compartilhado com o app bloqueado abre a escolha da conta por baixo do bloqueio e
+  aparece, com o arquivo, quando a pessoa desbloqueia
+  ([Compartilhar pelo Android](../01-principal/05-comprovantes.md#compartilhar-pelo-android)).
+- Se, quando o app pede, o celular não tem mais biometria nem bloqueio de tela cadastrados (a pessoa
+  os apagou com a opção ligada), o app desliga a opção e abre, para ninguém ficar trancado fora.
+  Enquanto o PIN, a senha ou o padrão continuar cadastrado, o pedido do sistema segue por ele.
+
 ## Critérios de aceite
 
 - [ ] Um e-mail do Google fora da lista vê a tela de aguardando permissão, com o e-mail usado, e não
@@ -127,3 +159,16 @@ O app tem uma versão mínima, guardada no documento `settings/app`, no campo `m
 - [ ] Um `minVersion` malformado não barra o app.
 - [ ] A 0.10.0 passa por um mínimo de 0.9.0, e a versão igual à mínima também passa.
 - [ ] Qualquer um lê o documento `settings/app`, até sem entrar, e ninguém o grava pelo app.
+- [ ] Com a opção ligada, abrir o app do zero pede a biometria.
+- [ ] Voltar do segundo plano antes de 10 minutos não pede a biometria.
+- [ ] Voltar do segundo plano depois de 10 minutos ou mais pede a biometria.
+- [ ] Mandar o app para o segundo plano durante a abertura não deixa o pedido preso: ao voltar, ele
+      abre uma vez.
+- [ ] Cancelar o pedido deixa o app na tela "App bloqueado", com o botão Desbloquear.
+- [ ] O Desbloquear pede a biometria de novo.
+- [ ] O botão Voltar do Android não sai da tela "App bloqueado".
+- [ ] Desbloqueado, o app volta à mesma tela em que a pessoa estava.
+- [ ] Um comprovante compartilhado com o app bloqueado abre a escolha da conta depois do desbloqueio.
+- [ ] A tela de atualização e a de entrada ficam na frente do bloqueio, e o bloqueio não cobre quem
+      não está logado e liberado.
+- [ ] Sem biometria nem bloqueio de tela cadastrados no celular, o app desliga a opção e abre.
