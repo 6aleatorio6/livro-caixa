@@ -13,8 +13,19 @@ const people = [
 ];
 const choices = memberChoicesOf(people, 'bruno');
 
-const titleOf = (markedUids: string[]) =>
-  totalTitleOf(chipSelectionOf(new Set(markedUids), choices, 'bruno'), '2026-10');
+// `EVERYONE` é o modo "Todos"; uma lista de uids são os chips marcados em "Várias".
+const EVERYONE = 'everyone' as const;
+const titleOf = (marked: string[] | typeof EVERYONE) =>
+  totalTitleOf(
+    chipSelectionOf(
+      marked === EVERYONE
+        ? { mode: 'everyone', markedUids: new Set() }
+        : { mode: 'several', markedUids: new Set(marked) },
+      choices,
+      'bruno',
+    ),
+    '2026-10',
+  );
 
 describe('totalTitleOf', () => {
   it('Should say "Sua parte" when only "Você" is marked', () => {
@@ -35,7 +46,7 @@ describe('totalTitleOf', () => {
     expect(titleOf(['ana', 'carla', 'clara'])).toBe('Partes de Ana, Carla e Clara em outubro');
   });
 
-  it('Should say the family registered when every person is marked', () => {
-    expect(titleOf(['bruno', 'ana', 'carla', 'clara'])).toBe('A família registrou em outubro');
+  it('Should say the family registered in "Todos"', () => {
+    expect(titleOf(EVERYONE)).toBe('A família registrou em outubro');
   });
 });

@@ -3,13 +3,13 @@
  * mudam.
  */
 type IChipSelectionCase =
-  /** Todos os chips de pessoa estão marcados (havendo mais de uma): o chip "Todos" fica marcado. */
+  /** O modo "Todos": todos os chips de pessoa ficam marcados. */
   | { kind: 'everyone' }
   /** Só o chip de quem está logado está marcado. */
   | { kind: 'me' }
   /** Só o chip de uma outra pessoa está marcado: `name` é o rótulo dele. */
   | { kind: 'other'; name: string }
-  /** Duas ou mais pessoas, mas não todas: `names` são os rótulos dos chips marcados, na ordem dos chips. */
+  /** Duas ou mais pessoas, em "Várias": `names` são os rótulos dos chips marcados, na ordem dos chips. */
   | { kind: 'several'; names: string[] };
 
 export type IChipSelection = IChipSelectionCase & {

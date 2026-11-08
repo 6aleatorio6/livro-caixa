@@ -33,10 +33,15 @@ const november = { service: entryMonthQueryService, scenario: entryMonthQuerySce
 /** O botão da linha de uma conta: o rótulo dele é o nome, o texto de apoio e o valor, e este começa pelo nome. */
 const rowOf = (name: string) => screen.getByRole('button', { name: new RegExp(`^${name},`) });
 
-/** O chip "Todos" e os de todas as pessoas, marcados. */
+/** A aba do modo do filtro: "Uma pessoa", "Várias" ou "Todos". */
+const modeTab = (name: string) => screen.getByRole('tab', { name });
+/** O chip de uma pessoa. */
+const chip = (name: string) => screen.getByRole('button', { name });
+
+/** Os chips de todas as pessoas, marcados. */
 function expectEveryChipSelected() {
-  for (const name of ['Todos', 'Você', 'Ana', 'Clara']) {
-    expect(screen.getByRole('button', { name })).toBeSelected();
+  for (const name of ['Você', 'Ana', 'Clara']) {
+    expect(chip(name)).toBeSelected();
   }
 }
 
@@ -232,65 +237,29 @@ describe('PaymentsPage', () => {
     expect(screen.queryByText('Nenhum pagamento seu em outubro')).not.toBeOnTheScreen();
   });
 
-  describe('Chips of the family', () => {
-    it('Should open on "Você" and offer "Todos" and who already entered the app', async () => {
+  describe('People filter', () => {
+    it('Should open on "Uma pessoa" with "Você", with a chip for each person who already entered the app', async () => {
       mockRealtime(october, threeTags, family);
       await render(<PaymentsPage />);
 
-      expect(screen.getByRole('button', { name: 'Você' })).toBeSelected();
-      expect(screen.getByRole('button', { name: 'Todos' })).not.toBeSelected();
-      expect(screen.getByRole('button', { name: 'Ana' })).not.toBeSelected();
-      const chips = screen.getAllByRole('button', { name: /^(Todos|Você|Ana|Clara|Elisa.*)$/ });
-      expect(chips.map((chip) => chip.props.accessibilityLabel)).toEqual(['Todos', 'Você', 'Ana', 'Clara']);
+      expect(modeTab('Uma pessoa')).toBeSelected();
+      expect(modeTab('Várias')).not.toBeSelected();
+      expect(modeTab('Todos')).not.toBeSelected();
+      expect(chip('Você')).toBeSelected();
+      expect(chip('Ana')).not.toBeSelected();
+      const chips = screen.getAllByRole('button', { name: /^(Você|Ana|Clara|Elisa.*)$/ });
+      expect(chips.map((node) => node.props.accessibilityLabel)).toEqual(['Você', 'Ana', 'Clara']);
     });
 
-    it('Should show the entries of the whole family, grouped by tag, with who paid each one, when "Todos" is pressed', async () => {
+    it('Should show only the entries of another member, grouped by tag, when her chip is pressed in "Uma pessoa"', async () => {
       mockRealtime(october, threeTags, family);
       await render(<PaymentsPage />);
 
-      await userEvent.setup().press(screen.getByRole('button', { name: 'Todos' }));
+      await userEvent.setup().press(chip('Ana'));
 
-      expectEveryChipSelected();
-      const headers = screen.getAllByText(/^(Casa|Serviços|Sem tag)$/).map((node) => node.props.children);
-      expect(headers).toEqual(['Casa', 'Serviços', 'Sem tag']);
-      expect(screen.getByText('12/10 · avulsa · Bruno')).toBeOnTheScreen();
-      expect(screen.getByText('20/10 · avulsa · Ana')).toBeOnTheScreen();
-      expect(screen.getByText('12/10 · avulsa · Ana')).toBeOnTheScreen();
-    });
-
-    // A porcentagem da família sobre ela mesma seria sempre 100%: o cartão não a mostra.
-    it('Should show the family total without the share when "Todos" is pressed', async () => {
-      mockRealtime(october, threeTags, family);
-      await render(<PaymentsPage />);
-
-      await userEvent.setup().press(screen.getByRole('button', { name: 'Todos' }));
-
-      expect(screen.getByText('A família registrou em outubro')).toBeOnTheScreen();
-      expect(screen.getByText('R$ 354,90')).toBeOnTheScreen();
-      expect(screen.getByText('3 lançamentos')).toBeOnTheScreen();
-    });
-
-    it('Should say nobody paid in the month when "Todos" is pressed on an empty month', async () => {
-      mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth }, threeTags, family);
-      await render(<PaymentsPage />);
-
-      await userEvent.setup().press(screen.getByRole('button', { name: 'Todos' }));
-
-      expect(screen.getByText('Nenhum pagamento em outubro')).toBeOnTheScreen();
-      expect(screen.getByText('Quando você registrar um pagamento ou uma conta avulsa, ele aparece aqui.')).toBeOnTheScreen();
-    });
-
-    // O chip de outra pessoa marca mais uma, em vez de trocar a escolhida: para ver só a Ana, desmarca-se o "Você".
-    it('Should show only the entries of another member, grouped by tag, when hers is the only chip marked', async () => {
-      mockRealtime(october, threeTags, family);
-      await render(<PaymentsPage />);
-      const user = userEvent.setup();
-
-      await user.press(screen.getByRole('button', { name: 'Ana' }));
-      await user.press(screen.getByRole('button', { name: 'Você' }));
-
-      expect(screen.getByRole('button', { name: 'Ana' })).toBeSelected();
-      expect(screen.getByRole('button', { name: 'Você' })).not.toBeSelected();
+      expect(chip('Ana')).toBeSelected();
+      expect(chip('Você')).not.toBeSelected();
+      expect(modeTab('Uma pessoa')).toBeSelected();
       // Ana: Mercado (Serviços, R$ 250,00) e Estacionamento (sem tag, R$ 15,00), de R$ 354,90 da família.
       expect(screen.getByText('Parte de Ana em outubro')).toBeOnTheScreen();
       expect(screen.getByText('2 lançamentos · 74% do que a família pagou')).toBeOnTheScreen();
@@ -301,12 +270,22 @@ describe('PaymentsPage', () => {
       expect(screen.queryByText('Farmácia')).not.toBeOnTheScreen();
     });
 
+    it('Should keep the person marked when her own chip is pressed again in "Uma pessoa"', async () => {
+      mockRealtime(october, threeTags, family);
+      await render(<PaymentsPage />);
+
+      await userEvent.setup().press(chip('Você'));
+
+      expect(chip('Você')).toBeSelected();
+      expect(screen.getByText('Sua parte em outubro')).toBeOnTheScreen();
+    });
+
     it('Should open the details of an entry of another member', async () => {
       mockRealtime(october, threeTags, family);
       await render(<PaymentsPage />);
       const user = userEvent.setup();
 
-      await user.press(screen.getByRole('button', { name: 'Ana' }));
+      await user.press(chip('Ana'));
       await user.press(rowOf('Mercado'));
 
       expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]', params: { id: 'market' } });
@@ -315,59 +294,185 @@ describe('PaymentsPage', () => {
     it('Should say another member has no entry in the month, without the text for whoever is signed in', async () => {
       mockRealtime(october, threeTags, family);
       await render(<PaymentsPage />);
-      const user = userEvent.setup();
 
-      await user.press(screen.getByRole('button', { name: 'Clara' }));
-      await user.press(screen.getByRole('button', { name: 'Você' }));
+      await userEvent.setup().press(chip('Clara'));
 
       expect(screen.getByText('Nenhum pagamento de Clara em outubro')).toBeOnTheScreen();
       expect(screen.queryByText(/Quando você registrar/)).not.toBeOnTheScreen();
       expect(screen.queryByText('Parte de Clara em outubro')).not.toBeOnTheScreen();
     });
 
-    it('Should add the person of the chip pressed to the ones marked, and sum their parts under their names', async () => {
+    it('Should show the entries of the whole family, grouped by tag, with who paid each one, when "Todos" is chosen', async () => {
       mockRealtime(october, threeTags, family);
       await render(<PaymentsPage />);
 
-      await userEvent.setup().press(screen.getByRole('button', { name: 'Ana' }));
+      await userEvent.setup().press(modeTab('Todos'));
 
-      expect(screen.getByRole('button', { name: 'Você' })).toBeSelected();
-      expect(screen.getByRole('button', { name: 'Ana' })).toBeSelected();
-      expect(screen.getByRole('button', { name: 'Todos' })).not.toBeSelected();
+      expect(modeTab('Todos')).toBeSelected();
+      expectEveryChipSelected();
+      const headers = screen.getAllByText(/^(Casa|Serviços|Sem tag)$/).map((node) => node.props.children);
+      expect(headers).toEqual(['Casa', 'Serviços', 'Sem tag']);
+      expect(screen.getByText('12/10 · avulsa · Bruno')).toBeOnTheScreen();
+      expect(screen.getByText('20/10 · avulsa · Ana')).toBeOnTheScreen();
+      expect(screen.getByText('12/10 · avulsa · Ana')).toBeOnTheScreen();
+    });
+
+    // A porcentagem da família sobre ela mesma seria sempre 100%: o cartão não a mostra.
+    it('Should show the family total without the share when "Todos" is chosen', async () => {
+      mockRealtime(october, threeTags, family);
+      await render(<PaymentsPage />);
+
+      await userEvent.setup().press(modeTab('Todos'));
+
+      expect(screen.getByText('A família registrou em outubro')).toBeOnTheScreen();
+      expect(screen.getByText('R$ 354,90')).toBeOnTheScreen();
+      expect(screen.getByText('3 lançamentos')).toBeOnTheScreen();
+    });
+
+    it('Should say nobody paid in the month when "Todos" is chosen on an empty month', async () => {
+      mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth }, threeTags, family);
+      await render(<PaymentsPage />);
+
+      await userEvent.setup().press(modeTab('Todos'));
+
+      expect(screen.getByText('Nenhum pagamento em outubro')).toBeOnTheScreen();
+      expect(screen.getByText('Quando você registrar um pagamento ou uma conta avulsa, ele aparece aqui.')).toBeOnTheScreen();
+    });
+
+    it('Should add the person of the chip pressed in "Várias", and sum their parts under their names', async () => {
+      mockRealtime(october, threeTags, family);
+      await render(<PaymentsPage />);
+      const user = userEvent.setup();
+
+      await user.press(modeTab('Várias'));
+      await user.press(chip('Ana'));
+
+      expect(modeTab('Várias')).toBeSelected();
+      expect(chip('Você')).toBeSelected();
+      expect(chip('Ana')).toBeSelected();
+      expect(chip('Clara')).not.toBeSelected();
       // Bruno: Farmácia (R$ 89,90); Ana: Mercado (R$ 250,00) e Estacionamento (R$ 15,00); R$ 354,90 da família.
       expect(screen.getByText('Partes de Você e Ana em outubro')).toBeOnTheScreen();
       expect(screen.getByText('R$ 354,90')).toBeOnTheScreen();
       expect(screen.getByText('3 lançamentos · 100% do que a família pagou')).toBeOnTheScreen();
     });
 
-    // Se a última marcada desmarcasse, o "Você" voltaria a valer no lugar da Ana, e o toque trocaria de pessoa.
-    it('Should keep the last marked chip marked when it is pressed, whoever it is', async () => {
+    it('Should keep the last marked chip marked when it is pressed in "Várias"', async () => {
       mockRealtime(october, threeTags, family);
       await render(<PaymentsPage />);
       const user = userEvent.setup();
-      await user.press(screen.getByRole('button', { name: 'Ana' }));
-      await user.press(screen.getByRole('button', { name: 'Você' }));
+      await user.press(chip('Ana'));
+      await user.press(modeTab('Várias'));
 
-      await user.press(screen.getByRole('button', { name: 'Ana' }));
+      await user.press(chip('Ana'));
 
-      expect(screen.getByRole('button', { name: 'Ana' })).toBeSelected();
-      expect(screen.getByRole('button', { name: 'Você' })).not.toBeSelected();
+      expect(chip('Ana')).toBeSelected();
+      expect(chip('Você')).not.toBeSelected();
       expect(screen.getByText('Parte de Ana em outubro')).toBeOnTheScreen();
     });
 
-    it('Should keep the marked chips when the month changes', async () => {
+    it('Should go to "Todos" when the last person left is marked in "Várias"', async () => {
+      mockRealtime(october, threeTags, family);
+      await render(<PaymentsPage />);
+      const user = userEvent.setup();
+      await user.press(modeTab('Várias'));
+
+      await user.press(chip('Ana'));
+      await user.press(chip('Clara'));
+
+      expect(modeTab('Todos')).toBeSelected();
+      expect(modeTab('Várias')).not.toBeSelected();
+      expect(screen.getByText('A família registrou em outubro')).toBeOnTheScreen();
+    });
+
+    it('Should go to "Várias", with the others still marked, when a chip is unmarked in "Todos"', async () => {
+      mockRealtime(october, threeTags, family);
+      await render(<PaymentsPage />);
+      const user = userEvent.setup();
+      await user.press(modeTab('Todos'));
+
+      await user.press(chip('Ana'));
+
+      expect(modeTab('Várias')).toBeSelected();
+      expect(chip('Você')).toBeSelected();
+      expect(chip('Ana')).not.toBeSelected();
+      expect(chip('Clara')).toBeSelected();
+      expect(screen.getByText('Partes de Você e Clara em outubro')).toBeOnTheScreen();
+    });
+
+    it('Should keep only "Você" when "Uma pessoa" is chosen with several marked', async () => {
+      mockRealtime(october, threeTags, family);
+      await render(<PaymentsPage />);
+      const user = userEvent.setup();
+      await user.press(modeTab('Todos'));
+
+      await user.press(modeTab('Uma pessoa'));
+
+      expect(modeTab('Uma pessoa')).toBeSelected();
+      expect(chip('Você')).toBeSelected();
+      expect(chip('Ana')).not.toBeSelected();
+      expect(chip('Clara')).not.toBeSelected();
+    });
+
+    // Clara é marcada antes da Ana, mas a Ana vem antes nos chips: vale a ordem dos chips, não a dos toques.
+    it('Should keep the first marked person in the order of the chips when "Uma pessoa" is chosen without "Você"', async () => {
+      mockRealtime(october, threeTags, family);
+      await render(<PaymentsPage />);
+      const user = userEvent.setup();
+      await user.press(chip('Clara'));
+      await user.press(modeTab('Várias'));
+      await user.press(chip('Ana'));
+
+      await user.press(modeTab('Uma pessoa'));
+
+      expect(chip('Ana')).toBeSelected();
+      expect(chip('Clara')).not.toBeSelected();
+      expect(chip('Você')).not.toBeSelected();
+    });
+
+    it('Should keep the person marked when "Várias" is chosen from "Uma pessoa"', async () => {
+      mockRealtime(october, threeTags, family);
+      await render(<PaymentsPage />);
+      const user = userEvent.setup();
+      await user.press(chip('Ana'));
+
+      await user.press(modeTab('Várias'));
+
+      expect(modeTab('Várias')).toBeSelected();
+      expect(chip('Ana')).toBeSelected();
+      expect(chip('Você')).not.toBeSelected();
+    });
+
+    // Com todas marcadas, "Várias" voltaria na hora a ser "Todos": começa só com "Você".
+    it('Should start "Várias" from "Você" when it is chosen from "Todos"', async () => {
+      mockRealtime(october, threeTags, family);
+      await render(<PaymentsPage />);
+      const user = userEvent.setup();
+      await user.press(modeTab('Todos'));
+
+      await user.press(modeTab('Várias'));
+
+      expect(modeTab('Várias')).toBeSelected();
+      expect(chip('Você')).toBeSelected();
+      expect(chip('Ana')).not.toBeSelected();
+      expect(chip('Clara')).not.toBeSelected();
+    });
+
+    it('Should keep the mode and the marked chips when the month changes', async () => {
       jest.setSystemTime(new Date(2026, 10, 25));
       mockRealtime(november, threeTags, family);
       await render(<PaymentsPage />);
       const user = userEvent.setup();
-      await user.press(screen.getByRole('button', { name: 'Ana' }));
+      await user.press(modeTab('Várias'));
+      await user.press(chip('Ana'));
 
       mockRealtime(october, threeTags, family);
       await user.press(screen.getByRole('button', { name: 'Mês anterior' }));
 
       // Outubro tem o Mercado e o Estacionamento da Ana e a Farmácia do Bruno.
-      expect(screen.getByRole('button', { name: 'Ana' })).toBeSelected();
-      expect(screen.getByRole('button', { name: 'Você' })).toBeSelected();
+      expect(modeTab('Várias')).toBeSelected();
+      expect(chip('Ana')).toBeSelected();
+      expect(chip('Você')).toBeSelected();
       expect(screen.getByText('Partes de Você e Ana em outubro')).toBeOnTheScreen();
       expect(screen.getByText('Mercado')).toBeOnTheScreen();
       expect(screen.getByText('Farmácia')).toBeOnTheScreen();
@@ -380,15 +485,13 @@ describe('PaymentsPage', () => {
       scenario: allowedEmailListQueryScenarios.personRemovedWhileOpen,
     });
     await render(<PaymentsPage />);
-    const user = userEvent.setup();
-    await user.press(screen.getByRole('button', { name: 'Clara' }));
-    await user.press(screen.getByRole('button', { name: 'Você' }));
+    await userEvent.setup().press(chip('Clara'));
     expect(screen.getByText('Nenhum pagamento de Clara em outubro')).toBeOnTheScreen();
 
     await act(async () => realtime.applyChange(allowedEmailListQueryService));
 
     expect(screen.queryByRole('button', { name: 'Clara' })).not.toBeOnTheScreen();
-    expect(screen.getByRole('button', { name: 'Você' })).toBeSelected();
+    expect(chip('Você')).toBeSelected();
     expect(screen.getByText('Sua parte em outubro')).toBeOnTheScreen();
   });
 
@@ -435,7 +538,7 @@ describe('PaymentsPage', () => {
     it('Should mark everybody under Todos and show the Luz twice, the part of who paid and the contribution', async () => {
       const user = await renderWithContribution();
 
-      await user.press(screen.getByRole('button', { name: 'Todos' }));
+      await user.press(modeTab('Todos'));
 
       expectEveryChipSelected();
       expect(screen.getAllByText('Luz')).toHaveLength(2);
@@ -465,7 +568,8 @@ describe('PaymentsPage', () => {
     it('Should sum the two parts on the card when "Você" and Ana are marked', async () => {
       const user = await renderWithContribution();
 
-      await user.press(screen.getByRole('button', { name: 'Ana' }));
+      await user.press(modeTab('Várias'));
+      await user.press(chip('Ana'));
 
       expect(screen.getByText('Partes de Você e Ana em outubro')).toBeOnTheScreen();
       // Os R$ 147,35 do Bruno e os R$ 40,00 da Ana são os R$ 187,35 que a família pagou: o cartão e o total da tag.
@@ -477,8 +581,7 @@ describe('PaymentsPage', () => {
     it('Should show only the contribution, in the tag of the bill, when only the contributor is marked', async () => {
       const user = await renderWithContribution();
 
-      await user.press(screen.getByRole('button', { name: 'Ana' }));
-      await user.press(screen.getByRole('button', { name: 'Você' }));
+      await user.press(chip('Ana'));
 
       expect(screen.getByText('Parte de Ana em outubro')).toBeOnTheScreen();
       expect(screen.getByText('1 lançamento · 21% do que a família pagou')).toBeOnTheScreen();
@@ -491,7 +594,7 @@ describe('PaymentsPage', () => {
 
     it('Should open the details of the contribution from its row and those of the payment from the row of the payer', async () => {
       const user = await renderWithContribution();
-      await user.press(screen.getByRole('button', { name: 'Todos' }));
+      await user.press(modeTab('Todos'));
       // As duas partes têm o mesmo nome: o rótulo de cada botão traz o apoio e o valor.
       const paymentRow = screen.getByRole('button', { name: 'Luz, pago em 10/10 · parte de Bruno, R$ 147,35' });
       const contributionRow = screen.getByRole('button', { name: 'Luz, contribuição em 11/10 · Ana, R$ 40,00' });
@@ -533,8 +636,7 @@ describe('PaymentsPage', () => {
       );
       await render(<PaymentsPage />);
       const user = userEvent.setup();
-      await user.press(screen.getByRole('button', { name: 'Ana' }));
-      await user.press(screen.getByRole('button', { name: 'Você' }));
+      await user.press(chip('Ana'));
 
       expect(screen.getByText('Parte de Ana em outubro')).toBeOnTheScreen();
       expect(screen.getByText('contribuição em 11/10')).toBeOnTheScreen();

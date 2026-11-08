@@ -1,6 +1,6 @@
 {
   "name": "livro-caixa",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "App de celular para controlar o financeiro de uma família",
   "private": true,
   "packageManager": "pnpm@10.33.0",

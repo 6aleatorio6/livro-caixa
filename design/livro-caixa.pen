@@ -18594,6 +18594,33 @@
                                   "letterSpacing": "$label-large-tracking"
                                 }
                               ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "SdXki",
+                              "x": 170,
+                              "y": 4,
+                              "name": "Segmento 3",
+                              "enabled": false,
+                              "width": "fill_container(166)",
+                              "height": 36,
+                              "cornerRadius": 999,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "puTHZ",
+                                  "name": "Rótulo",
+                                  "fill": "$on-surface-variant",
+                                  "content": "Por membro",
+                                  "lineHeight": "$label-large-line-height",
+                                  "fontFamily": "$font-family",
+                                  "fontSize": "$label-large-size",
+                                  "fontWeight": "$label-large-weight",
+                                  "letterSpacing": "$label-large-tracking"
+                                }
+                              ]
                             }
                           ]
                         },
@@ -29608,66 +29635,89 @@
             },
             {
               "type": "frame",
-              "id": "zmPyM",
+              "id": "dMMxw",
               "name": "Pessoas",
               "width": "fill_container",
-              "gap": 8,
+              "layout": "vertical",
+              "gap": 12,
               "children": [
                 {
-                  "id": "Ojjxy",
+                  "id": "JVbTa",
                   "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Todos",
+                  "ref": "ZZ0J1",
+                  "name": "Modo",
+                  "width": "fill_container",
                   "descendants": {
-                    "V78Sy": {
-                      "enabled": false
+                    "K45Yv": {
+                      "fill": "$secondary-container"
                     },
-                    "olBfv": {
-                      "enabled": false
+                    "JZlaB": {
+                      "content": "Uma pessoa",
+                      "fill": "$on-secondary-container"
                     },
-                    "PooxK": {
+                    "axKN3": {
+                      "fill": "#00000000"
+                    },
+                    "rn7Zt": {
+                      "content": "Várias",
+                      "fill": "$on-surface-variant"
+                    },
+                    "SdXki": {
+                      "enabled": true,
+                      "fill": "#00000000"
+                    },
+                    "puTHZ": {
                       "content": "Todos",
                       "fill": "$on-surface-variant"
                     }
                   }
                 },
                 {
-                  "id": "jOFns",
-                  "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Você",
-                  "fill": "$secondary-container",
-                  "strokeWidth": 0,
-                  "descendants": {
-                    "V78Sy": {
-                      "enabled": true
+                  "type": "frame",
+                  "id": "VuGcI",
+                  "name": "Chips",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "id": "YJPhp",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Você",
+                      "fill": "$secondary-container",
+                      "strokeWidth": 0,
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": true
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Você",
+                          "fill": "$on-secondary-container"
+                        }
+                      }
                     },
-                    "olBfv": {
-                      "enabled": false
-                    },
-                    "PooxK": {
-                      "content": "Você",
-                      "fill": "$on-secondary-container"
+                    {
+                      "id": "R2WCQy",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Bruno",
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": false
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Bruno",
+                          "fill": "$on-surface-variant"
+                        }
+                      }
                     }
-                  }
-                },
-                {
-                  "id": "e8amNT",
-                  "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Bruno",
-                  "descendants": {
-                    "V78Sy": {
-                      "enabled": false
-                    },
-                    "olBfv": {
-                      "enabled": false
-                    },
-                    "PooxK": {
-                      "content": "Bruno",
-                      "fill": "$on-surface-variant"
-                    }
-                  }
+                  ]
                 }
               ]
             },
@@ -37936,66 +37986,89 @@
             },
             {
               "type": "frame",
-              "id": "kMf7m",
+              "id": "F3Aeev",
               "name": "Pessoas",
               "width": "fill_container",
-              "gap": 8,
+              "layout": "vertical",
+              "gap": 12,
               "children": [
                 {
-                  "id": "nm9LR",
+                  "id": "N4J2l",
                   "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Todos",
+                  "ref": "ZZ0J1",
+                  "name": "Modo",
+                  "width": "fill_container",
                   "descendants": {
-                    "V78Sy": {
-                      "enabled": false
+                    "K45Yv": {
+                      "fill": "$secondary-container"
                     },
-                    "olBfv": {
-                      "enabled": false
+                    "JZlaB": {
+                      "content": "Uma pessoa",
+                      "fill": "$on-secondary-container"
                     },
-                    "PooxK": {
+                    "axKN3": {
+                      "fill": "#00000000"
+                    },
+                    "rn7Zt": {
+                      "content": "Várias",
+                      "fill": "$on-surface-variant"
+                    },
+                    "SdXki": {
+                      "enabled": true,
+                      "fill": "#00000000"
+                    },
+                    "puTHZ": {
                       "content": "Todos",
                       "fill": "$on-surface-variant"
                     }
                   }
                 },
                 {
-                  "id": "g1oYOm",
-                  "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Você",
-                  "fill": "$secondary-container",
-                  "strokeWidth": 0,
-                  "descendants": {
-                    "V78Sy": {
-                      "enabled": true
+                  "type": "frame",
+                  "id": "tdh9t",
+                  "name": "Chips",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "id": "PgWFG",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Você",
+                      "fill": "$secondary-container",
+                      "strokeWidth": 0,
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": true
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Você",
+                          "fill": "$on-secondary-container"
+                        }
+                      }
                     },
-                    "olBfv": {
-                      "enabled": false
-                    },
-                    "PooxK": {
-                      "content": "Você",
-                      "fill": "$on-secondary-container"
+                    {
+                      "id": "TEBiJ",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Bruno",
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": false
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Bruno",
+                          "fill": "$on-surface-variant"
+                        }
+                      }
                     }
-                  }
-                },
-                {
-                  "id": "Ld0OA",
-                  "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Bruno",
-                  "descendants": {
-                    "V78Sy": {
-                      "enabled": false
-                    },
-                    "olBfv": {
-                      "enabled": false
-                    },
-                    "PooxK": {
-                      "content": "Bruno",
-                      "fill": "$on-surface-variant"
-                    }
-                  }
+                  ]
                 }
               ]
             },
@@ -39042,66 +39115,89 @@
             },
             {
               "type": "frame",
-              "id": "wugzO",
+              "id": "QMtRc",
               "name": "Pessoas",
               "width": "fill_container",
-              "gap": 8,
+              "layout": "vertical",
+              "gap": 12,
               "children": [
                 {
-                  "id": "znDHV",
+                  "id": "iX1ic",
                   "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Todos",
+                  "ref": "ZZ0J1",
+                  "name": "Modo",
+                  "width": "fill_container",
                   "descendants": {
-                    "V78Sy": {
-                      "enabled": false
+                    "K45Yv": {
+                      "fill": "$secondary-container"
                     },
-                    "olBfv": {
-                      "enabled": false
+                    "JZlaB": {
+                      "content": "Uma pessoa",
+                      "fill": "$on-secondary-container"
                     },
-                    "PooxK": {
+                    "axKN3": {
+                      "fill": "#00000000"
+                    },
+                    "rn7Zt": {
+                      "content": "Várias",
+                      "fill": "$on-surface-variant"
+                    },
+                    "SdXki": {
+                      "enabled": true,
+                      "fill": "#00000000"
+                    },
+                    "puTHZ": {
                       "content": "Todos",
                       "fill": "$on-surface-variant"
                     }
                   }
                 },
                 {
-                  "id": "f5DDt",
-                  "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Você",
-                  "descendants": {
-                    "V78Sy": {
-                      "enabled": false
+                  "type": "frame",
+                  "id": "V2u3PZ",
+                  "name": "Chips",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "id": "rTs8g",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Você",
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": false
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Você",
+                          "fill": "$on-surface-variant"
+                        }
+                      }
                     },
-                    "olBfv": {
-                      "enabled": false
-                    },
-                    "PooxK": {
-                      "content": "Você",
-                      "fill": "$on-surface-variant"
+                    {
+                      "id": "t86uJ",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Bruno",
+                      "fill": "$secondary-container",
+                      "strokeWidth": 0,
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": true
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Bruno",
+                          "fill": "$on-secondary-container"
+                        }
+                      }
                     }
-                  }
-                },
-                {
-                  "id": "xS57b",
-                  "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Bruno",
-                  "fill": "$secondary-container",
-                  "strokeWidth": 0,
-                  "descendants": {
-                    "V78Sy": {
-                      "enabled": true
-                    },
-                    "olBfv": {
-                      "enabled": false
-                    },
-                    "PooxK": {
-                      "content": "Bruno",
-                      "fill": "$on-secondary-container"
-                    }
-                  }
+                  ]
                 }
               ]
             },
@@ -39736,70 +39832,89 @@
             },
             {
               "type": "frame",
-              "id": "hDwGn",
+              "id": "Y7MDC",
               "name": "Pessoas",
               "width": "fill_container",
-              "gap": 8,
+              "layout": "vertical",
+              "gap": 12,
               "children": [
                 {
-                  "id": "soAQm",
+                  "id": "CQjez",
                   "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Todos",
-                  "fill": "#00000000",
-                  "strokeWidth": 1,
+                  "ref": "ZZ0J1",
+                  "name": "Modo",
+                  "width": "fill_container",
                   "descendants": {
-                    "V78Sy": {
-                      "enabled": false
+                    "K45Yv": {
+                      "fill": "$secondary-container"
                     },
-                    "olBfv": {
-                      "enabled": false
+                    "JZlaB": {
+                      "content": "Uma pessoa",
+                      "fill": "$on-secondary-container"
                     },
-                    "PooxK": {
+                    "axKN3": {
+                      "fill": "#00000000"
+                    },
+                    "rn7Zt": {
+                      "content": "Várias",
+                      "fill": "$on-surface-variant"
+                    },
+                    "SdXki": {
+                      "enabled": true,
+                      "fill": "#00000000"
+                    },
+                    "puTHZ": {
                       "content": "Todos",
                       "fill": "$on-surface-variant"
                     }
                   }
                 },
                 {
-                  "id": "Vql4f",
-                  "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Você",
-                  "fill": "#00000000",
-                  "strokeWidth": 1,
-                  "descendants": {
-                    "V78Sy": {
-                      "enabled": false
+                  "type": "frame",
+                  "id": "Le2iR",
+                  "name": "Chips",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "id": "TzduI",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Você",
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": false
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Você",
+                          "fill": "$on-surface-variant"
+                        }
+                      }
                     },
-                    "olBfv": {
-                      "enabled": false
-                    },
-                    "PooxK": {
-                      "content": "Você",
-                      "fill": "$on-surface-variant"
+                    {
+                      "id": "NgnBY",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Bruno",
+                      "fill": "$secondary-container",
+                      "strokeWidth": 0,
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": true
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Bruno",
+                          "fill": "$on-secondary-container"
+                        }
+                      }
                     }
-                  }
-                },
-                {
-                  "id": "VFLyb",
-                  "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Bruno",
-                  "fill": "$secondary-container",
-                  "strokeWidth": 0,
-                  "descendants": {
-                    "V78Sy": {
-                      "enabled": true
-                    },
-                    "olBfv": {
-                      "enabled": false
-                    },
-                    "PooxK": {
-                      "content": "Bruno",
-                      "fill": "$on-secondary-container"
-                    }
-                  }
+                  ]
                 }
               ]
             },
@@ -40152,70 +40267,91 @@
             },
             {
               "type": "frame",
-              "id": "jL1wk",
+              "id": "U32W7",
               "name": "Pessoas",
               "width": "fill_container",
-              "gap": 8,
+              "layout": "vertical",
+              "gap": 12,
               "children": [
                 {
-                  "id": "bZPtw",
+                  "id": "B8J3U",
                   "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Todos",
-                  "fill": "$secondary-container",
-                  "strokeWidth": 0,
+                  "ref": "ZZ0J1",
+                  "name": "Modo",
+                  "width": "fill_container",
                   "descendants": {
-                    "V78Sy": {
-                      "enabled": true
+                    "K45Yv": {
+                      "fill": "#00000000"
                     },
-                    "olBfv": {
-                      "enabled": false
+                    "JZlaB": {
+                      "content": "Uma pessoa",
+                      "fill": "$on-surface-variant"
                     },
-                    "PooxK": {
+                    "axKN3": {
+                      "fill": "#00000000"
+                    },
+                    "rn7Zt": {
+                      "content": "Várias",
+                      "fill": "$on-surface-variant"
+                    },
+                    "SdXki": {
+                      "enabled": true,
+                      "fill": "$secondary-container"
+                    },
+                    "puTHZ": {
                       "content": "Todos",
                       "fill": "$on-secondary-container"
                     }
                   }
                 },
                 {
-                  "id": "x4Brb",
-                  "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Você",
-                  "fill": "$secondary-container",
-                  "strokeWidth": 0,
-                  "descendants": {
-                    "V78Sy": {
-                      "enabled": true
+                  "type": "frame",
+                  "id": "e3bmlg",
+                  "name": "Chips",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "id": "o1Dm2j",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Você",
+                      "fill": "$secondary-container",
+                      "strokeWidth": 0,
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": true
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Você",
+                          "fill": "$on-secondary-container"
+                        }
+                      }
                     },
-                    "olBfv": {
-                      "enabled": false
-                    },
-                    "PooxK": {
-                      "content": "Você",
-                      "fill": "$on-secondary-container"
+                    {
+                      "id": "G92Fs",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Bruno",
+                      "fill": "$secondary-container",
+                      "strokeWidth": 0,
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": true
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Bruno",
+                          "fill": "$on-secondary-container"
+                        }
+                      }
                     }
-                  }
-                },
-                {
-                  "id": "oiELz",
-                  "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Bruno",
-                  "fill": "$secondary-container",
-                  "strokeWidth": 0,
-                  "descendants": {
-                    "V78Sy": {
-                      "enabled": true
-                    },
-                    "olBfv": {
-                      "enabled": false
-                    },
-                    "PooxK": {
-                      "content": "Bruno",
-                      "fill": "$on-secondary-container"
-                    }
-                  }
+                  ]
                 }
               ]
             },
@@ -43275,88 +43411,109 @@
             },
             {
               "type": "frame",
-              "id": "DVUF1",
+              "id": "m6o59x",
               "name": "Pessoas",
               "width": "fill_container",
-              "gap": 8,
+              "layout": "vertical",
+              "gap": 12,
               "children": [
                 {
-                  "id": "K9oqIi",
+                  "id": "aSE1m",
                   "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Todos",
-                  "fill": "#00000000",
-                  "strokeWidth": 1,
+                  "ref": "ZZ0J1",
+                  "name": "Modo",
+                  "width": "fill_container",
                   "descendants": {
-                    "V78Sy": {
-                      "enabled": false
+                    "K45Yv": {
+                      "fill": "#00000000"
                     },
-                    "olBfv": {
-                      "enabled": false
+                    "JZlaB": {
+                      "content": "Uma pessoa",
+                      "fill": "$on-surface-variant"
                     },
-                    "PooxK": {
+                    "axKN3": {
+                      "fill": "$secondary-container"
+                    },
+                    "rn7Zt": {
+                      "content": "Várias",
+                      "fill": "$on-secondary-container"
+                    },
+                    "SdXki": {
+                      "enabled": true,
+                      "fill": "#00000000"
+                    },
+                    "puTHZ": {
                       "content": "Todos",
                       "fill": "$on-surface-variant"
                     }
                   }
                 },
                 {
-                  "id": "vaa40",
-                  "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Você",
-                  "fill": "$secondary-container",
-                  "strokeWidth": 0,
-                  "descendants": {
-                    "V78Sy": {
-                      "enabled": true
+                  "type": "frame",
+                  "id": "Khcb0",
+                  "name": "Chips",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "id": "w0G0GN",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Você",
+                      "fill": "$secondary-container",
+                      "strokeWidth": 0,
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": true
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Você",
+                          "fill": "$on-secondary-container"
+                        }
+                      }
                     },
-                    "olBfv": {
-                      "enabled": false
+                    {
+                      "id": "EEyWy",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Bruno",
+                      "fill": "$secondary-container",
+                      "strokeWidth": 0,
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": true
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Bruno",
+                          "fill": "$on-secondary-container"
+                        }
+                      }
                     },
-                    "PooxK": {
-                      "content": "Você",
-                      "fill": "$on-secondary-container"
+                    {
+                      "id": "N328sp",
+                      "type": "ref",
+                      "ref": "M3onBb",
+                      "name": "Carla",
+                      "descendants": {
+                        "V78Sy": {
+                          "enabled": false
+                        },
+                        "olBfv": {
+                          "enabled": false
+                        },
+                        "PooxK": {
+                          "content": "Carla",
+                          "fill": "$on-surface-variant"
+                        }
+                      }
                     }
-                  }
-                },
-                {
-                  "id": "li3XS",
-                  "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Bruno",
-                  "fill": "$secondary-container",
-                  "strokeWidth": 0,
-                  "descendants": {
-                    "V78Sy": {
-                      "enabled": true
-                    },
-                    "olBfv": {
-                      "enabled": false
-                    },
-                    "PooxK": {
-                      "content": "Bruno",
-                      "fill": "$on-secondary-container"
-                    }
-                  }
-                },
-                {
-                  "id": "bSWGE",
-                  "type": "ref",
-                  "ref": "M3onBb",
-                  "name": "Carla",
-                  "descendants": {
-                    "V78Sy": {
-                      "enabled": false
-                    },
-                    "olBfv": {
-                      "enabled": false
-                    },
-                    "PooxK": {
-                      "content": "Carla",
-                      "fill": "$on-surface-variant"
-                    }
-                  }
+                  ]
                 }
               ]
             },

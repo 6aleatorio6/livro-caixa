@@ -14,7 +14,8 @@ import { paymentRowsOf } from './paymentRowsOf';
 const people = [personOf('ana', 'Ana'), personOf('bruno', 'Bruno'), personOf('carla', 'Carla')];
 // Quem está logado é a Ana: o chip dela é o "Você".
 const choices = memberChoicesOf(people, 'ana');
-const EVERYONE = ['ana', 'bruno', 'carla'];
+// O modo "Todos"; uma lista de uids são os chips marcados em "Várias".
+const EVERYONE = 'everyone' as const;
 
 const payment = ownedPaymentOf({ amountCents: 180000, expectedAmountCents: 180000, paidOn: '2026-10-25' });
 // A Luz que saiu diferente do previsto.
@@ -31,9 +32,13 @@ const oneOff: IOwnedEntry = {
   date: '2026-10-12',
 };
 
-/** O detalhe de cada linha dos lançamentos, com os chips de `markedUids` marcados. */
-const supportsOf = (entries: IEntry[], markedUids: string[]) => {
-  const selection = chipSelectionOf(new Set(markedUids), choices, 'ana');
+/** O detalhe de cada linha dos lançamentos, com os chips de `marked` marcados, ou em "Todos". */
+const supportsOf = (entries: IEntry[], marked: string[] | typeof EVERYONE) => {
+  const filter =
+    marked === EVERYONE
+      ? { mode: EVERYONE, markedUids: new Set<string>() }
+      : { mode: 'several' as const, markedUids: new Set(marked) };
+  const selection = chipSelectionOf(filter, choices, 'ana');
   const rows = paymentRowsOf(memberPartsOf(entries), selection.rowUids);
   return rows.map((row) => paymentEntrySupportOf(row, people, selection));
 };
