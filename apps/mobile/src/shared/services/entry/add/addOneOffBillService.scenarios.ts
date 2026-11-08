@@ -35,11 +35,11 @@ export const addOneOffBillScenarios = {
     input: [{ ...FARMACIA, tagId: null }],
     result: undefined,
   },
-  // A conta de 30/09 entra em setembro, mesmo registrada em outubro.
-  memberAddsSeptemberBill: {
+  // A conta de 30/10 entra em outubro, mesmo registrada em novembro.
+  memberAddsOctoberBill: {
     signedInAs: BRUNO,
     given: BRUNO_WITHOUT_ENTRIES,
-    input: [{ ...FARMACIA, date: '2026-09-30' }],
+    input: [{ ...FARMACIA, date: '2026-10-30' }],
     result: undefined,
   },
   // Quem já lançou antes tem `hasEntries` em `true`; o lote o grava de novo sem problema.

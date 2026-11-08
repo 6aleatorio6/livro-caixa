@@ -1,7 +1,10 @@
 import { number, object, string } from 'yup';
 
+import { FIRST_DAY } from '@/shared/constants/date/firstDay';
+import { FIRST_MONTH } from '@/shared/constants/date/firstMonth';
 import type { IOneOffBillFormValues } from '@/shared/types/entry/OneOffBillFormValues';
 import type { IOneOffBillFormContext } from '@/shared/types/form/OneOffBillFormContext';
+import { formatMonthTitle } from '@/shared/utils/date/formatMonthTitle';
 import { monthName } from '@/shared/utils/date/monthName';
 import { monthOf } from '@/shared/utils/date/monthOf';
 import { toIsoDate } from '@/shared/utils/date/toIsoDate';
@@ -25,9 +28,15 @@ const oneOffBillSchema = object({
         message: `O valor não fica abaixo das contribuições, de ${formatCents(contributedCents)}.`,
       });
     }),
-  // O calendário já para em hoje, mas o valor também chega por outros caminhos.
+  // O calendário já para entre o primeiro dia do app e hoje, mas o valor também chega por outros caminhos.
   date: string()
     .required()
+    // Antes do primeiro mês nenhuma tela chega: a conta ficaria sem como abrir, alterar ou excluir.
+    .test(
+      'notBeforeFirstMonth',
+      `A data não pode ser antes de ${formatMonthTitle(FIRST_MONTH).toLowerCase()}.`,
+      (value) => value >= FIRST_DAY,
+    )
     .test('notAfterToday', 'A data não pode passar de hoje.', (value) => value <= toIsoDate(new Date()))
     // A contribuição guarda o mês da conta e não muda junto: com contribuições, a data fica no mesmo mês.
     .test('lockedMonth', '', function (value) {

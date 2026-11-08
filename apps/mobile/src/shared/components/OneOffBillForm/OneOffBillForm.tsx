@@ -9,12 +9,14 @@ import { AmountPaidFieldSmart } from '@/shared/components/inputs/AmountPaidField
 import { ReceiptFieldSmart } from '@/shared/components/inputs/ReceiptFieldSmart/ReceiptFieldSmart';
 import { TagChoiceSmart } from '@/shared/components/inputs/TagChoiceSmart/TagChoiceSmart';
 import { TextFieldSmart } from '@/shared/components/inputs/TextFieldSmart/TextFieldSmart';
+import { FIRST_DAY } from '@/shared/constants/date/firstDay';
 import { useOneOffBillForm } from '@/shared/hooks/useOneOffBillForm/useOneOffBillForm';
 import type { IOneOffBillFormValues } from '@/shared/types/entry/OneOffBillFormValues';
 import type { IOneOffBillInput } from '@/shared/types/entry/OneOffBillInput';
 import type { IReceipt } from '@/shared/types/file/Receipt';
 import type { IReceiptFile } from '@/shared/types/file/ReceiptFile';
 import type { ITag } from '@/shared/types/tag/Tag';
+import { fromIsoDate } from '@/shared/utils/date/fromIsoDate';
 import { monthName } from '@/shared/utils/date/monthName';
 import { monthOf } from '@/shared/utils/date/monthOf';
 import { toIsoDate } from '@/shared/utils/date/toIsoDate';
@@ -90,6 +92,7 @@ export function OneOffBillForm<TCurrentReceipt extends IReceiptFile | undefined 
         name="date"
         label="Data"
         supportText={lockedMonth ? `Com contribuições, a data fica em ${monthName(lockedMonth)}.` : dateSupportText}
+        minimumDate={fromIsoDate(FIRST_DAY)}
         maximumDate={new Date()}
       />
 

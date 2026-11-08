@@ -49,7 +49,7 @@ A conta vale até ser excluída: não há data de fim.
 
 - [ ] Uma conta aparece como a pagar em cada mês a partir da data em que vale.
 - [ ] Uma conta do dia 31 vence no último dia de um mês mais curto.
-- [ ] Uma conta não paga em setembro continua a pagar em setembro e não aparece em outubro.
+- [ ] Uma conta não paga em novembro continua a pagar em novembro e não aparece em dezembro.
 - [ ] Depois de alterar o valor previsto, os meses sem pagamento mostram o valor novo, e os meses
       pagos mantêm o valor do pagamento.
 - [ ] Depois de excluir a conta, os pagamentos já feitos continuam, e a conta deixa de aparecer

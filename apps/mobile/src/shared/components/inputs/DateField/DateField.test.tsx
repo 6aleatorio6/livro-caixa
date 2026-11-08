@@ -15,11 +15,23 @@ function openedWith() {
   };
 }
 
-async function renderDateField(initial = '', maximumDate?: Date) {
+async function renderDateField(
+  initial = '',
+  { maximumDate, minimumDate }: { maximumDate?: Date; minimumDate?: Date } = {},
+) {
   const onBlur = jest.fn();
   function Harness() {
     const [value, setValue] = useState(initial);
-    return <DateField label="Vale a partir de" value={value} onValueChange={setValue} onBlur={onBlur} maximumDate={maximumDate} />;
+    return (
+      <DateField
+        label="Vale a partir de"
+        value={value}
+        onValueChange={setValue}
+        onBlur={onBlur}
+        maximumDate={maximumDate}
+        minimumDate={minimumDate}
+      />
+    );
   }
   await render(<Harness />);
   return { onBlur, field: () => screen.getByRole('button', { name: 'Vale a partir de' }) };
@@ -67,11 +79,21 @@ describe('DateField', () => {
   it('Should limit the calendar to the maximum date', async () => {
     const user = userEvent.setup();
     const maximumDate = new Date(2026, 9, 25);
-    const { field } = await renderDateField('2026-10-12', maximumDate);
+    const { field } = await renderDateField('2026-10-12', { maximumDate });
 
     await user.press(field());
 
     expect(openedWith().maximumDate).toBe(maximumDate);
+  });
+
+  it('Should limit the calendar to the minimum date', async () => {
+    const user = userEvent.setup();
+    const minimumDate = new Date(2026, 9, 1);
+    const { field } = await renderDateField('2026-10-12', { minimumDate });
+
+    await user.press(field());
+
+    expect(openedWith().minimumDate).toBe(minimumDate);
   });
 
   it('Should write the chosen date and leave the field', async () => {

@@ -58,7 +58,7 @@ const CONTRIBUTION_SETUP = {
   },
   fileContentsGiven: receiptOf(CONTRIBUTION_FILE_ID, ANA).fileContentIds,
 };
-const ONE_OFF_BILL_CHANGES = { name: 'Conserto do freezer', amountCents: 40000, date: '2026-09-28', tagId: null };
+const ONE_OFF_BILL_CHANGES = { name: 'Conserto do freezer', amountCents: 40000, date: '2026-11-03', tagId: null };
 
 export const updateEntryScenarios = {
   // O valor pago corrigido para R$ 200,00; o comprovante fica.
@@ -120,7 +120,7 @@ export const updateEntryScenarios = {
     expectedEntry: { ...CONTRIBUTION_TO_UNOWNED_DOCUMENT, amountCents: 3000 },
     wasReceiptReplaced: false,
   },
-  // Nome, valor, a data em setembro (o `month` muda com ela) e a tag tirada (o campo some).
+  // Nome, valor, a data em novembro (o `month` muda com ela) e a tag tirada (o campo some).
   memberChangesOneOffBill: {
     signedInAs: BRUNO,
     ...ONE_OFF_BILL_SETUP(),
@@ -129,7 +129,7 @@ export const updateEntryScenarios = {
     expectedEntry: {
       ...ONE_OFF_BILL_WITHOUT_TAG_DOCUMENT,
       ...ONE_OFF_BILL_CHANGES,
-      month: '2026-09',
+      month: '2026-11',
       tagId: undefined,
     },
     wasReceiptReplaced: false,

@@ -369,6 +369,7 @@ describe('PayRecurringBillPage', () => {
     ['a text that is not a month', 'outubro'],
     ['no month', undefined],
     ['a month before the bill starts', '2025-12'],
+    ['a month before the first month of the app', '2026-09'],
   ])('with %s', (_case, month) => {
     it('Should say the bill is not to pay, without the form', async () => {
       await renderPage(paymentOfScenario.bill.id, { month });

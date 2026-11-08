@@ -257,6 +257,8 @@ describe('EditEntryPage', () => {
     });
 
     it('Should save the new name, amount, date and no tag keeping the receipt, say so and go back to the sheet', async () => {
+      // A conta de 12 de outubro passa para novembro: a data nova não pode ser depois de hoje.
+      jest.setSystemTime(new Date(2026, 10, 5));
       const scenario = updateEntryScenarios.memberChangesOneOffBill;
       mockServiceScenario(updateEntryService, scenario);
       const user = await renderOneOffBill();
@@ -265,7 +267,7 @@ describe('EditEntryPage', () => {
       await user.type(screen.getByLabelText('Nome da conta'), ` ${scenario.input[0].changes.name} `);
       await user.clear(screen.getByLabelText('Valor pago'));
       await user.type(screen.getByLabelText('Valor pago'), '40000');
-      await pickDate(user, new Date(2026, 8, 28));
+      await pickDate(user, new Date(2026, 10, 3));
       await user.press(screen.getByRole('button', { name: 'Casa' }));
       await user.press(screen.getByRole('button', { name: SAVE }));
 
