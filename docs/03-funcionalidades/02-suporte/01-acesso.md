@@ -9,6 +9,8 @@ mesma cuida dele.
 - Todo membro, ao entrar no app.
 - O admin, ao cadastrar uma pessoa da família: só o e-mail do Google.
 - Todo membro, para mudar o próprio nome, em [Configurações](03-configuracoes.md).
+- Quem está com o app abaixo da versão mínima, ao abrir o app e ao voltar ao
+  [Início](../01-principal/01-inicio.md) ([Versão mínima](#versão-mínima)).
 
 ## Login
 
@@ -58,6 +60,36 @@ mesma cuida dele.
 - O app mostra sempre o nome atual: nos lançamentos da pessoa, inclusive nos registrados antes da
   troca, e na separação por membro do [Início](../01-principal/01-inicio.md).
 
+## Versão mínima
+
+O app tem uma versão mínima, guardada no documento `settings/app`, no campo `minVersion` (por exemplo,
+`"0.5.0"`). Quem está com uma versão abaixo dela não usa o app até instalar a nova.
+
+- O documento muda pelo console do Firebase: o app não tem tela para isso, e as regras não deixam o
+  app gravá-lo. Qualquer um o lê, até sem entrar com a conta Google, porque a tela de atualização
+  aparece antes do login.
+- O app compara a própria versão com o `minVersion` número a número (maior, menor e correção): a
+  0.10.0 passa por um mínimo de 0.9.0, o que a comparação como texto erraria. A versão igual à mínima
+  passa.
+- O app confere quando abre do zero e sempre que o [Início](../01-principal/01-inicio.md) volta a
+  aparecer, por exemplo ao voltar de Configurações. Se o mínimo subir com o app aberto, a pessoa segue
+  usando até voltar ao Início. Voltar do segundo plano direto para outra tela que não o Início não
+  confere: a conferência roda no Início.
+- Abaixo do mínimo, o app mostra só a tela "Atualize o app", com a versão instalada e a exigida. Ela
+  não tem botão: a saída é instalar a versão nova. Nenhuma outra tela fica disponível, nem a de
+  entrada, nem para quem já está logado e liberado.
+- Sem o documento ou com um `minVersion` que não é uma versão de três números separados por ponto, o
+  app abre como antes.
+- Sem internet, a conferência usa o que o celular guardou da última leitura do documento: depois de o
+  mínimo ser lido uma vez, a trava vale também sem rede, porque um app desatualizado não deve ser
+  usado. Só quem está sem internet e nunca leu o mínimo (nenhum documento guardado no celular) abre o
+  app como antes. A conferência espera a leitura por até 3 segundos; se ela não responder nesse prazo,
+  o app abre.
+- A trava vale da versão que a traz em diante. A 0.3.0 não a tem e continua funcionando até a família
+  instalar uma versão que a tenha.
+- Quem cuida do app sobe o mínimo no console do Firebase só depois de o APK da versão nova chegar à
+  família. Quem ficar para trás vê a tela de atualização até instalar.
+
 ## Critérios de aceite
 
 - [ ] Um e-mail do Google fora da lista vê a tela de aguardando permissão, com o e-mail usado, e não
@@ -83,3 +115,15 @@ mesma cuida dele.
 - [ ] O admin remove o e-mail de uma pessoa que ainda não tem lançamentos, e ela deixa de entrar.
 - [ ] O app não deixa remover o e-mail de quem já tem um pagamento ou uma conta avulsa.
 - [ ] O app não deixa remover o e-mail de quem só tem contribuições.
+- [ ] Abaixo da versão mínima, o app mostra só a tela de atualização, com a versão instalada e a
+      pedida, e nenhuma outra tela fica disponível, nem para quem está logado e liberado.
+- [ ] A tela de atualização aparece também para quem ainda não entrou com a conta Google.
+- [ ] A versão mínima sobe com o app aberto: ao voltar ao Início, a tela de atualização aparece.
+- [ ] Sem o documento, o app abre como antes.
+- [ ] Sem internet e sem nunca ter lido o mínimo (nenhum documento guardado no celular), o app abre
+      como antes.
+- [ ] Depois de ler o mínimo uma vez, o app abaixo dele continua na tela de atualização também sem
+      internet.
+- [ ] Um `minVersion` malformado não barra o app.
+- [ ] A 0.10.0 passa por um mínimo de 0.9.0, e a versão igual à mínima também passa.
+- [ ] Qualquer um lê o documento `settings/app`, até sem entrar, e ninguém o grava pelo app.
