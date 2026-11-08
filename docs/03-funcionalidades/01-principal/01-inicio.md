@@ -30,8 +30,9 @@ Todo membro, ao abrir o app.
     nela abre os detalhes, com a lista de contribuições e o "Anexar o comprovante da conta".
 - **A troca de mês**, para ver os meses anteriores e o próximo mês. O Início abre no mês atual, e a
   troca para no próximo mês, que mostra as contas recorrentes dele a pagar e os pagamentos já
-  feitos para ele. O mês atual leva o selo "Este mês", e o próximo, "Mês que vem"; os anteriores não
-  têm selo.
+  feitos para ele. Para trás, a troca começa em outubro de 2026, o primeiro mês do app: nele, o
+  Mês anterior fica desabilitado. O mês atual leva o selo "Este mês", e o próximo, "Mês que vem";
+  os anteriores não têm selo.
 
 Sem nenhuma conta recorrente cadastrada, o Início mostra o gráfico vazio e o botão para cadastrar as
 [contas recorrentes](02-contas-recorrentes.md).
@@ -41,8 +42,8 @@ O formato do gráfico fica para o design.
 ## Regras
 
 - Os números são da família, não de um membro.
-- Cada mês mostra só as próprias contas. Uma conta de setembro que não foi paga continua a pagar
-  em setembro e não aparece em outubro.
+- Cada mês mostra só as próprias contas. Uma conta de novembro que não foi paga continua a pagar
+  em novembro e não aparece em dezembro.
 - O pagamento de uma conta recorrente conta no mês da conta que ele paga, e no nome de quem pagou.
   Ex.: Ana paga o Aluguel de novembro em 28 de outubro; o Início de outubro não muda, e o de
   novembro mostra o Aluguel pago, no nome de Ana.
@@ -65,11 +66,15 @@ O formato do gráfico fica para o design.
       mostra selo.
 - [ ] Dá para avançar até o próximo mês, que mostra as contas recorrentes dele a pagar; nele, o
       Próximo mês fica desabilitado.
+- [ ] Em outubro de 2026, o primeiro mês do app, o Mês anterior fica desabilitado; nos meses
+      depois dele, fica habilitado.
 - [ ] Um pagamento de novembro registrado em outubro aparece pago em novembro e não muda outubro.
-- [ ] Uma conta de setembro sem pagamento não aparece no Início de outubro.
-- [ ] Uma conta avulsa com data de 30 de setembro, registrada em 2 de outubro, entra em setembro.
+- [ ] Uma conta de novembro sem pagamento não aparece no Início de dezembro.
+- [ ] Uma conta avulsa com data de 30 de novembro, registrada em 2 de dezembro, entra em novembro.
 - [ ] Na separação por membro, quem registrou um lançamento aparece com o valor pago menos as
       contribuições, e cada contribuinte com o que contribuiu.
 - [ ] As contribuições não mudam o total do mês nem a separação por tag.
 - [ ] Uma conta com contribuições abaixo do previsto aparece a pagar pelo que falta, com quem
       contribuiu.
+- [ ] Com R$ 2.677,90 a pagar, o valor fica dentro do anel; um valor maior diminui até caber numa
+      linha.

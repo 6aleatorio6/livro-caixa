@@ -78,3 +78,26 @@ describe('settings delete of the tags', () => {
 
   itEach(cases, ({ as, isAllowed }) => assertAccess(isAllowed, deleteDoc(tagsDocOf(as()))));
 });
+
+// `settings/app` (a versão mínima do app) muda só pelo console: nem o membro nem o admin o gravam pelo app.
+describe('settings create of the app settings', () => {
+  const cases = rowsFor(ALL, 'create the app settings', false, { data: { minVersion: '0.5.0' } });
+
+  itEach(cases, ({ as, data, isAllowed }) => assertAccess(isAllowed, setDoc(settingsDocOf(as(), 'app'), data)));
+});
+
+describe('settings update of the app settings', () => {
+  beforeEach(() => asOwner((firestore) => setDoc(settingsDocOf(firestore, 'app'), { minVersion: '0.5.0' })));
+
+  const cases = rowsFor(ALL, 'update the app settings', false, { data: { minVersion: '0.9.0' } });
+
+  itEach(cases, ({ as, data, isAllowed }) => assertAccess(isAllowed, updateDoc(settingsDocOf(as(), 'app'), data)));
+});
+
+describe('settings delete of the app settings', () => {
+  beforeEach(() => asOwner((firestore) => setDoc(settingsDocOf(firestore, 'app'), { minVersion: '0.5.0' })));
+
+  const cases = rowsFor(ALL, 'delete the app settings', false);
+
+  itEach(cases, ({ as, isAllowed }) => assertAccess(isAllowed, deleteDoc(settingsDocOf(as(), 'app'))));
+});

@@ -5,11 +5,14 @@ import type { IAccessStatus } from '@/shared/types/auth/AccessStatus';
 import type { IAuthState } from '@/shared/types/auth/AuthState';
 
 /**
- * A tela de acesso que vale para a sessão e para a leitura do e-mail na lista. Uma recusa só vem do
- * servidor: sem internet e sem o e-mail no cache do aparelho, o app espera em vez de dizer que a
+ * A tela de acesso que vale para a sessão e para a leitura do e-mail na lista, ou `null` quando a leitura falha. Uma
+ * recusa só vem do servidor: sem internet e sem o e-mail no cache do aparelho, o app espera em vez de dizer que a
  * pessoa não tem acesso.
  */
-export function accessStatusFor(authState: IAuthState, allowedEmail: IRealtimeState<IAllowedEmail | null>): IAccessStatus {
+export function accessStatusFor(
+  authState: IAuthState,
+  allowedEmail: IRealtimeState<IAllowedEmail | null>,
+): IAccessStatus | null {
   if (authState.status !== 'signedIn') return authState.status;
   switch (allowedEmail.status) {
     case 'success':
@@ -17,7 +20,7 @@ export function accessStatusFor(authState: IAuthState, allowedEmail: IRealtimeSt
     case 'cached':
       return allowedEmail.data === null ? 'loading' : 'allowed';
     case 'error':
-      return 'denied';
+      return null;
     default:
       return 'loading';
   }

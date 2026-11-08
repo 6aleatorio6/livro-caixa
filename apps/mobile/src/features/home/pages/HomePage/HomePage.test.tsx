@@ -1,5 +1,5 @@
 import { act, render, screen, userEvent } from '@testing-library/react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { getSharedPayloads } from 'expo-sharing';
 
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
@@ -14,6 +14,7 @@ import { tagListQueryService } from '@/shared/services/tag/query/tagListQuerySer
 import { tagListQueryScenarios } from '@/shared/services/tag/query/tagListQueryService.scenarios';
 import { mockRealtime } from '@/shared/testing/mockRealtime';
 import { signedInAuthState } from '@/shared/testing/signedInAuthState';
+import { checkAppVersion } from '@/shared/utils/version/checkAppVersion';
 
 import { HomePage } from './HomePage';
 
@@ -24,7 +25,9 @@ jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entry
 jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService', () => ({ recurringBillListQueryService: {} }));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({ allowedEmailListQueryService: {} }));
-jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
+jest.mock('expo-router', () => ({ router: { push: jest.fn() }, useFocusEffect: jest.fn() }));
+// A conferência da versão tem teste próprio e carregaria o serviço de leitura; é assíncrona, como a verdadeira.
+jest.mock('@/shared/utils/version/checkAppVersion', () => ({ checkAppVersion: jest.fn(() => Promise.resolve()) }));
 // O compartilhamento que o Android deixou para o app, lido pelo Início ao abrir.
 jest.mock('expo-sharing', () => ({ getSharedPayloads: jest.fn(() => []) }));
 
@@ -34,6 +37,9 @@ const threeTags = { service: tagListQueryService, scenario: tagListQueryScenario
 const family = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyList };
 const renamedFamily = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyWithRenamedMember };
 const familyMonth = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthOfTheFamily };
+// Em novembro o mês anterior é outubro, o primeiro do app: os testes da troca para o mês anterior abrem em novembro,
+// porque em outubro o botão está desabilitado.
+const november = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.nextMonthPaidEarly };
 const emptyMonth = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth };
 
 beforeEach(() => {
@@ -52,6 +58,28 @@ afterEach(() => {
 });
 
 describe('HomePage', () => {
+  describe('The app version check', () => {
+    it('Should check the app version each time the home gains focus', async () => {
+      mockRealtime(fiveBills, threeTags, family, familyMonth);
+      await render(<HomePage />);
+      const onFocus = jest.mocked(useFocusEffect).mock.lastCall![0];
+
+      onFocus();
+      onFocus();
+
+      expect(checkAppVersion).toHaveBeenCalledTimes(2);
+    });
+
+    // O `useFocusEffect` só aceita uma função ou nada de volta: a promessa da conferência avisaria no console.
+    it('Should return nothing to the focus effect, which warns about a promise', async () => {
+      mockRealtime(fiveBills, threeTags, family, familyMonth);
+      await render(<HomePage />);
+      const onFocus = jest.mocked(useFocusEffect).mock.lastCall![0];
+
+      expect(onFocus()).toBeUndefined();
+    });
+  });
+
   describe('A file shared to the app', () => {
     it('Should open the share screen when a shared file is waiting', async () => {
       jest.mocked(getSharedPayloads).mockReturnValue([
@@ -184,28 +212,22 @@ describe('HomePage', () => {
   });
 
   it('Should show the numbers of the previous month when the month is changed', async () => {
-    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    jest.setSystemTime(new Date(2026, 10, 25));
+    mockRealtime(fiveBills, threeTags, family, november);
     await render(<HomePage />);
-    mockRealtime(fiveBills, threeTags, family, {
-      service: entryMonthQueryService,
-      scenario: entryMonthQueryScenarios.previousMonthWithEntries,
-    });
+    mockRealtime(fiveBills, threeTags, family, familyMonth);
 
     await userEvent.setup().press(screen.getByRole('button', { name: 'Mês anterior' }));
 
-    expect(screen.getByText('Setembro de 2026')).toBeOnTheScreen();
-    expect(screen.getByText('R$ 2.677,90')).toBeOnTheScreen();
-    expect(screen.getByText('5 de 6 contas')).toBeOnTheScreen();
-    expect(screen.getByText('1 conta · R$ 30,00')).toBeOnTheScreen();
+    expect(screen.getByText('Outubro de 2026')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 3.005,25')).toBeOnTheScreen();
+    expect(screen.getByText('2 de 6 contas')).toBeOnTheScreen();
   });
 
   it('Should show the bills to pay of the next month, and no month after it', async () => {
     mockRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);
-    mockRealtime(fiveBills, threeTags, family, {
-      service: entryMonthQueryService,
-      scenario: entryMonthQueryScenarios.nextMonthPaidEarly,
-    });
+    mockRealtime(fiveBills, threeTags, family, november);
 
     await userEvent.setup().press(screen.getByRole('button', { name: 'Próximo mês' }));
 

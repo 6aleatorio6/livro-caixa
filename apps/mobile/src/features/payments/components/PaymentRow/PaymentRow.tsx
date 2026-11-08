@@ -1,69 +1,38 @@
 import { router } from 'expo-router';
-import { View } from 'react-native';
-import { StyleSheet } from 'react-native-unistyles';
 
 import { EntryItem } from '@/shared/components/EntryItem/EntryItem';
-import { entryMarkKindOf } from '@/shared/utils/entry/entryMarkKindOf';
 import type { IAllowedEmailListItem } from '@/shared/types/allowedEmail/AllowedEmailListItem';
+import { formatCents } from '@/shared/utils/format/formatCents';
 
+import type { IChipSelection } from '../../types/ChipSelection';
 import type { IPaymentRow } from '../../types/PaymentRow';
-import { PaymentPartLine } from '../PaymentPartLine/PaymentPartLine';
-import { partLabelOf } from '../../utils/partLabelOf';
 import { paymentEntrySupportOf } from '../../utils/paymentEntrySupportOf';
+import { paymentRowMarkKindOf } from '../../utils/paymentRowMarkKindOf';
 
 export interface IPaymentRowProps {
   row: IPaymentRow;
   people: IAllowedEmailListItem[];
-  /** O membro do chip escolhido; `null` em "Todos", que mostra a conta sem as partes. */
-  chosenUid: string | null;
-  /** Quem está logado: a parte dele se chama "Sua parte". */
-  signedInUid: string | null;
+  /** Quem está marcado nos chips: o texto de apoio muda com ele. */
+  selection: IChipSelection;
 }
 
 /**
- * Uma conta na lista de Pagamentos: a linha do lançamento, que abre os detalhes dele, e, no chip de um membro, as
- * partes embaixo quando a conta tem contribuições: a do membro em destaque, depois a dos outros. A parte que é uma
- * contribuição abre os detalhes dela.
+ * Uma parte na lista de Pagamentos: a de quem pagou abre os detalhes do lançamento da conta, e a contribuição, os
+ * detalhes dela. As duas partes de uma conta têm o mesmo nome: o rótulo de leitura traz também o texto de apoio e o
+ * valor, que as distinguem.
  */
-export function PaymentRow({ row, people, chosenUid, signedInUid }: IPaymentRowProps) {
-  const { entry, amountCents, parts } = row;
-  // Com contribuições, as partes aparecem: a contribuição única de um mês sem dono também, que só abre por aqui.
-  const isExpanded = chosenUid !== null && parts.some(({ contribution }) => contribution !== null);
+export function PaymentRow({ row, people, selection }: IPaymentRowProps) {
+  const { entry, amountCents, contribution } = row;
+  const support = paymentEntrySupportOf(row, people, selection);
 
   return (
-    <View>
-      <EntryItem
-        kind={entryMarkKindOf(entry)}
-        name={entry.name}
-        amountCents={amountCents}
-        onPress={() => router.push({ pathname: '/entries/[id]', params: { id: entry.id } })}
-        support={paymentEntrySupportOf(row, people, chosenUid)}
-      />
-      {isExpanded ? (
-        <View style={styles.parts}>
-          {/* A parte do membro escolhido vem primeiro; a ordem estável mantém a de quem pagou antes das contribuições. */}
-          {[...parts]
-            .sort((a, b) => Number(b.uid === chosenUid) - Number(a.uid === chosenUid))
-            .map((part) => (
-              <PaymentPartLine
-                key={part.contribution?.id ?? `payer-${part.uid}`}
-                part={part}
-                label={partLabelOf(part, people, chosenUid, signedInUid)}
-                isHighlighted={part.uid === chosenUid}
-              />
-            ))}
-        </View>
-      ) : null}
-    </View>
+    <EntryItem
+      kind={paymentRowMarkKindOf(row)}
+      name={entry.name}
+      amountCents={amountCents}
+      onPress={() => router.push({ pathname: '/entries/[id]', params: { id: contribution?.id ?? entry.id } })}
+      support={support}
+      accessibilityLabel={`${entry.name}, ${support}, ${formatCents(amountCents)}`}
+    />
   );
 }
-
-const styles = StyleSheet.create((theme) => ({
-  // A margem da esquerda alinha as partes ao nome da conta, depois da marca: a medida do design, sem token.
-  parts: {
-    gap: theme.spacing.extraSmall,
-    paddingLeft: 72,
-    paddingRight: theme.spacing.large,
-    paddingBottom: theme.spacing.small,
-  },
-}));

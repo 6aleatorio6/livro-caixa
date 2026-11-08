@@ -1,7 +1,7 @@
 import { ColorDot } from '@/shared/components/ColorDot/ColorDot';
 import { FilterChip } from '@/shared/components/FilterChip/FilterChip';
 import type { ITagColor } from '@/shared/types/tag/TagColor';
-import { tagColorRoles } from '@/shared/utils/tag/tagColorRoles';
+import { tagColorRole } from '@/shared/utils/tag/tagColorRole';
 
 export interface ITagChipProps {
   name: string;
@@ -18,7 +18,7 @@ export function TagChip({ name, color, isSelected, onPress }: ITagChipProps) {
     <FilterChip
       label={name}
       isSelected={isSelected}
-      leading={<ColorDot color={tagColorRoles(color).mainRole} />}
+      leading={<ColorDot color={tagColorRole(color)} />}
       onPress={onPress}
     />
   );

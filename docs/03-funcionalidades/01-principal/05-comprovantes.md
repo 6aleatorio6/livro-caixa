@@ -37,14 +37,24 @@ câmera nem a galeria.
 1. Ao compartilhar uma imagem ou um PDF em outro app do celular, este app aparece na lista de
    destinos.
 2. Escolhido o app, ele abre a escolha da conta, com o comprovante já anexado: primeiro "Conta
-   avulsa", que leva à [conta avulsa](04-conta-avulsa.md), depois as contas a pagar do mês atual e,
-   abaixo, as do próximo mês, que já pode ser pago.
+   avulsa", que leva à [conta avulsa](04-conta-avulsa.md), e embaixo o filtro de mês com as contas
+   a pagar do mês escolhido.
 3. O membro escolhe a conta que está pagando e segue no
    [pagamento](03-pagamento-de-conta-recorrente.md) daquele mês.
 
-Abaixo das contas a pagar, a lista mostra as contas já pagas por outros membros, do mês atual e do
-próximo. Tocar numa delas abre a [contribuição](08-contribuicao.md) nela, com o comprovante anexado.
-Ficam de fora as que não têm mais nada a receber: a soma das contribuições já chegou ao valor pago.
+O filtro são duas pílulas pequenas, "Este mês" e "Mês que vem", as mesmas palavras do selo do mês
+no [Início](01-inicio.md). Ele abre no mês atual e só tem o mês atual e o próximo, que já pode ser
+pago: não há pílula de mês anterior nem de depois do próximo. A pílula do mês escolhido fica
+marcada.
+
+Abaixo do filtro, a tela mostra as contas a pagar do mês escolhido, em "A pagar em novembro", por
+exemplo. Embaixo delas, as contas desse mês já pagas por outros membros, em "Já pagas por outros em
+novembro". Os títulos levam o nome do mês porque as pílulas dizem só a posição dele. Tocar numa
+conta já paga abre a [contribuição](08-contribuicao.md) nela, com o comprovante anexado. Ficam de
+fora as que não têm mais nada a receber: a soma das contribuições já chegou ao valor pago.
+
+Trocar de pílula lê o outro mês, com um carregamento curto. "Conta avulsa" fica no topo, qualquer
+que seja o mês.
 
 Quem compartilha sem estar logado faz o login pelo Google e perde o arquivo: precisa
 compartilhá-lo de novo depois de entrar.
@@ -55,8 +65,13 @@ Ao anexar o comprovante, o app lê o texto dele no próprio celular, sem enviá-
 e preenche o valor pago do [pagamento](03-pagamento-de-conta-recorrente.md), da
 [conta avulsa](04-conta-avulsa.md) ou da alteração. O membro confere o valor antes de salvar.
 
-- **O que é lido:** a imagem, ou a primeira página do PDF. A leitura acontece enquanto o comprovante
-  é preparado, com o carregamento que já cobre a tela.
+- **O que é lido:** a imagem, ou o PDF até a terceira página: a primeira, e a seguinte só quando a
+  anterior não mostra um valor. A leitura acontece enquanto o comprovante é preparado, com o
+  carregamento que já cobre a tela.
+- **O prazo:** a leitura inteira, as três páginas juntas, tem 8 s. Passado o prazo, o comprovante segue
+  anexado e o campo fica sem o valor lido, como numa leitura que falha: no pagamento, com o valor
+  previsto ("Veio do valor previsto"); na conta avulsa, vazio, para o membro digitar. O que a leitura
+  trouxer depois é descartado.
 - **Qual valor:** o valor em reais do comprovante, quando ele mostra um só, mesmo que repetido. Com
   dois valores diferentes, como o do documento e o pago com juros, nada é preenchido. O valor zerado,
   como a tarifa de R$ 0,00, não conta. Ex.: o Pix de R$ 30,00 com a tarifa de R$ 0,00 preenche
@@ -88,23 +103,38 @@ O comprovante abre em tela cheia dentro do app, sobre fundo escuro. Embaixo, de 
 - **O PDF abre com as páginas uma embaixo da outra**, rolando, com o zoom de pinça do leitor do app
   e, quando há mais de uma página, a indicação "1 de 2". Ele não sai para o leitor de PDF do
   celular.
+- **O Compartilhar, no canto da barra, manda o arquivo para outro app** pelo compartilhar do Android,
+  seja imagem ou PDF, com o nome com que foi salvo. Ex.: mandar o Pix da água pelo WhatsApp. O nome
+  termina na extensão do formato, porque o app que recebe reconhece o arquivo por ela: a imagem que o
+  app comprimiu vai como `.webp`, e um PDF salvo como "Boleto luz" vai como "Boleto luz.pdf". O botão
+  fica desligado até o arquivo chegar, quando o app não consegue abri-lo e enquanto o compartilhar
+  está aberto.
 
 Antes de salvar, o membro também abre o comprovante anexado, para conferir o valor enquanto o digita:
 
 - **No pagamento, na conta avulsa e na alteração**, tocar no comprovante anexado o abre em tela cheia,
-  do mesmo jeito, sem a faixa do lançamento, que ainda não existe. Só o Trocar escolhe outro arquivo.
-  Na alteração, o comprovante já salvo abre como pelo Ver dos detalhes.
+  do mesmo jeito, sem a faixa do lançamento, que ainda não existe, e sem o Compartilhar: o arquivo
+  ainda é o do celular. Só o Trocar escolhe outro arquivo. Na alteração, o comprovante já salvo abre
+  como pelo Ver dos detalhes.
 - **Na lista do compartilhamento**, tocar no comprovante o abre do mesmo jeito. Ali ele não se troca.
 
 ## Critérios de aceite
 
 - [ ] Ao compartilhar uma imagem ou um PDF em outro app do Android, este app aparece entre os
       destinos.
-- [ ] O app abre a escolha da conta com o comprovante anexado: "Conta avulsa" primeiro, depois as
-      contas a pagar do mês atual e as do próximo mês.
+- [ ] O app abre a escolha da conta com o comprovante anexado: "Conta avulsa" primeiro, depois o
+      filtro de mês e as contas a pagar do mês escolhido.
+- [ ] O compartilhar abre no mês atual, com a pílula "Este mês" marcada e as contas a pagar do mês
+      atual, não as do próximo.
+- [ ] O filtro vai só até o próximo mês: tem as pílulas "Este mês" e "Mês que vem", e nenhuma de
+      mês anterior.
+- [ ] Tocar em "Mês que vem" marca a pílula e mostra as contas a pagar do próximo mês; "Conta
+      avulsa" continua no topo.
 - [ ] Escolhida uma conta da lista do próximo mês, o pagamento é desse mês.
-- [ ] A lista mostra, abaixo das contas a pagar, as contas já pagas por outros membros, e tocar
-      numa delas abre a contribuição.
+- [ ] A lista mostra, abaixo das contas a pagar, as contas do mês escolhido já pagas por outros
+      membros, e tocar numa delas abre a contribuição.
+- [ ] A conta paga por outro membro aparece para contribuir no mês dela: com o filtro nesse mês, e
+      não no outro.
 - [ ] Uma imagem de até 900 KB é salva como está.
 - [ ] Uma imagem acima de 900 KB é salva em WebP, no primeiro degrau que cabe, baixando a qualidade
       antes do lado maior.
@@ -116,6 +146,14 @@ Antes de salvar, o membro também abre o comprovante anexado, para conferir o va
 - [ ] Qualquer membro abre o comprovante de um lançamento de outro membro.
 - [ ] A imagem abre em tela cheia na largura da tela e rola na vertical, sem zoom.
 - [ ] O PDF abre em tela cheia dentro do app, com as páginas rolando.
+- [ ] Dois toques rápidos em Ver abrem um leitor só.
+- [ ] No comprovante aberto pelo Ver, o Compartilhar abre o compartilhar do Android com o arquivo,
+      imagem ou PDF, com o nome dele terminado na extensão do formato: a imagem comprimida vai como
+      `.webp`, e o nome sem extensão a ganha.
+- [ ] Até o arquivo do comprovante chegar, e quando ele não abre, o Compartilhar fica desligado.
+- [ ] Um segundo toque no Compartilhar, com o compartilhar do Android aberto, não abre outro.
+- [ ] Quando o compartilhar não abre, o app avisa "Não deu para compartilhar o comprovante." e o
+      Compartilhar volta a funcionar.
 - [ ] No pagamento, tocar no comprovante compartilhado o abre em tela cheia, sem abrir a escolha de
       arquivo; o Trocar abre a escolha.
 - [ ] Na lista do compartilhamento, tocar no comprovante o abre em tela cheia.
@@ -126,7 +164,11 @@ Antes de salvar, o membro também abre o comprovante anexado, para conferir o va
 - [ ] O comprovante do Mercado Pago de R$ 63⁹⁶ preenche R$ 63,96, também quando a leitura traz a
       vírgula.
 - [ ] Um valor lido acima de R$ 9.999.999,99 não preenche nada.
-- [ ] Do PDF, só a primeira página é lida.
+- [ ] O valor que só aparece na segunda página do PDF preenche o valor pago.
+- [ ] Com o valor na primeira página, a segunda não é lida.
+- [ ] Do PDF, no máximo as três primeiras páginas são lidas.
+- [ ] A leitura que passa de 8 s segue sem o valor lido: o pagamento fica com o valor previsto, com o
+      aviso "Veio do valor previsto", e a conta avulsa fica com o campo vazio.
 - [ ] O valor que o membro digitou não é trocado pelo do comprovante.
 - [ ] Com o valor lido, o campo diz "Veio do comprovante. Corrija se pagou outro valor."; digitado
       outro valor, o aviso sai.

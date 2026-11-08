@@ -1,11 +1,15 @@
 // Esboço do modelo de dados, pensado para o Firestore. Cada tabela é uma coleção (ou, em tags, os
-// itens de um documento só), e a chave primária é o id do documento.
+// itens de um documento só, e em appSettings, o próprio documento), e a chave primária é o id do
+// documento.
 //
 // Leituras do Início de um mês: a lista de allowedEmails inteira (dela sai o nome atual de quem
 // registrou cada lançamento), o documento único das tags, todas as contas recorrentes e os
 // lançamentos do mês (uma consulta por month). O que
 // falta pagar e as somas por tag e por membro são calculados no app, com o que já foi lido: não há
 // totais gravados. Trocar de mês lê só os lançamentos do novo mês.
+//
+// Fora essas leituras, o app lê o documento settings/app uma vez ao abrir e a cada vez que o Início
+// volta a aparecer, para conferir a versão mínima. Ele é o único documento que se lê sem entrar.
 //
 // Sem servidor próprio: as regras de segurança do Firestore garantem o acesso, a autoria, o
 // pagamento único por mês e a trava de remoção do e-mail.
@@ -48,6 +52,12 @@ Table tags {
   color varchar [not null, note: 'Um valor do enum de cores definido no código; a lista de cores sai do design']
 
   Note: 'Todas as tags num documento só, settings/tags: uma leitura traz todas, e a transação garante o nome único. A exclusão confere antes, no app, que nenhuma conta usa a tag.'
+}
+
+Table appSettings {
+  minVersion varchar [note: 'A versão mínima do app, três números separados por ponto, como "0.5.0". O app instalado abaixo dela mostra só a tela de atualização. Ausente ou fora desse formato, o app abre como antes']
+
+  Note: 'O documento único settings/app. Qualquer um o lê, até sem entrar: a tela de atualização aparece antes do login. Ninguém o grava pelo app: ele muda pelo console do Firebase, só depois de o APK da versão nova chegar à família.'
 }
 
 Table recurringBills {

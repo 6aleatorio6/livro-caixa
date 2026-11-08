@@ -6,6 +6,8 @@ export const tagsDocOf = (firestore) => doc(firestore, 'settings', 'tags');
 
 export const settingsDocOf = (firestore, id) => doc(firestore, 'settings', id);
 
+export const settingsOf = (firestore) => collection(firestore, 'settings');
+
 export const recurringBillOf = (firestore, id) => doc(firestore, 'recurringBills', id);
 
 export const entryDocOf = (firestore, id) => doc(firestore, 'entries', id);

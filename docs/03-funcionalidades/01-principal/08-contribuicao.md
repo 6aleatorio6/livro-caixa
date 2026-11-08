@@ -103,9 +103,11 @@ guarda o valor previsto e os dados da conta naquele momento, e não segue mais a
 - **Em [Detalhes do Lançamento](07-detalhes-do-lancamento.md), quem não registrou o lançamento tem o
   Contribuir**, que abre o mesmo formulário sem o interruptor, com o lançamento de quem pagou no
   topo.
-- **Os detalhes da contribuição só se abrem por [Pagamentos](06-pagamentos.md)**, na mesma folha do
-  pagamento: a conta, o valor, o lançamento que ela recebe ("na Luz de R$ 187,35, paga por Ana"), quem
-  contribuiu, quando e o comprovante. Para quem contribuiu, Alterar e Excluir.
+- **Os detalhes da contribuição só se abrem pela linha dela em [Pagamentos](06-pagamentos.md)**, na
+  mesma folha do pagamento: a conta, o valor, a conta que ela recebe ("na conta Luz de R$ 187,35,
+  paga por Ana"), quem contribuiu, quando e os comprovantes, o da contribuição e o da conta, que é
+  o "Comprovante do pagamento" ou, na conta avulsa, o "Comprovante da conta avulsa". Para quem
+  contribuiu, Alterar e Excluir.
 
 ## Quanto cada membro pagou
 
@@ -145,5 +147,5 @@ pago, e quem pagou fica com a parte negativa até alguém corrigir. Numa famíli
 - [ ] O total do mês e a separação por tag não mudam com as contribuições.
 - [ ] Ligar Paguei só uma parte em Alterar pagamento transforma o pagamento numa contribuição.
 - [ ] Desligar o interruptor em Alterar contribuição transforma a contribuição no pagamento do mês.
-- [ ] Os detalhes de uma contribuição abrem por Pagamentos, com Alterar e Excluir para quem
-      contribuiu.
+- [ ] Os detalhes de uma contribuição abrem pela linha dela em Pagamentos, com o comprovante dela e
+      o da conta (do pagamento ou da conta avulsa), e Alterar e Excluir para quem contribuiu.

@@ -44,7 +44,12 @@ jest.mock('expo-router', () => ({
 jest.mock('@react-native-community/datetimepicker', () => ({ DateTimePickerAndroid: { open: jest.fn() } }));
 
 type IUser = ReturnType<typeof userEvent.setup>;
-type IOpenArgs = { value: Date; maximumDate?: Date; onValueChange: (event: unknown, date: Date) => void };
+type IOpenArgs = {
+  value: Date;
+  minimumDate?: Date;
+  maximumDate?: Date;
+  onValueChange: (event: unknown, date: Date) => void;
+};
 
 const scenario = addOneOffBillScenarios.memberAddsOneOffBill;
 const [bill] = scenario.input;
@@ -99,11 +104,12 @@ describe('NewOneOffBillPage', () => {
     await user.press(screen.getByRole('button', { name: RECEIPT_BUTTON }));
   }
 
-  it('Should show today in the date field and let the calendar go up to today', async () => {
+  it('Should show today in the date field and let the calendar go from the first month of the app up to today', async () => {
     const user = await renderPage();
 
     expect(screen.getByDisplayValue('25/10/2026')).toBeOnTheScreen();
-    const { maximumDate } = await openCalendar(user);
+    const { minimumDate, maximumDate } = await openCalendar(user);
+    expect(minimumDate).toEqual(new Date(2026, 9, 1));
     expect(maximumDate).toEqual(new Date(2026, 9, 25));
   });
 
@@ -132,16 +138,18 @@ describe('NewOneOffBillPage', () => {
   });
 
   it('Should send the date chosen in the calendar, even from the previous month', async () => {
-    const september = addOneOffBillScenarios.memberAddsSeptemberBill;
-    mockServiceScenario(addOneOffBillService, september);
+    // Registrada em 2 de novembro, a conta de 30 de outubro é do mês anterior.
+    jest.setSystemTime(new Date(2026, 10, 2));
+    const october = addOneOffBillScenarios.memberAddsOctoberBill;
+    mockServiceScenario(addOneOffBillService, october);
     const user = await renderPage();
 
-    await fillPharmacy(user, new Date(2026, 8, 30));
+    await fillPharmacy(user, new Date(2026, 9, 30));
     await user.press(screen.getByRole('button', { name: 'Casa' }));
     await user.press(screen.getByRole('button', { name: SUBMIT }));
 
-    expect(screen.getByDisplayValue('30/09/2026')).toBeOnTheScreen();
-    expect(addOneOffBillService).toHaveBeenCalledWith(...september.input);
+    expect(screen.getByDisplayValue('30/10/2026')).toBeOnTheScreen();
+    expect(addOneOffBillService).toHaveBeenCalledWith(...october.input);
   });
 
   it('Should refuse a bill without receipt, say so and not call the service', async () => {

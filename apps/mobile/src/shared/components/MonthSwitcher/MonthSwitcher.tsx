@@ -6,6 +6,8 @@ import type { IColorRole } from '@/core/types/ColorRole';
 
 import { AppText } from '@/shared/components/AppText/AppText';
 import { IconButton } from '@/shared/components/IconButton/IconButton';
+import { FIRST_MONTH } from '@/shared/constants/date/firstMonth';
+import { MONTH_BADGES } from '@/shared/constants/date/monthBadges';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { formatMonthTitle } from '@/shared/utils/date/formatMonthTitle';
 import { nextMonth } from '@/shared/utils/date/nextMonth';
@@ -19,24 +21,21 @@ export interface IMonthSwitcherProps {
   onMonthChange: (month: string) => void;
 }
 
-const BADGES = {
-  current: { text: 'Este mês', background: 'primaryContainer', color: 'onPrimaryContainer' },
-  next: { text: 'Mês que vem', background: 'tertiaryContainer', color: 'onTertiaryContainer' },
-} as const;
-
 /** O selo ao lado do rótulo: "Este mês" no mês atual, "Mês que vem" no próximo; os meses anteriores não têm. */
 function badgeOf(month: string) {
-  if (month === currentMonth()) return BADGES.current;
-  if (month === nextMonth()) return BADGES.next;
+  if (month === currentMonth()) return MONTH_BADGES.current;
+  if (month === nextMonth()) return MONTH_BADGES.next;
   return null;
 }
 
 /**
  * O cabeçalho de uma aba por mês: o rótulo, com o selo do mês atual ou do próximo, o mês por extenso e os botões de
- * mês anterior e próximo. Não há próximo depois do próximo mês.
+ * mês anterior e próximo. Não há próximo depois do próximo mês nem anterior antes do primeiro mês do app.
  */
 export function MonthSwitcher({ label, month, onMonthChange }: IMonthSwitcherProps) {
   const badge = badgeOf(month);
+  // 'AAAA-MM' se compara pela ordem do texto.
+  const isFirstMonth = month <= FIRST_MONTH;
 
   return (
     <View style={styles.container}>
@@ -56,7 +55,12 @@ export function MonthSwitcher({ label, month, onMonthChange }: IMonthSwitcherPro
         <AppText variant="headlineSmallEmphasized">{formatMonthTitle(month)}</AppText>
       </View>
       <View style={styles.buttons}>
-        <IconButton icon={ChevronLeft} label="Mês anterior" onPress={() => onMonthChange(shiftMonth(month, -1))} />
+        <IconButton
+          icon={ChevronLeft}
+          label="Mês anterior"
+          disabled={isFirstMonth}
+          onPress={() => onMonthChange(shiftMonth(month, -1))}
+        />
         <IconButton
           icon={ChevronRight}
           label="Próximo mês"

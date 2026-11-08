@@ -9,13 +9,11 @@ import { OnlyAuthorNotice } from '@/features/entries/components/OnlyAuthorNotice
 import { AppText } from '@/shared/components/AppText/AppText';
 import { Button } from '@/shared/components/Button/Button';
 import { DetailRow } from '@/shared/components/DetailRow/DetailRow';
-import { ReceiptSummary } from '@/shared/components/ReceiptSummary/ReceiptSummary';
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { signedInUid } from '@/shared/utils/auth/signedInUid';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
-import { receiptFileQueryService } from '@/shared/services/file/query/receiptFileQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import { formatIsoDate } from '@/shared/utils/date/formatIsoDate';
@@ -28,6 +26,7 @@ import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 import { findTag } from '@/shared/utils/tag/findTag';
 
 import { EntryDetailsHeader } from '../EntryDetailsHeader/EntryDetailsHeader';
+import { EntryReceipt } from '../EntryReceipt/EntryReceipt';
 
 export interface IEntryDetailsContentProps {
   entry: IOwnedEntry;
@@ -40,7 +39,6 @@ export interface IEntryDetailsContentProps {
  */
 export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
   const authState = useAuthState();
-  const { data: file } = useRealtime(receiptFileQueryService, { id: entry.receiptFileId });
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
   const { data: tags } = useRealtime(tagListQueryService, {});
   const { data: monthEntries } = useRealtime(entryMonthQueryService, { month: entry.month });
@@ -96,14 +94,7 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
         {tag ? <DetailRow label="Tag" value={tag.name} tagColor={tag.color} /> : null}
       </View>
 
-      <ReceiptSummary
-        file={file ? { name: file.name, type: file.type, sizeBytes: file.sizeBytes } : null}
-        disabled={!file}
-        action={{
-          label: 'Ver',
-          onPress: () => router.push({ pathname: '/entries/[id]/receipt', params: { id: entry.id } }),
-        }}
-      />
+      <EntryReceipt entry={entry} />
 
       {contributions.length > 0 ? (
         <ContributionsSection
@@ -159,7 +150,7 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
 }
 
 const styles = StyleSheet.create((theme) => ({
-  authorActions: { gap: theme.spacing.small },
+  authorActions: { gap: theme.spacing.large },
   actions: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.medium },
   change: { flex: 1 },
 }));

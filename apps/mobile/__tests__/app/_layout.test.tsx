@@ -1,19 +1,30 @@
 import { act } from '@testing-library/react-native';
+import { router } from 'expo-router';
 import { renderRouter, screen } from 'expo-router/testing-library';
-import { Text } from 'react-native';
+import { Text, type AppStateStatus } from 'react-native';
 import { useState } from 'react';
+import { authenticateAsync, type LocalAuthenticationResult } from 'expo-local-authentication';
+import * as SplashScreen from 'expo-splash-screen';
 import { clearSharedPayloads, getSharedPayloads } from 'expo-sharing';
 
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { allowedEmailQueryService } from '@/shared/services/allowedEmail/query/allowedEmailQueryService';
 import { allowedEmailQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailQueryService.scenarios';
+import { findMinimumAppVersionService } from '@/shared/services/appSettings/findMinimumAppVersionService';
+import { findMinimumAppVersionScenarios } from '@/shared/services/appSettings/findMinimumAppVersionService.scenarios';
 import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
+import { useAppVersionLockStore } from '@/shared/store/appVersionLock.store';
+import { useBiometricLockStore } from '@/shared/store/biometricLock.store';
+import { holdNextPromptOpen } from '@/shared/testing/holdNextPromptOpen';
+import { mockAppState } from '@/shared/testing/mockAppState';
 import { mockRealtime } from '@/shared/testing/mockRealtime';
+import { mockServiceScenario } from '@/shared/testing/mockServiceScenario';
 import { signedInAuthState } from '@/shared/testing/signedInAuthState';
 import type { IAllowedEmail } from '@/shared/types/allowedEmail/AllowedEmail';
 import type { IAuthState } from '@/shared/types/auth/AuthState';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
+import { checkAppVersion } from '@/shared/utils/version/checkAppVersion';
 
 import TabsLayout from '@/app/(tabs)/_layout';
 import RootLayout from '@/app/_layout';
@@ -22,12 +33,46 @@ import RootLayout from '@/app/_layout';
 jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jest.fn() }));
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailQueryService', () => ({ allowedEmailQueryService: {} }));
+// A versão mínima que o layout lê na abertura; cada teste escolhe o cenário.
+jest.mock('@/shared/services/appSettings/findMinimumAppVersionService', () => ({
+  findMinimumAppVersionService: jest.fn(),
+}));
+// A versão instalada muda por teste: o `get` lê o valor na hora do uso, e o nome com `mock` o libera na fábrica.
+let mockInstalledVersion = '0.4.0';
+jest.mock('@/shared/constants/appVersion', () => ({
+  get APP_VERSION() {
+    return mockInstalledVersion;
+  },
+}));
+// A splash do Expo é nativa: o teste só confere quando o layout manda escondê-la.
+jest.mock('expo-splash-screen', () => ({ preventAutoHideAsync: jest.fn(), hide: jest.fn() }));
 // O compartilhamento que o Android deixou para o app, lido pelo layout na abertura.
 jest.mock('expo-sharing', () => ({ getSharedPayloads: jest.fn(() => []), clearSharedPayloads: jest.fn() }));
+// A biblioteca da digital e do rosto é nativa: cada teste escolhe o que o pedido do sistema responde.
+jest.mock('expo-local-authentication', () => ({ authenticateAsync: jest.fn() }));
+// O arquivo da opção "Entrar com biometria", em memória: `undefined` é o arquivo que não existe.
+let mockStoredBiometricsOption: string | undefined;
+jest.mock('expo-file-system', () => ({
+  Paths: { document: 'file:///document' },
+  File: jest.fn(() => ({
+    get exists() {
+      return mockStoredBiometricsOption !== undefined;
+    },
+    textSync: () => mockStoredBiometricsOption,
+    writeSync: (content: string) => {
+      mockStoredBiometricsOption = content;
+    },
+  })),
+}));
 // O layout das abas chama o hook do nome, que tem teste próprio e carregaria o serviço de escrita.
 jest.mock('@/features/auth/hooks/useEnsureOwnName/useEnsureOwnName', () => ({ useEnsureOwnName: jest.fn() }));
 
 const SIGNED_OUT: IAuthState = { status: 'signedOut' };
+
+const memberInList = {
+  authState: signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn),
+  allowedEmail: allowedEmailQueryScenarios.emailInList,
+};
 
 const ROUTES = {
     _layout: RootLayout,
@@ -37,6 +82,7 @@ const ROUTES = {
     '(tabs)/settings': () => <Text>Página das configurações</Text>,
     'sign-in': () => <Text>Entrar</Text>,
     'no-access': () => <Text>Sem acesso</Text>,
+    'update-required': () => <Text>Atualização obrigatória</Text>,
     'test-sign-in': () => <Text>Entrada de teste</Text>,
     'allowed-emails': () => <Text>Página dos e-mails permitidos</Text>,
     'change-name': () => <Text>Página do seu nome</Text>,
@@ -44,7 +90,10 @@ const ROUTES = {
     'recurring-bills/new': () => <Text>Página da nova conta recorrente</Text>,
     'recurring-bills/[id]/index': () => <Text>Página de alterar conta recorrente</Text>,
     'recurring-bills/[id]/pay': () => <Text>Página de registrar pagamento</Text>,
+    'one-off-bills/new': () => <Text>Página da nova conta avulsa</Text>,
     'entries/[id]/index': () => <Text>Página dos detalhes do lançamento</Text>,
+    'entries/[id]/contribute': () => <Text>Página de registrar contribuição</Text>,
+    'entries/[id]/receipt': () => <Text>Página do comprovante do lançamento</Text>,
     'share-receipt': () => <Text>Página de compartilhar</Text>,
     'receipt-preview': () => <Text>Página do comprovante anexado</Text>,
     'tags/index': () => <Text>Página das tags</Text>,
@@ -67,6 +116,28 @@ async function renderAppAs(
   await renderRouter(ROUTES, { initialUrl });
   return realtime;
 }
+
+let appState: ReturnType<typeof mockAppState>;
+
+/** O sistema muda o estado do app (segundo plano, volta) no instante `at`, que é a hora que o ouvinte lê. */
+async function changeAppState(state: AppStateStatus, at: number) {
+  await act(async () => {
+    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(at);
+    appState.change(state);
+    nowSpy.mockRestore();
+  });
+}
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockInstalledVersion = '0.4.0';
+  useAppVersionLockStore.setState({ requiredVersion: null });
+  mockStoredBiometricsOption = undefined;
+  useBiometricLockStore.setState(useBiometricLockStore.getInitialState());
+  jest.mocked(authenticateAsync).mockReset();
+  appState = mockAppState();
+  mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.noAppSettings);
+});
 
 describe('RootLayout', () => {
   it('Should show the sign-in screen to a signed-out person', async () => {
@@ -121,6 +192,276 @@ describe('RootLayout', () => {
     expect(screen.queryByText('Entrar')).not.toBeOnTheScreen();
   });
 
+  describe('The version lock', () => {
+    it.each([
+      { who: 'an allowed member', ...memberInList },
+      { who: 'a signed-out person', authState: SIGNED_OUT, allowedEmail: null },
+      {
+        who: 'an e-mail outside the allowed list',
+        authState: signedInAuthState(signInWithFakeGoogleScenarios.outsiderSignsIn),
+        allowedEmail: allowedEmailQueryScenarios.emailOutsideList,
+      },
+    ])(
+      'Should show only the update screen to $who when the app is below the minimum',
+      async ({ authState, allowedEmail }) => {
+        mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.minimumVersionSet);
+
+        await renderAppAs(authState, allowedEmail);
+
+        expect(screen.getByText('Atualização obrigatória')).toBeOnTheScreen();
+        expect(screen.queryByText('Página do início')).not.toBeOnTheScreen();
+        expect(screen.queryByText('Entrar')).not.toBeOnTheScreen();
+        expect(screen.queryByText('Sem acesso')).not.toBeOnTheScreen();
+      },
+    );
+
+    it('Should keep an allowed member on the update screen when opening another screen of the app', async () => {
+      mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.minimumVersionSet);
+
+      await renderAppAs(memberInList.authState, memberInList.allowedEmail, '/tags');
+
+      expect(screen.getByText('Atualização obrigatória')).toBeOnTheScreen();
+      expect(screen.queryByText('Página das tags')).not.toBeOnTheScreen();
+    });
+
+    it('Should open the app as before when the installed version is the minimum', async () => {
+      mockInstalledVersion = '0.5.0';
+      mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.minimumVersionSet);
+
+      await renderAppAs(memberInList.authState, memberInList.allowedEmail);
+
+      expect(screen.getByText('Página do início')).toBeOnTheScreen();
+      expect(screen.queryByText('Atualização obrigatória')).not.toBeOnTheScreen();
+    });
+
+    it('Should take an allowed member from the open app to the update screen when the check finds a higher minimum', async () => {
+      await renderAppAs(memberInList.authState, memberInList.allowedEmail);
+      expect(screen.getByText('Página do início')).toBeOnTheScreen();
+
+      mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.minimumVersionSet);
+      await act(async () => checkAppVersion());
+
+      expect(await screen.findByText('Atualização obrigatória')).toBeOnTheScreen();
+      expect(screen.queryByText('Página do início')).not.toBeOnTheScreen();
+    });
+
+    // Quem está logado e cuja leitura do e-mail falha esperaria na splash por 30 s (ou para sempre, sem rede) sobre uma
+    // tela de atualização que não depende do acesso.
+    it('Should show the update screen while the access is still loading', async () => {
+      mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.minimumVersionSet);
+
+      await renderAppAs({ status: 'loading' }, null);
+
+      expect(SplashScreen.hide).toHaveBeenCalled();
+      expect(screen.getByText('Atualização obrigatória')).toBeOnTheScreen();
+      expect(screen.queryByText('Entrar')).not.toBeOnTheScreen();
+    });
+
+    it("Should keep the splash while the access loads when the app isn't locked", async () => {
+      await renderAppAs({ status: 'loading' }, null);
+
+      expect(SplashScreen.hide).not.toHaveBeenCalled();
+    });
+
+    it('Should hold the splash until the first check ends', async () => {
+      let answerCheck!: (minimumVersion: string | null) => void;
+      jest.mocked(findMinimumAppVersionService).mockReturnValue(
+        new Promise((resolve) => {
+          answerCheck = resolve;
+        }),
+      );
+
+      await renderAppAs(memberInList.authState, memberInList.allowedEmail);
+      expect(SplashScreen.hide).not.toHaveBeenCalled();
+
+      await act(async () => answerCheck(null));
+
+      expect(SplashScreen.hide).toHaveBeenCalled();
+    });
+  });
+
+  describe('The biometric lock', () => {
+    const LOCK_MESSAGE = 'Use a digital ou o rosto para abrir o app.';
+    const MINUTE_MS = 60 * 1000;
+    const TEN_MINUTES_MS = 10 * MINUTE_MS;
+    const LEFT_AT = 1_700_000_000_000;
+
+    /** Como o `holdNextPromptOpen`, e a resposta chega dentro de `act`. */
+    function holdNextPromptOpenInAct() {
+      const answer = holdNextPromptOpen();
+      return async (result: LocalAuthenticationResult) => act(async () => answer(result));
+    }
+
+    async function openAppAsMemberWithOptionOn(initialUrl = '/') {
+      mockStoredBiometricsOption = 'true';
+      await renderAppAs(memberInList.authState, memberInList.allowedEmail, initialUrl);
+    }
+
+    it('Should cover the home with the lock screen and ask for the biometrics when the option is on', async () => {
+      holdNextPromptOpen();
+
+      await openAppAsMemberWithOptionOn();
+
+      expect(screen.getByText(LOCK_MESSAGE)).toBeOnTheScreen();
+      expect(screen.getByRole('button', { name: 'Desbloquear' })).toBeOnTheScreen();
+      expect(screen.getByText('Página do início')).toBeOnTheScreen();
+      expect(authenticateAsync).toHaveBeenCalledTimes(1);
+    });
+
+    it('Should open the home when the biometrics succeed', async () => {
+      const answerPrompt = holdNextPromptOpenInAct();
+      await openAppAsMemberWithOptionOn();
+      expect(screen.getByText(LOCK_MESSAGE)).toBeOnTheScreen();
+
+      await answerPrompt({ success: true });
+
+      expect(screen.queryByText(LOCK_MESSAGE)).not.toBeOnTheScreen();
+      expect(screen.getByText('Página do início')).toBeOnTheScreen();
+    });
+
+    it('Should keep the lock screen when the person cancels the prompt', async () => {
+      const answerPrompt = holdNextPromptOpenInAct();
+      await openAppAsMemberWithOptionOn();
+
+      await answerPrompt({ success: false, error: 'user_cancel' });
+
+      expect(screen.getByText(LOCK_MESSAGE)).toBeOnTheScreen();
+      expect(screen.getByRole('button', { name: 'Desbloquear' })).toBeEnabled();
+    });
+
+    it('Should turn the option off and open the app when the phone has no biometrics enrolled anymore', async () => {
+      const answerPrompt = holdNextPromptOpenInAct();
+      await openAppAsMemberWithOptionOn();
+
+      await answerPrompt({ success: false, error: 'not_enrolled' });
+
+      expect(screen.queryByText(LOCK_MESSAGE)).not.toBeOnTheScreen();
+      expect(screen.getByText('Página do início')).toBeOnTheScreen();
+      expect(mockStoredBiometricsOption).toBe('false');
+    });
+
+    it('Should open the app as before when the option is off', async () => {
+      await renderAppAs(memberInList.authState, memberInList.allowedEmail);
+
+      expect(screen.getByText('Página do início')).toBeOnTheScreen();
+      expect(screen.queryByText(LOCK_MESSAGE)).not.toBeOnTheScreen();
+      expect(authenticateAsync).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      { who: 'a signed-out person', authState: SIGNED_OUT, allowedEmail: null, screenText: 'Entrar' },
+      {
+        who: 'an e-mail outside the allowed list',
+        authState: signedInAuthState(signInWithFakeGoogleScenarios.outsiderSignsIn),
+        allowedEmail: allowedEmailQueryScenarios.emailOutsideList,
+        screenText: 'Sem acesso',
+      },
+    ])('Should not lock over the screen of $who', async ({ authState, allowedEmail, screenText }) => {
+      mockStoredBiometricsOption = 'true';
+
+      await renderAppAs(authState, allowedEmail);
+
+      expect(screen.getByText(screenText)).toBeOnTheScreen();
+      expect(screen.queryByText(LOCK_MESSAGE)).not.toBeOnTheScreen();
+      expect(authenticateAsync).not.toHaveBeenCalled();
+    });
+
+    it('Should keep the update screen in front of the lock', async () => {
+      mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.minimumVersionSet);
+
+      await openAppAsMemberWithOptionOn();
+
+      expect(screen.getByText('Atualização obrigatória')).toBeOnTheScreen();
+      expect(screen.queryByText(LOCK_MESSAGE)).not.toBeOnTheScreen();
+      expect(authenticateAsync).not.toHaveBeenCalled();
+    });
+
+    describe('When the app returns from the background', () => {
+      async function openUnlockedAppOnTags() {
+        jest.mocked(authenticateAsync).mockResolvedValueOnce({ success: true });
+        await openAppAsMemberWithOptionOn();
+        await act(async () => router.push('/tags'));
+        expect(screen.getByText('Página das tags')).toBeOnTheScreen();
+        expect(screen.queryByText(LOCK_MESSAGE)).not.toBeOnTheScreen();
+      }
+
+      it.each([
+        { away: '9 min 59 s', awayMs: TEN_MINUTES_MS - 1000, shouldLock: false },
+        { away: '10 min', awayMs: TEN_MINUTES_MS, shouldLock: true },
+      ])(
+        'Should lock over the open screen only if it was away at least 10 minutes ($away)',
+        async ({ awayMs, shouldLock }) => {
+          await openUnlockedAppOnTags();
+          holdNextPromptOpen();
+
+          await changeAppState('background', LEFT_AT);
+          await changeAppState('active', LEFT_AT + awayMs);
+
+          expect(screen.queryByText(LOCK_MESSAGE) !== null).toBe(shouldLock);
+          expect(authenticateAsync).toHaveBeenCalledTimes(shouldLock ? 2 : 1);
+          expect(screen.getByText('Página das tags')).toBeOnTheScreen();
+          expect(screen).toHavePathname('/tags');
+        },
+      );
+
+      it('Should bring the person back to the same screen when unlocking after the return', async () => {
+        await openUnlockedAppOnTags();
+        const answerPrompt = holdNextPromptOpenInAct();
+        await changeAppState('background', LEFT_AT);
+        await changeAppState('active', LEFT_AT + TEN_MINUTES_MS);
+        expect(screen.getByText(LOCK_MESSAGE)).toBeOnTheScreen();
+
+        await answerPrompt({ success: true });
+
+        expect(screen.queryByText(LOCK_MESSAGE)).not.toBeOnTheScreen();
+        expect(screen).toHavePathname('/tags');
+      });
+
+      // Uma volta que não bloqueou também gasta a saída: um `active` a mais, sem outra ida ao segundo plano, não a julga de novo.
+      it('Should not lock on a later active event after a return that did not lock', async () => {
+        await openUnlockedAppOnTags();
+        await changeAppState('background', LEFT_AT);
+        await changeAppState('active', LEFT_AT + MINUTE_MS);
+
+        await changeAppState('active', LEFT_AT + TEN_MINUTES_MS);
+
+        expect(screen.queryByText(LOCK_MESSAGE)).not.toBeOnTheScreen();
+        expect(authenticateAsync).toHaveBeenCalledTimes(1);
+      });
+
+      // O pedido do sistema pode tirar o app de `active` e devolvê-lo: a mesma saída não pode bloquear de novo.
+      it('Should not lock again when the app becomes active again after the unlock', async () => {
+        await openUnlockedAppOnTags();
+        jest.mocked(authenticateAsync).mockResolvedValueOnce({ success: true });
+        await changeAppState('background', LEFT_AT);
+        await changeAppState('active', LEFT_AT + TEN_MINUTES_MS);
+        expect(authenticateAsync).toHaveBeenCalledTimes(2);
+
+        await changeAppState('active', LEFT_AT + TEN_MINUTES_MS + 1000);
+
+        expect(screen.queryByText(LOCK_MESSAGE)).not.toBeOnTheScreen();
+        expect(authenticateAsync).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    // Quem abre a escolha da conta é o Início, com o app já aberto: aqui o teste faz o mesmo empurrão com o app bloqueado.
+    it('Should keep the share screen under the lock and show it when the app unlocks', async () => {
+      const answerPrompt = holdNextPromptOpenInAct();
+      await openAppAsMemberWithOptionOn();
+
+      await act(async () => router.push('/share-receipt'));
+
+      expect(screen.getByText(LOCK_MESSAGE)).toBeOnTheScreen();
+      expect(screen.getByText('Página de compartilhar')).toBeOnTheScreen();
+
+      await answerPrompt({ success: true });
+
+      expect(screen.queryByText(LOCK_MESSAGE)).not.toBeOnTheScreen();
+      expect(screen.getByText('Página de compartilhar')).toBeOnTheScreen();
+      expect(screen).toHavePathname('/share-receipt');
+    });
+  });
+
   describe('The change-name screen', () => {
     it('Should let a member reach /change-name', async () => {
       await renderAppAs(
@@ -169,6 +510,97 @@ describe('RootLayout', () => {
 
       expect(screen.queryByText(page)).not.toBeOnTheScreen();
       expect(screen.getByText('Entrar')).toBeOnTheScreen();
+    });
+  });
+
+  describe('The screens that open once per tap', () => {
+    const SCREENS = [
+      {
+        name: 'pay',
+        url: '/recurring-bills/internet/pay?month=2026-10',
+        plain: { pathname: '/recurring-bills/[id]/pay', params: { id: 'internet', month: '2026-10' } },
+        shared: { pathname: '/recurring-bills/[id]/pay', params: { id: 'internet', month: '2026-10', shared: '1' } },
+      },
+      {
+        name: 'one-off bill',
+        url: '/one-off-bills/new',
+        plain: { pathname: '/one-off-bills/new' },
+        shared: { pathname: '/one-off-bills/new', params: { shared: '1' } },
+      },
+      {
+        name: 'contribute',
+        url: '/entries/fridge/contribute',
+        plain: { pathname: '/entries/[id]/contribute', params: { id: 'fridge' } },
+        shared: { pathname: '/entries/[id]/contribute', params: { id: 'fridge', shared: '1' } },
+      },
+    ] as const;
+
+    // As que o compartilhamento não abre também abrem por um toque.
+    const RECEIPT_PREVIEW_OF_RECEIPT_A = {
+      pathname: '/receipt-preview',
+      params: { uri: 'file:///recibo-a.jpg', name: 'recibo-a.jpg', type: 'image' },
+    } as const;
+    const RECEIPT_PREVIEW_OF_RECEIPT_B = {
+      pathname: '/receipt-preview',
+      params: { uri: 'file:///recibo-b.jpg', name: 'recibo-b.jpg', type: 'image' },
+    } as const;
+    const TAPPED_ONCE_SCREENS = [
+      ...SCREENS,
+      { name: 'receipt preview', plain: RECEIPT_PREVIEW_OF_RECEIPT_A },
+      { name: 'receipt viewer', plain: { pathname: '/entries/[id]/receipt', params: { id: 'fridge' } } },
+      { name: 'entry details', plain: { pathname: '/entries/[id]', params: { id: 'fridge' } } },
+    ] as const;
+
+    async function renderAppAsMember() {
+      await renderAppAs(
+        signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn),
+        allowedEmailQueryScenarios.emailInList,
+      );
+    }
+
+    // O compartilhamento sempre abre uma tela nova: a que já estava aberta ficou sem o comprovante.
+    it.each(SCREENS)(
+      'Should open a new $name screen for a shared receipt even with the same one open',
+      async ({ url, plain, shared }) => {
+        await renderAppAsMember();
+        await act(async () => router.push(plain));
+        await act(async () => router.push('/share-receipt'));
+        await act(async () => router.push(shared));
+
+        await act(async () => router.back());
+        expect(screen).toHavePathname('/share-receipt');
+        await act(async () => router.back());
+
+        expect(screen).toHavePathnameWithParams(url);
+      },
+    );
+
+    it.each(TAPPED_ONCE_SCREENS)(
+      'Should reuse the $name screen on a second tap without a share',
+      async ({ plain }) => {
+        await renderAppAsMember();
+
+        await act(async () => router.push(plain));
+        await act(async () => router.push(plain));
+        await act(async () => router.back());
+
+        expect(screen.getByText('Página do início')).toBeOnTheScreen();
+      },
+    );
+
+    // O leitor aberto sob o formulário guarda o estado do arquivo dele (falha, página); outro arquivo é outro leitor.
+    it('Should open a new receipt preview for another file', async () => {
+      await renderAppAsMember();
+      await act(async () => router.push(RECEIPT_PREVIEW_OF_RECEIPT_A));
+      await act(async () => router.push('/share-receipt'));
+      await act(async () => router.push(RECEIPT_PREVIEW_OF_RECEIPT_B));
+
+      await act(async () => router.back());
+      expect(screen).toHavePathname('/share-receipt');
+      await act(async () => router.back());
+
+      expect(screen).toHavePathname('/receipt-preview');
+      expect(screen).toHaveSearchParams(RECEIPT_PREVIEW_OF_RECEIPT_A.params);
     });
   });
 

@@ -26,6 +26,19 @@ const threeTags = { service: tagListQueryService, scenario: tagListQueryScenario
 // Ana, Bruno e Clara já entraram; a Elisa ainda não, e não ganha chip.
 const family = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyWithPersonNotEntered };
 const october = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithEntries };
+// Em novembro o mês anterior é outubro, o primeiro do app: os testes da troca para o mês anterior abrem em novembro,
+// porque em outubro o botão está desabilitado.
+const november = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.nextMonthPaidEarly };
+
+/** O botão da linha de uma conta: o rótulo dele é o nome, o texto de apoio e o valor, e este começa pelo nome. */
+const rowOf = (name: string) => screen.getByRole('button', { name: new RegExp(`^${name},`) });
+
+/** O chip "Todos" e os de todas as pessoas, marcados. */
+function expectEveryChipSelected() {
+  for (const name of ['Todos', 'Você', 'Ana', 'Clara']) {
+    expect(screen.getByRole('button', { name })).toBeSelected();
+  }
+}
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -59,7 +72,7 @@ describe('PaymentsPage', () => {
     mockRealtime(october, threeTags, family);
     await render(<PaymentsPage />);
 
-    await userEvent.setup().press(screen.getByRole('button', { name: 'Farmácia' }));
+    await userEvent.setup().press(rowOf('Farmácia'));
 
     expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]', params: { id: 'pharmacy' } });
   });
@@ -154,17 +167,18 @@ describe('PaymentsPage', () => {
   });
 
   it('Should read the previous month when the previous month is pressed', async () => {
-    mockRealtime(october, threeTags, family);
+    jest.setSystemTime(new Date(2026, 10, 25));
+    mockRealtime(november, threeTags, family);
     await render(<PaymentsPage />);
     const user = userEvent.setup();
 
-    mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.previousMonthWithEntries }, threeTags, family);
+    mockRealtime(october, threeTags, family);
     await user.press(screen.getByRole('button', { name: 'Mês anterior' }));
 
-    expect(screen.getByText('Setembro de 2026')).toBeOnTheScreen();
-    expect(screen.getByText('Gráfica')).toBeOnTheScreen();
-    expect(screen.getByText('Sua parte em setembro')).toBeOnTheScreen();
-    expect(screen.queryByText('Farmácia')).not.toBeOnTheScreen();
+    expect(screen.getByText('Outubro de 2026')).toBeOnTheScreen();
+    expect(screen.getByText('Farmácia')).toBeOnTheScreen();
+    expect(screen.getByText('Sua parte em outubro')).toBeOnTheScreen();
+    expect(screen.queryByText('Condomínio')).not.toBeOnTheScreen();
   });
 
   // O pagamento do próximo mês feito antes de o mês começar aparece lá, não no mês em que foi feito.
@@ -173,7 +187,7 @@ describe('PaymentsPage', () => {
     await render(<PaymentsPage />);
     const user = userEvent.setup();
 
-    mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.nextMonthPaidEarly }, threeTags, family);
+    mockRealtime(november, threeTags, family);
     await user.press(screen.getByRole('button', { name: 'Próximo mês' }));
 
     expect(screen.getByText('Novembro de 2026')).toBeOnTheScreen();
@@ -224,6 +238,8 @@ describe('PaymentsPage', () => {
       await render(<PaymentsPage />);
 
       expect(screen.getByRole('button', { name: 'Você' })).toBeSelected();
+      expect(screen.getByRole('button', { name: 'Todos' })).not.toBeSelected();
+      expect(screen.getByRole('button', { name: 'Ana' })).not.toBeSelected();
       const chips = screen.getAllByRole('button', { name: /^(Todos|Você|Ana|Clara|Elisa.*)$/ });
       expect(chips.map((chip) => chip.props.accessibilityLabel)).toEqual(['Todos', 'Você', 'Ana', 'Clara']);
     });
@@ -234,7 +250,7 @@ describe('PaymentsPage', () => {
 
       await userEvent.setup().press(screen.getByRole('button', { name: 'Todos' }));
 
-      expect(screen.getByRole('button', { name: 'Todos' })).toBeSelected();
+      expectEveryChipSelected();
       const headers = screen.getAllByText(/^(Casa|Serviços|Sem tag)$/).map((node) => node.props.children);
       expect(headers).toEqual(['Casa', 'Serviços', 'Sem tag']);
       expect(screen.getByText('12/10 · avulsa · Bruno')).toBeOnTheScreen();
@@ -264,13 +280,17 @@ describe('PaymentsPage', () => {
       expect(screen.getByText('Quando você registrar um pagamento ou uma conta avulsa, ele aparece aqui.')).toBeOnTheScreen();
     });
 
-    it('Should show the entries of another member, grouped by tag, when their chip is pressed', async () => {
+    // O chip de outra pessoa marca mais uma, em vez de trocar a escolhida: para ver só a Ana, desmarca-se o "Você".
+    it('Should show only the entries of another member, grouped by tag, when hers is the only chip marked', async () => {
       mockRealtime(october, threeTags, family);
       await render(<PaymentsPage />);
+      const user = userEvent.setup();
 
-      await userEvent.setup().press(screen.getByRole('button', { name: 'Ana' }));
+      await user.press(screen.getByRole('button', { name: 'Ana' }));
+      await user.press(screen.getByRole('button', { name: 'Você' }));
 
       expect(screen.getByRole('button', { name: 'Ana' })).toBeSelected();
+      expect(screen.getByRole('button', { name: 'Você' })).not.toBeSelected();
       // Ana: Mercado (Serviços, R$ 250,00) e Estacionamento (sem tag, R$ 15,00), de R$ 354,90 da família.
       expect(screen.getByText('Parte de Ana em outubro')).toBeOnTheScreen();
       expect(screen.getByText('2 lançamentos · 74% do que a família pagou')).toBeOnTheScreen();
@@ -287,7 +307,7 @@ describe('PaymentsPage', () => {
       const user = userEvent.setup();
 
       await user.press(screen.getByRole('button', { name: 'Ana' }));
-      await user.press(screen.getByRole('button', { name: 'Mercado' }));
+      await user.press(rowOf('Mercado'));
 
       expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]', params: { id: 'market' } });
     });
@@ -295,40 +315,74 @@ describe('PaymentsPage', () => {
     it('Should say another member has no entry in the month, without the text for whoever is signed in', async () => {
       mockRealtime(october, threeTags, family);
       await render(<PaymentsPage />);
+      const user = userEvent.setup();
 
-      await userEvent.setup().press(screen.getByRole('button', { name: 'Clara' }));
+      await user.press(screen.getByRole('button', { name: 'Clara' }));
+      await user.press(screen.getByRole('button', { name: 'Você' }));
 
       expect(screen.getByText('Nenhum pagamento de Clara em outubro')).toBeOnTheScreen();
       expect(screen.queryByText(/Quando você registrar/)).not.toBeOnTheScreen();
       expect(screen.queryByText('Parte de Clara em outubro')).not.toBeOnTheScreen();
     });
 
-    it('Should keep the chosen person when the month changes', async () => {
+    it('Should add the person of the chip pressed to the ones marked, and sum their parts under their names', async () => {
+      mockRealtime(october, threeTags, family);
+      await render(<PaymentsPage />);
+
+      await userEvent.setup().press(screen.getByRole('button', { name: 'Ana' }));
+
+      expect(screen.getByRole('button', { name: 'Você' })).toBeSelected();
+      expect(screen.getByRole('button', { name: 'Ana' })).toBeSelected();
+      expect(screen.getByRole('button', { name: 'Todos' })).not.toBeSelected();
+      // Bruno: Farmácia (R$ 89,90); Ana: Mercado (R$ 250,00) e Estacionamento (R$ 15,00); R$ 354,90 da família.
+      expect(screen.getByText('Partes de Você e Ana em outubro')).toBeOnTheScreen();
+      expect(screen.getByText('R$ 354,90')).toBeOnTheScreen();
+      expect(screen.getByText('3 lançamentos · 100% do que a família pagou')).toBeOnTheScreen();
+    });
+
+    // Se a última marcada desmarcasse, o "Você" voltaria a valer no lugar da Ana, e o toque trocaria de pessoa.
+    it('Should keep the last marked chip marked when it is pressed, whoever it is', async () => {
       mockRealtime(october, threeTags, family);
       await render(<PaymentsPage />);
       const user = userEvent.setup();
       await user.press(screen.getByRole('button', { name: 'Ana' }));
+      await user.press(screen.getByRole('button', { name: 'Você' }));
 
-      mockRealtime(
-        { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.previousMonthWithEntries },
-        threeTags,
-        family,
-      );
+      await user.press(screen.getByRole('button', { name: 'Ana' }));
+
+      expect(screen.getByRole('button', { name: 'Ana' })).toBeSelected();
+      expect(screen.getByRole('button', { name: 'Você' })).not.toBeSelected();
+      expect(screen.getByText('Parte de Ana em outubro')).toBeOnTheScreen();
+    });
+
+    it('Should keep the marked chips when the month changes', async () => {
+      jest.setSystemTime(new Date(2026, 10, 25));
+      mockRealtime(november, threeTags, family);
+      await render(<PaymentsPage />);
+      const user = userEvent.setup();
+      await user.press(screen.getByRole('button', { name: 'Ana' }));
+
+      mockRealtime(october, threeTags, family);
       await user.press(screen.getByRole('button', { name: 'Mês anterior' }));
 
-      // Setembro só tem a Gráfica, do Bruno.
+      // Outubro tem o Mercado e o Estacionamento da Ana e a Farmácia do Bruno.
       expect(screen.getByRole('button', { name: 'Ana' })).toBeSelected();
-      expect(screen.getByText('Nenhum pagamento de Ana em setembro')).toBeOnTheScreen();
+      expect(screen.getByRole('button', { name: 'Você' })).toBeSelected();
+      expect(screen.getByText('Partes de Você e Ana em outubro')).toBeOnTheScreen();
+      expect(screen.getByText('Mercado')).toBeOnTheScreen();
+      expect(screen.getByText('Farmácia')).toBeOnTheScreen();
     });
   });
 
-  it('Should go back to "Você" when the chosen person leaves the list while the screen is open', async () => {
+  it('Should go back to "Você" when the only marked person leaves the list while the screen is open', async () => {
     const realtime = mockRealtime(october, threeTags, {
       service: allowedEmailListQueryService,
       scenario: allowedEmailListQueryScenarios.personRemovedWhileOpen,
     });
     await render(<PaymentsPage />);
-    await userEvent.setup().press(screen.getByRole('button', { name: 'Clara' }));
+    const user = userEvent.setup();
+    await user.press(screen.getByRole('button', { name: 'Clara' }));
+    await user.press(screen.getByRole('button', { name: 'Você' }));
     expect(screen.getByText('Nenhum pagamento de Clara em outubro')).toBeOnTheScreen();
 
     await act(async () => realtime.applyChange(allowedEmailListQueryService));
@@ -364,7 +418,8 @@ describe('PaymentsPage', () => {
     expect(router.push).toHaveBeenCalledWith('/one-off-bills/new');
   });
 
-  // A Luz de R$ 187,35 que o Bruno pagou, com R$ 40,00 da Ana; o Bruno está logado.
+  // A Luz de R$ 187,35 que o Bruno pagou, com R$ 40,00 da Ana; o Bruno está logado. Cada parte é uma linha: a do
+  // Bruno, R$ 147,35, e a contribuição da Ana, R$ 40,00.
   describe('Contributions', () => {
     const lightWithContribution = {
       service: entryMonthQueryService,
@@ -377,43 +432,100 @@ describe('PaymentsPage', () => {
       return userEvent.setup();
     }
 
-    it('Should show each bill once, with the amount paid, under Todos', async () => {
+    it('Should mark everybody under Todos and show the Luz twice, the part of who paid and the contribution', async () => {
       const user = await renderWithContribution();
 
       await user.press(screen.getByRole('button', { name: 'Todos' }));
 
-      expect(screen.getAllByText('Luz')).toHaveLength(1);
-      expect(screen.getAllByText('R$ 187,35').length).toBeGreaterThan(0);
-      expect(screen.getByText('pago em 10/10 · Bruno · previsto R$ 210,00')).toBeOnTheScreen();
-      expect(screen.queryByText('Sua parte')).not.toBeOnTheScreen();
-      expect(screen.queryByText('Ana · contribuição')).not.toBeOnTheScreen();
+      expectEveryChipSelected();
+      expect(screen.getAllByText('Luz')).toHaveLength(2);
+      expect(screen.getByText('pago em 10/10 · parte de Bruno')).toBeOnTheScreen();
+      expect(screen.getByText('R$ 147,35')).toBeOnTheScreen();
+      expect(screen.getByText('contribuição em 11/10 · Ana')).toBeOnTheScreen();
+      expect(screen.getByText('R$ 40,00')).toBeOnTheScreen();
+      // Sem a porcentagem: a família sobre ela mesma seria 100%. O cartão e o total da tag somam as duas linhas.
+      expect(screen.getByText('A família registrou em outubro')).toBeOnTheScreen();
+      expect(screen.getByText('2 lançamentos')).toBeOnTheScreen();
+      expect(screen.getAllByText('R$ 187,35')).toHaveLength(2);
     });
 
-    it("Should expand an entry with the member's part and the others' under a member chip, and total the member's parts on the card", async () => {
+    it('Should show only the part of who is signed in, without the contribution, when only "Você" is marked', async () => {
       await renderWithContribution();
 
       expect(screen.getByText('Sua parte em outubro')).toBeOnTheScreen();
       expect(screen.getByText('1 lançamento · 78% do que a família pagou')).toBeOnTheScreen();
-      expect(screen.getByText('Sua parte')).toBeOnTheScreen();
-      expect(screen.getByText('Ana · contribuição')).toBeOnTheScreen();
-      expect(screen.getByText('R$ 40,00')).toBeOnTheScreen();
-      // O cartão, o total da tag e a parte: os três são a parte do Bruno.
+      expect(screen.getAllByText('Luz')).toHaveLength(1);
+      expect(screen.getByText('pago em 10/10 · sua parte')).toBeOnTheScreen();
+      // O cartão, o total da tag e a linha: os três são a parte do Bruno.
       expect(screen.getAllByText('R$ 147,35')).toHaveLength(3);
+      expect(screen.queryByText('R$ 40,00')).not.toBeOnTheScreen();
+      expect(screen.queryByText(/contribuição em/)).not.toBeOnTheScreen();
     });
 
-    it("Should show a contribution as the member's part of the payer's entry", async () => {
+    it('Should sum the two parts on the card when "Você" and Ana are marked', async () => {
       const user = await renderWithContribution();
 
       await user.press(screen.getByRole('button', { name: 'Ana' }));
 
-      expect(screen.getByText('Parte de Ana em outubro')).toBeOnTheScreen();
-      expect(screen.getByText('paga por Bruno em 10/10')).toBeOnTheScreen();
-      expect(screen.getByText('Ana · contribuição')).toBeOnTheScreen();
-      expect(screen.getByText('Bruno · pagou a conta')).toBeOnTheScreen();
-      expect(screen.getAllByText('R$ 40,00').length).toBeGreaterThan(1);
+      expect(screen.getByText('Partes de Você e Ana em outubro')).toBeOnTheScreen();
+      // Os R$ 147,35 do Bruno e os R$ 40,00 da Ana são os R$ 187,35 que a família pagou: o cartão e o total da tag.
+      expect(screen.getAllByText('R$ 187,35')).toHaveLength(2);
+      expect(screen.getByText('2 lançamentos · 100% do que a família pagou')).toBeOnTheScreen();
+      expect(screen.getAllByText('Luz')).toHaveLength(2);
     });
 
-    it('Should show a lone contribution to a month with no owner under the member chip, and open it', async () => {
+    it('Should show only the contribution, in the tag of the bill, when only the contributor is marked', async () => {
+      const user = await renderWithContribution();
+
+      await user.press(screen.getByRole('button', { name: 'Ana' }));
+      await user.press(screen.getByRole('button', { name: 'Você' }));
+
+      expect(screen.getByText('Parte de Ana em outubro')).toBeOnTheScreen();
+      expect(screen.getByText('1 lançamento · 21% do que a família pagou')).toBeOnTheScreen();
+      expect(screen.getByText('Serviços')).toBeOnTheScreen();
+      expect(screen.getAllByText('Luz')).toHaveLength(1);
+      expect(screen.getByText('contribuição em 11/10 · para Bruno')).toBeOnTheScreen();
+      expect(screen.getAllByText('R$ 40,00')).toHaveLength(3);
+      expect(screen.queryByText(/sua parte|parte de Bruno/)).not.toBeOnTheScreen();
+    });
+
+    it('Should open the details of the contribution from its row and those of the payment from the row of the payer', async () => {
+      const user = await renderWithContribution();
+      await user.press(screen.getByRole('button', { name: 'Todos' }));
+      // As duas partes têm o mesmo nome: o rótulo de cada botão traz o apoio e o valor.
+      const paymentRow = screen.getByRole('button', { name: 'Luz, pago em 10/10 · parte de Bruno, R$ 147,35' });
+      const contributionRow = screen.getByRole('button', { name: 'Luz, contribuição em 11/10 · Ana, R$ 40,00' });
+
+      await user.press(contributionRow);
+      expect(router.push).toHaveBeenLastCalledWith({ pathname: '/entries/[id]', params: { id: 'c-ana' } });
+
+      await user.press(paymentRow);
+      expect(router.push).toHaveBeenLastCalledWith({
+        pathname: '/entries/[id]',
+        params: { id: '2026-10_electricity' },
+      });
+    });
+
+    // A Ana cobriu a Luz inteira do Bruno: a parte dele é R$ 0,00, mas é o pagamento que ele registrou, e ele o
+    // edita ou apaga por essa linha.
+    it("Should keep the payer's part at zero, opening the payment, when the contributions cover the whole bill", async () => {
+      mockRealtime(
+        { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithFullyContributedPayment },
+        threeTags,
+        family,
+      );
+      await render(<PaymentsPage />);
+
+      expect(screen.getByText('Sua parte em outubro')).toBeOnTheScreen();
+      expect(screen.getByText('1 lançamento · 0% do que a família pagou')).toBeOnTheScreen();
+      // O cartão, o total da tag e a linha.
+      expect(screen.getAllByText('R$ 0,00')).toHaveLength(3);
+      await userEvent.setup().press(screen.getByRole('button', { name: 'Luz, pago em 10/10 · sua parte, R$ 0,00' }));
+
+      expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]', params: { id: '2026-10_electricity' } });
+    });
+
+    it('Should show the lone contribution to a month with no owner under the chip of who contributed, and open it', async () => {
       mockRealtime(
         { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithContributionToUnownedPayment },
         threeTags,
@@ -422,17 +534,12 @@ describe('PaymentsPage', () => {
       await render(<PaymentsPage />);
       const user = userEvent.setup();
       await user.press(screen.getByRole('button', { name: 'Ana' }));
+      await user.press(screen.getByRole('button', { name: 'Você' }));
 
-      await user.press(screen.getByRole('button', { name: 'Ana · contribuição, R$ 50,00' }));
-
-      expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]', params: { id: 'c-ana' } });
-    });
-
-    it("Should open the contribution's details from the member's part under their chip", async () => {
-      const user = await renderWithContribution();
-      await user.press(screen.getByRole('button', { name: 'Ana' }));
-
-      await user.press(screen.getByRole('button', { name: 'Ana · contribuição, R$ 40,00' }));
+      expect(screen.getByText('Parte de Ana em outubro')).toBeOnTheScreen();
+      expect(screen.getByText('contribuição em 11/10')).toBeOnTheScreen();
+      expect(screen.getAllByText('R$ 50,00')).toHaveLength(3);
+      await user.press(rowOf('Internet'));
 
       expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]', params: { id: 'c-ana' } });
     });

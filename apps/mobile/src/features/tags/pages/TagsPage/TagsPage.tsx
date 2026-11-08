@@ -13,7 +13,7 @@ import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { oneOffBillTagIdsQueryService } from '@/shared/services/entry/query/oneOffBillTagIdsQueryService';
 import { recurringBillListQueryService } from '@/shared/services/recurringBill/query/recurringBillListQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
-import { tagColorRoles } from '@/shared/utils/tag/tagColorRoles';
+import { tagColorRole } from '@/shared/utils/tag/tagColorRole';
 
 import { tagUsageParts } from '@/features/tags/utils/tagUsageParts';
 
@@ -48,7 +48,6 @@ export function TagsPage() {
         {tags ? (
           <View>
             {tags.map((tag) => {
-              const colors = tagColorRoles(tag.color);
               // Sem as duas leituras, o apoio fica de fora: "Sem uso" seria um palpite.
               const parts = bills && oneOffTagIds ? tagUsageParts(bills, oneOffTagIds, tag.id) : null;
               return (
@@ -57,8 +56,8 @@ export function TagsPage() {
                   icon={Tag}
                   title={tag.name}
                   support={parts === null ? undefined : parts.length === 0 ? 'Sem uso' : parts.join(' · ')}
-                  markColor={colors.containerRole}
-                  iconColor={colors.onContainerRole}
+                  markColor={tagColorRole(tag.color)}
+                  iconColor="onTag"
                   onPress={() => router.push(`/tags/${tag.id}`)}
                 />
               );

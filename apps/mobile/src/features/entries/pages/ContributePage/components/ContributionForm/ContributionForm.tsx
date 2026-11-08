@@ -1,4 +1,3 @@
-import { useWatch } from 'react-hook-form';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
@@ -34,9 +33,9 @@ export interface IContributionFormProps {
 }
 
 /**
- * A contribuição num lançamento já registrado, com ele no topo: de quem é, o valor pago e com quanto quem pagou fica.
- * Embaixo, quanto a pessoa contribuiu (sem passar do que falta), o comprovante e o aviso, que diz com quanto quem pagou
- * passa a ficar. O pagamento sem dono não tem o limite: as contribuições podem passar do previsto.
+ * A contribuição num lançamento já registrado, com ele no topo: de quem é e o valor pago. Embaixo, quanto a pessoa
+ * contribuiu (sem passar do que falta), o comprovante e o aviso. O pagamento sem dono não tem o limite: as
+ * contribuições podem passar do previsto.
  */
 export function ContributionForm({
   target,
@@ -53,7 +52,6 @@ export function ContributionForm({
     { amountCents: null, receipt: initialReceipt },
   );
   const { control, handleSubmit, formState } = form;
-  const amountCents = useWatch({ control, name: 'amountCents' });
 
   // O schema já recusou o valor e o comprovante vazios.
   const submit = handleSubmit((values) =>
@@ -72,11 +70,8 @@ export function ContributionForm({
   const amountLine =
     payerName === null
       ? `previsto ${formatCents(target.kind === 'recurringPayment' ? target.expectedAmountCents : targetAmountCents)}`
-      : `${formatCents(targetAmountCents)} · ${payerName} fica com ${formatCents(payerPartCents)}`;
-  const consequence =
-    payerName === null
-      ? 'A conta continua a pagar pelo que faltar.'
-      : `${payerName} passa a ficar com ${formatCents(payerPartCents - (amountCents ?? 0))}.`;
+      : formatCents(targetAmountCents);
+  const consequence = payerName === null ? 'A conta continua a pagar pelo que faltar.' : undefined;
 
   return (
     <View style={styles.form}>

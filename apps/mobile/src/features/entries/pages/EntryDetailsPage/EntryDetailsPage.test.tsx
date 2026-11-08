@@ -273,8 +273,8 @@ describe('EntryDetailsPage', () => {
       expect(screen.getByText('R$ 147,35')).toBeOnTheScreen();
       expect(screen.getByRole('header', { name: 'Contribuições' })).toBeOnTheScreen();
       expect(screen.getByText('(R$ 40,00)')).toBeOnTheScreen();
-      expect(screen.getByText('Ana · 11/10 · R$ 40,00')).toBeOnTheScreen();
-      expect(screen.getByText('pix-luz-ana.jpg')).toBeOnTheScreen();
+      expect(screen.getByText('Ana · 11/10')).toBeOnTheScreen();
+      expect(screen.getByText('R$ 40,00')).toBeOnTheScreen();
     });
 
     it('Should not offer Contribuir to whoever registered the entry, and keep Excluir off while it has contributions', async () => {
@@ -312,7 +312,7 @@ describe('EntryDetailsPage', () => {
       expect(screen.getByRole('button', { name: 'Excluir' })).toBeDisabled();
     });
 
-    it("Should open only the receipt from a contribution in an entry's details", async () => {
+    it("Should offer no Ver for a contribution in an entry's details: the entry's own receipt is the only one", async () => {
       const { user } = await renderDetails(
         payment,
         pdfReceipt,
@@ -322,20 +322,24 @@ describe('EntryDetailsPage', () => {
         monthWithContribution,
       );
 
-      await user.press(screen.getByRole('button', { name: /^Comprovante: pix-luz-ana.jpg/ }));
+      expect(screen.queryByText('pix-luz-ana.jpg')).not.toBeOnTheScreen();
+      const receipts = screen.getAllByRole('button', { name: /^Comprovante:/ });
+      expect(receipts).toHaveLength(1);
+      await user.press(receipts[0]);
 
       expect(router.push).toHaveBeenCalledTimes(1);
-      expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]/receipt', params: { id: 'c-ana' } });
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/entries/[id]/receipt',
+        params: { id: '2026-10_electricity' },
+      });
     });
 
     describe('A bill paid only by contributions', () => {
       const reachedRent = { service: entryQueryService, scenario: entryQueryScenarios.reachedUnownedPayment };
       const november = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithContributions };
-      // Os comprovantes das contribuições ainda carregam: a folha não depende deles.
-      const receiptsLoading = { service: receiptFileQueryService, status: 'loading' as const };
 
       it('Should disable Contribuir when the contributions reached the expected amount, and say why', async () => {
-        await renderDetails(reachedRent, receiptsLoading, family, threeTags, november);
+        await renderDetails(reachedRent, family, threeTags, november);
 
         expect(screen.getByText('R$ 2.000,00')).toBeOnTheScreen();
         expect(screen.getByText('Chegaram ao previsto, então não dá para contribuir mais.')).toBeOnTheScreen();
@@ -344,8 +348,18 @@ describe('EntryDetailsPage', () => {
         expect(screen.queryByRole('button', { name: 'Excluir' })).not.toBeOnTheScreen();
       });
 
+      it('Should list each contribution as a text line, with no receipt of its own', async () => {
+        await renderDetails(reachedRent, family, threeTags, november);
+
+        // O Bruno contribuiu no dia 4, e a Carla, que a lista da família não tem (então "Alguém"), no dia 5.
+        expect(screen.getByText('Bruno · 04/11')).toBeOnTheScreen();
+        expect(screen.getByText('Alguém · 05/11')).toBeOnTheScreen();
+        expect(screen.getAllByText('R$ 1.000,00')).toHaveLength(2);
+        expect(screen.queryAllByRole('button', { name: /^Comprovante:/ })).toHaveLength(0);
+      });
+
       it('Should open the payment of the month from "Anexar o comprovante da conta"', async () => {
-        const { user } = await renderDetails(reachedRent, receiptsLoading, family, threeTags, november);
+        const { user } = await renderDetails(reachedRent, family, threeTags, november);
 
         await user.press(screen.getByRole('button', { name: 'Anexar o comprovante da conta' }));
 
@@ -358,10 +372,35 @@ describe('EntryDetailsPage', () => {
 
     describe("A contribution's own details", () => {
       const contribution = { service: entryQueryService, scenario: entryQueryScenarios.contribution };
+      const contributionToUnownedPayment = {
+        service: entryQueryService,
+        scenario: entryQueryScenarios.contributionToUnownedPayment,
+      };
+      const monthWithContributionToUnownedPayment = {
+        service: entryMonthQueryService,
+        scenario: entryMonthQueryScenarios.monthWithContributionToUnownedPayment,
+      };
+      const contributionToOneOffBill = {
+        service: entryQueryService,
+        scenario: entryQueryScenarios.contributionToOneOffBill,
+      };
+      const monthWithContributionToOneOffBill = {
+        service: entryMonthQueryService,
+        scenario: entryMonthQueryScenarios.monthWithContributionToOneOffBill,
+      };
+
+      // A folha da contribuição da Ana na Luz do Bruno, com o comprovante dela e o do pagamento; `overrides` troca a
+      // contribuição, o mês e o comprovante da conta.
+      function renderContribution(
+        overrides: { entry?: IEntryMock; month?: IRealtimeMock; billReceipt?: IRealtimeMock } = {},
+      ) {
+        const { entry = contribution, month = monthWithContribution, billReceipt = pdfReceipt } = overrides;
+        return renderDetails(entry, contributionReceipt, billReceipt, family, threeTags, month);
+      }
 
       it('Should show the contribution with the payment sheet, with Alterar and Excluir for its author', async () => {
         jest.mocked(useAuthState).mockReturnValue(signedInAuthState(ana));
-        await renderDetails(contribution, contributionReceipt, family, threeTags, monthWithContribution);
+        await renderContribution();
 
         expect(screen.getByText('Luz')).toBeOnTheScreen();
         expect(screen.getByText('Contribuição em outubro de 2026')).toBeOnTheScreen();
@@ -374,19 +413,59 @@ describe('EntryDetailsPage', () => {
       });
 
       it('Should say the bill is still to pay when the contribution went to a month with no owner', async () => {
-        await renderDetails(
-          { service: entryQueryService, scenario: entryQueryScenarios.contributionToUnownedPayment },
-          contributionReceipt,
-          family,
-          threeTags,
-          { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithContributionToUnownedPayment },
-        );
+        await renderContribution({ entry: contributionToUnownedPayment, month: monthWithContributionToUnownedPayment });
 
         expect(screen.getByText('na conta Internet de R$ 120,00, ainda a pagar')).toBeOnTheScreen();
       });
 
+      it("Should show the contribution's receipt and then the payment's, each with its heading", async () => {
+        await renderContribution();
+
+        expect(screen.getByText('Comprovante da contribuição')).toBeOnTheScreen();
+        expect(screen.getByText('Comprovante do pagamento')).toBeOnTheScreen();
+        const receipts = screen.getAllByRole('button', { name: /^Comprovante:/ });
+        expect(receipts).toHaveLength(2);
+        expect(receipts[0]).toHaveAccessibleName('Comprovante: pix-luz-ana.jpg. Ver');
+        expect(receipts[1]).toHaveAccessibleName('Comprovante: comprovante-luz.pdf. Ver');
+      });
+
+      it("Should call the second receipt the one-off bill's when the contribution went to a one-off bill", async () => {
+        await renderContribution({
+          entry: contributionToOneOffBill,
+          month: monthWithContributionToOneOffBill,
+          billReceipt: imageReceipt,
+        });
+
+        expect(screen.getByText('na conta Conserto da geladeira de R$ 350,00, paga por Bruno')).toBeOnTheScreen();
+        expect(screen.getByText('Comprovante da contribuição')).toBeOnTheScreen();
+        expect(screen.getByText('Comprovante da conta avulsa')).toBeOnTheScreen();
+        expect(screen.queryByText('Comprovante do pagamento')).not.toBeOnTheScreen();
+      });
+
+      it('Should open each receipt with the id of the entry it belongs to', async () => {
+        const { user } = await renderContribution();
+
+        await user.press(screen.getByRole('button', { name: /^Comprovante: pix-luz-ana.jpg/ }));
+        expect(router.push).toHaveBeenLastCalledWith({ pathname: '/entries/[id]/receipt', params: { id: 'c-ana' } });
+
+        await user.press(screen.getByRole('button', { name: /^Comprovante: comprovante-luz.pdf/ }));
+        expect(router.push).toHaveBeenLastCalledWith({
+          pathname: '/entries/[id]/receipt',
+          params: { id: '2026-10_electricity' },
+        });
+        expect(router.push).toHaveBeenCalledTimes(2);
+      });
+
+      it("Should show only the contribution's receipt when the payment it goes to has no owner", async () => {
+        await renderContribution({ entry: contributionToUnownedPayment, month: monthWithContributionToUnownedPayment });
+
+        expect(screen.getByText('Comprovante da contribuição')).toBeOnTheScreen();
+        expect(screen.queryByText('Comprovante do pagamento')).not.toBeOnTheScreen();
+        expect(screen.getAllByRole('button', { name: /^Comprovante:/ })).toHaveLength(1);
+      });
+
       it('Should say who can change it to another member', async () => {
-        await renderDetails(contribution, contributionReceipt, family, threeTags, monthWithContribution);
+        await renderContribution();
 
         expect(screen.getByText('Só Ana pode alterar ou excluir esta contribuição.')).toBeOnTheScreen();
         expect(screen.queryByRole('button', { name: 'Alterar' })).not.toBeOnTheScreen();
@@ -396,13 +475,7 @@ describe('EntryDetailsPage', () => {
         jest.mocked(useAuthState).mockReturnValue(signedInAuthState(ana));
         const deletion = deleteEntryScenarios.memberDeletesContributionToPaidEntry;
         mockServiceScenario(deleteEntryService, deletion);
-        const { user } = await renderDetails(
-          contribution,
-          contributionReceipt,
-          family,
-          threeTags,
-          monthWithContribution,
-        );
+        const { user } = await renderContribution();
 
         await confirmDeletion(user);
 

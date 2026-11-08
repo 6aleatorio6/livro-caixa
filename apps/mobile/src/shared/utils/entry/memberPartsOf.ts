@@ -7,6 +7,9 @@ import { sumCents } from '@/shared/utils/entry/sumCents';
  * A parte de cada membro em cada conta dos lançamentos: quem pagou fica com o valor pago menos as contribuições, e
  * cada contribuinte com a sua. O pagamento sem dono não dá parte a ninguém; a contribuição cujo lançamento não está
  * na lista também não conta.
+ *
+ * A ordem é garantida: as contas na ordem recebida e, em cada uma, a parte de quem pagou primeiro e depois as
+ * contribuições, da mais antiga para a mais nova.
  */
 export function memberPartsOf(entries: IEntry[]): IMemberPart[] {
   return entries.flatMap((entry): IMemberPart[] => {

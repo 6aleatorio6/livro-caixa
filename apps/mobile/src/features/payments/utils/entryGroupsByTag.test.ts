@@ -1,3 +1,4 @@
+import { contributionOf } from '@/shared/testing/contributionOf';
 import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { ITag } from '@/shared/types/tag/Tag';
 
@@ -10,7 +11,7 @@ const water = tag('water', 'Água');
 const home = tag('home', 'Casa');
 const utilities = tag('utilities', 'Serviços');
 
-// A linha de uma conta avulsa sem contribuições: ela conta inteira na lista.
+// A linha de uma conta avulsa sem contribuições: a parte de quem pagou é a conta inteira.
 const oneOff = (id: string, tagId: string | null, amountCents: number): IPaymentRow => {
   const entry: IOwnedEntry = {
     id,
@@ -23,7 +24,7 @@ const oneOff = (id: string, tagId: string | null, amountCents: number): IPayment
     paidBy: 'uid-bruno',
     receiptFileId: 'f1',
   };
-  return { entry, amountCents, countedCents: amountCents, parts: [] };
+  return { key: `${id}:uid-bruno`, entry, uid: 'uid-bruno', amountCents, contribution: null };
 };
 
 describe('entryGroupsByTag', () => {
@@ -60,9 +61,19 @@ describe('entryGroupsByTag', () => {
 });
 
 describe('entryGroupsByTag, with parts', () => {
-  it('Should sum what each row counts in the list, not the amount paid', () => {
-    const row = { ...oneOff('light', 'home', 18735), countedCents: 14735 };
+  // A Luz de R$ 187,35 da Ana, com R$ 40,00 do Bruno: as duas linhas são do mesmo grupo e somam o que foi pago.
+  it('Should sum the amount of each row, so the parts of one bill add up to the amount paid', () => {
+    const payerPart = { ...oneOff('light', 'home', 18735), uid: 'uid-ana', amountCents: 14735 };
+    const contribution = contributionOf('light', 'uid-bruno', 4000);
+    const contributionPart = {
+      ...oneOff('light', 'home', 18735),
+      key: contribution.id,
+      contribution,
+      amountCents: 4000,
+    };
 
-    expect(entryGroupsByTag([row], [home])).toEqual([{ tag: home, totalCents: 14735, rows: [row] }]);
+    expect(entryGroupsByTag([payerPart, contributionPart], [home])).toEqual([
+      { tag: home, totalCents: 18735, rows: [payerPart, contributionPart] },
+    ]);
   });
 });

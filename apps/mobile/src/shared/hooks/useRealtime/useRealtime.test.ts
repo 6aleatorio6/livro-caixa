@@ -64,6 +64,20 @@ describe('useRealtime', () => {
     expect(result.current).toEqual({ status: 'success', data: true });
   });
 
+  // O filtro de mês do compartilhar conta com isto: um toque durante a troca não usa as linhas do mês anterior.
+  it('Should go back to loading when the params change after a success', async () => {
+    const { result, rerender } = await renderHook(
+      ({ email }: { email: string }) => useRealtime(allowedEmailService, { email }),
+      { initialProps: { email: 'ana@gmail.com' } },
+    );
+    await act(async () => deliver(allowedSnapshot()));
+    expect(result.current).toEqual({ status: 'success', data: true });
+
+    await rerender({ email: 'bruno@gmail.com' });
+
+    expect(result.current).toEqual({ status: 'loading', data: null });
+  });
+
   describe('When a listener fails', () => {
     beforeEach(() => {
       jest.useFakeTimers();

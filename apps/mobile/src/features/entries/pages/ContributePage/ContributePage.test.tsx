@@ -88,9 +88,12 @@ describe('ContributePage', () => {
 
     expect(screen.getByText('Pagamento de Bruno · outubro')).toBeOnTheScreen();
     expect(screen.getByText('Luz')).toBeOnTheScreen();
-    expect(screen.getByText('R$ 187,35 · Bruno fica com R$ 147,35')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 187,35')).toBeOnTheScreen();
+    expect(screen.queryByText(/fica com|passa a ficar/)).not.toBeOnTheScreen();
     await typeAmount(user, String(input.amountCents));
-    expect(screen.getByText('Fica no seu nome, Ana. Bruno passa a ficar com R$ 107,35.')).toBeOnTheScreen();
+    expect(
+      screen.getByText('Fica no seu nome, Ana. Só você poderá alterar ou excluir esta contribuição.'),
+    ).toBeOnTheScreen();
     await user.press(screen.getByRole('button', { name: RECEIPT_BUTTON }));
     await user.press(screen.getByRole('button', { name: SUBMIT }));
 

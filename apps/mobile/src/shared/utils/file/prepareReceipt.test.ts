@@ -1,5 +1,6 @@
 import { AppError } from '@/shared/exceptions/AppError';
 import type { ILocalFile } from '@/shared/types/file/LocalFile';
+import type { IOcrLine } from '@/shared/types/ocr/OcrLine';
 import { ocrLinesOf } from '@/shared/testing/ocrLinesOf';
 import { findReceiptAmount } from '@/shared/utils/receiptAmount/findReceiptAmount';
 import { prepareReceipt } from './prepareReceipt';
@@ -27,6 +28,19 @@ function file(contentType: string, sizeBytes: number): ILocalFile {
 /** As linhas que o OCR leu num Pix do Inter: um valor só, sem rótulo. */
 const PIX_LINES = ocrLinesOf('inter', 'Pix enviado', 'R$ 64,90', 'Sobre a transação');
 
+/** Uma página lida sem nenhum valor em reais, como a capa ou os termos de um comprovante. */
+const NO_AMOUNT_LINES = ocrLinesOf('Comprovante de transferência', 'Termos e condições');
+
+/** O OCR devolve as linhas da página pedida; a que não existe vem nula, como no módulo nativo. */
+function ocrReads(pages: IOcrLine[][]) {
+  jest.mocked(recognizeReceiptText).mockImplementation(async (_uri, _isPdf, pageIndex) => pages[pageIndex] ?? null);
+}
+
+/** Os índices das páginas que o OCR foi chamado para ler, na ordem. */
+function pageIndexesRead() {
+  return jest.mocked(recognizeReceiptText).mock.calls.map(([, , pageIndex]) => pageIndex);
+}
+
 async function rejection(promise: Promise<unknown>) {
   return promise.then(
     () => null,
@@ -39,7 +53,7 @@ beforeEach(() => {
   // Por padrão a redução devolve o próprio arquivo, como faz com o que não vale reduzir.
   jest.mocked(reduceImage).mockImplementation(async (image) => image);
   // Por padrão o OCR não lê nada, como num binário sem o módulo.
-  jest.mocked(recognizeReceiptText).mockResolvedValue([]);
+  jest.mocked(recognizeReceiptText).mockResolvedValue(null);
 });
 
 describe('prepareReceipt', () => {
@@ -158,7 +172,7 @@ describe('prepareReceipt', () => {
 
   describe('The amount read from the receipt', () => {
     it('Should attach the amount read from the receipt', async () => {
-      jest.mocked(recognizeReceiptText).mockResolvedValue(PIX_LINES);
+      ocrReads([PIX_LINES]);
       const original = file('image/png', 300 * 1024);
 
       expect(await prepareReceipt(original)).toEqual({
@@ -175,7 +189,7 @@ describe('prepareReceipt', () => {
 
       await prepareReceipt(file('image/jpeg', 3 * MB));
 
-      expect(recognizeReceiptText).toHaveBeenCalledWith('file:///cache/reduzida.webp', false);
+      expect(recognizeReceiptText).toHaveBeenCalledWith('file:///cache/reduzida.webp', false, 0);
     });
 
     it('Should read a PDF as a PDF', async () => {
@@ -183,7 +197,101 @@ describe('prepareReceipt', () => {
 
       await prepareReceipt(original);
 
-      expect(recognizeReceiptText).toHaveBeenCalledWith(original.uri, true);
+      expect(recognizeReceiptText).toHaveBeenCalledWith(original.uri, true, 0);
+    });
+
+    it('Should read an image as one page', async () => {
+      ocrReads([NO_AMOUNT_LINES]);
+      const original = file('image/png', 300 * 1024);
+
+      await prepareReceipt(original);
+
+      expect(recognizeReceiptText).toHaveBeenCalledTimes(1);
+      expect(recognizeReceiptText).toHaveBeenCalledWith(original.uri, false, 0);
+    });
+
+    it('Should read the amount on the second page when the first has none', async () => {
+      ocrReads([NO_AMOUNT_LINES, PIX_LINES]);
+
+      expect(await prepareReceipt(file('application/pdf', 30 * 1024))).toMatchObject({ readAmountCents: 6490 });
+      expect(pageIndexesRead()).toEqual([0, 1]);
+    });
+
+    it('Should not look for the amount on the next page when this one shows two different amounts', async () => {
+      ocrReads([ocrLinesOf('Valor', 'R$ 100,00', 'Tarifa', 'R$ 1,50'), ocrLinesOf('Tarifa', 'R$ 1,50')]);
+
+      expect(await prepareReceipt(file('application/pdf', 30 * 1024))).toMatchObject({ readAmountCents: null });
+      expect(pageIndexesRead()).toEqual([0]);
+    });
+
+    it('Should read the amount on the third page', async () => {
+      ocrReads([NO_AMOUNT_LINES, NO_AMOUNT_LINES, PIX_LINES]);
+
+      expect(await prepareReceipt(file('application/pdf', 30 * 1024))).toMatchObject({ readAmountCents: 6490 });
+      expect(pageIndexesRead()).toEqual([0, 1, 2]);
+    });
+
+    it('Should read R$ 2.463,68 from the Itaú bill payment, whose amounts are all on the second page', async () => {
+      // Transcrito da captura do comprovante do Itaú de 02/11/2026 (não é a saída do ML Kit), com os dados pessoais
+      // trocados. A primeira página de verdade não tem valor em reais, por isso aqui basta uma página sem valor; a
+      // segunda tem o pago duas vezes e os encargos zerados.
+      const secondPage = ocrLinesOf(
+        '2 de 2',
+        'Data do pagamento:',
+        '02/11/2026',
+        'Valor do documento:',
+        'R$ 2.463,68',
+        'Desconto:',
+        'R$ 0,00',
+        'Juros/Mora:',
+        'R$ 0,00',
+        'Multa:',
+        'R$ 0,00',
+        'Total de encargos:',
+        'R$ 0,00',
+        'Valor pago:',
+        'R$ 2.463,68',
+        'Pagamento efetuado em',
+        '02/11/2026 às 17:57:27 via MOBILE',
+      );
+      ocrReads([NO_AMOUNT_LINES, secondPage]);
+
+      expect(await prepareReceipt(file('application/pdf', 30 * 1024))).toMatchObject({ readAmountCents: 246368 });
+    });
+
+    it('Should not read the second page when the first has the amount', async () => {
+      ocrReads([PIX_LINES, NO_AMOUNT_LINES]);
+
+      expect(await prepareReceipt(file('application/pdf', 30 * 1024))).toMatchObject({ readAmountCents: 6490 });
+      expect(pageIndexesRead()).toEqual([0]);
+    });
+
+    it('Should read at most three pages', async () => {
+      ocrReads(Array.from({ length: 5 }, () => NO_AMOUNT_LINES));
+
+      expect(await prepareReceipt(file('application/pdf', 30 * 1024))).toMatchObject({ readAmountCents: null });
+      expect(pageIndexesRead()).toEqual([0, 1, 2]);
+    });
+
+    it('Should keep the amount empty when no page has one', async () => {
+      ocrReads([NO_AMOUNT_LINES, NO_AMOUNT_LINES]);
+
+      expect(await prepareReceipt(file('application/pdf', 30 * 1024))).toMatchObject({ readAmountCents: null });
+      expect(pageIndexesRead()).toEqual([0, 1, 2]);
+    });
+
+    it('Should keep reading after a page without text', async () => {
+      ocrReads([[], PIX_LINES]);
+
+      expect(await prepareReceipt(file('application/pdf', 30 * 1024))).toMatchObject({ readAmountCents: 6490 });
+      expect(pageIndexesRead()).toEqual([0, 1]);
+    });
+
+    it('Should stop at the first page the PDF does not have', async () => {
+      ocrReads([NO_AMOUNT_LINES]);
+
+      expect(await prepareReceipt(file('application/pdf', 30 * 1024))).toMatchObject({ readAmountCents: null });
+      expect(pageIndexesRead()).toEqual([0, 1]);
     });
 
     it('Should attach null when the OCR reads nothing', async () => {
@@ -191,7 +299,7 @@ describe('prepareReceipt', () => {
     });
 
     it('Should keep the receipt when reading the amount throws', async () => {
-      jest.mocked(recognizeReceiptText).mockResolvedValue(PIX_LINES);
+      ocrReads([PIX_LINES]);
       jest.mocked(findReceiptAmount).mockImplementationOnce(() => {
         throw new Error('O parser quebrou com as linhas lidas');
       });
@@ -206,6 +314,67 @@ describe('prepareReceipt', () => {
       await rejection(prepareReceipt(file('application/pdf', RECEIPT_MAX_BYTES + 1)));
 
       expect(recognizeReceiptText).not.toHaveBeenCalled();
+    });
+
+    describe('The deadline of the reading', () => {
+      let warn: jest.SpyInstance;
+
+      beforeEach(() => {
+        jest.useFakeTimers();
+        warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      });
+
+      afterEach(() => {
+        warn.mockRestore();
+        jest.useRealTimers();
+      });
+
+      it('Should attach the receipt without an amount when reading takes more than 8 s', async () => {
+        // O ML Kit que nunca responde.
+        jest.mocked(recognizeReceiptText).mockReturnValue(new Promise(() => {}));
+        const original = file('image/png', 300 * 1024);
+        const preparing = prepareReceipt(original);
+
+        await jest.advanceTimersByTimeAsync(8000);
+
+        expect(await preparing).toEqual({ ...original, type: 'image', wasReduced: false, readAmountCents: null });
+        expect(warn).toHaveBeenCalledWith('A leitura do comprovante passou de 8 s e segue sem o valor lido.');
+      });
+
+      it('Should keep the amount read before the 8 s', async () => {
+        jest
+          .mocked(recognizeReceiptText)
+          .mockImplementation(() => new Promise((resolve) => setTimeout(() => resolve(PIX_LINES), 7999)));
+        const preparing = prepareReceipt(file('image/png', 300 * 1024));
+
+        await jest.advanceTimersByTimeAsync(7999);
+
+        expect(await preparing).toMatchObject({ readAmountCents: 6490 });
+      });
+
+      it('Should stop reading pages after the deadline', async () => {
+        // A primeira página só responde aos 9 s, depois do prazo, e sem valor: as duas seguintes não valem a leitura.
+        jest
+          .mocked(recognizeReceiptText)
+          .mockImplementation(
+            (_uri, _isPdf, pageIndex) =>
+              new Promise((resolve) => setTimeout(() => resolve(NO_AMOUNT_LINES), pageIndex === 0 ? 9000 : 0)),
+          );
+        const preparing = prepareReceipt(file('application/pdf', 30 * 1024));
+
+        await jest.advanceTimersByTimeAsync(9000);
+        await preparing;
+
+        expect(pageIndexesRead()).toEqual([0]);
+      });
+
+      it('Should not leave the timer running after the reading ends', async () => {
+        ocrReads([PIX_LINES]);
+
+        await prepareReceipt(file('image/png', 300 * 1024));
+
+        expect(jest.getTimerCount()).toBe(0);
+      });
     });
   });
 });

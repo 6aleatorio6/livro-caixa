@@ -67,7 +67,7 @@ describe('EditTagPage', () => {
       await renderPage(HEALTH_TAG_ID);
 
       expect(screen.getByLabelText('Nome da tag')).toHaveDisplayValue('Saúde');
-      expect(screen.getByRole('radio', { name: 'Ameixa' })).toBeChecked();
+      expect(screen.getByRole('radio', { name: 'Amora' })).toBeChecked();
     });
 
     it('Should rename the tag with the scenario input, say so and go back', async () => {

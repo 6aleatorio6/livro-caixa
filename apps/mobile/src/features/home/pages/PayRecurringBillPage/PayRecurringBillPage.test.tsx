@@ -264,13 +264,13 @@ describe('PayRecurringBillPage', () => {
   describe('A month with contributions', () => {
     const openMonth = { month: '2026-11', entriesScenario: entryMonthQueryScenarios.monthWithContributions };
 
-    it('Should start at the whole bill and say what is left and how much the payer keeps', async () => {
+    it('Should start at the whole bill and say what the contributions cover', async () => {
       await renderPage('electricity', openMonth);
 
       // O vencimento é a cópia do pagamento sem dono (dia 20), não o da conta de hoje (dia 10): o mês não segue a conta.
       expect(screen.getByText('vence dia 20 · faltam R$ 100,00')).toBeOnTheScreen();
       expect(screen.getByDisplayValue('R$ 200,00')).toBeOnTheScreen();
-      expect(screen.getByText('A conta inteira, com os R$ 100,00 de Ana. Você fica com R$ 100,00.')).toBeOnTheScreen();
+      expect(screen.getByText('A conta inteira, com os R$ 100,00 de Ana.')).toBeOnTheScreen();
     });
 
     it('Should refuse a payment below the sum of the contributions', async () => {
@@ -369,6 +369,7 @@ describe('PayRecurringBillPage', () => {
     ['a text that is not a month', 'outubro'],
     ['no month', undefined],
     ['a month before the bill starts', '2025-12'],
+    ['a month before the first month of the app', '2026-09'],
   ])('with %s', (_case, month) => {
     it('Should say the bill is not to pay, without the form', async () => {
       await renderPage(paymentOfScenario.bill.id, { month });

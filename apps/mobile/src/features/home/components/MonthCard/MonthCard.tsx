@@ -49,10 +49,15 @@ export function MonthCard({ month, summary }: IMonthCardProps) {
         <AppText variant="labelLarge" color="onSurfaceVariant">
           {label}
         </AppText>
-        <AppText variant="headlineLargeEmphasized" color={state === 'empty' ? 'onSurfaceVariant' : 'onSurface'}>
+        <AppText
+          variant="headlineSmallEmphasized"
+          color={state === 'empty' ? 'onSurfaceVariant' : 'onSurface'}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
           {value}
         </AppText>
-        <AppText variant="bodySmall" color="onSurfaceVariant">
+        <AppText variant="bodySmall" color="onSurfaceVariant" style={state === 'empty' ? styles.emptyCount : undefined}>
           {count}
         </AppText>
       </DonutChart>
@@ -85,6 +90,7 @@ const styles = StyleSheet.create((theme) => ({
     borderRadius: theme.radii.extraLarge,
     backgroundColor: theme.colors.surfaceContainerLow,
   },
+  emptyCount: { width: 112, textAlign: 'center' }, // a largura do design, sem token: o texto quebra em duas linhas
   legend: { flexDirection: 'row', alignSelf: 'stretch', gap: theme.spacing.medium },
   legendCard: {
     flex: 1,

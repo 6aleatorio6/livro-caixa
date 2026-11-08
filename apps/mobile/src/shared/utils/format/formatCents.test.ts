@@ -11,6 +11,9 @@ describe('formatCents', () => {
     { cents: 100000, expected: 'R$ 1.000,00' },
     { cents: 267790, expected: 'R$ 2.677,90' },
     { cents: 123456789, expected: 'R$ 1.234.567,89' },
+    { cents: -5, expected: '-R$ 0,05' },
+    { cents: -1265, expected: '-R$ 12,65' },
+    { cents: -123456, expected: '-R$ 1.234,56' },
   ])('Should write $cents cents as $expected', ({ cents, expected }) => {
     expect(formatCents(cents)).toBe(expected);
   });

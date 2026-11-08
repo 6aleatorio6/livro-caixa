@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
@@ -31,6 +31,7 @@ import { memberPartsOf } from '@/shared/utils/entry/memberPartsOf';
 import { formatCents } from '@/shared/utils/format/formatCents';
 import { tagDisplayOf } from '@/shared/utils/tag/tagDisplayOf';
 import { findTag } from '@/shared/utils/tag/findTag';
+import { checkAppVersion } from '@/shared/utils/version/checkAppVersion';
 
 import { NoBillsPrompt } from './components/NoBillsPrompt/NoBillsPrompt';
 
@@ -42,6 +43,10 @@ const SPLIT_OPTIONS = [
 /** O mês da família: o anel, a divisão por tag ou por membro e a lista com as contas a pagar e as pagas. */
 export function HomePage() {
   useOpenPendingShare();
+  // O mínimo pode subir com o app aberto: voltar ao Início confere de novo. O efeito não devolve a promessa da conferência.
+  useFocusEffect(() => {
+    checkAppVersion();
+  });
   const [month, setMonth] = useState(currentMonth);
   const [splitView, setSplitView] = useState<'tag' | 'member'>('tag');
   const { bills, summary, hasError } = useMonthSummary(month);

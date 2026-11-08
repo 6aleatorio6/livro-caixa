@@ -13,7 +13,7 @@ const COMPROVANTE_LUZ = 'comprovante-luz.pdf';
 const RECIBO_CONSERTO = 'recibo-conserto.jpg';
 
 /** Os parâmetros que o `data/request.js` repassa, com o nome que têm no fluxo. */
-export type ScenarioParams = { EMAIL?: string; FILE?: string; COLD?: string };
+export type ScenarioParams = { EMAIL?: string; FILE?: string; COLD?: string; VERSION?: string };
 type Scenario = (owner: OwnerFirestore, params: ScenarioParams) => Promise<object | void>;
 
 function getParam(params: ScenarioParams, name: keyof ScenarioParams) {
@@ -225,6 +225,8 @@ export const scenariosByName: Record<string, Scenario> = {
   removeEmail: ({ db }, params) => deleteDoc(allowedEmail(db, getParam(params, 'EMAIL'))),
   /** Tira só a marca de admin: o nome e o resto do documento ficam. */
   removeAdmin: ({ db }, params) => updateDoc(allowedEmail(db, getParam(params, 'EMAIL')), { isAdmin: false }),
+  /** Grava a versão mínima do app em `settings/app`, como quem a muda pelo console; o `reset` apaga o documento. */
+  setMinimumAppVersion: ({ db }, params) => setDoc(doc(db, 'settings', 'app'), { minVersion: getParam(params, 'VERSION') }),
   /**
    * As tags do design (Casa, Serviços e Saúde) sobre o que o `reset` deixou, com as contas recorrentes que
    * deixam a Casa em uso por 2 contas e os Serviços por 3; a Saúde não tem uso e pode ser excluída.

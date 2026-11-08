@@ -51,8 +51,9 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
 - **O valor do comprovante lido no celular pelo ML Kit**, o reconhecimento de texto do Google, num
   módulo Expo local, `apps/mobile/modules/receipt-ocr`
   ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#o-valor-lido-do-comprovante)).
-  O módulo lê a imagem, ou desenha a primeira página do PDF com o `PdfRenderer` do Android, e devolve
-  as linhas de texto com a posição de cada uma. Os parsers do app acham nelas o valor pago. O modelo
+  O módulo lê a imagem, ou desenha a página pedida do PDF com o `PdfRenderer` do Android, e devolve
+  as linhas de texto dessa página com a posição de cada uma, ou nada quando o PDF não tem a página;
+  o app pede até três, uma de cada vez. Os parsers do app acham nelas o valor pago. O modelo
   vai embutido no APK, com cerca de 4 MB em cada uma das 4 arquiteturas, e lê desde o primeiro
   comprovante, sem internet. O modelo baixado pelo Google Play Services teria uns 260 KB, mas a
   leitura feita antes de o download terminar não devolveria nada.
@@ -88,7 +89,10 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   O plugin dele põe no manifesto o filtro que faz o app aparecer entre os destinos de uma imagem ou
   de um PDF, e o `+native-intent` do expo-router leva o endereço `livrocaixa://expo-sharing`, com que
   o Android abre o app, à rota `share-receipt`. O `useIncomingShare` lê o arquivo, que o módulo já
-  copia para o cache, e o `prepareReceipt` o confere como em qualquer comprovante.
+  copia para o cache, e o `prepareReceipt` o confere como em qualquer comprovante. No sentido
+  contrário, o Compartilhar do comprovante grava uma cópia no cache e a entrega ao `shareAsync`, que
+  a passa aos outros apps pelo `FileProvider` do próprio módulo
+  ([Ver o comprovante](../03-funcionalidades/01-principal/05-comprovantes.md#ver-o-comprovante)).
   O risco: no SDK 58, o recebimento ainda é experimental.
 - **Seletor de arquivos com o `expo-document-picker`**, do próprio Expo, que sai junto com o SDK.
   Abre o seletor de documentos do Android para escolher o comprovante e não pede plugin.
@@ -105,6 +109,11 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   `KeyboardAwareScrollView` dela: o campo com foco sobe e deixa um vão entre o cursor e o teclado,
   para a mensagem de erro do campo continuar visível. É uma biblioteca nativa, sem config plugin: a
   instalação pede um APK novo.
+- **Biometria com o `expo-local-authentication`**, do próprio Expo, que sai junto com o SDK e não é um
+  serviço pago. Ela não pede entrada no `app.json`: o prebuild aplica o plugin dela sozinho, e as
+  permissões `USE_BIOMETRIC` e `USE_FINGERPRINT` do Android entram pelo manifesto da biblioteca. É nativa, então
+  a instalação também pede um APK novo. A opção de pedir a biometria fica guardada no aparelho, e não
+  no Firestore: vale para aquele celular, não para a conta.
 
 Ficaram de fora:
 

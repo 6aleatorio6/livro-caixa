@@ -263,7 +263,8 @@ service cloud.firestore {
     }
 
     // As tags da família moram num único documento, `settings/tags`, com o mapa `items` (chave da tag
-    // -> nome, chave do nome e cor). Qualquer outro documento de `settings` continua negado.
+    // -> nome, chave do nome e cor). Fora ele e o `settings/app` (a versão mínima do app, que só se lê), qualquer
+    // outro documento de `settings` continua negado.
     //
     // O que estas regras NÃO garantem, e fica com o app: o nome único da tag (sem diferença de
     // maiúsculas e acentos) e o "tag em uso" (excluir só a tag que nenhuma conta usa). O app confere o
@@ -271,6 +272,11 @@ service cloud.firestore {
     // um item do conjunto de chaves do mapa para validar o item que mudou, então não separa o item
     // alterado dos demais para comparar os nomes, e uma regra não lê as contas ao excluir um item.
     match /settings/{docId} {
+      // Qualquer um lê `settings/app`, até sem sessão: ele guarda a versão mínima do app, que a tela de
+      // atualização confere antes do login. Ninguém o grava pelo app (não há `create`, `update` nem `delete`
+      // para ele): o documento muda pelo console.
+      allow get: if docId == 'app';
+
       // Todo membro lê as tags, que aparecem na escolha das contas e dos lançamentos.
       allow get: if docId == 'tags' && isInList();
 

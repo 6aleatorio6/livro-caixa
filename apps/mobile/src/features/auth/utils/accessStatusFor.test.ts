@@ -47,7 +47,7 @@ describe('accessStatusFor', () => {
     expect(accessStatusFor(signedIn, allowedEmail('cached', null))).toBe('loading');
   });
 
-  it('Should show the no-access screen when the list cannot be read', () => {
-    expect(accessStatusFor(signedIn, allowedEmail('error', null))).toBe('denied');
+  it('Should not decide when the list cannot be read', () => {
+    expect(accessStatusFor(signedIn, allowedEmail('error', null))).toBeNull();
   });
 });

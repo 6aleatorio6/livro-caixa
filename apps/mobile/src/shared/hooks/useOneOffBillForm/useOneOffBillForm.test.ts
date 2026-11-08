@@ -16,7 +16,7 @@ const receipt: IReceipt = {
 };
 
 /** Envia o formulário preenchido com o nome e a data dados e devolve os erros que o schema achou. */
-async function submit({ name = 'Farmácia', date = '2026-09-30' }: { name?: string; date?: string }) {
+async function submit({ name = 'Farmácia', date = '2026-10-30' }: { name?: string; date?: string }) {
   const { result } = await renderHook(() => useOneOffBillForm(undefined, { name, amountCents: 8990, date, receipt }));
   const onValid = jest.fn();
   const onInvalid = jest.fn();
@@ -30,7 +30,7 @@ const submitWithDate = (date: string) => submit({ date });
 
 describe('useOneOffBillForm', () => {
   beforeEach(() => {
-    jest.useFakeTimers({ now: new Date(2026, 9, 25), advanceTimers: true });
+    jest.useFakeTimers({ now: new Date(2026, 10, 25), advanceTimers: true });
   });
 
   afterEach(() => {
@@ -38,7 +38,7 @@ describe('useOneOffBillForm', () => {
   });
 
   it('Should refuse a date after today, even when it did not come from the calendar', async () => {
-    const { onValid, errors } = await submitWithDate('2026-10-26');
+    const { onValid, errors } = await submitWithDate('2026-11-26');
 
     expect(errors?.date?.message).toBe('A data não pode passar de hoje.');
     expect(onValid).not.toHaveBeenCalled();
@@ -51,7 +51,20 @@ describe('useOneOffBillForm', () => {
   });
 
   it('Should accept a date in a past month', async () => {
-    const { onValid } = await submitWithDate('2026-09-30');
+    const { onValid } = await submitWithDate('2026-10-30');
+
+    expect(onValid).toHaveBeenCalledTimes(1);
+  });
+
+  it('Should refuse a date before the first month of the app', async () => {
+    const { onValid, errors } = await submitWithDate('2026-09-30');
+
+    expect(errors?.date?.message).toBe('A data não pode ser antes de outubro de 2026.');
+    expect(onValid).not.toHaveBeenCalled();
+  });
+
+  it('Should accept the first day of the first month of the app', async () => {
+    const { onValid } = await submitWithDate('2026-10-01');
 
     expect(onValid).toHaveBeenCalledTimes(1);
   });
@@ -69,12 +82,12 @@ describe('useOneOffBillForm', () => {
     expect(onValid).not.toHaveBeenCalled();
   });
 
-  // A Geladeira de R$ 300,00, de setembro, com R$ 200,00 de contribuições.
+  // A Geladeira de R$ 300,00, de outubro, com R$ 200,00 de contribuições.
   describe('With contributions', () => {
     async function submitChanged({ amountCents, date }: { amountCents: number; date: string }) {
       const { result } = await renderHook(() =>
         useOneOffBillForm(
-          { contributedCents: 20000, lockedMonth: '2026-09' },
+          { contributedCents: 20000, lockedMonth: '2026-10' },
           { name: 'Geladeira', amountCents, date, receipt },
         ),
       );
@@ -85,21 +98,21 @@ describe('useOneOffBillForm', () => {
     }
 
     it('Should refuse an amount below the sum of the contributions', async () => {
-      const { errors } = await submitChanged({ amountCents: 19999, date: '2026-09-30' });
+      const { errors } = await submitChanged({ amountCents: 19999, date: '2026-10-30' });
 
       expect(errors?.amountCents?.message).toBe('O valor não fica abaixo das contribuições, de R$ 200,00.');
     });
 
     it('Should accept an amount equal to the sum of the contributions, with the date in the same month', async () => {
-      const { onValid } = await submitChanged({ amountCents: 20000, date: '2026-09-01' });
+      const { onValid } = await submitChanged({ amountCents: 20000, date: '2026-10-01' });
 
       expect(onValid).toHaveBeenCalledTimes(1);
     });
 
     it('Should refuse a date in another month', async () => {
-      const { errors } = await submitChanged({ amountCents: 30000, date: '2026-10-01' });
+      const { errors } = await submitChanged({ amountCents: 30000, date: '2026-11-01' });
 
-      expect(errors?.date?.message).toBe('Com contribuições, a data fica em setembro.');
+      expect(errors?.date?.message).toBe('Com contribuições, a data fica em outubro.');
     });
   });
 });

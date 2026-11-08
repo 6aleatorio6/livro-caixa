@@ -3,6 +3,8 @@ import {
   BRUNO,
   CONTRIBUTION,
   CONTRIBUTION_DOCUMENT,
+  CONTRIBUTION_TO_ONE_OFF_BILL,
+  CONTRIBUTION_TO_ONE_OFF_BILL_DOCUMENT,
   CONTRIBUTION_TO_UNOWNED,
   CONTRIBUTION_TO_UNOWNED_DOCUMENT,
   ONE_OFF_BILL,
@@ -60,6 +62,13 @@ export const entryQueryScenarios = {
     given: { ...BOTH_IN_THE_LIST, 'entries/c-ana': CONTRIBUTION_DOCUMENT },
     input: { id: 'c-ana' },
     result: CONTRIBUTION,
+  },
+  // A contribuição da Ana na conta avulsa do Bruno: a conta que ela recebe é uma avulsa, não um pagamento.
+  contributionToOneOffBill: {
+    signedInAs: BRUNO,
+    given: { ...BOTH_IN_THE_LIST, 'entries/c-ana': CONTRIBUTION_TO_ONE_OFF_BILL_DOCUMENT },
+    input: { id: 'c-ana' },
+    result: CONTRIBUTION_TO_ONE_OFF_BILL,
   },
   // A contribuição num mês ainda sem dono: a que o interruptor de Alterar transforma no pagamento.
   contributionToUnownedPayment: {

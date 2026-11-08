@@ -4,8 +4,8 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { Decorative } from '@/shared/components/Decorative/Decorative';
 import type { ITagColorOption } from '@/shared/types/tag/TagColorOption';
-import type { ITagColorRoles } from '@/shared/types/tag/TagColorRoles';
-import { tagColorRoles } from '@/shared/utils/tag/tagColorRoles';
+import type { ITagColorRole } from '@/shared/types/tag/TagColorRole';
+import { tagColorRole } from '@/shared/utils/tag/tagColorRole';
 
 export interface IColorSwatchProps {
   option: ITagColorOption;
@@ -27,10 +27,10 @@ export function ColorSwatch({ option, isSelected, disabled = false, onPress }: I
       onPress={onPress}
       style={({ pressed }) => styles.target(isSelected, pressed)}
     >
-      <View style={styles.circle(tagColorRoles(option.color).mainRole)}>
+      <View style={styles.circle(tagColorRole(option.color))}>
         {isSelected ? (
           <Decorative>
-            <Check size={20} color={theme.colors.surface} />
+            <Check size={20} color={theme.colors.onTag} />
           </Decorative>
         ) : null}
       </View>
@@ -49,7 +49,7 @@ const styles = StyleSheet.create((theme) => ({
     borderColor: isSelected ? theme.colors.onSurface : 'transparent',
     opacity: isPressed ? theme.opacity.pressed : 1,
   }),
-  circle: (role: ITagColorRoles['mainRole']) => ({
+  circle: (role: ITagColorRole) => ({
     width: 40, // o círculo visível do design, sem token
     height: 40,
     alignItems: 'center',

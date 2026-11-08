@@ -58,6 +58,23 @@ describe('memberPartsOf', () => {
     ]);
   });
 
+  it('Should list the bills as given, each with the payer first and then the contributions from the oldest to the newest', () => {
+    const rent = ownedPaymentOf();
+    const internet = ownedPaymentOf({ id: '2026-10_internet', amountCents: 12000, paidBy: 'bruno' });
+    const newestOnRent = contributionOf(rent.id, 'carla', 30000);
+    const oldestOnRent = contributionOf(rent.id, 'bruno', 50000);
+
+    // a leitura do mês traz as contribuições da mais nova para a mais antiga
+    const parts = memberPartsOf([internet, newestOnRent, rent, oldestOnRent]);
+
+    expect(parts.map(({ entry, uid }) => `${entry.id}:${uid}`)).toEqual([
+      '2026-10_internet:bruno',
+      '2026-10_rent:ana',
+      '2026-10_rent:bruno',
+      '2026-10_rent:carla',
+    ]);
+  });
+
   it('Should leave out a contribution whose entry is not in the list', () => {
     expect(memberPartsOf([contributionOf('2026-10_gone', 'bruno', 4000)])).toEqual([]);
   });

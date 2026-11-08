@@ -10,6 +10,7 @@ const params = {
   EMAIL: typeof EMAIL === 'undefined' ? undefined : EMAIL,
   FILE: typeof FILE === 'undefined' ? undefined : FILE,
   COLD: typeof COLD === 'undefined' ? undefined : COLD,
+  VERSION: typeof VERSION === 'undefined' ? undefined : VERSION,
 };
 const response = http.post(`${MAESTRO_DATA_URL}/${SCENARIO}`, {
   headers: { 'Content-Type': 'application/json' },
