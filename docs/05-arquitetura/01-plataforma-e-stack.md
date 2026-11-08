@@ -105,6 +105,11 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   `KeyboardAwareScrollView` dela: o campo com foco sobe e deixa um vão entre o cursor e o teclado,
   para a mensagem de erro do campo continuar visível. É uma biblioteca nativa, sem config plugin: a
   instalação pede um APK novo.
+- **Biometria com o `expo-local-authentication`**, do próprio Expo, que sai junto com o SDK e não é um
+  serviço pago. Ela não pede entrada no `app.json`: o prebuild aplica o plugin dela sozinho, e as
+  permissões `USE_BIOMETRIC` e `USE_FINGERPRINT` do Android entram pelo manifesto da biblioteca. É nativa, então
+  a instalação também pede um APK novo. A opção de pedir a biometria fica guardada no aparelho, e não
+  no Firestore: vale para aquele celular, não para a conta.
 
 Ficaram de fora:
 
