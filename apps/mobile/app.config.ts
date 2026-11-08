@@ -1,4 +1,4 @@
-import { withAppBuildGradle, type ConfigPlugin } from 'expo/config-plugins';
+import { AndroidConfig, withAndroidManifest, withAppBuildGradle, type ConfigPlugin } from 'expo/config-plugins';
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
 import packageJson from './package.json';
@@ -27,7 +27,32 @@ const withReleaseSigning: ConfigPlugin = (config) =>
     return gradle;
   });
 
+// Trocar a fonte, a densidade ou o idioma do celular com o app aberto recriava a `MainActivity`, e no build de debug a
+// nova Activity montava uma segunda raiz do app por cima da primeira. Com esses valores no `android:configChanges`, o
+// Android entrega a mudança à Activity que já existe, e o React Native atualiza a tela sem recriá-la. O negrito do
+// texto (`fontWeightAdjustment`), o modo de cor e o gênero gramatical também recriam a Activity, e entram pelo mesmo
+// motivo.
+const ACTIVITY_CONFIG_CHANGES = [
+  'fontScale',
+  'density',
+  'locale',
+  'layoutDirection',
+  'fontWeightAdjustment',
+  'colorMode',
+  'grammaticalGender',
+];
+
+// O `prebuild` sem `--clean` aplica o plugin de novo sobre o manifesto já gerado: o conjunto evita repetir um valor.
+const withStableActivity: ConfigPlugin = (config) =>
+  withAndroidManifest(config, (manifest) => {
+    const activity = AndroidConfig.Manifest.getMainActivityOrThrow(manifest.modResults);
+    const current = (activity.$['android:configChanges'] ?? '').split('|').filter(Boolean);
+    activity.$['android:configChanges'] = [...new Set([...current, ...ACTIVITY_CONFIG_CHANGES])].join('|');
+    return manifest;
+  });
+
 // O resto da configuração está no app.json (o nome e o slug, que o `ExpoConfig` exige, inclusive). Daqui vêm a
-// versão, do package.json, a mesma que o app mostra (`APP_VERSION`), para ela mudar num lugar só, e a assinatura.
+// versão, do package.json, a mesma que o app mostra (`APP_VERSION`), para ela mudar num lugar só, a assinatura e a
+// `MainActivity` que não é recriada.
 export default ({ config }: ConfigContext) =>
-  withReleaseSigning({ ...config, version: packageJson.version } as ExpoConfig);
+  withStableActivity(withReleaseSigning({ ...config, version: packageJson.version } as ExpoConfig));
