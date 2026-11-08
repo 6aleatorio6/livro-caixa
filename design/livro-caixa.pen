@@ -20329,12 +20329,27 @@
                               "id": "QgaRn",
                               "name": "Título",
                               "fill": "$on-surface",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Registrar pagamento",
                               "lineHeight": "$title-large-line-height",
                               "fontFamily": "$font-family",
                               "fontSize": "$title-large-size",
                               "fontWeight": "$title-large-weight",
                               "letterSpacing": "$title-large-tracking"
+                            },
+                            {
+                              "id": "Y2aVM",
+                              "type": "ref",
+                              "ref": "m2ArK2",
+                              "name": "Ação",
+                              "enabled": false,
+                              "descendants": {
+                                "uRzVL": {
+                                  "icon": "share-2",
+                                  "fill": "$on-surface"
+                                }
+                              }
                             }
                           ]
                         },
@@ -31151,12 +31166,20 @@
           "name": "Barra superior",
           "width": "fill_container",
           "fill": "#00000000",
+          "padding": [
+            0,
+            4
+          ],
           "descendants": {
             "aCkcd/uRzVL": {
               "icon": "x"
             },
             "QgaRn": {
               "content": "recibo-conserto.jpg"
+            },
+            "Y2aVM": {
+              "enabled": true,
+              "name": "Compartilhar"
             }
           }
         },
@@ -31570,12 +31593,20 @@
           "name": "Barra superior",
           "width": "fill_container",
           "fill": "#00000000",
+          "padding": [
+            0,
+            4
+          ],
           "descendants": {
             "aCkcd/uRzVL": {
               "icon": "x"
             },
             "QgaRn": {
               "content": "comprovante-luz.pdf"
+            },
+            "Y2aVM": {
+              "enabled": true,
+              "name": "Compartilhar"
             }
           }
         },
