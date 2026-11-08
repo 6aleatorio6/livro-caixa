@@ -86,6 +86,19 @@ export const CONTRIBUTION: IContributionEntry = {
   paidOn: '2026-10-11',
 };
 
+// A contribuição da Ana, R$ 40,00, no conserto da geladeira do Bruno (a conta avulsa), registrada um dia depois
+// da conta.
+export const CONTRIBUTION_TO_ONE_OFF_BILL_DOCUMENT = {
+  ...CONTRIBUTION_DOCUMENT,
+  createdAt: new Date('2026-10-13T15:00:00Z'),
+  entryId: 'fridge',
+};
+export const CONTRIBUTION_TO_ONE_OFF_BILL: IContributionEntry = {
+  ...CONTRIBUTION,
+  entryId: 'fridge',
+  paidOn: '2026-10-13',
+};
+
 // A Internet de outubro sem dono: a primeira contribuição a gravou com as cópias da conta, R$ 120,00 previstos.
 export const UNOWNED_PAYMENT_DOCUMENT = {
   kind: 'recurringPayment',

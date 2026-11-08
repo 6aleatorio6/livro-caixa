@@ -7,13 +7,11 @@ import { DeleteEntryButton } from '@/features/entries/components/DeleteEntryButt
 import { OnlyAuthorNotice } from '@/features/entries/components/OnlyAuthorNotice/OnlyAuthorNotice';
 import { Button } from '@/shared/components/Button/Button';
 import { DetailRow } from '@/shared/components/DetailRow/DetailRow';
-import { ReceiptSummary } from '@/shared/components/ReceiptSummary/ReceiptSummary';
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { signedInUid } from '@/shared/utils/auth/signedInUid';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
-import { receiptFileQueryService } from '@/shared/services/file/query/receiptFileQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import type { IBillEntry } from '@/shared/types/entry/BillEntry';
 import type { IContributionEntry } from '@/shared/types/entry/ContributionEntry';
@@ -29,10 +27,17 @@ import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 import { findTag } from '@/shared/utils/tag/findTag';
 
 import { EntryDetailsHeader } from '../EntryDetailsHeader/EntryDetailsHeader';
+import { EntryReceipt } from '../EntryReceipt/EntryReceipt';
 
 export interface IContributionDetailsProps {
   entry: IContributionEntry;
 }
+
+/** O título do comprovante da conta que a contribuição recebe, pelo tipo dela. */
+const BILL_RECEIPT_HEADINGS = {
+  recurringPayment: 'Comprovante do pagamento',
+  oneOffBill: 'Comprovante da conta avulsa',
+} as const satisfies Record<IBillEntry['kind'], string>;
 
 /**
  * Para que conta a contribuição foi: "na conta Luz de R$ 187,35, paga por Ana"; no mês sem dono, "paga pelas
@@ -50,11 +55,11 @@ function targetSupportOf(target: IBillEntry, entries: IEntry[], people: IAllowed
 
 /**
  * A folha de uma contribuição, a mesma do pagamento: a conta que ela recebe, o valor, quem contribuiu, quando, o
- * vencimento ou a data e a tag da conta, e o comprovante. Para quem contribuiu, Alterar e Excluir.
+ * vencimento ou a data e a tag da conta, o comprovante da contribuição e, quando a conta tem dono, o dela. Para quem
+ * contribuiu, Alterar e Excluir.
  */
 export function ContributionDetails({ entry }: IContributionDetailsProps) {
   const authState = useAuthState();
-  const { data: file } = useRealtime(receiptFileQueryService, { id: entry.receiptFileId });
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
   const { data: tags } = useRealtime(tagListQueryService, {});
   const { data: monthEntries } = useRealtime(entryMonthQueryService, { month: entry.month });
@@ -82,14 +87,11 @@ export function ContributionDetails({ entry }: IContributionDetailsProps) {
         {tag ? <DetailRow label="Tag" value={tag.name} tagColor={tag.color} /> : null}
       </View>
 
-      <ReceiptSummary
-        file={file ? { name: file.name, type: file.type, sizeBytes: file.sizeBytes } : null}
-        disabled={!file}
-        action={{
-          label: 'Ver',
-          onPress: () => router.push({ pathname: '/entries/[id]/receipt', params: { id: entry.id } }),
-        }}
-      />
+      <EntryReceipt entry={entry} heading="Comprovante da contribuição" />
+      {/* A conta sem dono não tem comprovante: só a conta com dono leva o seu, e a leitura nunca vai com id nulo. */}
+      {target && target.paidBy !== null ? (
+        <EntryReceipt entry={target} heading={BILL_RECEIPT_HEADINGS[target.kind]} />
+      ) : null}
 
       {isAuthor ? (
         <View style={styles.actions}>

@@ -33,13 +33,15 @@ export function ContributionsSection({ contributions, people, closedReason }: IC
           {closedReason}
         </AppText>
       ) : null}
-      {contributions.map((contribution) => (
-        <ContributionItem
-          key={contribution.id}
-          contribution={contribution}
-          contributorName={memberNameOf(contribution.paidBy, people)}
-        />
-      ))}
+      <View>
+        {contributions.map((contribution) => (
+          <ContributionItem
+            key={contribution.id}
+            contribution={contribution}
+            contributorName={memberNameOf(contribution.paidBy, people)}
+          />
+        ))}
+      </View>
     </View>
   );
 }

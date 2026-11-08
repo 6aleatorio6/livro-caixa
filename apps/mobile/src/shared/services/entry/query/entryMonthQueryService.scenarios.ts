@@ -1,8 +1,12 @@
 import {
   CONTRIBUTION,
   CONTRIBUTION_DOCUMENT,
+  CONTRIBUTION_TO_ONE_OFF_BILL,
+  CONTRIBUTION_TO_ONE_OFF_BILL_DOCUMENT,
   CONTRIBUTION_TO_UNOWNED,
   CONTRIBUTION_TO_UNOWNED_DOCUMENT,
+  ONE_OFF_BILL,
+  ONE_OFF_BILL_DOCUMENT,
   PAYMENT,
   PAYMENT_DOCUMENT,
   UNOWNED_PAYMENT,
@@ -315,6 +319,18 @@ export const entryMonthQueryScenarios = {
     },
     input: { month: '2026-10' },
     result: [CONTRIBUTION, PAYMENT],
+  },
+  // O conserto da geladeira do Bruno (a conta avulsa), com a contribuição de R$ 40,00 da Ana, registrada no dia
+  // seguinte: vem primeiro.
+  monthWithContributionToOneOffBill: {
+    signedInAs: BRUNO,
+    given: {
+      ...BOTH_IN_THE_LIST,
+      'entries/fridge': ONE_OFF_BILL_DOCUMENT,
+      'entries/c-ana': CONTRIBUTION_TO_ONE_OFF_BILL_DOCUMENT,
+    },
+    input: { month: '2026-10' },
+    result: [CONTRIBUTION_TO_ONE_OFF_BILL, ONE_OFF_BILL],
   },
   // A Luz do Bruno já recebeu da Ana tudo o que ele pagou: não falta nada.
   monthWithFullyContributedPayment: {
