@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native-unistyles';
 import { AppText } from '@/shared/components/AppText/AppText';
 import { ColorDot } from '@/shared/components/ColorDot/ColorDot';
 import type { ITagColor } from '@/shared/types/tag/TagColor';
-import { tagColorRoles } from '@/shared/utils/tag/tagColorRoles';
+import { tagColorRole } from '@/shared/utils/tag/tagColorRole';
 
 export interface IDetailRowProps {
   label: string;
@@ -21,7 +21,7 @@ export function DetailRow({ label, value, tagColor }: IDetailRowProps) {
         {label}
       </AppText>
       <View style={styles.value}>
-        {tagColor ? <ColorDot color={tagColorRoles(tagColor).mainRole} /> : null}
+        {tagColor ? <ColorDot color={tagColorRole(tagColor)} /> : null}
         <AppText variant="bodyLarge" numberOfLines={1} style={styles.text}>
           {value}
         </AppText>

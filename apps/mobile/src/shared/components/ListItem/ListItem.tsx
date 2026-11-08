@@ -10,7 +10,7 @@ import { CircleMark } from '@/shared/components/CircleMark/CircleMark';
 import { ColorDot } from '@/shared/components/ColorDot/ColorDot';
 import { Decorative } from '@/shared/components/Decorative/Decorative';
 import type { ITag } from '@/shared/types/tag/Tag';
-import { tagColorRoles } from '@/shared/utils/tag/tagColorRoles';
+import { tagColorRole } from '@/shared/utils/tag/tagColorRole';
 
 export interface IListItemProps {
   icon: LucideIcon;
@@ -54,7 +54,7 @@ export function ListItem({
         <AppText variant={isCompact ? 'titleMedium' : 'bodyLarge'}>{title}</AppText>
         {support ? (
           <View style={styles.support}>
-            {tag ? <ColorDot color={tagColorRoles(tag.color).mainRole} isSmall /> : null}
+            {tag ? <ColorDot color={tagColorRole(tag.color)} isSmall /> : null}
             <AppText variant="bodySmall" color="onSurfaceVariant" numberOfLines={1} style={styles.supportText}>
               {support}
             </AppText>

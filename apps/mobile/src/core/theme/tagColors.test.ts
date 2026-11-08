@@ -53,9 +53,8 @@ function oklabDistance(firstHex: string, secondHex: string) {
 }
 
 describe.each(Object.entries(themes))('Tag colors in the %s theme', (_themeName, colors) => {
-  // `tagWood` entra; `tagWoodContainer` e `onTagWoodContainer` não.
   const names = Object.keys(colors)
-    .filter((role) => /^tag[A-Z][a-z]+$/.test(role))
+    .filter((role) => role.startsWith('tag'))
     .map((role) => role.slice('tag'.length));
 
   it('Should find the eight tag colors', () => {
