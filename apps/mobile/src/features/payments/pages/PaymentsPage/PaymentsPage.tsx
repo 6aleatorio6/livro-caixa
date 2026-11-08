@@ -32,10 +32,9 @@ import { sumCents } from '@/shared/utils/entry/sumCents';
 import { tagDisplayOf } from '@/shared/utils/tag/tagDisplayOf';
 
 /**
- * As contas de uma pessoa da família por vez, ou de todos, escolhidas nos chips (abre em quem está logado), mês a mês e
- * agrupadas por tag, com o total no mês. No chip de um membro, a conta em que ele tem parte conta só a parte dele e,
- * com contribuições, mostra as partes de cada um; em "Todos", cada conta aparece uma vez. O botão registra uma conta
- * avulsa.
+ * As partes de uma pessoa da família por vez, ou de todos, escolhidas nos chips (abre em quem está logado), mês a mês
+ * e agrupadas por tag, com o total no mês. Cada parte é uma linha: a de quem pagou conta o valor pago menos as
+ * contribuições, e cada contribuição é a sua. O botão registra uma conta avulsa.
  */
 export function PaymentsPage() {
   const uid = signedInUid(useAuthState());
@@ -52,9 +51,14 @@ export function PaymentsPage() {
   const isEveryone = chosen?.kind === 'everyone';
   const isMine = chosen?.key === uid;
   const chosenUid = chosen?.kind === 'member' ? chosen.uid : null;
-  // A leitura traz o mês da família inteira; a lista é a das contas em que a pessoa escolhida tem parte, ou todas no
-  // chip "Todos". Sem as tags, toda conta cairia no grupo sem tag: a lista as espera.
-  const rows = entries && chosen ? paymentRowsOf(entries, chosenUid) : null;
+  // Ponte até os chips de várias pessoas: o conjunto de quem está marcado ainda é a escolha única, ou todas as pessoas
+  // em "Todos".
+  const selectedUids = new Set(
+    chosenUid !== null ? [chosenUid] : choices.flatMap((choice) => (choice.kind === 'member' ? [choice.uid] : [])),
+  );
+  // A leitura traz o mês da família inteira; a lista é a das partes da pessoa escolhida, ou de todas no chip "Todos".
+  // Sem as tags, toda conta cairia no grupo sem tag: a lista as espera.
+  const rows = entries && chosen ? paymentRowsOf(entries, selectedUids) : null;
   const groups = rows && tags ? entryGroupsByTag(rows, tags) : null;
   const hasError = status === 'error' || tagsStatus === 'error';
   // A base da porcentagem é o mesmo pago do Início: a soma das partes de todos.
@@ -105,13 +109,7 @@ export function PaymentsPage() {
                 return (
                   <EntryTagGroup key={key} name={name} color={color} totalCents={totalCents}>
                     {groupRows.map((row) => (
-                      <PaymentRow
-                        key={row.entry.id}
-                        row={row}
-                        people={people ?? []}
-                        chosenUid={chosenUid}
-                        signedInUid={uid}
-                      />
+                      <PaymentRow key={row.key} row={row} people={people ?? []} chosenUid={chosenUid} />
                     ))}
                   </EntryTagGroup>
                 );

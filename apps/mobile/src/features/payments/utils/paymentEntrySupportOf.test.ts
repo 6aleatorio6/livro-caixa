@@ -32,9 +32,13 @@ const oneOff: IOwnedEntry = {
   date: '2026-10-12',
 };
 
-/** O detalhe da primeira linha dos lançamentos, no chip de `chosenUid` (`null` em "Todos"). */
+/** O detalhe da primeira linha dos lançamentos, no chip de `chosenUid` (`null` em "Todos", com todas as pessoas). */
 const supportOf = (entries: IEntry[], chosenUid: string | null) =>
-  paymentEntrySupportOf(paymentRowsOf(entries, chosenUid)[0], people, chosenUid);
+  paymentEntrySupportOf(
+    paymentRowsOf(entries, new Set(chosenUid === null ? ['ana', 'bruno', 'carla'] : [chosenUid]))[0],
+    people,
+    chosenUid,
+  );
 
 describe('paymentEntrySupportOf', () => {
   // A tag está no cabeçalho do grupo: a linha não a repete.
@@ -61,11 +65,12 @@ describe('paymentEntrySupportOf', () => {
     expect(supportOf([oneOff, contributionOf(oneOff.id, 'bruno', 3000)], 'bruno')).toBe('12/10 · avulsa · Ana');
   });
 
-  it('Should name who contributed to a bill paid only by contributions', () => {
+  // Cada contribuição é uma linha; a primeira é a mais antiga, a do Bruno.
+  it('Should name who contributed in the row of a bill paid only by contributions', () => {
     const rent = unownedPaymentOf({ id: '2026-10_rent', dueDay: 5 });
 
     expect(
       supportOf([contributionOf(rent.id, 'carla', 1000), contributionOf(rent.id, 'bruno', 1000), rent], null),
-    ).toBe('dia 5 · contribuições de Bruno e Carla');
+    ).toBe('dia 5 · contribuição de Bruno');
   });
 });
