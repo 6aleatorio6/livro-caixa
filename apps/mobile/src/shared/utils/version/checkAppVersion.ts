@@ -1,6 +1,7 @@
 import { APP_VERSION } from '@/shared/constants/appVersion';
 import { findMinimumAppVersionService } from '@/shared/services/appSettings/findMinimumAppVersionService';
 import { useAppVersionLockStore } from '@/shared/store/appVersionLock.store';
+import { resultWithinDeadline } from '@/shared/utils/async/resultWithinDeadline';
 
 import { isVersionBelow } from './isVersionBelow';
 
@@ -24,16 +25,9 @@ export function checkAppVersion(): Promise<void> {
 }
 
 async function readAndStoreRequiredVersion() {
-  const minimumVersion = await findMinimumVersionWithinDeadline();
+  // Uma leitura que falha vale o mesmo que o prazo vencido: não barra.
+  const reading = findMinimumAppVersionService().catch(() => null);
+  const minimumVersion = await resultWithinDeadline(reading, READ_DEADLINE_MS);
   const isBelowMinimum = minimumVersion !== null && isVersionBelow(APP_VERSION, minimumVersion);
   useAppVersionLockStore.setState({ requiredVersion: isBelowMinimum ? minimumVersion : null });
-}
-
-function findMinimumVersionWithinDeadline() {
-  return new Promise<string | null>((resolve) => {
-    const deadline = setTimeout(() => resolve(null), READ_DEADLINE_MS);
-    findMinimumAppVersionService()
-      .then(resolve, () => resolve(null))
-      .finally(() => clearTimeout(deadline));
-  });
 }

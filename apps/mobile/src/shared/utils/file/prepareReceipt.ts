@@ -2,6 +2,7 @@ import { AppError } from '@/shared/exceptions/AppError';
 import type { ILocalFile } from '@/shared/types/file/LocalFile';
 import type { IReceipt } from '@/shared/types/file/Receipt';
 import type { IOcrLine } from '@/shared/types/ocr/OcrLine';
+import { resultWithinDeadline } from '@/shared/utils/async/resultWithinDeadline';
 import { formatFileSize } from '@/shared/utils/format/formatFileSize';
 import { findBrlAmounts } from '@/shared/utils/receiptAmount/findBrlAmounts';
 import { findReceiptAmount } from '@/shared/utils/receiptAmount/findReceiptAmount';
@@ -54,25 +55,17 @@ export async function prepareReceipt(file: ILocalFile): Promise<IReceipt> {
     ...prepared,
     type: isPdf ? 'pdf' : 'image',
     wasReduced: prepared.uri !== file.uri,
-    readAmountCents: await resultWithinDeadline(findPaidAmount(prepared.uri, isPdf, deadlineAt)),
+    readAmountCents: await resultWithinDeadline(
+      findPaidAmount(prepared.uri, isPdf, deadlineAt),
+      OCR_DEADLINE_MS,
+      warnReadingOverran,
+    ),
   };
 }
 
-/** O resultado da leitura, ou `null` quando ela não termina no prazo; o temporizador sai quando ela termina antes. */
-async function resultWithinDeadline(reading: Promise<number | null>): Promise<number | null> {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const deadline = new Promise<null>((resolve) => {
-    timer = setTimeout(() => {
-      // Sem o aviso, um módulo nativo que sempre trava passaria por comprovante sem valor.
-      console.warn(`A leitura do comprovante passou de ${OCR_DEADLINE_MS / 1000} s e segue sem o valor lido.`);
-      resolve(null);
-    }, OCR_DEADLINE_MS);
-  });
-  try {
-    return await Promise.race([reading, deadline]);
-  } finally {
-    clearTimeout(timer);
-  }
+// Sem o aviso, um módulo nativo que sempre trava passaria por comprovante sem valor.
+function warnReadingOverran() {
+  console.warn(`A leitura do comprovante passou de ${OCR_DEADLINE_MS / 1000} s e segue sem o valor lido.`);
 }
 
 async function findPaidAmount(uri: string, isPdf: boolean, deadlineAt: number): Promise<number | null> {
