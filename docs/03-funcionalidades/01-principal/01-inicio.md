@@ -30,8 +30,9 @@ Todo membro, ao abrir o app.
     nela abre os detalhes, com a lista de contribuições e o "Anexar o comprovante da conta".
 - **A troca de mês**, para ver os meses anteriores e o próximo mês. O Início abre no mês atual, e a
   troca para no próximo mês, que mostra as contas recorrentes dele a pagar e os pagamentos já
-  feitos para ele. O mês atual leva o selo "Este mês", e o próximo, "Mês que vem"; os anteriores não
-  têm selo.
+  feitos para ele. Para trás, a troca começa em outubro de 2026, o primeiro mês do app: nele, o
+  Mês anterior fica desabilitado. O mês atual leva o selo "Este mês", e o próximo, "Mês que vem";
+  os anteriores não têm selo.
 
 Sem nenhuma conta recorrente cadastrada, o Início mostra o gráfico vazio e o botão para cadastrar as
 [contas recorrentes](02-contas-recorrentes.md).
@@ -65,6 +66,8 @@ O formato do gráfico fica para o design.
       mostra selo.
 - [ ] Dá para avançar até o próximo mês, que mostra as contas recorrentes dele a pagar; nele, o
       Próximo mês fica desabilitado.
+- [ ] Em outubro de 2026, o primeiro mês do app, o Mês anterior fica desabilitado; nos meses
+      depois dele, fica habilitado.
 - [ ] Um pagamento de novembro registrado em outubro aparece pago em novembro e não muda outubro.
 - [ ] Uma conta de setembro sem pagamento não aparece no Início de outubro.
 - [ ] Uma conta avulsa com data de 30 de setembro, registrada em 2 de outubro, entra em setembro.

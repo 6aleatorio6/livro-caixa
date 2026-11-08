@@ -37,14 +37,24 @@ câmera nem a galeria.
 1. Ao compartilhar uma imagem ou um PDF em outro app do celular, este app aparece na lista de
    destinos.
 2. Escolhido o app, ele abre a escolha da conta, com o comprovante já anexado: primeiro "Conta
-   avulsa", que leva à [conta avulsa](04-conta-avulsa.md), depois as contas a pagar do mês atual e,
-   abaixo, as do próximo mês, que já pode ser pago.
+   avulsa", que leva à [conta avulsa](04-conta-avulsa.md), e embaixo o filtro de mês com as contas
+   a pagar do mês escolhido.
 3. O membro escolhe a conta que está pagando e segue no
    [pagamento](03-pagamento-de-conta-recorrente.md) daquele mês.
 
-Abaixo das contas a pagar, a lista mostra as contas já pagas por outros membros, do mês atual e do
-próximo. Tocar numa delas abre a [contribuição](08-contribuicao.md) nela, com o comprovante anexado.
-Ficam de fora as que não têm mais nada a receber: a soma das contribuições já chegou ao valor pago.
+O filtro são duas pílulas pequenas, "Este mês" e "Mês que vem", as mesmas palavras do selo do mês
+no [Início](01-inicio.md). Ele abre no mês atual e só tem o mês atual e o próximo, que já pode ser
+pago: não há pílula de mês anterior nem de depois do próximo. A pílula do mês escolhido fica
+marcada.
+
+Abaixo do filtro, a tela mostra as contas a pagar do mês escolhido, em "A pagar em novembro", por
+exemplo. Embaixo delas, as contas desse mês já pagas por outros membros, em "Já pagas por outros em
+novembro". Os títulos levam o nome do mês porque as pílulas dizem só a posição dele. Tocar numa
+conta já paga abre a [contribuição](08-contribuicao.md) nela, com o comprovante anexado. Ficam de
+fora as que não têm mais nada a receber: a soma das contribuições já chegou ao valor pago.
+
+Trocar de pílula lê o outro mês, com um carregamento curto. "Conta avulsa" fica no topo, qualquer
+que seja o mês.
 
 Quem compartilha sem estar logado faz o login pelo Google e perde o arquivo: precisa
 compartilhá-lo de novo depois de entrar.
@@ -105,11 +115,19 @@ Antes de salvar, o membro também abre o comprovante anexado, para conferir o va
 
 - [ ] Ao compartilhar uma imagem ou um PDF em outro app do Android, este app aparece entre os
       destinos.
-- [ ] O app abre a escolha da conta com o comprovante anexado: "Conta avulsa" primeiro, depois as
-      contas a pagar do mês atual e as do próximo mês.
+- [ ] O app abre a escolha da conta com o comprovante anexado: "Conta avulsa" primeiro, depois o
+      filtro de mês e as contas a pagar do mês escolhido.
+- [ ] O compartilhar abre no mês atual, com a pílula "Este mês" marcada e as contas a pagar do mês
+      atual, não as do próximo.
+- [ ] O filtro vai só até o próximo mês: tem as pílulas "Este mês" e "Mês que vem", e nenhuma de
+      mês anterior.
+- [ ] Tocar em "Mês que vem" marca a pílula e mostra as contas a pagar do próximo mês; "Conta
+      avulsa" continua no topo.
 - [ ] Escolhida uma conta da lista do próximo mês, o pagamento é desse mês.
-- [ ] A lista mostra, abaixo das contas a pagar, as contas já pagas por outros membros, e tocar
-      numa delas abre a contribuição.
+- [ ] A lista mostra, abaixo das contas a pagar, as contas do mês escolhido já pagas por outros
+      membros, e tocar numa delas abre a contribuição.
+- [ ] A conta paga por outro membro aparece para contribuir no mês dela: com o filtro nesse mês, e
+      não no outro.
 - [ ] Uma imagem de até 900 KB é salva como está.
 - [ ] Uma imagem acima de 900 KB é salva em WebP, no primeiro degrau que cabe, baixando a qualidade
       antes do lado maior.

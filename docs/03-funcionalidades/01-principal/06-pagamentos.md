@@ -33,8 +33,9 @@ pagou.
   R$ 147,35" e "Bruno · contribuição R$ 40,00"; na de Bruno, a mesma Luz mostra "Sua parte ·
   contribuição R$ 40,00" e "Ana · pagou a conta R$ 147,35". O total da tag conta só a parte do
   membro.
-- **A troca de mês**, como no [Início](01-inicio.md): dos meses anteriores até o próximo mês. Ela
-  não muda a pessoa escolhida.
+- **A troca de mês**, como no [Início](01-inicio.md): de outubro de 2026, o primeiro mês do app, até
+  o próximo mês. Em outubro de 2026, o Mês anterior fica desabilitado. Ela não muda a pessoa
+  escolhida.
 - **O botão Nova conta avulsa**, que abre o registro de uma [conta avulsa](04-conta-avulsa.md).
 
 Ao tocar num lançamento, abrem os [detalhes](07-detalhes-do-lancamento.md) dele, com o comprovante.
@@ -76,6 +77,8 @@ pagamento em outubro", também com o que fazer.
 - [ ] Tocar na contribuição de quem está logado abre os detalhes dela, com Alterar e Excluir.
 - [ ] O pagamento de novembro registrado em outubro aparece em novembro, não em outubro.
 - [ ] Trocar de mês mantém a pessoa escolhida.
+- [ ] Em outubro de 2026, o primeiro mês do app, o Mês anterior fica desabilitado; nos meses
+      depois dele, fica habilitado.
 - [ ] Ao tocar num lançamento, abrem os detalhes dele, com o comprovante; Alterar e Excluir só
       aparecem nos do membro logado.
 - [ ] Sem lançamentos de outro membro no mês, a tela diz "Nenhum pagamento de Bruno em outubro".
