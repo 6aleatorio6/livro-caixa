@@ -24,8 +24,9 @@ Os detalhes abrem numa folha que sobe de baixo, por cima da lista:
 Com contribuições, a folha mostra também:
 
 - a parte de quem pagou: "Fica com Ana", o valor pago menos as contribuições;
-- a lista de contribuições, com o total no título, cada uma com quem contribuiu, o valor e o Ver do
-  comprovante dela;
+- a lista de contribuições, com o total no título; cada uma é uma linha de texto, com quem
+  contribuiu e quando ("Bruno · 12/10") e o valor, sem o comprovante dela. A folha do pagamento
+  mostra só o comprovante do pagamento;
 - o Contribuir, para quem não registrou o lançamento, que abre a contribuição com o lançamento de
   quem pagou no topo. Quando a soma das contribuições chega ao valor pago, ele fica desabilitado, e
   embaixo do título das contribuições a folha diz por quê;
@@ -33,9 +34,13 @@ Com contribuições, a folha mostra também:
   da conta", que abre o pagamento do mês com a soma das contribuições como valor. Essa folha não tem
   Alterar nem Excluir.
 
-Os detalhes de uma contribuição são a mesma folha, abertos por [Pagamentos](06-pagamentos.md): a
-conta, o valor, o lançamento que ela recebe ("na Luz de R$ 187,35, paga por Ana"), quem contribuiu,
-quando e o comprovante.
+Os detalhes de uma contribuição são a mesma folha, abertos pela linha dela em
+[Pagamentos](06-pagamentos.md): a conta, o valor, a conta que ela recebe ("na conta Luz de
+R$ 187,35, paga por Ana"), quem contribuiu e quando. Eles mostram dois comprovantes, cada um com o
+seu Ver: o "Comprovante da contribuição" e, quando a conta tem dono, o dela, que se chama
+"Comprovante do pagamento" no pagamento e "Comprovante da conta avulsa" na conta avulsa. Se a conta
+foi paga só pelas contribuições, sem o comprovante da conta inteira, só o da contribuição aparece.
+Essa folha não tem o "Fica com" nem a lista de contribuições.
 
 Para quem registrou, a folha tem Alterar e Excluir. Para os outros membros, ela diz quem pode
 alterar ou excluir. Com contribuições, o Excluir fica desabilitado, e a folha diz por quê.
@@ -56,6 +61,13 @@ alterar ou excluir. Com contribuições, o Excluir fica desabilitado, e a folha 
 - [ ] Quem registrou vê Alterar e Excluir nos detalhes do próprio lançamento.
 - [ ] Excluir pede confirmação antes de apagar o lançamento.
 - [ ] Com contribuições, a folha mostra com quanto quem pagou fica e a lista das contribuições.
+- [ ] Nos detalhes de um pagamento, cada contribuição é uma linha de texto, com quem contribuiu,
+      quando e o valor, sem o comprovante dela; a folha mostra só o comprovante do pagamento.
+- [ ] Os detalhes de uma contribuição mostram o comprovante dela e, quando a conta tem dono, o da
+      conta ("Comprovante do pagamento" ou, na conta avulsa, "Comprovante da conta avulsa"), cada um
+      com o seu Ver.
+- [ ] Os detalhes de uma contribuição a uma conta paga só pelas contribuições mostram só o
+      comprovante dela.
 - [ ] Quem não registrou o lançamento tem o Contribuir; quem registrou, não.
 - [ ] Quando a soma das contribuições chega ao valor pago, o Contribuir fica desabilitado.
 - [ ] Com contribuições, o Excluir fica desabilitado.
