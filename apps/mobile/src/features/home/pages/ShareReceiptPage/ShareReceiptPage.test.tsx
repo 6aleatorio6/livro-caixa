@@ -79,7 +79,7 @@ afterEach(() => {
 });
 
 describe('ShareReceiptPage', () => {
-  it('Should show the shared receipt, "Conta avulsa" first, then the bills to pay of this month and of the next one', async () => {
+  it('Should show the shared receipt, "Conta avulsa" first, then the bills to pay of this month', async () => {
     mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
     await render(<ShareReceiptPage />);
 
@@ -87,10 +87,10 @@ describe('ShareReceiptPage', () => {
     expect(screen.getByText('Veio do compartilhamento · PDF · 64 KB')).toBeOnTheScreen();
     expect(screen.getByText('pix-agua-outubro.pdf')).toBeOnTheScreen();
     const titles = screen.getAllByRole('header').map((node) => node.props.children);
-    expect(titles.filter((title) => /^A pagar em/.test(title))).toEqual(['A pagar em outubro', 'A pagar em novembro']);
-    // O Aluguel foi pago em outubro e está a pagar em novembro; o Condomínio já foi pago nos dois.
-    expect(screen.getByText('R$ 1.800,00 · vence dia 5')).toBeOnTheScreen();
+    expect(titles.filter((title) => /^A pagar em/.test(title))).toEqual(['A pagar em outubro']);
+    // O Condomínio já foi pago em outubro, e o Aluguel só está a pagar em novembro.
     expect(screen.queryByText('Condomínio')).toBeNull();
+    expect(screen.queryByText('R$ 1.800,00 · vence dia 5')).toBeNull();
 
     // O rótulo de cada conta leva o nome da tag, que na tela é só a bolinha.
     const rows = screen.getAllByRole('button', { name: /^(Conta avulsa|Aluguel|Luz|Internet|Água)(, .+)?$/ });
@@ -98,14 +98,61 @@ describe('ShareReceiptPage', () => {
       'Conta avulsa',
       'Internet, Serviços',
       'Água, Serviços',
-      'Aluguel, Casa',
-      'Luz, Serviços',
-      'Internet, Serviços',
-      'Água, Serviços',
       // Por último, as já pagas por outros: o Aluguel e a Luz da Ana.
       'Aluguel, Casa',
       'Luz, Serviços',
     ]);
+  });
+
+  it("Should show next month's bills after tapping Mês que vem", async () => {
+    mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    await render(<ShareReceiptPage />);
+
+    await userEvent.setup().press(screen.getByRole('tab', { name: 'Mês que vem' }));
+
+    expect(screen.getByText('A pagar em novembro')).toBeOnTheScreen();
+    expect(screen.queryByText('A pagar em outubro')).toBeNull();
+    // O Aluguel foi pago em outubro e está a pagar em novembro; o Condomínio já foi pago antes.
+    expect(screen.getByText('R$ 1.800,00 · vence dia 5')).toBeOnTheScreen();
+    expect(screen.queryByText('Condomínio')).toBeNull();
+  });
+
+  it('Should mark the chosen pill as selected', async () => {
+    mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    await render(<ShareReceiptPage />);
+    const user = userEvent.setup();
+
+    expect(screen.getByRole('tab', { name: 'Este mês', selected: true })).toBeOnTheScreen();
+    expect(screen.getByRole('tab', { name: 'Mês que vem', selected: false })).toBeOnTheScreen();
+
+    await user.press(screen.getByRole('tab', { name: 'Mês que vem' }));
+
+    expect(screen.getByRole('tab', { name: 'Mês que vem', selected: true })).toBeOnTheScreen();
+    expect(screen.getByRole('tab', { name: 'Este mês', selected: false })).toBeOnTheScreen();
+  });
+
+  it('Should offer only this month and the next', async () => {
+    mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    await render(<ShareReceiptPage />);
+    const pillNames = () => screen.getAllByRole('tab').map((pill) => pill.props.accessibilityLabel);
+
+    expect(pillNames()).toEqual(['Este mês', 'Mês que vem']);
+
+    await userEvent.setup().press(screen.getByRole('tab', { name: 'Mês que vem' }));
+
+    expect(pillNames()).toEqual(['Este mês', 'Mês que vem']);
+  });
+
+  it('Should keep this month across midnight with the screen open', async () => {
+    jest.setSystemTime(new Date(2026, 9, 31, 23, 59));
+    const realtime = mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    await render(<ShareReceiptPage />);
+
+    jest.setSystemTime(new Date(2026, 10, 1, 0, 1));
+    await act(async () => realtime.applyChange(entryMonthQueryService));
+
+    expect(screen.getByRole('tab', { name: 'Este mês', selected: true })).toBeOnTheScreen();
+    expect(screen.getByText('A pagar em outubro')).toBeOnTheScreen();
   });
 
   it('Should not let the shared receipt be changed on this screen', async () => {
@@ -132,10 +179,10 @@ describe('ShareReceiptPage', () => {
     mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
     await render(<ShareReceiptPage />);
     const user = userEvent.setup();
-    const [octoberWater, novemberWater] = screen.getAllByRole('button', { name: 'Registrar Água' });
 
-    await user.press(octoberWater);
-    await user.press(novemberWater);
+    await user.press(screen.getByRole('button', { name: 'Registrar Água' }));
+    await user.press(screen.getByRole('tab', { name: 'Mês que vem' }));
+    await user.press(screen.getByRole('button', { name: 'Registrar Água' }));
 
     expect(router.push).toHaveBeenNthCalledWith(1, {
       pathname: '/recurring-bills/[id]/pay',
@@ -161,6 +208,9 @@ describe('ShareReceiptPage', () => {
     await render(<ShareReceiptPage />);
 
     expect(screen.getByText('Nenhuma conta a pagar em outubro.')).toBeOnTheScreen();
+
+    await userEvent.setup().press(screen.getByRole('tab', { name: 'Mês que vem' }));
+
     expect(screen.getByText('Nenhuma conta a pagar em novembro.')).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: 'Conta avulsa' })).toBeOnTheScreen();
   });
@@ -168,13 +218,17 @@ describe('ShareReceiptPage', () => {
   it('Should drop a bill another member pays while the screen is open', async () => {
     const realtime = mockRealtime(family, fiveBills, threeTags, paymentAddedWhileOpen, novemberPaidEarly);
     await render(<ShareReceiptPage />);
-    expect(screen.getAllByRole('button', { name: 'Registrar Internet' })).toHaveLength(2);
+    expect(screen.getByRole('button', { name: 'Registrar Internet' })).toBeOnTheScreen();
 
     await act(async () => realtime.applyChange(entryMonthQueryService));
 
+    expect(screen.queryByRole('button', { name: 'Registrar Internet' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Registrar Água' })).toBeOnTheScreen();
+
     // O pagamento é da Internet de outubro: a de novembro continua a pagar.
-    expect(screen.getAllByRole('button', { name: 'Registrar Internet' })).toHaveLength(1);
-    expect(screen.getAllByRole('button', { name: 'Registrar Água' })).toHaveLength(2);
+    await userEvent.setup().press(screen.getByRole('tab', { name: 'Mês que vem' }));
+
+    expect(screen.getByRole('button', { name: 'Registrar Internet' })).toBeOnTheScreen();
   });
 
   it('Should show the reason of a refused file and no list of bills', async () => {
@@ -226,7 +280,7 @@ describe('ShareReceiptPage', () => {
     });
     await render(<ShareReceiptPage />);
 
-    expect(screen.getAllByLabelText('Carregando as contas')).toHaveLength(2);
+    expect(screen.getAllByLabelText('Carregando as contas')).toHaveLength(1);
     expect(screen.getByRole('button', { name: 'Conta avulsa' })).toBeOnTheScreen();
     expect(screen.queryByText(/^Nenhuma conta a pagar/)).toBeNull();
   });
@@ -282,6 +336,33 @@ describe('ShareReceiptPage', () => {
       expect(screen.getByText('R$ 1.800,00 · pago por Ana')).toBeOnTheScreen();
       expect(screen.getByText('R$ 187,35 · pago por Ana')).toBeOnTheScreen();
       expect(screen.queryByText(/pago por Bruno/)).not.toBeOnTheScreen();
+    });
+
+    it('Should show the bills paid by others of the chosen month only', async () => {
+      // A Ana compartilha: em outubro o Condomínio e a geladeira são do Bruno, e em novembro só o Condomínio.
+      jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.adminSignsIn));
+      mockRealtime(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
+      await render(<ShareReceiptPage />);
+      const user = userEvent.setup();
+
+      expect(screen.getByText('Já pagas por outros em outubro')).toBeOnTheScreen();
+      expect(screen.queryByText('Já pagas por outros em novembro')).toBeNull();
+      await user.press(screen.getByRole('button', { name: 'Contribuir em Conserto da geladeira' }));
+      expect(router.push).toHaveBeenLastCalledWith({
+        pathname: '/entries/[id]/contribute',
+        params: { id: 'fridge', shared: '1' },
+      });
+
+      await user.press(screen.getByRole('tab', { name: 'Mês que vem' }));
+
+      expect(screen.getByText('Já pagas por outros em novembro')).toBeOnTheScreen();
+      expect(screen.queryByText('Já pagas por outros em outubro')).toBeNull();
+      expect(screen.queryByRole('button', { name: 'Contribuir em Conserto da geladeira' })).toBeNull();
+      await user.press(screen.getByRole('button', { name: 'Contribuir em Condomínio' }));
+      expect(router.push).toHaveBeenLastCalledWith({
+        pathname: '/entries/[id]/contribute',
+        params: { id: '2026-11_condo', shared: '1' },
+      });
     });
 
     it('Should open the contribution to the bill with the shared receipt', async () => {

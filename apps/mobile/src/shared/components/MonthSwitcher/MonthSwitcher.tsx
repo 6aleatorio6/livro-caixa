@@ -7,6 +7,7 @@ import type { IColorRole } from '@/core/types/ColorRole';
 import { AppText } from '@/shared/components/AppText/AppText';
 import { IconButton } from '@/shared/components/IconButton/IconButton';
 import { FIRST_MONTH } from '@/shared/constants/date/firstMonth';
+import { MONTH_BADGES } from '@/shared/constants/date/monthBadges';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { formatMonthTitle } from '@/shared/utils/date/formatMonthTitle';
 import { nextMonth } from '@/shared/utils/date/nextMonth';
@@ -20,15 +21,10 @@ export interface IMonthSwitcherProps {
   onMonthChange: (month: string) => void;
 }
 
-const BADGES = {
-  current: { text: 'Este mês', background: 'primaryContainer', color: 'onPrimaryContainer' },
-  next: { text: 'Mês que vem', background: 'tertiaryContainer', color: 'onTertiaryContainer' },
-} as const;
-
 /** O selo ao lado do rótulo: "Este mês" no mês atual, "Mês que vem" no próximo; os meses anteriores não têm. */
 function badgeOf(month: string) {
-  if (month === currentMonth()) return BADGES.current;
-  if (month === nextMonth()) return BADGES.next;
+  if (month === currentMonth()) return MONTH_BADGES.current;
+  if (month === nextMonth()) return MONTH_BADGES.next;
   return null;
 }
 

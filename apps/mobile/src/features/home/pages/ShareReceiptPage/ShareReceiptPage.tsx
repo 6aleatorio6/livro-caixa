@@ -15,7 +15,8 @@ import { SharedBillChoices } from './components/SharedBillChoices/SharedBillChoi
 
 /**
  * Onde cai quem compartilha uma imagem ou um PDF de outro app: o comprovante que chegou, "Conta avulsa" e as contas a
- * pagar do mês atual e do próximo. Escolher a conta segue no pagamento com o comprovante anexado.
+ * pagar do mês atual ou do próximo, o que o filtro escolher. Escolher a conta segue no pagamento com o comprovante
+ * anexado.
  */
 export function ShareReceiptPage() {
   const { theme } = useUnistyles();
