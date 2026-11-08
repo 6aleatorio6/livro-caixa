@@ -1,6 +1,8 @@
 import { act, render, screen, userEvent } from '@testing-library/react-native';
+import { authenticateAsync, isEnrolledAsync } from 'expo-local-authentication';
 import { router } from 'expo-router';
 
+import { useToastStore } from '@/core/store/toast.store';
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService.scenarios';
@@ -17,6 +19,8 @@ import { mockRealtime } from '@/shared/testing/mockRealtime';
 import { mockServiceScenario } from '@/shared/testing/mockServiceScenario';
 import { signedInAuthState } from '@/shared/testing/signedInAuthState';
 import { APP_VERSION } from '@/shared/constants/appVersion';
+import { useBiometricLockStore } from '@/shared/store/biometricLock.store';
+import { writeBiometricsEnabled } from '@/shared/utils/biometrics/writeBiometricsEnabled';
 
 import { SettingsPage } from './SettingsPage';
 
@@ -31,9 +35,17 @@ jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService',
 }));
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 jest.mock('@/shared/services/auth/signOutService', () => ({ signOutService: jest.fn() }));
+// A biblioteca nativa e o arquivo da opção (que o teste do arquivo cobre) ficam de fora: a página só decide o que
+// pedir e o que gravar.
+jest.mock('expo-local-authentication', () => ({ isEnrolledAsync: jest.fn(), authenticateAsync: jest.fn() }));
+jest.mock('@/shared/utils/biometrics/writeBiometricsEnabled', () => ({ writeBiometricsEnabled: jest.fn() }));
 
 beforeEach(() => {
   jest.clearAllMocks();
+  // `clearAllMocks` não tira o que um teste anterior programou: cada teste começa num celular sem biometria.
+  jest.mocked(isEnrolledAsync).mockResolvedValue(false);
+  useBiometricLockStore.setState(useBiometricLockStore.getInitialState());
+  useToastStore.setState({ toast: null });
 });
 
 function adminInList() {
@@ -192,6 +204,129 @@ describe('SettingsPage', () => {
         'Contas recorrentes',
         'Tags',
       ]);
+    });
+
+    describe('Biometrics option', () => {
+      afterEach(() => {
+        jest.useRealTimers();
+      });
+
+      function allowBiometrics() {
+        jest.mocked(isEnrolledAsync).mockResolvedValue(true);
+      }
+
+      it('Should not show the section on a phone without a fingerprint or face registered', async () => {
+        await render(<SettingsPage />);
+
+        expect(screen.queryByText('Neste celular')).not.toBeOnTheScreen();
+        expect(screen.queryByRole('switch', { name: 'Entrar com biometria' })).not.toBeOnTheScreen();
+      });
+
+      it('Should show the section with the option off when the phone has a fingerprint or face registered', async () => {
+        allowBiometrics();
+        await render(<SettingsPage />);
+
+        expect(await screen.findByText('Neste celular')).toBeOnTheScreen();
+        expect(
+          screen.getByText('Pede a digital ou o rosto ao abrir o app e depois de 10 minutos fora'),
+        ).toBeOnTheScreen();
+        expect(screen.getByRole('switch', { name: 'Entrar com biometria' })).not.toBeChecked();
+      });
+
+      it('Should show the option on when it was turned on before', async () => {
+        allowBiometrics();
+        useBiometricLockStore.setState({ isEnabled: true });
+        await render(<SettingsPage />);
+
+        expect(await screen.findByRole('switch', { name: 'Entrar com biometria' })).toBeChecked();
+      });
+
+      // O bloqueio continua pedindo (pelo PIN do aparelho) com a opção ligada: sem a linha, a pessoa não a desliga.
+      it('Should keep the section with the option on, so it can be turned off, after the biometrics were removed from the phone', async () => {
+        useBiometricLockStore.setState({ isEnabled: true });
+        const user = userEvent.setup();
+        await render(<SettingsPage />);
+
+        const option = await screen.findByRole('switch', { name: 'Entrar com biometria' });
+        expect(option).toBeChecked();
+        await user.press(option);
+
+        expect(authenticateAsync).not.toHaveBeenCalled();
+        expect(writeBiometricsEnabled).toHaveBeenCalledWith(false);
+        expect(screen.queryByText('Neste celular')).not.toBeOnTheScreen();
+      });
+
+      it('Should ask for the biometrics once and turn the option on and write it when it succeeds', async () => {
+        allowBiometrics();
+        jest.mocked(authenticateAsync).mockResolvedValue({ success: true });
+        const user = userEvent.setup();
+        await render(<SettingsPage />);
+
+        await user.press(await screen.findByRole('switch', { name: 'Entrar com biometria' }));
+
+        expect(authenticateAsync).toHaveBeenCalledTimes(1);
+        expect(authenticateAsync).toHaveBeenCalledWith(
+          expect.objectContaining({ promptMessage: 'Confirme para ligar a entrada com biometria' }),
+        );
+        expect(screen.getByRole('switch', { name: 'Entrar com biometria' })).toBeChecked();
+        expect(writeBiometricsEnabled).toHaveBeenCalledWith(true);
+      });
+
+      // A pessoa acabou de passar pela biometria para ligar a opção: o app só pede de novo na próxima abertura.
+      it('Should not lock the app on the spot when the option is turned on', async () => {
+        allowBiometrics();
+        jest.mocked(authenticateAsync).mockResolvedValue({ success: true });
+        const user = userEvent.setup();
+        await render(<SettingsPage />);
+
+        await user.press(await screen.findByRole('switch', { name: 'Entrar com biometria' }));
+
+        expect(screen.getByRole('switch', { name: 'Entrar com biometria' })).toBeChecked();
+        expect(useBiometricLockStore.getState().isLocked).toBe(false);
+      });
+
+      it('Should keep the option off and write nothing when the person cancels the biometrics', async () => {
+        allowBiometrics();
+        jest.mocked(authenticateAsync).mockResolvedValue({ success: false, error: 'user_cancel' });
+        const user = userEvent.setup();
+        await render(<SettingsPage />);
+
+        await user.press(await screen.findByRole('switch', { name: 'Entrar com biometria' }));
+
+        expect(screen.getByRole('switch', { name: 'Entrar com biometria' })).not.toBeChecked();
+        expect(writeBiometricsEnabled).not.toHaveBeenCalled();
+        expect(useToastStore.getState().toast).toBeNull();
+      });
+
+      it('Should turn the option off and write it without asking for the biometrics', async () => {
+        allowBiometrics();
+        useBiometricLockStore.setState({ isEnabled: true });
+        const user = userEvent.setup();
+        await render(<SettingsPage />);
+
+        await user.press(await screen.findByRole('switch', { name: 'Entrar com biometria' }));
+
+        expect(authenticateAsync).not.toHaveBeenCalled();
+        expect(screen.getByRole('switch', { name: 'Entrar com biometria' })).not.toBeChecked();
+        expect(writeBiometricsEnabled).toHaveBeenCalledWith(false);
+      });
+
+      it('Should keep the option off and show an error when the file cannot be written', async () => {
+        // Relógio falso para o aviso não deixar o tempo de esconder (4 s) pendente depois do teste.
+        jest.useFakeTimers();
+        allowBiometrics();
+        jest.mocked(authenticateAsync).mockResolvedValue({ success: true });
+        jest.mocked(writeBiometricsEnabled).mockImplementationOnce(() => {
+          throw new Error('Sem espaço no armazenamento');
+        });
+        const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+        await render(<SettingsPage />);
+
+        await user.press(await screen.findByRole('switch', { name: 'Entrar com biometria' }));
+
+        expect(screen.getByRole('switch', { name: 'Entrar com biometria' })).not.toBeChecked();
+        expect(useToastStore.getState().toast).toEqual({ message: 'Algo deu errado. Tente de novo.', kind: 'error' });
+      });
     });
   });
 

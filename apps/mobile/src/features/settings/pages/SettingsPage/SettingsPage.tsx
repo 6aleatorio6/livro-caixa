@@ -17,6 +17,7 @@ import { doSignOut } from '@/shared/utils/actions/doSignOut';
 import { signedInEmail } from '@/shared/utils/auth/signedInEmail';
 
 import { AdminSection } from './components/AdminSection/AdminSection';
+import { BiometricsSection } from './components/BiometricsSection/BiometricsSection';
 import { RecurringBillsRow } from './components/RecurringBillsRow/RecurringBillsRow';
 import { TagsRow } from './components/TagsRow/TagsRow';
 
@@ -42,6 +43,8 @@ export function SettingsPage() {
           <IconButton icon={Pencil} label="Alterar nome" onPress={() => router.push('/change-name')} />
           <IconButton icon={LogOut} label="Sair da conta" onPress={() => doSignOut()} />
         </View>
+
+        <BiometricsSection />
 
         <View style={styles.section}>
           <AppText variant="labelMedium" color="onSurfaceVariant">
