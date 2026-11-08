@@ -72,6 +72,23 @@ the new listener answers), the error reads as `loading`, and 30 s of failed read
   `allowedEmails` entry and true only while the status is `allowed`: losing the flag with the
   screen open takes the person off it, as a removal from the list does.
 
+## In front of the access: the minimum version
+
+The real layout has one guard more, before the access ones: `update-required`, open while the
+installed version is below `settings/app.minVersion` (`checkAppVersion`, `useAppVersionLockStore`).
+The access guards read `guardedStatus`, which is `null` while an update is required, so every other
+screen closes, sign-in included. The splash waits for the first version check too
+(`hasCheckedVersion`); with an update required it no longer waits for the session.
+
+## Over the app: the biometric lock
+
+The biometric lock is **not a guard**: a guard would unmount the open screens and lose a half-filled
+form. It is a full-screen `Modal` (`AppLockedScreen`) rendered after the `Stack`, shown while
+`useBiometricLock()` says the app is locked, the first version check is done and `guardedStatus`
+is `allowed`. The update screen and the sign-in stay in front of it, the stack keeps its screens
+under it, and Android's back button doesn't close it. A screen added to the app needs nothing for
+it; a change to the guards keeps that condition in step.
+
 ## Testing
 
 Test the guards with expo-router's `renderRouter` and `useAccess` mocked: the routes are plain
