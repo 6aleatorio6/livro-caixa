@@ -41,11 +41,37 @@ describe('MonthSwitcher', () => {
 
   it('Should ask for the previous month, even across a year', async () => {
     const onMonthChange = jest.fn();
-    await render(<MonthSwitcher label="Meus pagamentos" month="2026-01" onMonthChange={onMonthChange} />);
+    await render(<MonthSwitcher label="Meus pagamentos" month="2027-01" onMonthChange={onMonthChange} />);
 
     await userEvent.setup().press(screen.getByRole('button', { name: 'Mês anterior' }));
 
-    expect(onMonthChange).toHaveBeenCalledWith('2025-12');
+    expect(onMonthChange).toHaveBeenCalledWith('2026-12');
+  });
+
+  it('Should allow the previous month after the first month', async () => {
+    const onMonthChange = jest.fn();
+    await render(<MonthSwitcher label="Meus pagamentos" month="2026-11" onMonthChange={onMonthChange} />);
+
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Mês anterior' }));
+
+    expect(onMonthChange).toHaveBeenCalledWith('2026-10');
+  });
+
+  it('Should disable the previous month at the first month', async () => {
+    const onMonthChange = jest.fn();
+    await render(<MonthSwitcher label="Meus pagamentos" month="2026-10" onMonthChange={onMonthChange} />);
+
+    const previous = screen.getByRole('button', { name: 'Mês anterior' });
+    await userEvent.setup().press(previous);
+
+    expect(previous).toBeDisabled();
+    expect(onMonthChange).not.toHaveBeenCalled();
+  });
+
+  it('Should keep the previous month disabled before the first month', async () => {
+    await render(<MonthSwitcher label="Meus pagamentos" month="2026-09" onMonthChange={jest.fn()} />);
+
+    expect(screen.getByRole('button', { name: 'Mês anterior' })).toBeDisabled();
   });
 
   it('Should disable the next month on the month after the current one', async () => {

@@ -26,6 +26,9 @@ const threeTags = { service: tagListQueryService, scenario: tagListQueryScenario
 // Ana, Bruno e Clara já entraram; a Elisa ainda não, e não ganha chip.
 const family = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyWithPersonNotEntered };
 const october = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithEntries };
+// Em novembro o mês anterior é outubro, o primeiro do app: os testes da troca para o mês anterior abrem em novembro,
+// porque em outubro o botão está desabilitado.
+const november = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.nextMonthPaidEarly };
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -154,17 +157,18 @@ describe('PaymentsPage', () => {
   });
 
   it('Should read the previous month when the previous month is pressed', async () => {
-    mockRealtime(october, threeTags, family);
+    jest.setSystemTime(new Date(2026, 10, 25));
+    mockRealtime(november, threeTags, family);
     await render(<PaymentsPage />);
     const user = userEvent.setup();
 
-    mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.previousMonthWithEntries }, threeTags, family);
+    mockRealtime(october, threeTags, family);
     await user.press(screen.getByRole('button', { name: 'Mês anterior' }));
 
-    expect(screen.getByText('Setembro de 2026')).toBeOnTheScreen();
-    expect(screen.getByText('Gráfica')).toBeOnTheScreen();
-    expect(screen.getByText('Sua parte em setembro')).toBeOnTheScreen();
-    expect(screen.queryByText('Farmácia')).not.toBeOnTheScreen();
+    expect(screen.getByText('Outubro de 2026')).toBeOnTheScreen();
+    expect(screen.getByText('Farmácia')).toBeOnTheScreen();
+    expect(screen.getByText('Sua parte em outubro')).toBeOnTheScreen();
+    expect(screen.queryByText('Condomínio')).not.toBeOnTheScreen();
   });
 
   // O pagamento do próximo mês feito antes de o mês começar aparece lá, não no mês em que foi feito.
@@ -173,7 +177,7 @@ describe('PaymentsPage', () => {
     await render(<PaymentsPage />);
     const user = userEvent.setup();
 
-    mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.nextMonthPaidEarly }, threeTags, family);
+    mockRealtime(november, threeTags, family);
     await user.press(screen.getByRole('button', { name: 'Próximo mês' }));
 
     expect(screen.getByText('Novembro de 2026')).toBeOnTheScreen();
@@ -304,21 +308,19 @@ describe('PaymentsPage', () => {
     });
 
     it('Should keep the chosen person when the month changes', async () => {
-      mockRealtime(october, threeTags, family);
+      jest.setSystemTime(new Date(2026, 10, 25));
+      mockRealtime(november, threeTags, family);
       await render(<PaymentsPage />);
       const user = userEvent.setup();
       await user.press(screen.getByRole('button', { name: 'Ana' }));
 
-      mockRealtime(
-        { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.previousMonthWithEntries },
-        threeTags,
-        family,
-      );
+      mockRealtime(october, threeTags, family);
       await user.press(screen.getByRole('button', { name: 'Mês anterior' }));
 
-      // Setembro só tem a Gráfica, do Bruno.
+      // Outubro tem o Mercado e o Estacionamento da Ana e a Farmácia do Bruno.
       expect(screen.getByRole('button', { name: 'Ana' })).toBeSelected();
-      expect(screen.getByText('Nenhum pagamento de Ana em setembro')).toBeOnTheScreen();
+      expect(screen.getByText('Mercado')).toBeOnTheScreen();
+      expect(screen.queryByText('Farmácia')).not.toBeOnTheScreen();
     });
   });
 

@@ -37,6 +37,9 @@ const threeTags = { service: tagListQueryService, scenario: tagListQueryScenario
 const family = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyList };
 const renamedFamily = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyWithRenamedMember };
 const familyMonth = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthOfTheFamily };
+// Em novembro o mês anterior é outubro, o primeiro do app: os testes da troca para o mês anterior abrem em novembro,
+// porque em outubro o botão está desabilitado.
+const november = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.nextMonthPaidEarly };
 const emptyMonth = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth };
 
 beforeEach(() => {
@@ -209,28 +212,22 @@ describe('HomePage', () => {
   });
 
   it('Should show the numbers of the previous month when the month is changed', async () => {
-    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    jest.setSystemTime(new Date(2026, 10, 25));
+    mockRealtime(fiveBills, threeTags, family, november);
     await render(<HomePage />);
-    mockRealtime(fiveBills, threeTags, family, {
-      service: entryMonthQueryService,
-      scenario: entryMonthQueryScenarios.previousMonthWithEntries,
-    });
+    mockRealtime(fiveBills, threeTags, family, familyMonth);
 
     await userEvent.setup().press(screen.getByRole('button', { name: 'Mês anterior' }));
 
-    expect(screen.getByText('Setembro de 2026')).toBeOnTheScreen();
-    expect(screen.getByText('R$ 2.677,90')).toBeOnTheScreen();
-    expect(screen.getByText('5 de 6 contas')).toBeOnTheScreen();
-    expect(screen.getByText('1 conta · R$ 30,00')).toBeOnTheScreen();
+    expect(screen.getByText('Outubro de 2026')).toBeOnTheScreen();
+    expect(screen.getByText('R$ 3.005,25')).toBeOnTheScreen();
+    expect(screen.getByText('2 de 6 contas')).toBeOnTheScreen();
   });
 
   it('Should show the bills to pay of the next month, and no month after it', async () => {
     mockRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);
-    mockRealtime(fiveBills, threeTags, family, {
-      service: entryMonthQueryService,
-      scenario: entryMonthQueryScenarios.nextMonthPaidEarly,
-    });
+    mockRealtime(fiveBills, threeTags, family, november);
 
     await userEvent.setup().press(screen.getByRole('button', { name: 'Próximo mês' }));
 
