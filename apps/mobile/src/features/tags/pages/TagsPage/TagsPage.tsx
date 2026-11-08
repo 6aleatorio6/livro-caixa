@@ -26,7 +26,7 @@ export function TagsPage() {
   return (
     <Screen>
       <TopBar title="Tags" />
-      <ScreenContent gap="medium">
+      <ScreenContent gap="medium" hasFloatingButton>
         <AppText variant="bodyMedium" color="onSurfaceVariant">
           As tags classificam as contas recorrentes e as avulsas. A cor sai de uma lista de oito.
         </AppText>

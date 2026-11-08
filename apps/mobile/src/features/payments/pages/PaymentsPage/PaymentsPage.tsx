@@ -62,7 +62,7 @@ export function PaymentsPage() {
 
   return (
     <Screen>
-      <ScreenContent gap="extraLarge">
+      <ScreenContent gap="extraLarge" hasFloatingButton>
         <MonthSwitcher label="Pagamentos" month={month} onMonthChange={setMonth} />
 
         <View style={styles.chips}>

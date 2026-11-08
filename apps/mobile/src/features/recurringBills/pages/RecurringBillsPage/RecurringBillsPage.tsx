@@ -26,7 +26,7 @@ export function RecurringBillsPage() {
   return (
     <Screen>
       <TopBar title="Contas recorrentes" />
-      <ScreenContent gap="large">
+      <ScreenContent gap="large" hasFloatingButton>
         <AppText variant="bodyMedium" color="onSurfaceVariant">
           Cada conta aparece como a pagar todo mês, até alguém registrar o pagamento.
         </AppText>

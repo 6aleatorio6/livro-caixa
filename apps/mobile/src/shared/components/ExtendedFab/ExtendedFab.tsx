@@ -1,8 +1,12 @@
 import type { LucideIcon } from 'lucide-react-native';
+import { use } from 'react';
 import { Pressable } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
+import { AboveNavigationBarContext } from '@/shared/components/Screen/AboveNavigationBarContext';
+
+import { EXTENDED_FAB_HEIGHT } from './extendedFabHeight';
 
 export interface IExtendedFabProps {
   icon: LucideIcon;
@@ -11,19 +15,20 @@ export interface IExtendedFabProps {
 }
 
 /**
- * O botão flutuante estendido, com ícone e rótulo, para a ação principal da lista ("Nova tag"). Ele
- * mesmo se põe no canto inferior direito: a página o renderiza logo depois do `ScreenContent`, dentro
- * do `Screen`, e ele fica embaixo do corpo que rola (o `Screen` já cuida da barra de navegação e das abas).
+ * O botão flutuante estendido, com ícone e rótulo, para a ação principal da lista ("Nova tag"). Ele mesmo flutua no
+ * canto inferior direito, por cima da lista que rola: a página o renderiza logo depois do `ScreenContent`, dentro do
+ * `Screen`, e passa `hasFloatingButton` ao `ScreenContent`, para o fim da lista subir acima dele.
  */
 export function ExtendedFab({ icon: Icon, label, onPress }: IExtendedFabProps) {
   const { theme } = useUnistyles();
+  const isAboveNavigationBar = use(AboveNavigationBarContext);
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}
-      style={({ pressed }) => styles.container(pressed)}
+      style={({ pressed }) => styles.container(pressed, isAboveNavigationBar)}
     >
       <Icon size={24} color={theme.colors.onPrimaryContainer} />
       <AppText variant="labelLarge" color="onPrimaryContainer">
@@ -33,16 +38,17 @@ export function ExtendedFab({ icon: Icon, label, onPress }: IExtendedFabProps) {
   );
 }
 
-const styles = StyleSheet.create((theme) => ({
-  container: (isPressed: boolean) => ({
-    alignSelf: 'flex-end',
-    marginHorizontal: theme.spacing.largeIncreased, // o recuo lateral da tela, como no `ScreenContent`
-    marginTop: theme.spacing.large,
-    marginBottom: theme.spacing.extraLarge, // um respiro maior acima da barra de navegação e da de abas
+const styles = StyleSheet.create((theme, rt) => ({
+  container: (isPressed: boolean, isAboveNavigationBar: boolean) => ({
+    position: 'absolute',
+    // O `Screen` recua as barras do sistema com padding, que um filho absoluto não respeita: os recuos entram aqui,
+    // somados ao recuo lateral da tela (o do `ScreenContent`) e ao respiro maior acima das barras de baixo.
+    right: theme.spacing.largeIncreased + rt.insets.right,
+    bottom: theme.spacing.extraLarge + (isAboveNavigationBar ? 0 : rt.insets.bottom),
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.smallIncreased,
-    height: 56, // a altura do design, sem token
+    height: EXTENDED_FAB_HEIGHT,
     paddingHorizontal: theme.spacing.largeIncreased,
     borderRadius: theme.radii.large,
     backgroundColor: theme.colors.primaryContainer,
