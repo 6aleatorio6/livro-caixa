@@ -1,0 +1,42 @@
+# O Bruno compartilha um comprovante em PDF de duas páginas, com o "R$ 87,40" só na segunda, com o app aberto no
+# Início, escolhe a Internet, e o valor pago já vem com o valor da segunda página, com o aviso embaixo do campo.
+# Coberto por:
+# - O OCR ler a segunda página quando a primeira não tem valor (o PdfRenderer desenhando a página pedida e o ML Kit
+#   lendo-a, no módulo receipt-ocr): só no aparelho; prepareReceipt.test.ts cobre a decisão de seguir para a
+#   próxima página ("Should read the amount on the second page when the first has none"), e
+#   recognizeReceiptText.test.ts, a ponte com o módulo.
+# - O valor lido no campo, com o aviso: PayRecurringBillPage.test.tsx, com o cenário
+#   memberPaysWithAmountReadFromReceipt do payRecurringBillService.
+appId: dev.leonardolf.livrocaixa
+tags:
+  - share
+---
+- runFlow:
+    file: ../../steps/startAs.yaml
+    env:
+      PROFILE: member
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: seedShareReceipt
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: "Registrar Internet"
+    timeout: 30000
+- runScript:
+    file: ../../data/request.js
+    env:
+      SCENARIO: shareReceipt
+      FILE: comprovante-duas-paginas.pdf
+- extendedWaitUntil:
+    visible: "Qual conta você pagou?"
+    timeout: 15000
+- tapOn: "Registrar Internet"
+- extendedWaitUntil:
+    visible: "vence dia 15 · previsto R\\$ 119,90"
+    timeout: 10000
+# A tela de pagar só abre depois da leitura das páginas: o valor da segunda já vem preenchido.
+- assertVisible: "R\\$ 87,40"
+- assertVisible: "Veio do comprovante. Corrija se pagou outro valor."
+- takeScreenshot: pay-recurring-bill--amount-from-second-page

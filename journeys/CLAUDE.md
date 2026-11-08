@@ -34,7 +34,8 @@ journeys/
     fixtures/              the small committed files scenarios read: the receipt contents a scenario
                            writes to fileContents (comprovante-luz.pdf, two pages; recibo-conserto.jpg)
                            and the files shareFixture pushes to the phone (pix-agua-outubro.pdf, one
-                           page; pix-internet-outubro.pdf, one page of R$ 125,50 for the OCR to read)
+                           page; pix-internet-outubro.pdf, one page of R$ 125,50 for the OCR to read;
+                           comprovante-duas-paginas.pdf, R$ 87,40 only on its second page)
     request.js             the Maestro side (runScript): asks for a scenario, copies the answer to output
   .local/                  (outside Git)
     explore/               throwaway flows, run like any other
