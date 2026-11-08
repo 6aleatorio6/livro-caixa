@@ -20,6 +20,12 @@ mesma cuida dele.
   o e-mail com que a pessoa entrou e pede que quem administra o app o libere. Nenhuma outra tela do
   app fica disponível para ela.
 - Liberado o e-mail, o app abre sozinho, sem a pessoa sair e entrar de novo.
+- Só a resposta de que o e-mail não está na lista leva à tela de aguardando permissão. Um erro
+  momentâneo na leitura da lista não leva: quem já estava no app continua nele, quem acabou de
+  entrar espera na abertura, e o app tenta ler de novo sozinho até decidir. Se, sem nada decidido
+  ainda, a leitura só errar por 30 segundos seguidos, a pessoa cai na tela de aguardando permissão,
+  que tem o Sair. Vale também para quem sai e entra de novo: a nova entrada espera a nova leitura,
+  sem se prender ao erro de antes.
 
 ## Sair
 
@@ -57,6 +63,10 @@ mesma cuida dele.
 - [ ] Um e-mail do Google fora da lista vê a tela de aguardando permissão, com o e-mail usado, e não
       chega a nenhuma outra tela.
 - [ ] Liberado o e-mail, a tela de aguardando permissão dá lugar ao app sem a pessoa sair.
+- [ ] O e-mail removido da lista leva à tela de aguardando permissão, mesmo com o app aberto.
+- [ ] Um erro momentâneo na leitura do e-mail não leva à tela de aguardando permissão.
+- [ ] Quem sai e entra de novo com a mesma conta, com a leitura da lista ainda errando, espera a
+      nova leitura e, se ela só errar por 30 segundos seguidos, cai na tela de aguardando permissão.
 - [ ] Na tela de aguardando permissão, Sair volta para a entrada.
 - [ ] Em Configurações, o ícone de sair tira o membro da conta e volta para a entrada.
 - [ ] Um e-mail adicionado pelo admin consegue entrar.

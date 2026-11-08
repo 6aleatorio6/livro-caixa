@@ -32,9 +32,14 @@ No screen navigates by hand after a sign-in or a sign-out.
 | `allowed` | the app |
 
 A denial only comes from the server: offline, with the e-mail missing from the device cache, the
-status stays `loading` instead of sending someone with access to `no-access`. The service
-compares the e-mail lowercased (`allowedEmailId`, next to it), because the list's document ids
-are.
+status stays `loading` instead of sending someone with access to `no-access`. A failed read of the
+entry doesn't decide either: `accessStatusFor` returns `null`, and `useAccess` keeps the last
+`allowed` or `denied` `{ status, isAdmin }` until `useRealtime`'s retry answers, so a moment of
+denied rules doesn't swap the stack, and the share screen with it. With no such decision (the first
+read, or the one after signing out and in again, since `useRealtime` hands back its old error until
+the new listener answers), the error reads as `loading`, and 30 s of failed reads in a row decide
+`denied`, so the person reaches the sign-out button. The service compares the e-mail lowercased
+(`allowedEmailId`, next to it), because the list's document ids are.
 
 ## The root layout
 
