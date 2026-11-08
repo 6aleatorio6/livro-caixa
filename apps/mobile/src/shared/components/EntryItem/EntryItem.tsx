@@ -17,6 +17,11 @@ export interface IEntryItemProps {
   tag?: ITag;
   /** Sem `onPress` a linha é só leitura; com ele é um botão cujo rótulo é o nome do lançamento e o da tag. */
   onPress?: () => void;
+  /**
+   * O rótulo do botão no lugar do nome e da tag: para quando a lista repete o nome e o rótulo precisa distinguir as
+   * linhas.
+   */
+  accessibilityLabel?: string;
 }
 
 /**
@@ -24,7 +29,7 @@ export interface IEntryItemProps {
  * de uma conta recorrente, a marca `primaryContainer` e o `check`. O detalhe vem pronto: aqui só se desenha
  * a marca, o nome, a bolinha da tag e o valor.
  */
-export function EntryItem({ kind, name, amountCents, support, tag, onPress }: IEntryItemProps) {
+export function EntryItem({ kind, name, amountCents, support, tag, onPress, accessibilityLabel }: IEntryItemProps) {
   const { icon, markColor, iconColor } = entryMarkOf(kind);
 
   return (
@@ -35,6 +40,7 @@ export function EntryItem({ kind, name, amountCents, support, tag, onPress }: IE
       tag={tag}
       isCompact
       onPress={onPress}
+      accessibilityLabel={accessibilityLabel}
       markColor={markColor}
       iconColor={iconColor}
       trailing={

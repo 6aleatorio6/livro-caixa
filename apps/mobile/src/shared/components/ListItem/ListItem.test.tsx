@@ -31,6 +31,21 @@ describe('ListItem', () => {
     expect(screen.queryByText(/Caraguá/)).not.toBeOnTheScreen();
   });
 
+  it('Should label the button with the accessibilityLabel instead of the title and the tag', async () => {
+    await render(
+      <ListItem
+        icon={Tag}
+        title="Luz"
+        tag={{ id: 'servicos', name: 'Serviços', nameKey: 'servicos', color: 'blue' }}
+        accessibilityLabel="Luz, contribuição em 11/10 · Ana, R$ 40,00"
+        onPress={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Luz, contribuição em 11/10 · Ana, R$ 40,00' })).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Luz, Serviços' })).toBeNull();
+  });
+
   it('Should be read only, with the support text, when it has no onPress', async () => {
     await render(<ListItem icon={Tag} title="Tags" support="Casa, Saúde" />);
 

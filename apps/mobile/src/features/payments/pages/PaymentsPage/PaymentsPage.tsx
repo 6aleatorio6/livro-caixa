@@ -7,9 +7,13 @@ import { StyleSheet } from 'react-native-unistyles';
 import monthClosed from '@/assets/images/month-closed.png';
 import { EntryTagGroup } from '@/features/payments/components/EntryTagGroup/EntryTagGroup';
 import { PaymentRow } from '@/features/payments/components/PaymentRow/PaymentRow';
+import { chipSelectionOf } from '@/features/payments/utils/chipSelectionOf';
+import { emptyTitleOf } from '@/features/payments/utils/emptyTitleOf';
 import { entryGroupsByTag } from '@/features/payments/utils/entryGroupsByTag';
+import { markedUidsAfterPress } from '@/features/payments/utils/markedUidsAfterPress';
 import { memberChoicesOf } from '@/features/payments/utils/memberChoicesOf';
 import { paymentRowsOf } from '@/features/payments/utils/paymentRowsOf';
+import { totalTitleOf } from '@/features/payments/utils/totalTitleOf';
 import { AppText } from '@/shared/components/AppText/AppText';
 import { EmptyState } from '@/shared/components/EmptyState/EmptyState';
 import { ExtendedFab } from '@/shared/components/ExtendedFab/ExtendedFab';
@@ -26,43 +30,35 @@ import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonth
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { signedInUid } from '@/shared/utils/auth/signedInUid';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
-import { monthName } from '@/shared/utils/date/monthName';
 import { memberPartsOf } from '@/shared/utils/entry/memberPartsOf';
 import { sumCents } from '@/shared/utils/entry/sumCents';
 import { tagDisplayOf } from '@/shared/utils/tag/tagDisplayOf';
 
 /**
- * As partes de uma pessoa da família por vez, ou de todos, escolhidas nos chips (abre em quem está logado), mês a mês
- * e agrupadas por tag, com o total no mês. Cada parte é uma linha: a de quem pagou conta o valor pago menos as
- * contribuições, e cada contribuição é a sua. O botão registra uma conta avulsa.
+ * As partes das pessoas marcadas nos chips (abre em quem está logado; "Todos" marca todas), mês a mês e agrupadas por
+ * tag, com o total no mês. Cada parte é uma linha: a de quem pagou conta o valor pago menos as contribuições, e cada
+ * contribuição é a sua. O botão registra uma conta avulsa.
  */
 export function PaymentsPage() {
   const uid = signedInUid(useAuthState());
   const [month, setMonth] = useState(currentMonth);
-  // A `key` do chip escolhido, independente do mês; antes de tocar num chip, vale quem está logado, o chip "Você".
-  const [chosenKey, setChosenKey] = useState<string>();
+  // Os uids que a pessoa marcou, independentes do mês; o que vale é a seleção derivada deles, com "Você" quando nenhum
+  // sobra (nada tocado, ou quem estava marcado saiu da lista).
+  const [markedUids, setMarkedUids] = useState<ReadonlySet<string>>(() => new Set());
   const { status, data: entries } = useRealtime(entryMonthQueryService, { month });
   const { status: tagsStatus, data: tags } = useRealtime(tagListQueryService, {});
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
 
   const choices = uid ? memberChoicesOf(people ?? [], uid) : [];
-  // Sem escolha, ou com a pessoa escolhida fora da lista (removida com a tela aberta), vale o chip "Você".
-  const chosen = choices.find((choice) => choice.key === chosenKey) ?? choices.find((choice) => choice.key === uid);
-  const isEveryone = chosen?.kind === 'everyone';
-  const isMine = chosen?.key === uid;
-  const chosenUid = chosen?.kind === 'member' ? chosen.uid : null;
-  // Ponte até os chips de várias pessoas: o conjunto de quem está marcado ainda é a escolha única, ou todas as pessoas
-  // em "Todos".
-  const selectedUids = new Set(
-    chosenUid !== null ? [chosenUid] : choices.flatMap((choice) => (choice.kind === 'member' ? [choice.uid] : [])),
-  );
-  // A leitura traz o mês da família inteira; a lista é a das partes da pessoa escolhida, ou de todas no chip "Todos".
-  // Sem as tags, toda conta cairia no grupo sem tag: a lista as espera.
-  const rows = entries && chosen ? paymentRowsOf(entries, selectedUids) : null;
+  const selection = uid ? chipSelectionOf(markedUids, choices, uid) : null;
+  // A leitura traz o mês da família inteiro; as partes dele, calculadas uma vez, dão a lista e a base da porcentagem.
+  const parts = entries ? memberPartsOf(entries) : null;
+  // A lista é a das partes das pessoas marcadas. Sem as tags, toda conta cairia no grupo sem tag: ela as espera.
+  const rows = parts && selection ? paymentRowsOf(parts, selection.rowUids) : null;
   const groups = rows && tags ? entryGroupsByTag(rows, tags) : null;
   const hasError = status === 'error' || tagsStatus === 'error';
   // A base da porcentagem é o mesmo pago do Início: a soma das partes de todos.
-  const familyAmountCents = entries ? sumCents(memberPartsOf(entries)) : 0;
+  const familyAmountCents = parts ? sumCents(parts) : 0;
 
   return (
     <Screen>
@@ -70,38 +66,44 @@ export function PaymentsPage() {
         <MonthSwitcher label="Pagamentos" month={month} onMonthChange={setMonth} />
 
         <View style={styles.chips}>
-          {choices.map((choice) => (
-            <FilterChip
-              key={choice.key}
-              label={choice.name}
-              isSelected={choice.key === chosen?.key}
-              onPress={() => setChosenKey(choice.key)}
-            />
-          ))}
+          {selection
+            ? choices.map((choice) => (
+                <FilterChip
+                  key={choice.key}
+                  label={choice.name}
+                  isSelected={
+                    choice.kind === 'everyone' ? selection.kind === 'everyone' : selection.markedUids.has(choice.uid)
+                  }
+                  onPress={() => setMarkedUids(markedUidsAfterPress(selection.markedUids, choice, choices))}
+                />
+              ))
+            : null}
         </View>
 
         {hasError ? (
           <AppText variant="bodyMedium" color="onSurfaceVariant">
             Não deu para carregar a lista.
           </AppText>
-        ) : !groups || !chosen ? (
+        ) : !groups || !selection ? (
           <LoadingState />
         ) : groups.length === 0 ? (
           // O texto de baixo diz o que a própria pessoa faz para algo aparecer: não vale para outro membro.
           <EmptyState
             image={monthClosed}
-            title={emptyTitleOf(chosen.name, month, { isMine, isEveryone })}
+            title={emptyTitleOf(selection, month)}
             text={
-              isMine || isEveryone ? 'Quando você registrar um pagamento ou uma conta avulsa, ele aparece aqui.' : undefined
+              selection.kind === 'me' || selection.kind === 'everyone'
+                ? 'Quando você registrar um pagamento ou uma conta avulsa, ele aparece aqui.'
+                : undefined
             }
           />
         ) : (
           <>
             <MonthTotalCard
-              title={totalTitleOf(chosen.name, month, { isMine, isEveryone })}
+              title={totalTitleOf(selection, month)}
               amountCents={groups.reduce((sum, group) => sum + group.totalCents, 0)}
               entryCount={groups.reduce((count, group) => count + group.rows.length, 0)}
-              familyAmountCents={isEveryone ? undefined : familyAmountCents}
+              familyAmountCents={selection.kind === 'everyone' ? undefined : familyAmountCents}
             />
             <View style={styles.groups}>
               {groups.map(({ tag, totalCents, rows: groupRows }) => {
@@ -109,7 +111,7 @@ export function PaymentsPage() {
                 return (
                   <EntryTagGroup key={key} name={name} color={color} totalCents={totalCents}>
                     {groupRows.map((row) => (
-                      <PaymentRow key={row.key} row={row} people={people ?? []} chosenUid={chosenUid} />
+                      <PaymentRow key={row.key} row={row} people={people ?? []} selection={selection} />
                     ))}
                   </EntryTagGroup>
                 );
@@ -124,18 +126,6 @@ export function PaymentsPage() {
       <ExtendedFab icon={Plus} label="Nova conta avulsa" onPress={() => router.push('/one-off-bills/new')} />
     </Screen>
   );
-}
-
-/** O título do cartão do total: "Sua parte em outubro", "Parte de Bruno em outubro" ou "A família registrou em outubro". */
-function totalTitleOf(name: string, month: string, { isMine, isEveryone }: { isMine: boolean; isEveryone: boolean }) {
-  if (isEveryone) return `A família registrou em ${monthName(month)}`;
-  return `${isMine ? 'Sua parte' : `Parte de ${name}`} em ${monthName(month)}`;
-}
-
-/** O título do mês sem lançamentos: "Nenhum pagamento seu em outubro", "… de Bruno …" ou, no chip "Todos", de ninguém. */
-function emptyTitleOf(name: string, month: string, { isMine, isEveryone }: { isMine: boolean; isEveryone: boolean }) {
-  if (isEveryone) return `Nenhum pagamento em ${monthName(month)}`;
-  return `Nenhum pagamento ${isMine ? 'seu' : `de ${name}`} em ${monthName(month)}`;
 }
 
 const styles = StyleSheet.create((theme) => ({

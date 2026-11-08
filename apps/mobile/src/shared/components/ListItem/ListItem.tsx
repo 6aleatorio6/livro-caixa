@@ -29,6 +29,11 @@ export interface IListItemProps {
   isCompact?: boolean;
   /** Sem `onPress` o item é só leitura: não é um botão e não tem seta. */
   onPress?: () => void;
+  /**
+   * O rótulo do botão no lugar do título e da tag: para quando a lista repete o título e o rótulo precisa distinguir os
+   * itens.
+   */
+  accessibilityLabel?: string;
 }
 
 /** Um item de lista: a marca com o ícone, o título, o apoio e, à direita, o que vem de fora ou, quando leva a outra tela, a seta. */
@@ -42,6 +47,7 @@ export function ListItem({
   trailing,
   isCompact = false,
   onPress,
+  accessibilityLabel,
 }: IListItemProps) {
   const { theme } = useUnistyles();
 
@@ -74,7 +80,7 @@ export function ListItem({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={tag ? `${title}, ${tag.name}` : title}
+      accessibilityLabel={accessibilityLabel ?? (tag ? `${title}, ${tag.name}` : title)}
       onPress={onPress}
       style={({ pressed }) => styles.row(pressed, isCompact)}
     >
