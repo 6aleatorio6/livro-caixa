@@ -67,11 +67,11 @@ describe('NewTagPage', () => {
   it('Should keep only the color chosen last', async () => {
     const user = await renderPage();
 
-    await user.press(screen.getByRole('radio', { name: 'Lavanda' }));
+    await user.press(screen.getByRole('radio', { name: 'Uva' }));
     await user.press(screen.getByRole('radio', { name: 'Azul' }));
 
     expect(screen.getByRole('radio', { name: 'Azul' })).toBeChecked();
-    expect(screen.getByRole('radio', { name: 'Lavanda' })).not.toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Uva' })).not.toBeChecked();
     expect(screen.getByRole('radio', { name: 'Madeira' })).not.toBeChecked();
   });
 

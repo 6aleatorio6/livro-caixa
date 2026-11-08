@@ -51,7 +51,7 @@ tags:
 - tapOn: Nome da tag
 - inputText: saude
 - hideKeyboard
-- tapOn: Lavanda
+- tapOn: Uva
 - tapOn: Criar tag
 - extendedWaitUntil:
     visible: Já existe a tag Saúde. Escolha outro nome.

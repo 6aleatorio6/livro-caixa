@@ -8,6 +8,6 @@ export const TAG_COLORS = [
   { color: 'slate', label: 'Ardósia' },
   { color: 'blue', label: 'Azul' },
   { color: 'indigo', label: 'Anil' },
-  { color: 'lavender', label: 'Lavanda' },
-  { color: 'plum', label: 'Ameixa' },
+  { color: 'lavender', label: 'Uva' },
+  { color: 'plum', label: 'Amora' },
 ] as const satisfies readonly ITagColorOption[];
