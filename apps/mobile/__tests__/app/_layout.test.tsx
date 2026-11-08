@@ -1,4 +1,5 @@
 import { act } from '@testing-library/react-native';
+import { router } from 'expo-router';
 import { renderRouter, screen } from 'expo-router/testing-library';
 import { Text } from 'react-native';
 import { useState } from 'react';
@@ -44,7 +45,10 @@ const ROUTES = {
     'recurring-bills/new': () => <Text>Página da nova conta recorrente</Text>,
     'recurring-bills/[id]/index': () => <Text>Página de alterar conta recorrente</Text>,
     'recurring-bills/[id]/pay': () => <Text>Página de registrar pagamento</Text>,
+    'one-off-bills/new': () => <Text>Página da nova conta avulsa</Text>,
     'entries/[id]/index': () => <Text>Página dos detalhes do lançamento</Text>,
+    'entries/[id]/contribute': () => <Text>Página de registrar contribuição</Text>,
+    'entries/[id]/receipt': () => <Text>Página do comprovante do lançamento</Text>,
     'share-receipt': () => <Text>Página de compartilhar</Text>,
     'receipt-preview': () => <Text>Página do comprovante anexado</Text>,
     'tags/index': () => <Text>Página das tags</Text>,
@@ -169,6 +173,97 @@ describe('RootLayout', () => {
 
       expect(screen.queryByText(page)).not.toBeOnTheScreen();
       expect(screen.getByText('Entrar')).toBeOnTheScreen();
+    });
+  });
+
+  describe('The screens that open once per tap', () => {
+    const SCREENS = [
+      {
+        name: 'pay',
+        url: '/recurring-bills/internet/pay?month=2026-10',
+        plain: { pathname: '/recurring-bills/[id]/pay', params: { id: 'internet', month: '2026-10' } },
+        shared: { pathname: '/recurring-bills/[id]/pay', params: { id: 'internet', month: '2026-10', shared: '1' } },
+      },
+      {
+        name: 'one-off bill',
+        url: '/one-off-bills/new',
+        plain: { pathname: '/one-off-bills/new' },
+        shared: { pathname: '/one-off-bills/new', params: { shared: '1' } },
+      },
+      {
+        name: 'contribute',
+        url: '/entries/fridge/contribute',
+        plain: { pathname: '/entries/[id]/contribute', params: { id: 'fridge' } },
+        shared: { pathname: '/entries/[id]/contribute', params: { id: 'fridge', shared: '1' } },
+      },
+    ] as const;
+
+    // As que o compartilhamento não abre também abrem por um toque.
+    const RECEIPT_PREVIEW_OF_RECEIPT_A = {
+      pathname: '/receipt-preview',
+      params: { uri: 'file:///recibo-a.jpg', name: 'recibo-a.jpg', type: 'image' },
+    } as const;
+    const RECEIPT_PREVIEW_OF_RECEIPT_B = {
+      pathname: '/receipt-preview',
+      params: { uri: 'file:///recibo-b.jpg', name: 'recibo-b.jpg', type: 'image' },
+    } as const;
+    const TAPPED_ONCE_SCREENS = [
+      ...SCREENS,
+      { name: 'receipt preview', plain: RECEIPT_PREVIEW_OF_RECEIPT_A },
+      { name: 'receipt viewer', plain: { pathname: '/entries/[id]/receipt', params: { id: 'fridge' } } },
+      { name: 'entry details', plain: { pathname: '/entries/[id]', params: { id: 'fridge' } } },
+    ] as const;
+
+    async function renderAppAsMember() {
+      await renderAppAs(
+        signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn),
+        allowedEmailQueryScenarios.emailInList,
+      );
+    }
+
+    // O compartilhamento sempre abre uma tela nova: a que já estava aberta ficou sem o comprovante.
+    it.each(SCREENS)(
+      'Should open a new $name screen for a shared receipt even with the same one open',
+      async ({ url, plain, shared }) => {
+        await renderAppAsMember();
+        await act(async () => router.push(plain));
+        await act(async () => router.push('/share-receipt'));
+        await act(async () => router.push(shared));
+
+        await act(async () => router.back());
+        expect(screen).toHavePathname('/share-receipt');
+        await act(async () => router.back());
+
+        expect(screen).toHavePathnameWithParams(url);
+      },
+    );
+
+    it.each(TAPPED_ONCE_SCREENS)(
+      'Should reuse the $name screen on a second tap without a share',
+      async ({ plain }) => {
+        await renderAppAsMember();
+
+        await act(async () => router.push(plain));
+        await act(async () => router.push(plain));
+        await act(async () => router.back());
+
+        expect(screen.getByText('Página do início')).toBeOnTheScreen();
+      },
+    );
+
+    // O leitor aberto sob o formulário guarda o estado do arquivo dele (falha, página); outro arquivo é outro leitor.
+    it('Should open a new receipt preview for another file', async () => {
+      await renderAppAsMember();
+      await act(async () => router.push(RECEIPT_PREVIEW_OF_RECEIPT_A));
+      await act(async () => router.push('/share-receipt'));
+      await act(async () => router.push(RECEIPT_PREVIEW_OF_RECEIPT_B));
+
+      await act(async () => router.back());
+      expect(screen).toHavePathname('/share-receipt');
+      await act(async () => router.back());
+
+      expect(screen).toHavePathname('/receipt-preview');
+      expect(screen).toHaveSearchParams(RECEIPT_PREVIEW_OF_RECEIPT_A.params);
     });
   });
 

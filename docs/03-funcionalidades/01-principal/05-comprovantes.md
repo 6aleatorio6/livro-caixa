@@ -117,6 +117,7 @@ Antes de salvar, o membro também abre o comprovante anexado, para conferir o va
 - [ ] Qualquer membro abre o comprovante de um lançamento de outro membro.
 - [ ] A imagem abre em tela cheia na largura da tela e rola na vertical, sem zoom.
 - [ ] O PDF abre em tela cheia dentro do app, com as páginas rolando.
+- [ ] Dois toques rápidos em Ver abrem um leitor só.
 - [ ] No pagamento, tocar no comprovante compartilhado o abre em tela cheia, sem abrir a escolha de
       arquivo; o Trocar abre a escolha.
 - [ ] Na lista do compartilhamento, tocar no comprovante o abre em tela cheia.
