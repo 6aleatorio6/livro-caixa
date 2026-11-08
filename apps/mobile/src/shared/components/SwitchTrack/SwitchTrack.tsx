@@ -26,7 +26,8 @@ export function SwitchTrack({ isOn, isDisabled = false }: ISwitchTrackProps) {
 }
 
 const styles = StyleSheet.create((theme) => ({
-  // O trilho de 52 × 32 e as alças de 16 e 24 são as medidas do interruptor do design, sem token.
+  // O trilho de 52 × 32 e as alças de 16 e 24 são as medidas do interruptor do design, sem token. A alça fica a 4 da
+  // borda ligada e a 6 desligada: no React Native a borda de 2 do desligado soma ao padding, então o padding é um só.
   track: (isOn: boolean, isDisabled: boolean) => ({
     width: 52,
     height: 32,
@@ -34,7 +35,7 @@ const styles = StyleSheet.create((theme) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: isOn ? 'flex-end' : 'flex-start',
-    paddingHorizontal: isOn ? theme.spacing.extraSmall : theme.spacing.extraSmallIncreased,
+    paddingHorizontal: theme.spacing.extraSmall,
     backgroundColor: isOn ? theme.colors.primary : theme.colors.surfaceContainerHighest,
     borderWidth: isOn ? 0 : 2,
     borderColor: theme.colors.outline,
