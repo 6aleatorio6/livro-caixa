@@ -7,8 +7,19 @@ import { memberChoicesOf } from './memberChoicesOf';
 const people = [personOf('bruno', 'Bruno'), personOf('ana', 'Ana'), personOf('clara', 'Clara')];
 const choices = memberChoicesOf(people, 'bruno');
 
-const titleOf = (markedUids: string[]) =>
-  emptyTitleOf(chipSelectionOf(new Set(markedUids), choices, 'bruno'), '2026-10');
+// `EVERYONE` é o modo "Todos"; uma lista de uids são os chips marcados em "Várias".
+const EVERYONE = 'everyone' as const;
+const titleOf = (marked: string[] | typeof EVERYONE) =>
+  emptyTitleOf(
+    chipSelectionOf(
+      marked === EVERYONE
+        ? { mode: 'everyone', markedUids: new Set() }
+        : { mode: 'several', markedUids: new Set(marked) },
+      choices,
+      'bruno',
+    ),
+    '2026-10',
+  );
 
 describe('emptyTitleOf', () => {
   it('Should say nothing of "Você" when only "Você" is marked', () => {
@@ -23,7 +34,7 @@ describe('emptyTitleOf', () => {
     expect(titleOf(['bruno', 'ana'])).toBe('Nenhum pagamento das pessoas escolhidas em outubro');
   });
 
-  it('Should speak of nobody when every person is marked', () => {
-    expect(titleOf(['bruno', 'ana', 'clara'])).toBe('Nenhum pagamento em outubro');
+  it('Should speak of nobody in "Todos"', () => {
+    expect(titleOf(EVERYONE)).toBe('Nenhum pagamento em outubro');
   });
 });

@@ -15,12 +15,17 @@ pagou.
 
 ## O que aparece na tela
 
-- **Os chips com os membros da família:** "Todos" primeiro, depois "Você" e quem já entrou no app,
-  pelo primeiro nome. A aba abre só com "Você" marcado. Os chips se marcam em mais de um: tocar no
-  chip de uma pessoa marca ou desmarca a parte dela, e a lista mostra as partes de todas as
-  marcadas. O último chip marcado não desmarca, para a lista nunca ficar sem ninguém. "Todos" marca
-  todos os chips de pessoa e fica marcado enquanto todas estão marcadas, mesmo que cada uma tenha
-  sido marcada à mão; tocar nele com todas marcadas não muda nada.
+- **O filtro das pessoas:** em cima, o modo, "Uma pessoa", "Várias" ou "Todos"; embaixo, um chip
+  para "Você" e para cada membro que já entrou no app, pelo primeiro nome. A aba abre em "Uma
+  pessoa", com só "Você" marcado.
+  - **Em "Uma pessoa",** tocar no chip de outra pessoa troca a escolhida.
+  - **Em "Várias",** tocar num chip marca ou desmarca a pessoa, e a lista mostra as partes de todas
+    as marcadas. O último chip marcado não desmarca, para a lista nunca ficar sem ninguém.
+  - **"Todos"** marca todos os chips, também o de quem entra na família com a tela aberta.
+    Desmarcar alguém passa para "Várias", com os outros marcados, e marcar todos em "Várias" volta
+    para "Todos".
+  - **Ao trocar de modo,** "Uma pessoa" fica com a primeira pessoa marcada na ordem dos chips, que
+    começa em "Você", e "Várias", vindo de "Todos", começa só com "Você".
 - **O total das pessoas marcadas no mês** e quanto isso é do que a família pagou. É a soma das
   linhas da lista, e o título diz de quem é: "Sua parte em outubro" com só "Você" marcado, "Parte de
   Bruno em outubro" com só outro membro, "Partes de Você e Bruno em outubro" com mais de uma pessoa
@@ -71,8 +76,8 @@ escolhidas em outubro" com várias e, em "Todos", "Nenhum pagamento em outubro".
 
 ## Regras
 
-- A lista mostra as partes das pessoas marcadas, que podem ser várias, e o chip "Todos" marca
-  todas. O último chip marcado não desmarca.
+- A lista mostra as partes das pessoas marcadas: uma em "Uma pessoa", as escolhidas em "Várias" e
+  todas em "Todos". O último chip marcado não desmarca.
 - Quem foi adicionado à lista de e-mails e ainda não entrou no app não tem chip: não tem lançamento.
   Se uma pessoa marcada sai da lista, o chip dela some, e sem ninguém marcado vale o "Você".
 - Cada lançamento entra no mês em que conta no Início: o pagamento, no mês da conta que ele paga; a
@@ -88,13 +93,16 @@ escolhidas em outubro" com várias e, em "Todos", "Nenhum pagamento em outubro".
 
 ## Critérios de aceite
 
-- [ ] A aba abre nos lançamentos do membro logado, com só o chip "Você" marcado.
-- [ ] Os chips se marcam em mais de um, e a lista mostra as partes de todas as pessoas marcadas,
-      agrupadas por tag.
+- [ ] A aba abre em "Uma pessoa", nos lançamentos do membro logado, com só o chip "Você" marcado.
+- [ ] Em "Uma pessoa", tocar no chip de outra pessoa troca a escolhida.
+- [ ] Em "Várias", os chips se marcam em mais de um, e a lista mostra as partes de todas as pessoas
+      marcadas, agrupadas por tag.
 - [ ] Você e Ana marcados somam as duas partes no total do cartão.
 - [ ] O último chip marcado não desmarca.
-- [ ] "Todos" marca todos os chips de pessoa e fica marcado enquanto todas estão marcadas; tocar nele
-      com todas marcadas não muda nada.
+- [ ] "Todos" marca todos os chips; desmarcar um passa para "Várias", e marcar todos em "Várias"
+      volta para "Todos".
+- [ ] Em "Todos", quem entra na família com a tela aberta entra na lista, e a tela continua em
+      "Todos".
 - [ ] Com só outro membro marcado, a lista mostra só as partes dele, com o total dele no mês.
 - [ ] Um membro que ainda não entrou no app não tem chip.
 - [ ] Em "Todos", a lista mostra as partes da família inteira, agrupadas por tag, com quem pagou ou

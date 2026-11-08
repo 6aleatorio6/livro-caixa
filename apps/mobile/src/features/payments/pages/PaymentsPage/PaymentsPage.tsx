@@ -10,7 +10,10 @@ import { PaymentRow } from '@/features/payments/components/PaymentRow/PaymentRow
 import { chipSelectionOf } from '@/features/payments/utils/chipSelectionOf';
 import { emptyTitleOf } from '@/features/payments/utils/emptyTitleOf';
 import { entryGroupsByTag } from '@/features/payments/utils/entryGroupsByTag';
-import { markedUidsAfterPress } from '@/features/payments/utils/markedUidsAfterPress';
+import type { IPeopleFilter } from '@/features/payments/types/PeopleFilter';
+import type { IPeopleMode } from '@/features/payments/types/PeopleMode';
+import { peopleFilterAfterPress } from '@/features/payments/utils/peopleFilterAfterPress';
+import { peopleFilterForMode } from '@/features/payments/utils/peopleFilterForMode';
 import { memberChoicesOf } from '@/features/payments/utils/memberChoicesOf';
 import { paymentRowsOf } from '@/features/payments/utils/paymentRowsOf';
 import { totalTitleOf } from '@/features/payments/utils/totalTitleOf';
@@ -23,6 +26,7 @@ import { MonthSwitcher } from '@/shared/components/MonthSwitcher/MonthSwitcher';
 import { MonthTotalCard } from '@/shared/components/MonthTotalCard/MonthTotalCard';
 import { Screen } from '@/shared/components/Screen/Screen';
 import { ScreenContent } from '@/shared/components/Screen/ScreenContent';
+import { SegmentedToggle } from '@/shared/components/SegmentedToggle/SegmentedToggle';
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
@@ -34,23 +38,29 @@ import { memberPartsOf } from '@/shared/utils/entry/memberPartsOf';
 import { sumCents } from '@/shared/utils/entry/sumCents';
 import { tagDisplayOf } from '@/shared/utils/tag/tagDisplayOf';
 
+const PEOPLE_MODE_OPTIONS = [
+  { value: 'one', label: 'Uma pessoa' },
+  { value: 'several', label: 'Várias' },
+  { value: 'everyone', label: 'Todos' },
+] as const;
+
 /**
- * As partes das pessoas marcadas nos chips (abre em quem está logado; "Todos" marca todas), mês a mês e agrupadas por
- * tag, com o total no mês. Cada parte é uma linha: a de quem pagou conta o valor pago menos as contribuições, e cada
- * contribuição é a sua. O botão registra uma conta avulsa.
+ * As partes das pessoas marcadas nos chips, mês a mês e agrupadas por tag, com o total no mês. O modo diz como os chips
+ * se marcam: uma pessoa por vez (abre em quem está logado), várias, ou todas. Cada parte é uma linha: a de quem pagou
+ * conta o valor pago menos as contribuições, e cada contribuição é a sua. O botão registra uma conta avulsa.
  */
 export function PaymentsPage() {
   const uid = signedInUid(useAuthState());
   const [month, setMonth] = useState(currentMonth);
-  // Os uids que a pessoa marcou, independentes do mês; o que vale é a seleção derivada deles, com "Você" quando nenhum
-  // sobra (nada tocado, ou quem estava marcado saiu da lista).
-  const [markedUids, setMarkedUids] = useState<ReadonlySet<string>>(() => new Set());
+  // O modo e os uids que a pessoa marcou, independentes do mês; o que vale é a seleção derivada deles, com "Você" quando
+  // nenhum sobra (nada tocado, ou quem estava marcado saiu da lista).
+  const [filter, setFilter] = useState<IPeopleFilter>(() => ({ mode: 'one', markedUids: new Set() }));
   const { status, data: entries } = useRealtime(entryMonthQueryService, { month });
   const { status: tagsStatus, data: tags } = useRealtime(tagListQueryService, {});
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
 
   const choices = uid ? memberChoicesOf(people ?? [], uid) : [];
-  const selection = uid ? chipSelectionOf(markedUids, choices, uid) : null;
+  const selection = uid ? chipSelectionOf(filter, choices, uid) : null;
   // A leitura traz o mês da família inteiro; as partes dele, calculadas uma vez, dão a lista e a base da porcentagem.
   const parts = entries ? memberPartsOf(entries) : null;
   // A lista é a das partes das pessoas marcadas. Sem as tags, toda conta cairia no grupo sem tag: ela as espera.
@@ -60,25 +70,33 @@ export function PaymentsPage() {
   // A base da porcentagem é o mesmo pago do Início: a soma das partes de todos.
   const familyAmountCents = parts ? sumCents(parts) : 0;
 
+  function chooseMode(nextMode: IPeopleMode) {
+    if (!selection || !uid) return;
+    setFilter(peopleFilterForMode(nextMode, selection, choices, uid));
+  }
+
   return (
     <Screen>
       <ScreenContent gap="extraLarge" hasFloatingButton>
         <MonthSwitcher label="Pagamentos" month={month} onMonthChange={setMonth} />
 
-        <View style={styles.chips}>
-          {selection
-            ? choices.map((choice) => (
+        {selection ? (
+          <View style={styles.people}>
+            <SegmentedToggle options={[...PEOPLE_MODE_OPTIONS]} value={filter.mode} onChange={chooseMode} />
+            <View style={styles.chips}>
+              {choices.map((choice) => (
                 <FilterChip
-                  key={choice.key}
+                  key={choice.uid}
                   label={choice.name}
-                  isSelected={
-                    choice.kind === 'everyone' ? selection.kind === 'everyone' : selection.markedUids.has(choice.uid)
+                  isSelected={selection.markedUids.has(choice.uid)}
+                  onPress={() =>
+                    setFilter(peopleFilterAfterPress({ mode: filter.mode, markedUids: selection.markedUids }, choice, choices))
                   }
-                  onPress={() => setMarkedUids(markedUidsAfterPress(selection.markedUids, choice, choices))}
                 />
-              ))
-            : null}
-        </View>
+              ))}
+            </View>
+          </View>
+        ) : null}
 
         {hasError ? (
           <AppText variant="bodyMedium" color="onSurfaceVariant">
@@ -129,6 +147,7 @@ export function PaymentsPage() {
 }
 
 const styles = StyleSheet.create((theme) => ({
+  people: { gap: theme.spacing.medium },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.small },
   groups: { gap: theme.spacing.large },
 }));
