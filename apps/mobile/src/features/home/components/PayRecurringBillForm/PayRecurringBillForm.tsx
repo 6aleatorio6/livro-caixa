@@ -41,7 +41,7 @@ export interface IPayRecurringBillFormProps {
 /**
  * O pagamento de uma conta num mês: quem está sendo paga, o valor (do previsto, corrigível), o interruptor Paguei só
  * uma parte, o comprovante e o aviso. Ligado o interruptor, o registro é uma contribuição. No mês com contribuições, o
- * valor começa na conta inteira, e o apoio diz com quanto quem paga fica.
+ * valor começa na conta inteira, e o apoio diz que ela inclui as contribuições.
  */
 export function PayRecurringBillForm({
   bill,
@@ -78,7 +78,7 @@ export function PayRecurringBillForm({
   );
 
   const paymentSupportText = contributionsSupport
-    ? `A conta inteira, com os ${contributionsSupport}.${amountCents === null ? '' : ` Você fica com ${formatCents(amountCents - contributedCents)}.`}`
+    ? `A conta inteira, com os ${contributionsSupport}.`
     : 'Veio do valor previsto. Corrija se pagou outro valor.';
 
   return (

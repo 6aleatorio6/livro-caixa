@@ -37,8 +37,8 @@ Qualquer membro, depois de pagar uma conta da família.
   [contribuição](08-contribuicao.md). Abaixo de 30% do valor previsto do mês, ele vem ligado e
   desabilitado: o registro só pode ser uma contribuição. Ligado, o botão é Registrar contribuição.
 - **Num mês com contribuições**, quem paga registra o valor inteiro da conta, e o texto de apoio diz
-  com quanto ele fica: o valor menos as contribuições. O valor não pode ficar abaixo da soma delas. O
-  mês continua com o valor previsto que tinha na primeira contribuição.
+  que a conta inteira inclui as contribuições. O valor não pode ficar abaixo da soma delas. O mês
+  continua com o valor previsto que tinha na primeira contribuição.
 - **O pagamento com contribuições não é excluído** enquanto elas existirem, e o valor pago não baixa
   para menos que a soma delas.
 - Em Alterar pagamento, o mesmo interruptor transforma o pagamento numa contribuição, com o mesmo
