@@ -77,4 +77,45 @@ describe('ListItem', () => {
 
     expect(screen.queryByTestId('list-item-chevron', { includeHiddenElements: true })).toBeNull();
   });
+
+  describe('When isOn is defined', () => {
+    const SUPPORT = 'Pede a digital ou o rosto ao abrir o app e depois de 10 minutos fora';
+
+    async function renderSwitch(isOn: boolean) {
+      const onPress = jest.fn();
+      await render(
+        <ListItem icon={Tag} title="Entrar com biometria" support={SUPPORT} isOn={isOn} onPress={onPress} />,
+      );
+      return { onPress };
+    }
+
+    it('Should be a checked switch when it is on', async () => {
+      await renderSwitch(true);
+
+      expect(screen.getByRole('switch', { name: 'Entrar com biometria' })).toBeChecked();
+      expect(screen.queryByRole('button')).toBeNull();
+    });
+
+    it('Should be an unchecked switch when it is off', async () => {
+      await renderSwitch(false);
+
+      expect(screen.getByRole('switch', { name: 'Entrar com biometria' })).not.toBeChecked();
+    });
+
+    it('Should read the support text as the hint and show it whole', async () => {
+      await renderSwitch(false);
+
+      expect(screen.getByRole('switch', { name: 'Entrar com biometria' })).toHaveProp('accessibilityHint', SUPPORT);
+      expect(screen.getByText(SUPPORT)).not.toHaveProp('numberOfLines', 1);
+    });
+
+    it('Should call onPress and show no chevron, since the switch is what sits to the right', async () => {
+      const { onPress } = await renderSwitch(false);
+
+      await userEvent.setup().press(screen.getByRole('switch', { name: 'Entrar com biometria' }));
+
+      expect(onPress).toHaveBeenCalledTimes(1);
+      expect(screen.queryByTestId('list-item-chevron', { includeHiddenElements: true })).toBeNull();
+    });
+  });
 });
