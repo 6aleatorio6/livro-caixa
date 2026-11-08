@@ -259,7 +259,12 @@ throwaway flow before the round counts as passing.
 - **The status and navigation bars take height:** a list item near the end of the Início (the
   Água) sits below the fold. Wait for the first item, or scroll to the one the flow needs.
 - **`clearState`** erases the session and the cached data: every flow signs in again.
-- **A native change** needs `pnpm android` on the PC again; Metro alone won't bring it.
+- **A native change** needs `pnpm android` on the PC again; Metro alone won't bring it. A change
+  to a config plugin (`app.config.ts`, a plugin's options in `app.json`) needs
+  `cd apps/mobile && npx expo prebuild --platform android --no-install` on the PC first:
+  `expo run:android` only runs the prebuild when `android/` is missing, so the plugin never reaches
+  the APK (2026-11-08: the `configChanges` plugin was built without it, and `cmd package
+  resolve-activity` still showed the old `configChanges=0x80000fb3`).
 - **The first bundle** after `clearState` takes a while: `signInAs` waits up to 60 s for the
   sign-in screen.
 - **The adb version:** use only the PC's adb, the one the claude-box puts on the `PATH`. A client
