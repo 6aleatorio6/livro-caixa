@@ -1,5 +1,7 @@
 import { useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { Share2 } from 'lucide-react-native';
+import { useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { ScopedTheme, StyleSheet, useUnistyles } from 'react-native-unistyles';
 
@@ -18,11 +20,16 @@ import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 
 import { ReceiptEntryStrip } from './components/ReceiptEntryStrip/ReceiptEntryStrip';
 import { useReceiptContent } from './hooks/useReceiptContent/useReceiptContent';
+import { doShareReceipt } from './utils/actions/doShareReceipt';
 
 const CANNOT_OPEN = 'Não deu para abrir o comprovante.';
 const NOT_FOUND = 'O comprovante não foi encontrado.';
 
-/** O comprovante de um lançamento em tela cheia, no tema escuro: a imagem na largura da tela ou as páginas do PDF, as duas rolando, e os dados do lançamento embaixo. Qualquer membro abre. */
+/**
+ * O comprovante de um lançamento em tela cheia, no tema escuro: a imagem na largura da tela ou as páginas do PDF, as
+ * duas rolando, e os dados do lançamento embaixo. O Compartilhar da barra manda o arquivo para outro app. Qualquer
+ * membro abre.
+ */
 export function ReceiptViewerPage() {
   const { theme } = useUnistyles();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -32,6 +39,15 @@ export function ReceiptViewerPage() {
   const { status: fileStatus, data: file } = useRealtime(receiptFileQueryService, { id: entry?.receiptFileId ?? null });
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
   const receipt = useReceiptContent(file ?? null);
+  const [isSharing, setIsSharing] = useState(false);
+  const shareable = file && receipt.uri ? { file, uri: receipt.uri } : null;
+
+  async function share() {
+    if (!shareable) return;
+    setIsSharing(true);
+    await doShareReceipt(shareable);
+    setIsSharing(false);
+  }
 
   function body() {
     if (entryStatus === 'error' || fileStatus === 'error') return <ReceiptProblem message={CANNOT_OPEN} />;
@@ -53,7 +69,11 @@ export function ReceiptViewerPage() {
     <ScopedTheme name="dark">
       <StatusBar style="light" />
       <Screen>
-        <TopBar title={file?.name ?? ''} icon="close" />
+        <TopBar
+          title={file?.name ?? ''}
+          icon="close"
+          action={{ icon: Share2, label: 'Compartilhar', onPress: share, disabled: !shareable || isSharing }}
+        />
         <View style={styles.area}>{body()}</View>
         {entry ? <ReceiptEntryStrip entry={entry} authorName={memberNameOf(entry.paidBy, people ?? [])} /> : null}
       </Screen>

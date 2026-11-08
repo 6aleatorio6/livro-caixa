@@ -89,7 +89,10 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   O plugin dele põe no manifesto o filtro que faz o app aparecer entre os destinos de uma imagem ou
   de um PDF, e o `+native-intent` do expo-router leva o endereço `livrocaixa://expo-sharing`, com que
   o Android abre o app, à rota `share-receipt`. O `useIncomingShare` lê o arquivo, que o módulo já
-  copia para o cache, e o `prepareReceipt` o confere como em qualquer comprovante.
+  copia para o cache, e o `prepareReceipt` o confere como em qualquer comprovante. No sentido
+  contrário, o Compartilhar do comprovante grava uma cópia no cache e a entrega ao `shareAsync`, que
+  a passa aos outros apps pelo `FileProvider` do próprio módulo
+  ([Ver o comprovante](../03-funcionalidades/01-principal/05-comprovantes.md#ver-o-comprovante)).
   O risco: no SDK 58, o recebimento ainda é experimental.
 - **Seletor de arquivos com o `expo-document-picker`**, do próprio Expo, que sai junto com o SDK.
   Abre o seletor de documentos do Android para escolher o comprovante e não pede plugin.

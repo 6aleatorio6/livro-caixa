@@ -103,12 +103,19 @@ O comprovante abre em tela cheia dentro do app, sobre fundo escuro. Embaixo, de 
 - **O PDF abre com as páginas uma embaixo da outra**, rolando, com o zoom de pinça do leitor do app
   e, quando há mais de uma página, a indicação "1 de 2". Ele não sai para o leitor de PDF do
   celular.
+- **O Compartilhar, no canto da barra, manda o arquivo para outro app** pelo compartilhar do Android,
+  seja imagem ou PDF, com o nome com que foi salvo. Ex.: mandar o Pix da água pelo WhatsApp. O nome
+  termina na extensão do formato, porque o app que recebe reconhece o arquivo por ela: a imagem que o
+  app comprimiu vai como `.webp`, e um PDF salvo como "Boleto luz" vai como "Boleto luz.pdf". O botão
+  fica desligado até o arquivo chegar, quando o app não consegue abri-lo e enquanto o compartilhar
+  está aberto.
 
 Antes de salvar, o membro também abre o comprovante anexado, para conferir o valor enquanto o digita:
 
 - **No pagamento, na conta avulsa e na alteração**, tocar no comprovante anexado o abre em tela cheia,
-  do mesmo jeito, sem a faixa do lançamento, que ainda não existe. Só o Trocar escolhe outro arquivo.
-  Na alteração, o comprovante já salvo abre como pelo Ver dos detalhes.
+  do mesmo jeito, sem a faixa do lançamento, que ainda não existe, e sem o Compartilhar: o arquivo
+  ainda é o do celular. Só o Trocar escolhe outro arquivo. Na alteração, o comprovante já salvo abre
+  como pelo Ver dos detalhes.
 - **Na lista do compartilhamento**, tocar no comprovante o abre do mesmo jeito. Ali ele não se troca.
 
 ## Critérios de aceite
@@ -140,6 +147,13 @@ Antes de salvar, o membro também abre o comprovante anexado, para conferir o va
 - [ ] A imagem abre em tela cheia na largura da tela e rola na vertical, sem zoom.
 - [ ] O PDF abre em tela cheia dentro do app, com as páginas rolando.
 - [ ] Dois toques rápidos em Ver abrem um leitor só.
+- [ ] No comprovante aberto pelo Ver, o Compartilhar abre o compartilhar do Android com o arquivo,
+      imagem ou PDF, com o nome dele terminado na extensão do formato: a imagem comprimida vai como
+      `.webp`, e o nome sem extensão a ganha.
+- [ ] Até o arquivo do comprovante chegar, e quando ele não abre, o Compartilhar fica desligado.
+- [ ] Um segundo toque no Compartilhar, com o compartilhar do Android aberto, não abre outro.
+- [ ] Quando o compartilhar não abre, o app avisa "Não deu para compartilhar o comprovante." e o
+      Compartilhar volta a funcionar.
 - [ ] No pagamento, tocar no comprovante compartilhado o abre em tela cheia, sem abrir a escolha de
       arquivo; o Trocar abre a escolha.
 - [ ] Na lista do compartilhamento, tocar no comprovante o abre em tela cheia.

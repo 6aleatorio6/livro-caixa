@@ -1,8 +1,10 @@
 import { act, render, screen, userEvent } from '@testing-library/react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
+import { showToast } from '@/core/utils/storeActions/showToast';
 import { PdfPages } from '@/features/entries/components/PdfPages/PdfPages';
 import { ScrollableImage } from '@/features/entries/components/ScrollableImage/ScrollableImage';
+import { AppError } from '@/shared/exceptions/AppError';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService.scenarios';
 import { entryQueryService } from '@/shared/services/entry/query/entryQueryService';
@@ -20,6 +22,7 @@ import { mockServiceScenario } from '@/shared/testing/mockServiceScenario';
 import type { IRealtimeMock } from '@/shared/types/testing/RealtimeMock';
 
 import { ReceiptViewerPage } from './ReceiptViewerPage';
+import { shareReceipt } from './utils/shareReceipt';
 
 // Mocks com fábrica: o módulo real carregaria o React Native Firebase, que não roda no Jest.
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
@@ -34,6 +37,11 @@ jest.mock('expo-router', () => ({ router: { back: jest.fn() }, useLocalSearchPar
 jest.mock('@/features/entries/components/ScrollableImage/ScrollableImage', () => ({ ScrollableImage: jest.fn(() => null) }));
 // As páginas são desenhadas pelo módulo nativo da `react-native-pdf`; o teste lê as props que a tela passa.
 jest.mock('@/features/entries/components/PdfPages/PdfPages', () => ({ PdfPages: jest.fn(() => null) }));
+// O arquivo no cache e o compartilhar do Android se conferem no `shareReceipt.test.ts` e no aparelho.
+jest.mock('./utils/shareReceipt', () => ({ shareReceipt: jest.fn() }));
+// O aviso se esconde num timer de 4 s, que seguraria o Jest depois do teste. Com o relógio falso, a outra saída, esta tela
+// deixou o Jest num laço (a causa não foi achada).
+jest.mock('@/core/utils/storeActions/showToast', () => ({ showToast: jest.fn() }));
 
 const family = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyList };
 const oneOffBill = { service: entryQueryService, scenario: entryQueryScenarios.oneOffBillOfTheMember };
@@ -182,6 +190,77 @@ describe('ReceiptViewerPage', () => {
       expect(ScrollableImage).not.toHaveBeenCalled();
       expect(screen.queryByText('Não deu para abrir o comprovante.')).not.toBeOnTheScreen();
       expect(screen.getByText('Conserto da geladeira · R$ 350,00')).toBeOnTheScreen();
+    });
+  });
+
+  describe('Sharing', () => {
+    const shareButton = () => screen.getByRole('button', { name: 'Compartilhar' });
+
+    it.each([
+      { kind: 'PDF', entry: payment, receipt: pdfReceipt, content: pdfContent },
+      { kind: 'image', entry: oneOffBill, receipt: imageReceipt, content: imageContent },
+    ])('Should share the open $kind with its record and its content', async ({ entry, receipt, content }) => {
+      mockServiceScenario(getReceiptContentService, content);
+      jest.mocked(shareReceipt).mockResolvedValue();
+      const user = await renderViewer(entry, receipt, family);
+
+      await user.press(shareButton());
+
+      expect(shareReceipt).toHaveBeenCalledWith({ file: receipt.scenario.result, uri: content.result });
+    });
+
+    it('Should keep Compartilhar off while the content is not back', async () => {
+      jest.mocked(getReceiptContentService).mockReturnValue(new Promise(() => {}));
+
+      await renderViewer(oneOffBill, imageReceipt, family);
+
+      expect(shareButton()).toBeDisabled();
+    });
+
+    it('Should keep Compartilhar off when the image does not open', async () => {
+      mockServiceScenario(getReceiptContentService, imageContent);
+      await renderViewer(oneOffBill, imageReceipt, family);
+
+      await act(async () => imageProps().onError());
+
+      expect(shareButton()).toBeDisabled();
+    });
+
+    it('Should keep Compartilhar off when the content is missing', async () => {
+      mockServiceRejection(getReceiptContentService, getReceiptContentRejectedScenarios.receiptContentMissing);
+
+      await renderViewer(oneOffBill, imageReceipt, family);
+
+      expect(await screen.findByText('O comprovante não foi encontrado.')).toBeOnTheScreen();
+      expect(shareButton()).toBeDisabled();
+    });
+
+    it('Should open one share at a time, and allow another once the first ends', async () => {
+      mockServiceScenario(getReceiptContentService, pdfContent);
+      let endShare = () => {};
+      jest.mocked(shareReceipt).mockReturnValue(new Promise((resolve) => (endShare = resolve)));
+      const user = await renderViewer(payment, pdfReceipt, family);
+
+      await user.press(shareButton());
+      await user.press(shareButton());
+      expect(shareReceipt).toHaveBeenCalledTimes(1);
+      expect(shareButton()).toBeDisabled();
+
+      await act(async () => endShare());
+      expect(shareButton()).toBeEnabled();
+    });
+
+    it('Should tell the person when the share fails, and allow trying again', async () => {
+      mockServiceScenario(getReceiptContentService, pdfContent);
+      jest
+        .mocked(shareReceipt)
+        .mockRejectedValue(new AppError('Could not share the receipt', 'Não deu para compartilhar o comprovante.'));
+      const user = await renderViewer(payment, pdfReceipt, family);
+
+      await user.press(shareButton());
+
+      expect(showToast).toHaveBeenCalledWith('Não deu para compartilhar o comprovante.', 'error');
+      expect(shareButton()).toBeEnabled();
     });
   });
 
