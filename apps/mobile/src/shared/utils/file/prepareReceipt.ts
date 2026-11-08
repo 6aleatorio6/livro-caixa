@@ -16,6 +16,10 @@ import { reduceImage } from './reduceImage';
 // antes deles. Mais que isso não compensa: cada página lida custa o desenho dela e uma passada do ML Kit.
 const MAX_OCR_PAGES = 3;
 
+// O ML Kit pode não responder, e a leitura não pode prender o anexo. O prazo vale para a leitura inteira, não por
+// página: três páginas lentas fariam o membro esperar 24 s por um valor que ele ainda confere.
+const OCR_DEADLINE_MS = 8000;
+
 /**
  * Confere o arquivo escolhido: a imagem acima de 900 KiB passa pela redução, e o PDF vai como está, porque não há
  * como comprimi-lo. Recusa o que continua acima de 900 KiB depois disso, o limite do documento do Firestore. O que
@@ -45,18 +49,39 @@ export async function prepareReceipt(file: ILocalFile): Promise<IReceipt> {
     );
   }
 
+  const deadlineAt = Date.now() + OCR_DEADLINE_MS;
   return {
     ...prepared,
     type: isPdf ? 'pdf' : 'image',
     wasReduced: prepared.uri !== file.uri,
-    readAmountCents: await findPaidAmount(prepared.uri, isPdf),
+    readAmountCents: await resultWithinDeadline(findPaidAmount(prepared.uri, isPdf, deadlineAt)),
   };
 }
 
-async function findPaidAmount(uri: string, isPdf: boolean): Promise<number | null> {
+/** O resultado da leitura, ou `null` quando ela não termina no prazo; o temporizador sai quando ela termina antes. */
+async function resultWithinDeadline(reading: Promise<number | null>): Promise<number | null> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<null>((resolve) => {
+    timer = setTimeout(() => {
+      // Sem o aviso, um módulo nativo que sempre trava passaria por comprovante sem valor.
+      console.warn(`A leitura do comprovante passou de ${OCR_DEADLINE_MS / 1000} s e segue sem o valor lido.`);
+      resolve(null);
+    }, OCR_DEADLINE_MS);
+  });
+  try {
+    return await Promise.race([reading, deadline]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function findPaidAmount(uri: string, isPdf: boolean, deadlineAt: number): Promise<number | null> {
   const pagesToRead = isPdf ? MAX_OCR_PAGES : 1;
   try {
     for (let pageIndex = 0; pageIndex < pagesToRead; pageIndex += 1) {
+      // A chamada nativa já em andamento não se cancela, mas as páginas seguintes não valem o trabalho: ninguém
+      // espera mais pelo resultado.
+      if (Date.now() >= deadlineAt) return null;
       // Em sequência de propósito: a página seguinte só é lida quando esta não mostra valor.
       const lines = await recognizeReceiptText(uri, isPdf, pageIndex);
       if (lines === null) return null;

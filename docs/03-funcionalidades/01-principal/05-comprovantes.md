@@ -58,6 +58,10 @@ e preenche o valor pago do [pagamento](03-pagamento-de-conta-recorrente.md), da
 - **O que é lido:** a imagem, ou o PDF até a terceira página: a primeira, e a seguinte só quando a
   anterior não mostra um valor. A leitura acontece enquanto o comprovante é preparado, com o
   carregamento que já cobre a tela.
+- **O prazo:** a leitura inteira, as três páginas juntas, tem 8 s. Passado o prazo, o comprovante segue
+  anexado e o campo fica sem o valor lido, como numa leitura que falha: no pagamento, com o valor
+  previsto ("Veio do valor previsto"); na conta avulsa, vazio, para o membro digitar. O que a leitura
+  trouxer depois é descartado.
 - **Qual valor:** o valor em reais do comprovante, quando ele mostra um só, mesmo que repetido. Com
   dois valores diferentes, como o do documento e o pago com juros, nada é preenchido. O valor zerado,
   como a tarifa de R$ 0,00, não conta. Ex.: o Pix de R$ 30,00 com a tarifa de R$ 0,00 preenche
@@ -131,6 +135,8 @@ Antes de salvar, o membro também abre o comprovante anexado, para conferir o va
 - [ ] O valor que só aparece na segunda página do PDF preenche o valor pago.
 - [ ] Com o valor na primeira página, a segunda não é lida.
 - [ ] Do PDF, no máximo as três primeiras páginas são lidas.
+- [ ] A leitura que passa de 8 s segue sem o valor lido: o pagamento fica com o valor previsto, com o
+      aviso "Veio do valor previsto", e a conta avulsa fica com o campo vazio.
 - [ ] O valor que o membro digitou não é trocado pelo do comprovante.
 - [ ] Com o valor lido, o campo diz "Veio do comprovante. Corrija se pagou outro valor."; digitado
       outro valor, o aviso sai.

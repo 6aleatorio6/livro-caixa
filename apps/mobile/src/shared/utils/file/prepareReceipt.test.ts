@@ -315,5 +315,66 @@ describe('prepareReceipt', () => {
 
       expect(recognizeReceiptText).not.toHaveBeenCalled();
     });
+
+    describe('The deadline of the reading', () => {
+      let warn: jest.SpyInstance;
+
+      beforeEach(() => {
+        jest.useFakeTimers();
+        warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      });
+
+      afterEach(() => {
+        warn.mockRestore();
+        jest.useRealTimers();
+      });
+
+      it('Should attach the receipt without an amount when reading takes more than 8 s', async () => {
+        // O ML Kit que nunca responde.
+        jest.mocked(recognizeReceiptText).mockReturnValue(new Promise(() => {}));
+        const original = file('image/png', 300 * 1024);
+        const preparing = prepareReceipt(original);
+
+        await jest.advanceTimersByTimeAsync(8000);
+
+        expect(await preparing).toEqual({ ...original, type: 'image', wasReduced: false, readAmountCents: null });
+        expect(warn).toHaveBeenCalledWith('A leitura do comprovante passou de 8 s e segue sem o valor lido.');
+      });
+
+      it('Should keep the amount read before the 8 s', async () => {
+        jest
+          .mocked(recognizeReceiptText)
+          .mockImplementation(() => new Promise((resolve) => setTimeout(() => resolve(PIX_LINES), 7999)));
+        const preparing = prepareReceipt(file('image/png', 300 * 1024));
+
+        await jest.advanceTimersByTimeAsync(7999);
+
+        expect(await preparing).toMatchObject({ readAmountCents: 6490 });
+      });
+
+      it('Should stop reading pages after the deadline', async () => {
+        // A primeira página só responde aos 9 s, depois do prazo, e sem valor: as duas seguintes não valem a leitura.
+        jest
+          .mocked(recognizeReceiptText)
+          .mockImplementation(
+            (_uri, _isPdf, pageIndex) =>
+              new Promise((resolve) => setTimeout(() => resolve(NO_AMOUNT_LINES), pageIndex === 0 ? 9000 : 0)),
+          );
+        const preparing = prepareReceipt(file('application/pdf', 30 * 1024));
+
+        await jest.advanceTimersByTimeAsync(9000);
+        await preparing;
+
+        expect(pageIndexesRead()).toEqual([0]);
+      });
+
+      it('Should not leave the timer running after the reading ends', async () => {
+        ocrReads([PIX_LINES]);
+
+        await prepareReceipt(file('image/png', 300 * 1024));
+
+        expect(jest.getTimerCount()).toBe(0);
+      });
+    });
   });
 });
