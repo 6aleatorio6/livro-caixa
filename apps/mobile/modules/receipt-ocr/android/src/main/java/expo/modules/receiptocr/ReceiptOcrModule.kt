@@ -27,7 +27,7 @@ private const val PDF_PIXELS_PER_POINT = 3f
 // de encolher pelo lado maior e deixar o texto miúdo demais.
 private const val PDF_PAGE_MAX_PIXELS = 12_000_000f
 
-/** Lê o texto de um comprovante no próprio celular, com o ML Kit: a imagem, ou a primeira página do PDF desenhada. */
+/** Lê o texto de um comprovante no próprio celular, com o ML Kit: a imagem, ou uma página do PDF desenhada. */
 class ReceiptOcrModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
@@ -35,16 +35,17 @@ class ReceiptOcrModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ReceiptOcr")
 
-    // Devolve as linhas lidas, cada uma com a posição em pixels na imagem lida; o PDF sem páginas não tem nenhuma.
-    AsyncFunction("recognizeText") { uri: String, isPdf: Boolean, promise: Promise ->
-      val pageBitmap = if (isPdf) renderFirstPdfPage(uri) else null
+    // Devolve as linhas lidas da página pedida, cada uma com a posição em pixels na imagem lida: a imagem é uma página
+    // só e ignora o `pageIndex`. Devolve nulo quando o PDF não tem a página `pageIndex`.
+    AsyncFunction("recognizeText") { uri: String, isPdf: Boolean, pageIndex: Int, promise: Promise ->
+      val pageBitmap = if (isPdf) renderPdfPage(uri, pageIndex) else null
       val image = if (isPdf) {
         pageBitmap?.let { InputImage.fromBitmap(it, 0) }
       } else {
         InputImage.fromFilePath(context, Uri.parse(uri))
       }
       if (image == null) {
-        promise.resolve(emptyList<Any?>())
+        promise.resolve(null)
         return@AsyncFunction
       }
 
@@ -63,14 +64,14 @@ class ReceiptOcrModule : Module() {
     }
   }
 
-  private fun renderFirstPdfPage(uri: String): Bitmap? {
+  private fun renderPdfPage(uri: String, pageIndex: Int): Bitmap? {
     // O `contentResolver` abre tanto o `content://` do compartilhamento quanto o `file://` do seletor.
     val descriptor = context.contentResolver.openFileDescriptor(Uri.parse(uri), "r")
       ?: throw FileNotFoundException(uri)
     return descriptor.use {
       PdfRenderer(descriptor).use { renderer ->
-        if (renderer.pageCount == 0) return null
-        renderer.openPage(0).use { page ->
+        if (pageIndex !in 0 until renderer.pageCount) return null
+        renderer.openPage(pageIndex).use { page ->
           val scale = min(PDF_PIXELS_PER_POINT, sqrt(PDF_PAGE_MAX_PIXELS / (page.width.toFloat() * page.height)))
           val bitmap = Bitmap.createBitmap(
             (page.width * scale).roundToInt(),

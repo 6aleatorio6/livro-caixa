@@ -51,8 +51,9 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
 - **O valor do comprovante lido no celular pelo ML Kit**, o reconhecimento de texto do Google, num
   módulo Expo local, `apps/mobile/modules/receipt-ocr`
   ([Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md#o-valor-lido-do-comprovante)).
-  O módulo lê a imagem, ou desenha a primeira página do PDF com o `PdfRenderer` do Android, e devolve
-  as linhas de texto com a posição de cada uma. Os parsers do app acham nelas o valor pago. O modelo
+  O módulo lê a imagem, ou desenha a página pedida do PDF com o `PdfRenderer` do Android, e devolve
+  as linhas de texto dessa página com a posição de cada uma, ou nada quando o PDF não tem a página;
+  o app pede até três, uma de cada vez. Os parsers do app acham nelas o valor pago. O modelo
   vai embutido no APK, com cerca de 4 MB em cada uma das 4 arquiteturas, e lê desde o primeiro
   comprovante, sem internet. O modelo baixado pelo Google Play Services teria uns 260 KB, mas a
   leitura feita antes de o download terminar não devolveria nada.

@@ -55,8 +55,9 @@ Ao anexar o comprovante, o app lê o texto dele no próprio celular, sem enviá-
 e preenche o valor pago do [pagamento](03-pagamento-de-conta-recorrente.md), da
 [conta avulsa](04-conta-avulsa.md) ou da alteração. O membro confere o valor antes de salvar.
 
-- **O que é lido:** a imagem, ou a primeira página do PDF. A leitura acontece enquanto o comprovante
-  é preparado, com o carregamento que já cobre a tela.
+- **O que é lido:** a imagem, ou o PDF até a terceira página: a primeira, e a seguinte só quando a
+  anterior não mostra um valor. A leitura acontece enquanto o comprovante é preparado, com o
+  carregamento que já cobre a tela.
 - **Qual valor:** o valor em reais do comprovante, quando ele mostra um só, mesmo que repetido. Com
   dois valores diferentes, como o do documento e o pago com juros, nada é preenchido. O valor zerado,
   como a tarifa de R$ 0,00, não conta. Ex.: o Pix de R$ 30,00 com a tarifa de R$ 0,00 preenche
@@ -126,7 +127,9 @@ Antes de salvar, o membro também abre o comprovante anexado, para conferir o va
 - [ ] O comprovante do Mercado Pago de R$ 63⁹⁶ preenche R$ 63,96, também quando a leitura traz a
       vírgula.
 - [ ] Um valor lido acima de R$ 9.999.999,99 não preenche nada.
-- [ ] Do PDF, só a primeira página é lida.
+- [ ] O valor que só aparece na segunda página do PDF preenche o valor pago.
+- [ ] Com o valor na primeira página, a segunda não é lida.
+- [ ] Do PDF, no máximo as três primeiras páginas são lidas.
 - [ ] O valor que o membro digitou não é trocado pelo do comprovante.
 - [ ] Com o valor lido, o campo diz "Veio do comprovante. Corrija se pagou outro valor."; digitado
       outro valor, o aviso sai.
