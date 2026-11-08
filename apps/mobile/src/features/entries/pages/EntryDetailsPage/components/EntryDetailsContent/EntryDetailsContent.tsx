@@ -150,7 +150,7 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
 }
 
 const styles = StyleSheet.create((theme) => ({
-  authorActions: { gap: theme.spacing.small },
+  authorActions: { gap: theme.spacing.large },
   actions: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.medium },
   change: { flex: 1 },
 }));
