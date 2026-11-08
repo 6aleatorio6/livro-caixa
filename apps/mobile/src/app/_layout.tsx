@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import { AppContainer } from '@/core/AppContainer';
 import { SplashScreenController } from '@/core/components/SplashScreenController/SplashScreenController';
 import { useAccess } from '@/features/auth/hooks/useAccess/useAccess';
+import { AppLockedScreen } from '@/features/biometrics/components/AppLockedScreen/AppLockedScreen';
+import { useBiometricLock } from '@/features/biometrics/hooks/useBiometricLock/useBiometricLock';
 import { useDiscardShareWithoutAccess } from '@/features/home/hooks/useDiscardShareWithoutAccess/useDiscardShareWithoutAccess';
 import { useAppVersionLockStore } from '@/shared/store/appVersionLock.store';
 import { checkAppVersion } from '@/shared/utils/version/checkAppVersion';
@@ -33,6 +35,11 @@ export default function RootLayout() {
   useEffect(() => {
     checkAppVersion().then(() => setHasCheckedVersion(true));
   }, []);
+  const isLockedByBiometrics = useBiometricLock();
+  // O bloqueio é um `Modal` por cima da pilha, não uma guarda: uma guarda desmontaria as telas abertas e perderia o
+  // rascunho de um registro pela metade. Só cobre o app liberado: a tela de atualização e a de entrar ficam na frente,
+  // e a conferência da versão termina antes, para o pedido do sistema não abrir por baixo da splash e da atualização.
+  const isAppLockVisible = isLockedByBiometrics && hasCheckedVersion && guardedStatus === 'allowed';
 
   // A splash espera a primeira conferência e, com o app liberado, a sessão: ela cobre a tela de login, que é a única
   // liberada enquanto o acesso carrega. Com o app travado a sessão não conta, a tela de atualização não depende dela.
@@ -89,6 +96,7 @@ export default function RootLayout() {
           </Stack.Protected>
         </Stack.Protected>
       </Stack>
+      {isAppLockVisible && <AppLockedScreen />}
     </AppContainer>
   );
 }
