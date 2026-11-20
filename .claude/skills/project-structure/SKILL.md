@@ -165,6 +165,21 @@ pnpm typecheck:mobile   # tsc --noEmit
 
 The lint checks the case of files (PascalCase for components, pages and types, camelCase for
 hooks, services, utils and stores), folders with no hyphen (or a `(Group)` folder), the layers, one
-export per file and the names. It
-can't see a file named after the wrong export, a misplaced file that respects the layers, or a
+export per file and the names. It also checks where each import comes from
+(`boundaries/dependencies` with `checkAllOrigins`, `no-restricted-imports`):
+
+- **Packages.** `@react-native-firebase/*` only in `src/shared` and tests; `firebase`, `@firebase/*`,
+  `@testing-library/*` and `expo-router/testing-library` only in tests and `src/shared/testing`;
+  `zustand` only in `*.store.ts`; `@hookform/resolvers` only in `useAppForm.ts`;
+  `react-native-safe-area-context` and `@expo/vector-icons` nowhere.
+- **Layers.** A page or component `.tsx` imports no `*Service`, only a `*QueryService` (the `do*`
+  action and the hook of the page folder import the service); `src/core/store` is imported only from
+  `src/core` and tests.
+- **Names.** No `StyleSheet`, `Text` or `SafeAreaView` from `react-native`; no `useMemo`,
+  `useCallback`, `memo` or `forwardRef` from `react`; no `useForm`, `Controller` or `useController`
+  from `react-hook-form`; no `../../` (use `@/`). `AppText.tsx` and `src/core` may use `Text`,
+  `createInputSmartWrapper.tsx` the controllers and `useAppForm.ts` `useForm`. Tests,
+  `src/shared/testing` and `*.scenarios.ts` are left out.
+
+It can't see a file named after the wrong export, a misplaced file that respects the layers, or a
 local component left inside another one's file: those are on whoever writes and whoever reviews.

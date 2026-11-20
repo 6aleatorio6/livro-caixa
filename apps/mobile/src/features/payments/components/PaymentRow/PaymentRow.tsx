@@ -1,13 +1,12 @@
 import { router } from 'expo-router';
 
+import type { IChipSelection } from '@/features/payments/types/ChipSelection';
+import type { IPaymentRow } from '@/features/payments/types/PaymentRow';
+import { paymentEntrySupportOf } from '@/features/payments/utils/paymentEntrySupportOf';
+import { paymentRowMarkKindOf } from '@/features/payments/utils/paymentRowMarkKindOf';
 import { EntryItem } from '@/shared/components/EntryItem/EntryItem';
 import type { IAllowedEmailListItem } from '@/shared/types/allowedEmail/AllowedEmailListItem';
 import { formatCents } from '@/shared/utils/format/formatCents';
-
-import type { IChipSelection } from '../../types/ChipSelection';
-import type { IPaymentRow } from '../../types/PaymentRow';
-import { paymentEntrySupportOf } from '../../utils/paymentEntrySupportOf';
-import { paymentRowMarkKindOf } from '../../utils/paymentRowMarkKindOf';
 
 export interface IPaymentRowProps {
   row: IPaymentRow;

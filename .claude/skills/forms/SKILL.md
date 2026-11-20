@@ -74,7 +74,8 @@ const { control, handleSubmit, formState } = useOneOffBillForm();
 <TextFieldSmart control={control} name="name" label="Nome" />
 ```
 
-- No `Controller` or `useController` in screens: the smart wrapper is the only place that binds.
+- No `Controller` or `useController` in screens: the smart wrapper is the only place that binds, and
+  the lint fails them anywhere else (`useForm` too: use `useAppForm`).
 - A new input type implements `IInputMinimalProps<TValue>` (`src/shared/types/form/InputMinimalProps.ts`:
   `value`, `onValueChange`, `onBlur`, `errorMessage`, `isRequired`, `disabled`) and gets its smart
   version in its own folder, `src/shared/components/inputs/MoneyFieldSmart/MoneyFieldSmart.tsx`:

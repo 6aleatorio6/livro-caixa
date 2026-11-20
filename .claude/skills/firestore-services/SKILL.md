@@ -20,6 +20,11 @@ from there.
 
 ## The instances
 
+`@react-native-firebase/*` is imported only from `src/shared` (and from tests): the lint
+(`boundaries/dependencies`) fails it in a feature, which calls a service. A page or component `.tsx`
+imports no `*Service`, only a `*QueryService`; the `do*` action and the hook next to it import the
+service.
+
 `src/shared/services/firebase/` holds one instance per product, built with the **modular API**:
 `firebaseAuth` (`getAuth()`) and `firestoreDb` (`getFirestore()`). React Native Firebase 27 has no
 namespaced API (`firebase.firestore()`): never write it. There is no Cloud Storage: it needs the Blaze
