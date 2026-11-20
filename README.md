@@ -150,14 +150,16 @@ Mais detalhes em [Testes](docs/05-arquitetura/03-testes.md) e
 
 ## Rodando localmente
 
-Pré-requisitos: Node 22.18 ou mais novo e pnpm 10. Os emuladores do Firebase (regras, contrato e
+Pré-requisitos: Node 22.22.1 ou mais novo (o mínimo do lint-staged) e pnpm 10. Os emuladores do Firebase (regras, contrato e
 jornadas) pedem Java. O build Android pede o Android SDK e o `apps/mobile/google-services.json`,
-baixado do console do Firebase e mantido fora do Git.
+baixado do console do Firebase e mantido fora do Git. O `pnpm install` também liga o hook de commit
+(`.githooks/pre-commit`): cada commit formata e confere com o Oxlint os arquivos do app que leva e confere os
+tipos do app inteiro.
 
 ```sh
 pnpm install                 # instala o workspace
 pnpm typecheck:mobile        # tsc do app
-pnpm mobile lint             # Oxlint do app
+pnpm mobile lint             # Oxlint e oxfmt do app
 pnpm test:mobile             # testes de unidade e de página
 pnpm test:contract           # serviços contra os emuladores do Firebase
 pnpm test:rules              # regras do Firestore
