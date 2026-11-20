@@ -121,9 +121,7 @@ describe('DateField', () => {
 
   it('Should not open the calendar while disabled', async () => {
     const user = userEvent.setup();
-    await render(
-      <DateField label="Vale a partir de" value="" onValueChange={jest.fn()} onBlur={jest.fn()} disabled />,
-    );
+    await render(<DateField label="Vale a partir de" value="" onValueChange={jest.fn()} onBlur={jest.fn()} disabled />);
 
     await user.press(screen.getByRole('button', { name: 'Vale a partir de' }));
 

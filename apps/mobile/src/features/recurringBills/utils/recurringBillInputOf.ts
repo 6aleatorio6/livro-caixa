@@ -2,7 +2,13 @@ import type { IRecurringBillFormValues } from '@/features/recurringBills/types/R
 import type { IRecurringBillInput } from '@/shared/types/recurringBill/RecurringBillInput';
 
 /** O que o formulário validado entrega ao serviço: o dia vira inteiro e o valor, o previsto. */
-export function recurringBillInputOf({ name, amountCents, dayOfMonth, startsOn, tagId }: IRecurringBillFormValues): IRecurringBillInput {
+export function recurringBillInputOf({
+  name,
+  amountCents,
+  dayOfMonth,
+  startsOn,
+  tagId,
+}: IRecurringBillFormValues): IRecurringBillInput {
   return {
     name,
     // O schema já recusou o valor vazio.

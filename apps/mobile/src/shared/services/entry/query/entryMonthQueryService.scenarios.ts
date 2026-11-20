@@ -28,26 +28,142 @@ const BOTH_IN_THE_LIST = {
 // O que o documento grava (sem o id); a conta sem tag não tem o campo `tagId`.
 const base = { kind: 'oneOffBill', createdAt: new Date('2026-10-20T12:00:00Z') } as const;
 // A Farmácia foi lançada depois do Estacionamento, no mesmo dia: o desempate é a hora do lançamento, não o nome.
-const PHARMACY = { ...base, createdAt: new Date('2026-10-12T18:00:00Z'), month: '2026-10', name: 'Farmácia', amountCents: 8990, date: '2026-10-12', tagId: HOME_TAG_ID, paidBy: testAccountUid(BRUNO), receiptFileId: 'f1' };
-const MARKET = { ...base, month: '2026-10', name: 'Mercado', amountCents: 25000, date: '2026-10-20', tagId: UTILITIES_TAG_ID, paidBy: testAccountUid(ANA), receiptFileId: 'f2' };
-const GARAGE = { ...base, createdAt: new Date('2026-10-12T09:00:00Z'), month: '2026-10', name: 'Estacionamento', amountCents: 1500, date: '2026-10-12', paidBy: testAccountUid(ANA), receiptFileId: 'f3' };
+const PHARMACY = {
+  ...base,
+  createdAt: new Date('2026-10-12T18:00:00Z'),
+  month: '2026-10',
+  name: 'Farmácia',
+  amountCents: 8990,
+  date: '2026-10-12',
+  tagId: HOME_TAG_ID,
+  paidBy: testAccountUid(BRUNO),
+  receiptFileId: 'f1',
+};
+const MARKET = {
+  ...base,
+  month: '2026-10',
+  name: 'Mercado',
+  amountCents: 25000,
+  date: '2026-10-20',
+  tagId: UTILITIES_TAG_ID,
+  paidBy: testAccountUid(ANA),
+  receiptFileId: 'f2',
+};
+const GARAGE = {
+  ...base,
+  createdAt: new Date('2026-10-12T09:00:00Z'),
+  month: '2026-10',
+  name: 'Estacionamento',
+  amountCents: 1500,
+  date: '2026-10-12',
+  paidBy: testAccountUid(ANA),
+  receiptFileId: 'f3',
+};
 // O pagamento da Internet pela Ana, sem `date`.
-const INTERNET_PAYMENT = { kind: 'recurringPayment', createdAt: new Date('2026-10-15T15:00:00Z'), month: '2026-10', recurringBillId: 'internet', name: 'Internet', amountCents: 11990, dueDay: 15, expectedAmountCents: 11990, tagId: HOME_TAG_ID, paidBy: testAccountUid(ANA), receiptFileId: 'f7' };
+const INTERNET_PAYMENT = {
+  kind: 'recurringPayment',
+  createdAt: new Date('2026-10-15T15:00:00Z'),
+  month: '2026-10',
+  recurringBillId: 'internet',
+  name: 'Internet',
+  amountCents: 11990,
+  dueDay: 15,
+  expectedAmountCents: 11990,
+  tagId: HOME_TAG_ID,
+  paidBy: testAccountUid(ANA),
+  receiptFileId: 'f7',
+};
 const BRUNO_INTERNET_PAYMENT = { ...INTERNET_PAYMENT, amountCents: 12500, paidBy: testAccountUid(BRUNO) };
-const SEPTEMBER = { ...base, month: '2026-09', name: 'Gráfica', amountCents: 3000, date: '2026-09-30', paidBy: testAccountUid(BRUNO), receiptFileId: 'f4' };
+const SEPTEMBER = {
+  ...base,
+  month: '2026-09',
+  name: 'Gráfica',
+  amountCents: 3000,
+  date: '2026-09-30',
+  paidBy: testAccountUid(BRUNO),
+  receiptFileId: 'f4',
+};
 // O mês do desenho do Início: três pagamentos (a Luz pagou R$ 187,35 de R$ 210,00 previstos) e a avulsa do Bruno.
-const RENT_PAYMENT = { kind: 'recurringPayment', createdAt: new Date('2026-10-05T15:00:00Z'), month: '2026-10', recurringBillId: 'rent', name: 'Aluguel', amountCents: 180000, dueDay: 5, expectedAmountCents: 180000, tagId: HOME_TAG_ID, paidBy: testAccountUid(ANA), receiptFileId: 'f8' };
-const CONDO_PAYMENT = { ...RENT_PAYMENT, createdAt: new Date('2026-10-08T15:00:00Z'), recurringBillId: 'condo', name: 'Condomínio', amountCents: 45000, dueDay: 8, expectedAmountCents: 45000, paidBy: testAccountUid(BRUNO), receiptFileId: 'f9' };
-const ELECTRICITY_PAYMENT = { ...RENT_PAYMENT, createdAt: new Date('2026-10-10T15:00:00Z'), recurringBillId: 'electricity', name: 'Luz', amountCents: 18735, dueDay: 10, expectedAmountCents: 21000, tagId: UTILITIES_TAG_ID, receiptFileId: 'f10' };
+const RENT_PAYMENT = {
+  kind: 'recurringPayment',
+  createdAt: new Date('2026-10-05T15:00:00Z'),
+  month: '2026-10',
+  recurringBillId: 'rent',
+  name: 'Aluguel',
+  amountCents: 180000,
+  dueDay: 5,
+  expectedAmountCents: 180000,
+  tagId: HOME_TAG_ID,
+  paidBy: testAccountUid(ANA),
+  receiptFileId: 'f8',
+};
+const CONDO_PAYMENT = {
+  ...RENT_PAYMENT,
+  createdAt: new Date('2026-10-08T15:00:00Z'),
+  recurringBillId: 'condo',
+  name: 'Condomínio',
+  amountCents: 45000,
+  dueDay: 8,
+  expectedAmountCents: 45000,
+  paidBy: testAccountUid(BRUNO),
+  receiptFileId: 'f9',
+};
+const ELECTRICITY_PAYMENT = {
+  ...RENT_PAYMENT,
+  createdAt: new Date('2026-10-10T15:00:00Z'),
+  recurringBillId: 'electricity',
+  name: 'Luz',
+  amountCents: 18735,
+  dueDay: 10,
+  expectedAmountCents: 21000,
+  tagId: UTILITIES_TAG_ID,
+  receiptFileId: 'f10',
+};
 // A Luz do Bruno foi paga com o dia 3 e o previsto de R$ 250,00; a conta de hoje (dia 10, R$ 210,00) mudou depois.
-const ALTERED_BILL_PAYMENT = { ...ELECTRICITY_PAYMENT, dueDay: 3, expectedAmountCents: 25000, paidBy: testAccountUid(BRUNO) };
-const FRIDGE = { ...base, createdAt: new Date('2026-10-12T15:00:00Z'), month: '2026-10', name: 'Conserto da geladeira', amountCents: 35000, date: '2026-10-12', tagId: HOME_TAG_ID, paidBy: testAccountUid(BRUNO), receiptFileId: 'f11' };
+const ALTERED_BILL_PAYMENT = {
+  ...ELECTRICITY_PAYMENT,
+  dueDay: 3,
+  expectedAmountCents: 25000,
+  paidBy: testAccountUid(BRUNO),
+};
+const FRIDGE = {
+  ...base,
+  createdAt: new Date('2026-10-12T15:00:00Z'),
+  month: '2026-10',
+  name: 'Conserto da geladeira',
+  amountCents: 35000,
+  date: '2026-10-12',
+  tagId: HOME_TAG_ID,
+  paidBy: testAccountUid(BRUNO),
+  receiptFileId: 'f11',
+};
 // O Condomínio de novembro, pago pelo Bruno em 28 de outubro: conta em novembro, o mês da conta, e não no mês em que foi pago.
-const EARLY_CONDO_PAYMENT = { ...CONDO_PAYMENT, createdAt: new Date('2026-10-28T15:00:00Z'), month: '2026-11', receiptFileId: 'f12' };
+const EARLY_CONDO_PAYMENT = {
+  ...CONDO_PAYMENT,
+  createdAt: new Date('2026-10-28T15:00:00Z'),
+  month: '2026-11',
+  receiptFileId: 'f12',
+};
 // Para a soma do membro: duas contas do Bruno (R$ 89,90 e R$ 10,10) e uma da Ana de R$ 300,00.
-const BAKERY = { ...base, month: '2026-10', name: 'Padaria', amountCents: 1010, date: '2026-10-25', paidBy: testAccountUid(BRUNO), receiptFileId: 'f6' };
+const BAKERY = {
+  ...base,
+  month: '2026-10',
+  name: 'Padaria',
+  amountCents: 1010,
+  date: '2026-10-25',
+  paidBy: testAccountUid(BRUNO),
+  receiptFileId: 'f6',
+};
 const BIG_MARKET = { ...MARKET, amountCents: 30000 };
-const NEW_ONE = { ...base, month: '2026-10', name: 'Padaria', amountCents: 1200, date: '2026-10-25', paidBy: testAccountUid(BRUNO), receiptFileId: 'f5' };
+const NEW_ONE = {
+  ...base,
+  month: '2026-10',
+  name: 'Padaria',
+  amountCents: 1200,
+  date: '2026-10-25',
+  paidBy: testAccountUid(BRUNO),
+  receiptFileId: 'f5',
+};
 
 // O exemplo de novembro: o Aluguel pago só pelas contribuições de Bruno e Carla, a Internet paga pela Ana com R$ 40,00
 // do Bruno, a Luz ainda a pagar com R$ 100,00 da Ana, e a Farmácia da Ana com R$ 30,00 da Carla.
@@ -119,7 +235,12 @@ export const entryMonthQueryScenarios = {
   // O pagamento não tem `date`: entra na ordem pelo `paidOn`, o dia do `createdAt` (15/10), entre o Mercado e a Farmácia.
   monthWithPayment: {
     signedInAs: BRUNO,
-    given: { ...BOTH_IN_THE_LIST, 'entries/pharmacy': PHARMACY, 'entries/market': MARKET, 'entries/2026-10_internet': INTERNET_PAYMENT },
+    given: {
+      ...BOTH_IN_THE_LIST,
+      'entries/pharmacy': PHARMACY,
+      'entries/market': MARKET,
+      'entries/2026-10_internet': INTERNET_PAYMENT,
+    },
     input: { month: '2026-10' },
     result: [
       toEntry('market', MARKET),
@@ -147,7 +268,12 @@ export const entryMonthQueryScenarios = {
   // Duas contas do Bruno e uma da Ana: o total do Bruno é a soma das duas (R$ 100,00) contra os R$ 400,00 da família.
   monthWithTwoEntriesOfTheMember: {
     signedInAs: BRUNO,
-    given: { ...BOTH_IN_THE_LIST, 'entries/pharmacy': PHARMACY, 'entries/bakery': BAKERY, 'entries/market': BIG_MARKET },
+    given: {
+      ...BOTH_IN_THE_LIST,
+      'entries/pharmacy': PHARMACY,
+      'entries/bakery': BAKERY,
+      'entries/market': BIG_MARKET,
+    },
     input: { month: '2026-10' },
     result: [toEntry('bakery', BAKERY), toEntry('market', BIG_MARKET), toEntry('pharmacy', PHARMACY)],
   },
@@ -173,7 +299,12 @@ export const entryMonthQueryScenarios = {
   // O mês anterior de quem troca de mês: só o de setembro, com o de outubro (e o da Ana) de fora.
   previousMonthWithEntries: {
     signedInAs: BRUNO,
-    given: { ...BOTH_IN_THE_LIST, 'entries/pharmacy': PHARMACY, 'entries/market': MARKET, 'entries/september': SEPTEMBER },
+    given: {
+      ...BOTH_IN_THE_LIST,
+      'entries/pharmacy': PHARMACY,
+      'entries/market': MARKET,
+      'entries/september': SEPTEMBER,
+    },
     input: { month: '2026-09' },
     result: [toEntry('september', SEPTEMBER)],
   },
@@ -209,7 +340,10 @@ export const entryMonthQueryScenarios = {
     result: [toEntry('pharmacy', PHARMACY)],
     afterChange: {
       write: { 'entries/2026-10_internet': INTERNET_PAYMENT },
-      result: [toEntry('2026-10_internet', { ...INTERNET_PAYMENT, date: null, paidOn: '2026-10-15' }), toEntry('pharmacy', PHARMACY)],
+      result: [
+        toEntry('2026-10_internet', { ...INTERNET_PAYMENT, date: null, paidOn: '2026-10-15' }),
+        toEntry('pharmacy', PHARMACY),
+      ],
     },
   },
   // O autor exclui o pagamento da Internet com a lista aberta: a conta volta a estar a pagar.
@@ -217,7 +351,10 @@ export const entryMonthQueryScenarios = {
     signedInAs: BRUNO,
     given: { ...BOTH_IN_THE_LIST, 'entries/pharmacy': PHARMACY, 'entries/2026-10_internet': INTERNET_PAYMENT },
     input: { month: '2026-10' },
-    result: [toEntry('2026-10_internet', { ...INTERNET_PAYMENT, date: null, paidOn: '2026-10-15' }), toEntry('pharmacy', PHARMACY)],
+    result: [
+      toEntry('2026-10_internet', { ...INTERNET_PAYMENT, date: null, paidOn: '2026-10-15' }),
+      toEntry('pharmacy', PHARMACY),
+    ],
     afterChange: { write: { 'entries/2026-10_internet': null }, result: [toEntry('pharmacy', PHARMACY)] },
   },
   // Os quatro tipos de lançamento, do mais recente para o mais antigo; o pagamento sem dono e a contribuição do mesmo

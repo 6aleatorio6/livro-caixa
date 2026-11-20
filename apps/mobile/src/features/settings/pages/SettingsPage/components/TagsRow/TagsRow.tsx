@@ -11,5 +11,12 @@ import { tagsSupport } from '@/features/settings/utils/tagsSupport';
 export function TagsRow() {
   const { data: tags } = useRealtime(tagListQueryService, {});
 
-  return <ListItem icon={Tag} title="Tags" support={tags ? tagsSupport(tags) : undefined} onPress={() => router.push('/tags')} />;
+  return (
+    <ListItem
+      icon={Tag}
+      title="Tags"
+      support={tags ? tagsSupport(tags) : undefined}
+      onPress={() => router.push('/tags')}
+    />
+  );
 }

@@ -15,11 +15,14 @@ Where the file goes: skill `project-structure`. How to test it: skill `testing`.
 
 ## Styling: Unistyles and the theme
 
-- Import `StyleSheet` from `react-native-unistyles`, never from `react-native`: the Babel plugin
-  rewrites these style sheets so the light/dark switch happens without a re-render.
+- Import `StyleSheet` from `react-native-unistyles`, never from `react-native` (the lint fails it): the
+  Babel plugin rewrites these style sheets so the light/dark switch happens without a re-render.
 - Every value comes from the theme (`src/core/theme`): `theme.colors.<role>` (the Material 3
   color roles), `theme.typography.<role>`, `theme.spacing.<size>`, `theme.radii.<size>`. A literal
-  `#hex`, `rgb()` or `hsl()` fails the lint.
+  `#hex`, `rgb()` or `hsl()` fails the lint, and so does a literal number or string in `padding*`,
+  `margin*`, `gap`, `rowGap`, `columnGap`, `borderRadius`, `border*Radius`, `fontSize`, `lineHeight`,
+  `letterSpacing`, `fontWeight` or `fontFamily` (`0` and `'auto'` pass). A measure the design has
+  no token for takes `// oxlint-disable-next-line eslint-js/no-restricted-syntax -- <reason>`.
 - A style that depends on a prop is a function inside the sheet:
 
   ```tsx
@@ -40,8 +43,10 @@ Where the file goes: skill `project-structure`. How to test it: skill `testing`.
 ## The base pieces
 
 - **Text:** always `AppText` (`src/shared/components/AppText/AppText.tsx`) with a `variant` (typography
-  role) and a `color` (color role). No `Text` from React Native in screens. The exception is
-  `core`, which can't import `shared`: its components style text from `theme.typography` directly.
+  role) and a `color` (color role). The lint fails a `Text` from React Native everywhere but
+  `AppText.tsx` and `core`, which can't import `shared`: its components style text from
+  `theme.typography` directly. `SafeAreaView` fails too: the margins come from `rt.insets`, as in `Screen`.
+- **Pressable:** always with `accessibilityRole` and `accessibilityLabel`; the lint fails one without.
 - **Screen root:** `Screen` (`src/shared/components/Screen/Screen.tsx`): the theme background and the
   system bars' insets.
 - **Icons:** only `lucide-react-native` (`docs/05-arquitetura/01-plataforma-e-stack.md`). The app

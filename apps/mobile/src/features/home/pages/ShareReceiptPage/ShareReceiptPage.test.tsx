@@ -30,7 +30,9 @@ jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', (
   allowedEmailListQueryService: {},
 }));
 jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entryMonthQueryService: {} }));
-jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService', () => ({ recurringBillListQueryService: {} }));
+jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService', () => ({
+  recurringBillListQueryService: {},
+}));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
 jest.mock('@/features/home/hooks/useSharedReceipt/useSharedReceipt', () => ({ useSharedReceipt: jest.fn() }));
 jest.mock('expo-router', () => ({ router: { push: jest.fn(), dismissTo: jest.fn() } }));
@@ -41,7 +43,10 @@ const noBills = { service: recurringBillListQueryService, scenario: recurringBil
 const threeTags = { service: tagListQueryService, scenario: tagListQueryScenarios.threeTags };
 const familyMonth = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthOfTheFamily };
 const emptyMonth = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth };
-const paymentAddedWhileOpen = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.paymentAddedWhileOpen };
+const paymentAddedWhileOpen = {
+  service: entryMonthQueryService,
+  scenario: entryMonthQueryScenarios.paymentAddedWhileOpen,
+};
 // Novembro, o próximo mês: o Condomínio já foi pago em outubro, e as outras quatro contas estão a pagar.
 const novemberPaidEarly = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.nextMonthPaidEarly };
 

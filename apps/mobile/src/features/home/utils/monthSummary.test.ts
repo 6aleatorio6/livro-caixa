@@ -87,9 +87,17 @@ describe('monthSummary', () => {
   });
 
   it('Should sort the bills to pay by due date', () => {
-    const bills = [bill({ id: 'c', dayOfMonth: 20 }), bill({ id: 'a', dayOfMonth: 3 }), bill({ id: 'b', dayOfMonth: 10 })];
+    const bills = [
+      bill({ id: 'c', dayOfMonth: 20 }),
+      bill({ id: 'a', dayOfMonth: 3 }),
+      bill({ id: 'b', dayOfMonth: 10 }),
+    ];
 
-    expect(monthSummary({ month: '2026-10', bills, entries: [] }).toPay.map(({ bill: { id } }) => id)).toEqual(['a', 'b', 'c']);
+    expect(monthSummary({ month: '2026-10', bills, entries: [] }).toPay.map(({ bill: { id } }) => id)).toEqual([
+      'a',
+      'b',
+      'c',
+    ]);
   });
 
   it('Should not show in October a September bill without payment', () => {
@@ -138,8 +146,14 @@ describe('monthSummary', () => {
     const changed = bill({ expectedAmountCents: 120000 });
     const entries = [payment({ id: '2026-09_rent', month: '2026-09', amountCents: 100000 })];
 
-    expect(monthSummary({ month: '2026-09', bills: [changed], entries })).toMatchObject({ toPayCents: 0, paidCents: 100000 });
-    expect(monthSummary({ month: '2026-10', bills: [changed], entries: [] })).toMatchObject({ toPayCents: 120000, paidCents: 0 });
+    expect(monthSummary({ month: '2026-09', bills: [changed], entries })).toMatchObject({
+      toPayCents: 0,
+      paidCents: 100000,
+    });
+    expect(monthSummary({ month: '2026-10', bills: [changed], entries: [] })).toMatchObject({
+      toPayCents: 120000,
+      paidCents: 0,
+    });
   });
 
   it('Should keep the payments of a deleted bill as paid, without the bill to pay', () => {
@@ -156,7 +170,11 @@ describe('monthSummary', () => {
   });
 
   it('Should keep the entries without tag in the total', () => {
-    const summary = monthSummary({ month: '2026-10', bills: [bill({ id: 'x', tagId: null })], entries: [oneOff({ tagId: null })] });
+    const summary = monthSummary({
+      month: '2026-10',
+      bills: [bill({ id: 'x', tagId: null })],
+      entries: [oneOff({ tagId: null })],
+    });
 
     expect(summary.totalCents).toBe(104500);
   });

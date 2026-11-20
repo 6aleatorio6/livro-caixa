@@ -66,7 +66,6 @@ export function RecurringBillsPage() {
             ))}
           </View>
         ) : null}
-
       </ScreenContent>
       <ExtendedFab icon={Plus} label="Nova conta recorrente" onPress={() => router.push('/recurring-bills/new')} />
     </Screen>

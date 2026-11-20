@@ -157,7 +157,11 @@ describe('ReceiptField', () => {
     // Com o comprovante salvo por trás, a recusa não pode abrir o salvo: a linha mostra o arquivo recusado.
     it('Should not offer to open anything after a rejection, and let the whole row pick another', async () => {
       jest.mocked(pickReceiptFile).mockResolvedValue({ ...pickedFile, name: 'grande.pdf' });
-      jest.mocked(prepareReceipt).mockRejectedValue(new AppError('Receipt is over 900 KiB', 'O PDF passa de 900 KB. Escolha outro arquivo.', 'RECEIPT_TOO_LARGE'));
+      jest
+        .mocked(prepareReceipt)
+        .mockRejectedValue(
+          new AppError('Receipt is over 900 KiB', 'O PDF passa de 900 KB. Escolha outro arquivo.', 'RECEIPT_TOO_LARGE'),
+        );
       const { user } = await renderField({ currentReceipt: savedReceipt, entryId: 'fridge' });
 
       await user.press(screen.getByRole('button', { name: /Trocar$/ }));
@@ -205,7 +209,9 @@ describe('ReceiptField', () => {
       .mockResolvedValueOnce(pickedFile);
     jest
       .mocked(prepareReceipt)
-      .mockRejectedValueOnce(new AppError('Receipt is over 900 KiB', 'O PDF passa de 900 KB. Escolha outro arquivo.', 'RECEIPT_TOO_LARGE'))
+      .mockRejectedValueOnce(
+        new AppError('Receipt is over 900 KiB', 'O PDF passa de 900 KB. Escolha outro arquivo.', 'RECEIPT_TOO_LARGE'),
+      )
       .mockResolvedValueOnce(pdf);
     const { user } = await renderField();
 
@@ -223,7 +229,11 @@ describe('ReceiptField', () => {
 
   it('Should show the rejected file instead of the previous one', async () => {
     jest.mocked(pickReceiptFile).mockResolvedValue({ ...pickedFile, name: 'grande.pdf' });
-    jest.mocked(prepareReceipt).mockRejectedValue(new AppError('Receipt is over 900 KiB', 'O PDF passa de 900 KB. Escolha outro arquivo.', 'RECEIPT_TOO_LARGE'));
+    jest
+      .mocked(prepareReceipt)
+      .mockRejectedValue(
+        new AppError('Receipt is over 900 KiB', 'O PDF passa de 900 KB. Escolha outro arquivo.', 'RECEIPT_TOO_LARGE'),
+      );
     const { user } = await renderField({ initial: jpg });
 
     await user.press(screen.getByRole('button', { name: /Trocar$/ }));
@@ -234,7 +244,11 @@ describe('ReceiptField', () => {
 
   it('Should clear the form value when the new file is rejected, so the previous file is not sent', async () => {
     jest.mocked(pickReceiptFile).mockResolvedValue({ ...pickedFile, name: 'grande.pdf' });
-    jest.mocked(prepareReceipt).mockRejectedValue(new AppError('Receipt is over 900 KiB', 'O PDF passa de 900 KB. Escolha outro arquivo.', 'RECEIPT_TOO_LARGE'));
+    jest
+      .mocked(prepareReceipt)
+      .mockRejectedValue(
+        new AppError('Receipt is over 900 KiB', 'O PDF passa de 900 KB. Escolha outro arquivo.', 'RECEIPT_TOO_LARGE'),
+      );
     const { user, onValueChange } = await renderField({ initial: jpg });
 
     await user.press(screen.getByRole('button', { name: /Trocar$/ }));
@@ -244,7 +258,10 @@ describe('ReceiptField', () => {
   });
 
   it.each([
-    { description: 'the picker rejects', pick: () => jest.mocked(pickReceiptFile).mockRejectedValue(new Error('Picker already open')) },
+    {
+      description: 'the picker rejects',
+      pick: () => jest.mocked(pickReceiptFile).mockRejectedValue(new Error('Picker already open')),
+    },
     {
       description: 'the file size cannot be read',
       pick: () => jest.mocked(pickReceiptFile).mockRejectedValue(new TypeError('File size is not available')),
@@ -276,7 +293,9 @@ describe('ReceiptField', () => {
     const { rerender } = await render(<ReceiptField value={null} onValueChange={jest.fn()} onBlur={jest.fn()} />);
     expect(screen.getByRole('button')).toHaveStyle({ borderWidth: 1, paddingVertical: 13, paddingHorizontal: 15 });
 
-    await rerender(<ReceiptField value={null} onValueChange={jest.fn()} onBlur={jest.fn()} errorMessage="Anexe o comprovante." />);
+    await rerender(
+      <ReceiptField value={null} onValueChange={jest.fn()} onBlur={jest.fn()} errorMessage="Anexe o comprovante." />,
+    );
     expect(screen.getByRole('button')).toHaveStyle({ borderWidth: 2, paddingVertical: 12, paddingHorizontal: 14 });
   });
 
@@ -296,7 +315,11 @@ describe('ReceiptField', () => {
 
   it('Should hide the loader when the file is rejected', async () => {
     jest.mocked(pickReceiptFile).mockResolvedValue(pickedFile);
-    jest.mocked(prepareReceipt).mockRejectedValue(new AppError('Receipt is over 900 KiB', 'O PDF passa de 900 KB. Escolha outro arquivo.', 'RECEIPT_TOO_LARGE'));
+    jest
+      .mocked(prepareReceipt)
+      .mockRejectedValue(
+        new AppError('Receipt is over 900 KiB', 'O PDF passa de 900 KB. Escolha outro arquivo.', 'RECEIPT_TOO_LARGE'),
+      );
     const { user } = await renderField();
 
     await user.press(screen.getByRole('button'));

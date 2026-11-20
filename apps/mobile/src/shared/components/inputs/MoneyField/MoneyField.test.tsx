@@ -3,7 +3,13 @@ import { useState } from 'react';
 
 import { MoneyField } from './MoneyField';
 
-function MoneyFieldHarness({ initial = null, onChange }: { initial?: number | null; onChange?: (value: number | null) => void }) {
+function MoneyFieldHarness({
+  initial = null,
+  onChange,
+}: {
+  initial?: number | null;
+  onChange?: (value: number | null) => void;
+}) {
   const [value, setValue] = useState<number | null>(initial);
   return (
     <MoneyField

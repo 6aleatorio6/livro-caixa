@@ -18,7 +18,14 @@ export interface IConfirmDialogProps {
 /** O diálogo que pede a confirmação de uma ação que desfaz algo, sobre o véu do tema. */
 export function ConfirmDialog({ visible, title, message, confirmLabel, onConfirm, onCancel }: IConfirmDialogProps) {
   return (
-    <Modal testID="confirm-dialog" transparent visible={visible} animationType="fade" statusBarTranslucent onRequestClose={onCancel}>
+    <Modal
+      testID="confirm-dialog"
+      transparent
+      visible={visible}
+      animationType="fade"
+      statusBarTranslucent
+      onRequestClose={onCancel}
+    >
       <View style={styles.overlay}>
         <View style={styles.scrim} />
         <View accessibilityViewIsModal style={styles.dialog}>

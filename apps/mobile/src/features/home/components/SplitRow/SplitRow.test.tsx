@@ -3,7 +3,8 @@ import { render, screen } from '@testing-library/react-native';
 
 import { SplitRow } from './SplitRow';
 
-const barWidth = () => StyleSheet.flatten(screen.getByTestId('split-bar-fill', { includeHiddenElements: true }).props.style).width;
+const barWidth = () =>
+  StyleSheet.flatten(screen.getByTestId('split-bar-fill', { includeHiddenElements: true }).props.style).width;
 
 describe('SplitRow', () => {
   it('Should show the name, the paid amount and a bar proportional to the paid month', async () => {
@@ -22,7 +23,14 @@ describe('SplitRow', () => {
 
   it('Should show the detail only when there is one', async () => {
     const { rerender } = await render(
-      <SplitRow mark="dot" name="Serviços" paidCents={100000} monthPaidCents={400000} color="primary" detail="e mais R$ 217,90 a pagar" />,
+      <SplitRow
+        mark="dot"
+        name="Serviços"
+        paidCents={100000}
+        monthPaidCents={400000}
+        color="primary"
+        detail="e mais R$ 217,90 a pagar"
+      />,
     );
     expect(screen.getByText('e mais R$ 217,90 a pagar')).toBeOnTheScreen();
 

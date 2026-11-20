@@ -5,10 +5,7 @@ describe('isPermissionDenied', () => {
     expect(isPermissionDenied({ code })).toBe(true);
   });
 
-  it.each([{ code: 'firestore/unavailable' }, new Error('x'), null, undefined])(
-    'Should not recognize %p',
-    (error) => {
-      expect(isPermissionDenied(error)).toBe(false);
-    },
-  );
+  it.each([{ code: 'firestore/unavailable' }, new Error('x'), null, undefined])('Should not recognize %p', (error) => {
+    expect(isPermissionDenied(error)).toBe(false);
+  });
 });

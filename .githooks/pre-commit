@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# pre-commit — o lint-staged roda, nos arquivos do commit, o que a config do app pede
+# (apps/mobile/.lintstagedrc.mjs): formata, põe a formatação no commit e confere. O git o roda na raiz
+# da árvore, daí o caminho relativo, e o `prepare` do package.json o liga (`pnpm install`).
+
+# Nada do app no commit: nenhuma config do lint-staged se aplica, e o hook nem sobe o Node.
+git diff --cached --quiet -- apps/mobile && exit 0
+
+if [ ! -x node_modules/.bin/lint-staged ]; then
+  echo 'pre-commit: sem node_modules na raiz, o commit passa sem lint. Rode `pnpm install`.' >&2
+  exit 0
+fi
+
+# O lint-staged só passa às tarefas os arquivos adicionados, copiados, alterados ou renomeados
+# (--diff-filter=ACMR). Num commit que só apaga arquivos TS, o package.json ou o tsconfig.json do app, a
+# conferência de tipos, que pega quem ainda importa o que foi apagado, não rodaria por ele: roda aqui. A
+# lista é a do apps/mobile/.lintstagedrc.mjs.
+staged_typed_files() {
+  git diff --cached --name-only --diff-filter="$1" -- \
+    'apps/mobile/*.ts' 'apps/mobile/*.tsx' 'apps/mobile/*.mts' 'apps/mobile/package.json' 'apps/mobile/tsconfig.json'
+}
+if [ -n "$(staged_typed_files D)" ] && [ -z "$(staged_typed_files ACMR)" ]; then
+  (cd apps/mobile && node ../../scripts/typecheck-index.mjs) || exit 1
+fi
+
+# --cwd: com uma config só, o lint-staged roda as tarefas na raiz, e não na pasta da config; o oxfmt e o
+# Oxlint do app e o lint de arquitetura (que mede o caminho a partir do `cwd`) pedem apps/mobile. Com uma
+# segunda config, o --cwd sai: o lint-staged passa a rodar cada uma na pasta dela, como no hra.
+# --continue-on-error: quando o oxfmt ou o Oxlint acusam algo, a conferência de tipos termina mesmo
+# assim, e o commit mostra tudo.
+# --no-revert: sem ele, o commit recusado roda `git reset --hard HEAD` e reaplica o backup na árvore
+# inteira, o que reescreve os arquivos que outra sessão alterou e perde o que ela gravou durante as
+# tarefas. Com ele, a recusa só deixa a formatação nos arquivos do commit, já no índice.
+exec node_modules/.bin/lint-staged --cwd apps/mobile --continue-on-error --no-revert

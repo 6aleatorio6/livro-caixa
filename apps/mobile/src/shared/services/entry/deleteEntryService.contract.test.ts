@@ -39,22 +39,21 @@ describe('deleteEntryService', () => {
     await arrangeScenario(scenario);
     const refusal = deleteEntryService(...scenario.input);
 
-      await expect(refusal).rejects.toBeInstanceOf(AppError);
-      await expect(refusal).rejects.toMatchObject(scenario.result);
-      // Nada muda: o lote é recusado inteiro, e fica só o que o cenário já tinha.
-      const entryPaths = Object.keys(scenario.given).filter((path) => path.startsWith('entries/'));
-      const filePaths = Object.keys(scenario.given).filter((path) => path.startsWith('files/'));
-      expect(await readCollectionWithoutRules('entries')).toEqual(
-        entryPaths.map((path) => ({
-          id: path.slice('entries/'.length),
-          ...scenario.given[path],
-          createdAt: expect.any(Timestamp),
-        })),
-      );
-      expect(await readCollectionWithoutRules('files')).toHaveLength(filePaths.length);
-      expect((await readCollectionWithoutRules('fileContents')).map(({ id }) => id)).toEqual(
-        scenario.fileContentsGiven ?? [],
-      );
-    },
-  );
+    await expect(refusal).rejects.toBeInstanceOf(AppError);
+    await expect(refusal).rejects.toMatchObject(scenario.result);
+    // Nada muda: o lote é recusado inteiro, e fica só o que o cenário já tinha.
+    const entryPaths = Object.keys(scenario.given).filter((path) => path.startsWith('entries/'));
+    const filePaths = Object.keys(scenario.given).filter((path) => path.startsWith('files/'));
+    expect(await readCollectionWithoutRules('entries')).toEqual(
+      entryPaths.map((path) => ({
+        id: path.slice('entries/'.length),
+        ...scenario.given[path],
+        createdAt: expect.any(Timestamp),
+      })),
+    );
+    expect(await readCollectionWithoutRules('files')).toHaveLength(filePaths.length);
+    expect((await readCollectionWithoutRules('fileContents')).map(({ id }) => id)).toEqual(
+      scenario.fileContentsGiven ?? [],
+    );
+  });
 });

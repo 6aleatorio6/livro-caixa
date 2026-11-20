@@ -34,7 +34,9 @@ jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jes
 jest.mock('@/shared/services/entry/query/entryQueryService', () => ({ entryQueryService: {} }));
 jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entryMonthQueryService: {} }));
 jest.mock('@/shared/services/file/query/receiptFileQueryService', () => ({ receiptFileQueryService: {} }));
-jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({ allowedEmailListQueryService: {} }));
+jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({
+  allowedEmailListQueryService: {},
+}));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
 jest.mock('@/shared/services/entry/deleteEntryService', () => ({ deleteEntryService: jest.fn() }));
 // O aviso se esconde num timer de 4 s, que seguraria o Jest depois do teste.
@@ -106,7 +108,10 @@ describe('EntryDetailsPage', () => {
       expect(screen.getByText('comprovante-luz.pdf')).toBeOnTheScreen();
       await user.press(screen.getByRole('button', { name: /^Comprovante: comprovante-luz.pdf/ }));
 
-      expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]/receipt', params: { id: '2026-10_electricity' } });
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/entries/[id]/receipt',
+        params: { id: '2026-10_electricity' },
+      });
     });
 
     it('Should update the amount when the payment is corrected with the sheet open', async () => {
@@ -193,7 +198,10 @@ describe('EntryDetailsPage', () => {
 
       await user.press(screen.getByRole('button', { name: 'Alterar' }));
 
-      expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]/edit', params: { id: '2026-10_electricity' } });
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/entries/[id]/edit',
+        params: { id: '2026-10_electricity' },
+      });
     });
   });
 
@@ -503,7 +511,11 @@ describe('EntryDetailsPage', () => {
     });
 
     it('Should say the entry was deleted for an id that does not exist', async () => {
-      await renderDetails({ service: entryQueryService, scenario: entryQueryScenarios.missingEntry }, family, threeTags);
+      await renderDetails(
+        { service: entryQueryService, scenario: entryQueryScenarios.missingEntry },
+        family,
+        threeTags,
+      );
 
       expect(screen.getByText('Este lançamento foi excluído.')).toBeOnTheScreen();
     });

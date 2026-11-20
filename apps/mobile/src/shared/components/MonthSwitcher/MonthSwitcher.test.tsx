@@ -4,7 +4,10 @@ import { MonthSwitcher } from './MonthSwitcher';
 
 describe('MonthSwitcher', () => {
   beforeEach(() => {
-    jest.useFakeTimers({ now: new Date(2026, 9, 25), doNotFake: ['setTimeout', 'setInterval', 'setImmediate', 'queueMicrotask', 'nextTick'] });
+    jest.useFakeTimers({
+      now: new Date(2026, 9, 25),
+      doNotFake: ['setTimeout', 'setInterval', 'setImmediate', 'queueMicrotask', 'nextTick'],
+    });
   });
 
   afterEach(() => {

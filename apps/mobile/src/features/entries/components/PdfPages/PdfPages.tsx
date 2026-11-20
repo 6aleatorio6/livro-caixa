@@ -61,8 +61,7 @@ export function PdfPages({ uri, cacheFileName, onError }: IPdfPagesProps) {
 const styles = StyleSheet.create((theme) => ({
   area: {
     flex: 1,
-    // O fundo atrás das páginas é um cinza do design que não tem papel no tema.
-    // eslint-disable-next-line no-restricted-syntax
+    // oxlint-disable-next-line eslint-js/no-restricted-syntax -- o cinza do design atrás das páginas não tem papel no tema
     backgroundColor: '#3A3B37',
   },
   pdf: { flex: 1, backgroundColor: 'transparent' },

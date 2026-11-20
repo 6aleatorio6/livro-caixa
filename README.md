@@ -103,8 +103,9 @@ shared/    serviços do Firebase, componentes, hooks e utilitários usados por m
 core/      a base: AppContainer, tema, stores, tipos e utilitários sem dependência do resto
 ```
 
-O ESLint (`apps/mobile/eslint.config.mjs`) garante as fronteiras entre as camadas, os nomes de
-arquivo e um export por arquivo.
+O Oxlint (`apps/mobile/oxlint.config.mts`, com as regras locais em `lint/`) garante as fronteiras entre
+as camadas, de onde cada pacote é importado, os nomes e o lugar dos arquivos, um export por arquivo e as
+convenções de sintaxe das skills (cor e medidas do tema, acessibilidade, testes).
 
 ### Dados
 
@@ -149,14 +150,17 @@ Mais detalhes em [Testes](docs/05-arquitetura/03-testes.md) e
 
 ## Rodando localmente
 
-Pré-requisitos: Node 22.18 ou mais novo e pnpm 10. Os emuladores do Firebase (regras, contrato e
+Pré-requisitos: Node 22.22.1 ou mais novo (o mínimo do lint-staged) e pnpm 10. Os emuladores do Firebase (regras, contrato e
 jornadas) pedem Java. O build Android pede o Android SDK e o `apps/mobile/google-services.json`,
-baixado do console do Firebase e mantido fora do Git.
+baixado do console do Firebase e mantido fora do Git. O `pnpm install` também liga o hook de commit
+(`.githooks/pre-commit`): cada commit formata e confere com o Oxlint os arquivos do app que leva e confere os
+tipos do app inteiro. Para o `git blame` pular o commit que só formatou o app, rode uma vez
+`git config blame.ignoreRevsFile .git-blame-ignore-revs`.
 
 ```sh
 pnpm install                 # instala o workspace
 pnpm typecheck:mobile        # tsc do app
-pnpm mobile lint             # ESLint do app
+pnpm mobile lint             # Oxlint e oxfmt do app
 pnpm test:mobile             # testes de unidade e de página
 pnpm test:contract           # serviços contra os emuladores do Firebase
 pnpm test:rules              # regras do Firestore

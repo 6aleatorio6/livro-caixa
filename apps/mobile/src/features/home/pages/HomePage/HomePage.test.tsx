@@ -22,9 +22,13 @@ import { HomePage } from './HomePage';
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
 jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jest.fn() }));
 jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entryMonthQueryService: {} }));
-jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService', () => ({ recurringBillListQueryService: {} }));
+jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService', () => ({
+  recurringBillListQueryService: {},
+}));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
-jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({ allowedEmailListQueryService: {} }));
+jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({
+  allowedEmailListQueryService: {},
+}));
 jest.mock('expo-router', () => ({ router: { push: jest.fn() }, useFocusEffect: jest.fn() }));
 // A conferência da versão tem teste próprio e carregaria o serviço de leitura; é assíncrona, como a verdadeira.
 jest.mock('@/shared/utils/version/checkAppVersion', () => ({ checkAppVersion: jest.fn(() => Promise.resolve()) }));
@@ -35,7 +39,10 @@ const fiveBills = { service: recurringBillListQueryService, scenario: recurringB
 const noBills = { service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.noBills };
 const threeTags = { service: tagListQueryService, scenario: tagListQueryScenarios.threeTags };
 const family = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyList };
-const renamedFamily = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyWithRenamedMember };
+const renamedFamily = {
+  service: allowedEmailListQueryService,
+  scenario: allowedEmailListQueryScenarios.familyWithRenamedMember,
+};
 const familyMonth = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthOfTheFamily };
 // Em novembro o mês anterior é outubro, o primeiro do app: os testes da troca para o mês anterior abrem em novembro,
 // porque em outubro o botão está desabilitado.
@@ -82,9 +89,9 @@ describe('HomePage', () => {
 
   describe('A file shared to the app', () => {
     it('Should open the share screen when a shared file is waiting', async () => {
-      jest.mocked(getSharedPayloads).mockReturnValue([
-        { value: 'content://x/pix.pdf', shareType: 'file', mimeType: 'application/pdf' },
-      ] as never);
+      jest
+        .mocked(getSharedPayloads)
+        .mockReturnValue([{ value: 'content://x/pix.pdf', shareType: 'file', mimeType: 'application/pdf' }] as never);
       mockRealtime(fiveBills, threeTags, family, familyMonth);
 
       await render(<HomePage />);
@@ -347,12 +354,10 @@ describe('HomePage', () => {
   });
 
   it('Should show nothing of the month while it is loading', async () => {
-    mockRealtime(
-      { service: recurringBillListQueryService, status: 'loading' },
-      threeTags,
-      family,
-      { service: entryMonthQueryService, status: 'loading' },
-    );
+    mockRealtime({ service: recurringBillListQueryService, status: 'loading' }, threeTags, family, {
+      service: entryMonthQueryService,
+      status: 'loading',
+    });
     await render(<HomePage />);
 
     expect(screen.queryByText('Falta pagar')).not.toBeOnTheScreen();

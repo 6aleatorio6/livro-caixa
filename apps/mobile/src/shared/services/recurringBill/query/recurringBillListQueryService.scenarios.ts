@@ -9,11 +9,41 @@ const BRUNO_IN_THE_LIST = {
 };
 
 // As cinco contas do design, com o que o documento grava (sem o id).
-const RENT = { name: 'Aluguel', expectedAmountCents: 180000, dayOfMonth: 5, startsOn: '2026-01-01', tagId: HOME_TAG_ID };
-const CONDO = { name: 'Condomínio', expectedAmountCents: 45000, dayOfMonth: 8, startsOn: '2026-01-01', tagId: HOME_TAG_ID };
-const ELECTRICITY = { name: 'Luz', expectedAmountCents: 21000, dayOfMonth: 10, startsOn: '2026-01-01', tagId: UTILITIES_TAG_ID };
-const INTERNET = { name: 'Internet', expectedAmountCents: 11990, dayOfMonth: 15, startsOn: '2026-01-01', tagId: UTILITIES_TAG_ID };
-const WATER = { name: 'Água', expectedAmountCents: 9800, dayOfMonth: 20, startsOn: '2026-01-01', tagId: UTILITIES_TAG_ID };
+const RENT = {
+  name: 'Aluguel',
+  expectedAmountCents: 180000,
+  dayOfMonth: 5,
+  startsOn: '2026-01-01',
+  tagId: HOME_TAG_ID,
+};
+const CONDO = {
+  name: 'Condomínio',
+  expectedAmountCents: 45000,
+  dayOfMonth: 8,
+  startsOn: '2026-01-01',
+  tagId: HOME_TAG_ID,
+};
+const ELECTRICITY = {
+  name: 'Luz',
+  expectedAmountCents: 21000,
+  dayOfMonth: 10,
+  startsOn: '2026-01-01',
+  tagId: UTILITIES_TAG_ID,
+};
+const INTERNET = {
+  name: 'Internet',
+  expectedAmountCents: 11990,
+  dayOfMonth: 15,
+  startsOn: '2026-01-01',
+  tagId: UTILITIES_TAG_ID,
+};
+const WATER = {
+  name: 'Água',
+  expectedAmountCents: 9800,
+  dayOfMonth: 20,
+  startsOn: '2026-01-01',
+  tagId: UTILITIES_TAG_ID,
+};
 const GAS = { name: 'Gás', expectedAmountCents: 12000, dayOfMonth: 25, startsOn: '2026-11-01', tagId: HOME_TAG_ID };
 
 // Os documentos são dados fora de ordem, para provar que o serviço ordena.
@@ -43,7 +73,10 @@ export const recurringBillListQueryScenarios = {
   // A conta sem tag não tem o campo `tagId` no documento e chega com `tagId: null`.
   billWithoutTag: {
     signedInAs: BRUNO,
-    given: { ...BRUNO_IN_THE_LIST, 'recurringBills/gas': { name: 'Gás', expectedAmountCents: 12000, dayOfMonth: 25, startsOn: '2026-11-01' } },
+    given: {
+      ...BRUNO_IN_THE_LIST,
+      'recurringBills/gas': { name: 'Gás', expectedAmountCents: 12000, dayOfMonth: 25, startsOn: '2026-11-01' },
+    },
     input: {},
     result: [{ id: 'gas', ...GAS, tagId: null }],
   },

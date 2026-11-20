@@ -74,12 +74,15 @@ const { control, handleSubmit, formState } = useOneOffBillForm();
 <TextFieldSmart control={control} name="name" label="Nome" />
 ```
 
-- No `Controller` or `useController` in screens: the smart wrapper is the only place that binds.
+- No `Controller` or `useController` in screens: the smart wrapper is the only place that binds, and
+  the lint fails them anywhere else (`useForm` too: use `useAppForm`).
 - A new input type implements `IInputMinimalProps<TValue>` (`src/shared/types/form/InputMinimalProps.ts`:
   `value`, `onValueChange`, `onBlur`, `errorMessage`, `isRequired`, `disabled`) and gets its smart
   version in its own folder, `src/shared/components/inputs/MoneyFieldSmart/MoneyFieldSmart.tsx`:
   `export const MoneyFieldSmart = createInputSmartWrapper(MoneyField);`.
 - The required mark comes from the schema, never from a prop typed by hand.
+- A schema's `.test()` is synchronous: `isFieldRequired` validates in sync mode, and the lint fails an
+  `async` function there. What only the server knows comes back on submit as a field error.
 
 ## Submit
 

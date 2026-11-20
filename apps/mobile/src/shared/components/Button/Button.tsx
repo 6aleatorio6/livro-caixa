@@ -82,7 +82,8 @@ const styles = StyleSheet.create((theme) => ({
     return {
       minHeight: isCompact ? 40 : 48, // as alturas do design, sem token
       justifyContent: 'center',
-      paddingHorizontal: variant === 'text' || variant === 'textDestructive' ? theme.spacing.medium : theme.spacing.largeIncreased,
+      paddingHorizontal:
+        variant === 'text' || variant === 'textDestructive' ? theme.spacing.medium : theme.spacing.largeIncreased,
       borderRadius: theme.radii.full,
       borderWidth: variant === 'outlined' ? 1 : 0,
       borderColor: theme.colors.outline,

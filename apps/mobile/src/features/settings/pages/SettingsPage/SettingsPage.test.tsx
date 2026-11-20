@@ -29,7 +29,9 @@ import { SettingsPage } from './SettingsPage';
 jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jest.fn() }));
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailQueryService', () => ({ allowedEmailQueryService: {} }));
-jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({ allowedEmailListQueryService: {} }));
+jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({
+  allowedEmailListQueryService: {},
+}));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
 jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService', () => ({
   recurringBillListQueryService: {},
@@ -58,7 +60,9 @@ function adminInList() {
   ] as const;
 }
 
-function tagList(scenario: (typeof tagListQueryScenarios)[keyof typeof tagListQueryScenarios] = tagListQueryScenarios.threeTags) {
+function tagList(
+  scenario: (typeof tagListQueryScenarios)[keyof typeof tagListQueryScenarios] = tagListQueryScenarios.threeTags,
+) {
   return { service: tagListQueryService, scenario };
 }
 
@@ -123,7 +127,11 @@ describe('SettingsPage', () => {
   describe('as a member', () => {
     beforeEach(() => {
       jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn));
-      mockRealtime({ service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailInList }, tagList(), billList());
+      mockRealtime(
+        { service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailInList },
+        tagList(),
+        billList(),
+      );
     });
 
     it('Should show neither the allowed e-mails entry nor the admin mark', async () => {
@@ -347,7 +355,11 @@ describe('SettingsPage', () => {
   describe('as a person who has not entered yet', () => {
     it('Should show the e-mail in place of the name, once', async () => {
       jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.outsiderSignsIn));
-      mockRealtime({ service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailWithoutName }, tagList(), billList());
+      mockRealtime(
+        { service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailWithoutName },
+        tagList(),
+        billList(),
+      );
       await render(<SettingsPage />);
 
       expect(screen.getAllByText('carla.lima@exemplo.com')).toHaveLength(1);

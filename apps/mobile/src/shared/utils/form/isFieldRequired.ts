@@ -1,4 +1,4 @@
-import { getIn, ValidationError, type AnyObjectSchema, type Schema, type ValidateOptions } from 'yup';
+import { getIn, ValidationError, type AnyObject, type ObjectSchema, type Schema, type ValidateOptions } from 'yup';
 
 function emptyValueOf(value: unknown) {
   if (typeof value === 'string') return '';
@@ -12,7 +12,11 @@ function emptyValueOf(value: unknown) {
  * formulário: vale para `.required()`, para um `.test()` próprio e para um `.when()` que depende de
  * outro campo, também dentro de objetos e listas. A forma vem de um app anterior.
  */
-export function isFieldRequired(schema: AnyObjectSchema, values: object, name: string) {
+export function isFieldRequired<TValues extends AnyObject>(
+  schema: ObjectSchema<TValues>,
+  values: object,
+  name: string,
+) {
   let resolved: ReturnType<typeof getIn>;
   try {
     resolved = getIn(schema, name, values);

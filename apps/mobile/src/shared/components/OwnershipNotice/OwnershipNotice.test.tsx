@@ -12,7 +12,9 @@ describe('OwnershipNotice', () => {
     jest.mocked(useSignedInPersonName).mockReturnValue('Ana');
     await render(<OwnershipNotice subject="este pagamento" />);
 
-    expect(screen.getByText('Fica no seu nome, Ana. Só você poderá alterar ou excluir este pagamento.')).toBeOnTheScreen();
+    expect(
+      screen.getByText('Fica no seu nome, Ana. Só você poderá alterar ou excluir este pagamento.'),
+    ).toBeOnTheScreen();
   });
 
   it('Should leave the name out while it is unknown', async () => {

@@ -45,6 +45,7 @@ export function AppLockedScreen() {
     // primeiro `active` e pede uma vez. Não pede de novo a cada volta: no Android 10 ou anterior a tela do PIN é uma
     // atividade, e cancelá-la tira o app de `active` e o devolve, o que faria um laço.
     if (AppState.currentState === 'active') {
+      // oxlint-disable-next-line react/set-state-in-effect -- falso positivo do Oxlint: o setIsUnlocking vem depois do await
       askBiometrics();
       return;
     }

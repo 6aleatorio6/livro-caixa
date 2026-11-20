@@ -76,7 +76,7 @@ The helpers live in `src/shared/testing/`.
 without one loads the real module to copy its shape, the real module loads React Native Firebase,
 and Jest stops with "Native module NativeRNFBTurboApp is not registered". That includes the module of
 each realtime service the screen reaches: its object only needs to exist, because `mockRealtime`
-recognizes the service by identity.
+recognizes the service by identity. The lint fails a `jest.mock` with one argument.
 
 ### A realtime read
 
@@ -194,7 +194,9 @@ resolveSignIn();
 - `describe` carries the name of the unit under test (`'Button'`, `'createAsyncAction'`,
   `'useAccess'`) or the subject in English (`'Sign-in'`).
 - `it` **always starts with "Should"** and says what should happen, in English:
-  `it('Should not call onPress while disabled')` — `.claude/rules/code-language.md`.
+  `it('Should not call onPress while disabled')` — `.claude/rules/code-language.md`. The lint checks
+  the "Should" in every `it` and `test` title (`jest/valid-title`) and fails an `it.only`
+  (`jest/no-focused-tests`).
 - Nest a `describe` only to group 3+ cases with the same trigger (`describe('When the e-mail is
   removed from the list')`).
 - Every `it` is Arrange → Act → Assert, and asserts what is visible (the screen, the callback
@@ -203,7 +205,8 @@ resolveSignIn();
 ## Queries and interactions
 
 In Testing Library 14, `render` and `renderHook` return a promise: await them. Use `screen`, never what `render` returns. Query
-priority: `getByRole` › `getByLabelText` › `getByPlaceholderText` › `getByText` › `getByTestId`.
+priority: `getByRole` › `getByLabelText` › `getByPlaceholderText` › `getByText` › `getByTestId`. The
+lint fails `toBeTruthy` and `toBeFalsy`: use `toBeOnTheScreen` or the matcher that says what is expected.
 
 ```tsx
 await render(<Button label="Entrar com Google" onPress={onPress} />);

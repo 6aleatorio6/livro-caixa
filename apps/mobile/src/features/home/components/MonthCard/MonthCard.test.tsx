@@ -32,7 +32,13 @@ const summaryOf = ({
 
 describe('MonthCard', () => {
   it('Should show what is left to pay in the middle of the month', async () => {
-    const summary = summaryOf({ paidCents: 278735, totalCents: 300525, toPayCents: 21790, toPayCount: 2, billCount: 6 });
+    const summary = summaryOf({
+      paidCents: 278735,
+      totalCents: 300525,
+      toPayCents: 21790,
+      toPayCount: 2,
+      billCount: 6,
+    });
     await render(<MonthCard month="2026-10" summary={summary} />);
 
     expect(screen.getByText('Falta pagar')).toBeOnTheScreen();
@@ -43,7 +49,13 @@ describe('MonthCard', () => {
   });
 
   it('Should show the legend with the paid amount and the month total', async () => {
-    const summary = summaryOf({ paidCents: 278735, totalCents: 300525, toPayCents: 21790, toPayCount: 2, billCount: 6 });
+    const summary = summaryOf({
+      paidCents: 278735,
+      totalCents: 300525,
+      toPayCents: 21790,
+      toPayCount: 2,
+      billCount: 6,
+    });
     await render(<MonthCard month="2026-10" summary={summary} />);
 
     expect(screen.getByText('Já pago')).toBeOnTheScreen();

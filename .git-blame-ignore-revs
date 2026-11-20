@@ -1,0 +1,5 @@
+# Commits que o `git blame` pula: só formatação, sem mudança de código.
+# Para o blame local pular também: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# chore(mobile): o app passa pelo oxfmt
+fec1837de160fa6cba087ee93e76753fad5c4941

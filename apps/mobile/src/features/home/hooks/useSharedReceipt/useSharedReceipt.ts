@@ -58,7 +58,7 @@ export function useSharedReceipt(): ISharedReceiptResult {
       isCurrent = false;
     };
     // O efeito depende do arquivo (o `contentUri`), não do objeto do payload, que muda a cada leitura do mesmo arquivo.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react/exhaustive-deps
   }, [contentUri, clearSharedPayloads]);
 
   if (rejection && rejection.contentUri === contentUri) return { status: 'rejected', message: rejection.message };

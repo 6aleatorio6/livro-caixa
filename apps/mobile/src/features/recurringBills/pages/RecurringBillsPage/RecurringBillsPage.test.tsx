@@ -68,7 +68,10 @@ describe('RecurringBillsPage', () => {
   });
 
   it('Should show zero and no bill, and still offer to add one, when the family has none', async () => {
-    mockRealtime({ service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.noBills }, threeTags);
+    mockRealtime(
+      { service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.noBills },
+      threeTags,
+    );
     await render(<RecurringBillsPage />);
 
     expect(screen.getByText('R$ 0,00')).toBeOnTheScreen();

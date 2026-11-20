@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
@@ -67,10 +67,11 @@ export function OneOffBillForm<TCurrentReceipt extends IReceiptFile | undefined 
   contributedCents = 0,
   onSubmit,
 }: IOneOffBillFormProps<TCurrentReceipt>) {
+  const [today] = useState(() => new Date());
   const lockedMonth = contributedCents > 0 && initialValues?.date ? monthOf(initialValues.date) : null;
   const form = useOneOffBillForm(
     { hasCurrentReceipt: Boolean(currentReceipt), contributedCents, lockedMonth },
-    { date: toIsoDate(new Date()), ...initialValues },
+    { date: toIsoDate(today), ...initialValues },
   );
   const { control, handleSubmit, formState } = form;
   // O schema já recusou o valor vazio, e o comprovante vazio quando não há um salvo.
@@ -93,7 +94,7 @@ export function OneOffBillForm<TCurrentReceipt extends IReceiptFile | undefined 
         label="Data"
         supportText={lockedMonth ? `Com contribuições, a data fica em ${monthName(lockedMonth)}.` : dateSupportText}
         minimumDate={fromIsoDate(FIRST_DAY)}
-        maximumDate={new Date()}
+        maximumDate={today}
       />
 
       <View style={styles.tagGroup}>

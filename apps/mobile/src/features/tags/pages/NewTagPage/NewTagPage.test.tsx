@@ -5,7 +5,10 @@ import { showToast } from '@/core/utils/storeActions/showToast';
 
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { createTagService } from '@/shared/services/tag/create/createTagService';
-import { createTagRejectedScenarios, createTagScenarios } from '@/shared/services/tag/create/createTagService.scenarios';
+import {
+  createTagRejectedScenarios,
+  createTagScenarios,
+} from '@/shared/services/tag/create/createTagService.scenarios';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import { tagListQueryScenarios } from '@/shared/services/tag/query/tagListQueryService.scenarios';
 import { mockRealtime } from '@/shared/testing/mockRealtime';
@@ -28,7 +31,9 @@ beforeEach(() => {
 });
 
 describe('NewTagPage', () => {
-  async function renderPage(scenario: (typeof tagListQueryScenarios)[keyof typeof tagListQueryScenarios] = tagListQueryScenarios.threeTags) {
+  async function renderPage(
+    scenario: (typeof tagListQueryScenarios)[keyof typeof tagListQueryScenarios] = tagListQueryScenarios.threeTags,
+  ) {
     mockRealtime({ service: tagListQueryService, scenario });
     await render(<NewTagPage />);
     return userEvent.setup();

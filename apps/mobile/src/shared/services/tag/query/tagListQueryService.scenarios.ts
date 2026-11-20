@@ -1,10 +1,4 @@
-import {
-  HEALTH_TAG,
-  HEALTH_TAG_ID,
-  HOME_TAG,
-  THREE_TAGS_DOCUMENT,
-  UTILITIES_TAG,
-} from '@/shared/testing/tagFixtures';
+import { HEALTH_TAG, HEALTH_TAG_ID, HOME_TAG, THREE_TAGS_DOCUMENT, UTILITIES_TAG } from '@/shared/testing/tagFixtures';
 import { HOME_TAG_ID, UTILITIES_TAG_ID } from '@/shared/testing/tagFixtures';
 import type { ITag } from '@/shared/types/tag/Tag';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
@@ -25,7 +19,12 @@ export const tagListQueryScenarios = {
   // Antes da primeira tag o documento nem existe.
   noTagsDocument: { signedInAs: BRUNO, given: BRUNO_IN_THE_LIST, input: {}, result: [] },
   // Depois de excluir a última, o documento fica, com o mapa vazio.
-  emptyTagsDocument: { signedInAs: BRUNO, given: { ...BRUNO_IN_THE_LIST, 'settings/tags': { items: {} } }, input: {}, result: [] },
+  emptyTagsDocument: {
+    signedInAs: BRUNO,
+    given: { ...BRUNO_IN_THE_LIST, 'settings/tags': { items: {} } },
+    input: {},
+    result: [],
+  },
   // Casa madeira, Serviços azul e Saúde ameixa, gravadas fora de ordem: a lista vem por nome (pt-BR,
   // o "Saúde" antes do "Serviços").
   threeTags: {

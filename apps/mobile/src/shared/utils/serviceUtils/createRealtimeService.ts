@@ -1,3 +1,4 @@
+/* oxlint-disable check-file/folder-match-with-fex -- a fábrica dos *QueryService, não um serviço */
 import type { IRealtimeRef } from '@/shared/types/realtime/RealtimeRef';
 import type { IRealtimeService } from '@/shared/types/realtime/RealtimeService';
 

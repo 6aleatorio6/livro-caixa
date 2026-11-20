@@ -21,7 +21,11 @@ function centerOf(state: 'empty' | 'closed' | 'open', { month, summary }: IMonth
   const name = monthName(month);
 
   if (state === 'empty') {
-    return { label: `${name.charAt(0).toUpperCase()}${name.slice(1)}`, value: 'Sem contas', count: 'Nenhuma conta neste mês' };
+    return {
+      label: `${name.charAt(0).toUpperCase()}${name.slice(1)}`,
+      value: 'Sem contas',
+      count: 'Nenhuma conta neste mês',
+    };
   }
   if (state === 'closed') {
     return { label: 'Mês fechado', value: 'Tudo pago', count: `${summary.billCount} de ${summary.billCount} contas` };
@@ -96,7 +100,8 @@ const styles = StyleSheet.create((theme) => ({
     flex: 1,
     gap: theme.spacing.extraSmall,
     padding: theme.spacing.mediumIncreased,
-    borderRadius: 18, // o raio do design, sem token
+    // oxlint-disable-next-line eslint-js/no-restricted-syntax -- o raio do design, sem token
+    borderRadius: 18,
     backgroundColor: theme.colors.surfaceContainerLowest,
   },
   legendLabel: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.extraSmallIncreased },

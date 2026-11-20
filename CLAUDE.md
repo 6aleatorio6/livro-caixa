@@ -11,8 +11,12 @@ other stack decision is made without being written there.
 - `pnpm install` at the root installs the workspace.
 - `pnpm dev:docs` serves the portal at `http://localhost:4000`.
 - `pnpm verify` runs the portal's tests and the build, which fails on a broken link.
+- `pnpm lint:rules` tests the app's local lint rules, in `lint/`.
 - `pnpm typecheck:mobile` type-checks the app; `pnpm mobile <script>` runs any script of
   `apps/mobile`.
+- `pnpm install` also wires the git `pre-commit` (`prepare` sets `core.hooksPath` to `.githooks`): each
+  commit formats and lints the app's staged files and type-checks the whole app over the index, and
+  needs the Node of the root `engines` — [.claude/rules/lint-on-commit.md](.claude/rules/lint-on-commit.md).
 - `pnpm android` builds the app and opens it on the Android emulator. It needs the Android SDK,
   which only the developer's PC has: this container runs the type check, the lint and the tests,
   never the native build. `pnpm android --no-bundler` skips the Metro it would leave on 8081, which

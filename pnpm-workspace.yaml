@@ -11,7 +11,7 @@ ignoredBuiltDependencies:
   - '@swc/core'
   - core-js
 
-# Scripts de instalação que rodam: o unrs-resolver (resolvedor de imports do ESLint do app) confere
+# Scripts de instalação que rodam: o unrs-resolver (do resolvedor de TypeScript que o boundaries usa no lint do app) confere
 # se o binário nativo da plataforma veio; o re2 e o protobufjs são do firebase-tools, que sem eles
 # não sobe os emuladores.
 onlyBuiltDependencies:
