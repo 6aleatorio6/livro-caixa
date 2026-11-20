@@ -7,14 +7,17 @@ import { entryMonthQueryService } from './entryMonthQueryService';
 import { entryMonthQueryScenarios } from './entryMonthQueryService.scenarios';
 
 describe('entryMonthQueryService', () => {
-  it.each(scenarioEntries(entryMonthQueryScenarios))('Should deliver what the scenario %s says', async (_name, scenario) => {
-    await arrangeScenario(scenario);
-    const reading = listenTo(entryMonthQueryService, scenario.input);
+  it.each(scenarioEntries(entryMonthQueryScenarios))(
+    'Should deliver what the scenario %s says',
+    async (_name, scenario) => {
+      await arrangeScenario(scenario);
+      const reading = listenTo(entryMonthQueryService, scenario.input);
 
-    expect(await reading.next()).toEqual(scenario.result);
-    if (scenario.afterChange) {
-      await writeWithoutRules(scenario.afterChange.write);
-      expect(await reading.next()).toEqual(scenario.afterChange.result);
-    }
-  });
+      expect(await reading.next()).toEqual(scenario.result);
+      if (scenario.afterChange) {
+        await writeWithoutRules(scenario.afterChange.write);
+        expect(await reading.next()).toEqual(scenario.afterChange.result);
+      }
+    },
+  );
 });

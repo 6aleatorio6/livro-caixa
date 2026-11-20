@@ -3,7 +3,10 @@ import { readWithoutRules } from '@/shared/testing/contract/readWithoutRules';
 import { scenarioEntries } from '@/shared/testing/contract/scenarioEntries';
 
 import { updateRecurringBillService } from './updateRecurringBillService';
-import { updateRecurringBillRejectedScenarios, updateRecurringBillScenarios } from './updateRecurringBillService.scenarios';
+import {
+  updateRecurringBillRejectedScenarios,
+  updateRecurringBillScenarios,
+} from './updateRecurringBillService.scenarios';
 
 describe('updateRecurringBillService', () => {
   it.each(scenarioEntries(updateRecurringBillScenarios))(

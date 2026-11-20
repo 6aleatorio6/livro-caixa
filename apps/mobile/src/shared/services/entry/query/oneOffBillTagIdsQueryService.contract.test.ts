@@ -7,14 +7,17 @@ import { oneOffBillTagIdsQueryService } from './oneOffBillTagIdsQueryService';
 import { oneOffBillTagIdsQueryScenarios } from './oneOffBillTagIdsQueryService.scenarios';
 
 describe('oneOffBillTagIdsQueryService', () => {
-  it.each(scenarioEntries(oneOffBillTagIdsQueryScenarios))('Should deliver what the scenario %s says', async (_name, scenario) => {
-    await arrangeScenario(scenario);
-    const reading = listenTo(oneOffBillTagIdsQueryService, scenario.input);
+  it.each(scenarioEntries(oneOffBillTagIdsQueryScenarios))(
+    'Should deliver what the scenario %s says',
+    async (_name, scenario) => {
+      await arrangeScenario(scenario);
+      const reading = listenTo(oneOffBillTagIdsQueryService, scenario.input);
 
-    expect(await reading.next()).toEqual(scenario.result);
-    if (scenario.afterChange) {
-      await writeWithoutRules(scenario.afterChange.write);
-      expect(await reading.next()).toEqual(scenario.afterChange.result);
-    }
-  });
+      expect(await reading.next()).toEqual(scenario.result);
+      if (scenario.afterChange) {
+        await writeWithoutRules(scenario.afterChange.write);
+        expect(await reading.next()).toEqual(scenario.afterChange.result);
+      }
+    },
+  );
 });

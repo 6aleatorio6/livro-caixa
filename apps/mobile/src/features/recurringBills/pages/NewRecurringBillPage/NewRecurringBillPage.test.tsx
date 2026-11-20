@@ -17,7 +17,9 @@ import { NewRecurringBillPage } from './NewRecurringBillPage';
 // Mocks com fábrica: o módulo real carregaria o React Native Firebase, que não roda no Jest.
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
-jest.mock('@/shared/services/recurringBill/add/addRecurringBillService', () => ({ addRecurringBillService: jest.fn() }));
+jest.mock('@/shared/services/recurringBill/add/addRecurringBillService', () => ({
+  addRecurringBillService: jest.fn(),
+}));
 // O aviso se esconde num timer de 4 s, que seguraria o Jest depois do teste.
 jest.mock('@/core/utils/storeActions/showToast', () => ({ showToast: jest.fn() }));
 jest.mock('expo-router', () => ({ router: { back: jest.fn() } }));

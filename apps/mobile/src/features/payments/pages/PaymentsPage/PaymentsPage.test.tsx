@@ -19,12 +19,17 @@ jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.f
 jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jest.fn() }));
 jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entryMonthQueryService: {} }));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
-jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({ allowedEmailListQueryService: {} }));
+jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({
+  allowedEmailListQueryService: {},
+}));
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 
 const threeTags = { service: tagListQueryService, scenario: tagListQueryScenarios.threeTags };
 // Ana, Bruno e Clara já entraram; a Elisa ainda não, e não ganha chip.
-const family = { service: allowedEmailListQueryService, scenario: allowedEmailListQueryScenarios.familyWithPersonNotEntered };
+const family = {
+  service: allowedEmailListQueryService,
+  scenario: allowedEmailListQueryScenarios.familyWithPersonNotEntered,
+};
 const october = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithEntries };
 // Em novembro o mês anterior é outubro, o primeiro do app: os testes da troca para o mês anterior abrem em novembro,
 // porque em outubro o botão está desabilitado.
@@ -330,13 +335,19 @@ describe('PaymentsPage', () => {
     });
 
     it('Should say nobody paid in the month when "Todos" is chosen on an empty month', async () => {
-      mockRealtime({ service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth }, threeTags, family);
+      mockRealtime(
+        { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth },
+        threeTags,
+        family,
+      );
       await render(<PaymentsPage />);
 
       await userEvent.setup().press(modeTab('Todos'));
 
       expect(screen.getByText('Nenhum pagamento em outubro')).toBeOnTheScreen();
-      expect(screen.getByText('Quando você registrar um pagamento ou uma conta avulsa, ele aparece aqui.')).toBeOnTheScreen();
+      expect(
+        screen.getByText('Quando você registrar um pagamento ou uma conta avulsa, ele aparece aqui.'),
+      ).toBeOnTheScreen();
     });
 
     it('Should add the person of the chip pressed in "Várias", and sum their parts under their names', async () => {

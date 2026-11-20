@@ -47,7 +47,7 @@ describe('DonutChart', () => {
     expect(screen.getByTestId('donut-arc').props.strokeDasharray[0]).toBeCloseTo(CIRCUMFERENCE);
   });
 
-  it('Should have round caps and start at 12 o\'clock', async () => {
+  it("Should have round caps and start at 12 o'clock", async () => {
     await renderDonut(5000, 10000);
 
     const arc = screen.getByTestId('donut-arc');

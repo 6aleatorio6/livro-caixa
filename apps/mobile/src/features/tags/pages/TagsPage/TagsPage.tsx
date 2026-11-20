@@ -64,7 +64,6 @@ export function TagsPage() {
             })}
           </View>
         ) : null}
-
       </ScreenContent>
       <ExtendedFab icon={Plus} label="Nova tag" onPress={() => router.push('/tags/new')} />
     </Screen>

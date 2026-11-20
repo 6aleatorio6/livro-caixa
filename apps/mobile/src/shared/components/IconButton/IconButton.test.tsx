@@ -12,7 +12,9 @@ function StubIcon({ color }: LucideProps) {
 
 async function renderIconButton(overrides: { disabled?: boolean; color?: 'onSurface' } = {}) {
   const onPress = jest.fn();
-  await render(<IconButton icon={StubIcon as unknown as LucideIcon} label="Alterar nome" onPress={onPress} {...overrides} />);
+  await render(
+    <IconButton icon={StubIcon as unknown as LucideIcon} label="Alterar nome" onPress={onPress} {...overrides} />,
+  );
   return { onPress };
 }
 

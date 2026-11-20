@@ -75,30 +75,30 @@ const memberInList = {
 };
 
 const ROUTES = {
-    _layout: RootLayout,
-    '(tabs)/_layout': TabsLayout,
-    '(tabs)/index': () => <Text>Página do início</Text>,
-    '(tabs)/my-payments': () => <Text>Página dos pagamentos</Text>,
-    '(tabs)/settings': () => <Text>Página das configurações</Text>,
-    'sign-in': () => <Text>Entrar</Text>,
-    'no-access': () => <Text>Sem acesso</Text>,
-    'update-required': () => <Text>Atualização obrigatória</Text>,
-    'test-sign-in': () => <Text>Entrada de teste</Text>,
-    'allowed-emails': () => <Text>Página dos e-mails permitidos</Text>,
-    'change-name': () => <Text>Página do seu nome</Text>,
-    'recurring-bills/index': () => <Text>Página das contas recorrentes</Text>,
-    'recurring-bills/new': () => <Text>Página da nova conta recorrente</Text>,
-    'recurring-bills/[id]/index': () => <Text>Página de alterar conta recorrente</Text>,
-    'recurring-bills/[id]/pay': () => <Text>Página de registrar pagamento</Text>,
-    'one-off-bills/new': () => <Text>Página da nova conta avulsa</Text>,
-    'entries/[id]/index': () => <Text>Página dos detalhes do lançamento</Text>,
-    'entries/[id]/contribute': () => <Text>Página de registrar contribuição</Text>,
-    'entries/[id]/receipt': () => <Text>Página do comprovante do lançamento</Text>,
-    'share-receipt': () => <Text>Página de compartilhar</Text>,
-    'receipt-preview': () => <Text>Página do comprovante anexado</Text>,
-    'tags/index': () => <Text>Página das tags</Text>,
-    'tags/new': () => <Text>Página da nova tag</Text>,
-    'tags/[id]': () => <Text>Página de alterar tag</Text>,
+  _layout: RootLayout,
+  '(tabs)/_layout': TabsLayout,
+  '(tabs)/index': () => <Text>Página do início</Text>,
+  '(tabs)/my-payments': () => <Text>Página dos pagamentos</Text>,
+  '(tabs)/settings': () => <Text>Página das configurações</Text>,
+  'sign-in': () => <Text>Entrar</Text>,
+  'no-access': () => <Text>Sem acesso</Text>,
+  'update-required': () => <Text>Atualização obrigatória</Text>,
+  'test-sign-in': () => <Text>Entrada de teste</Text>,
+  'allowed-emails': () => <Text>Página dos e-mails permitidos</Text>,
+  'change-name': () => <Text>Página do seu nome</Text>,
+  'recurring-bills/index': () => <Text>Página das contas recorrentes</Text>,
+  'recurring-bills/new': () => <Text>Página da nova conta recorrente</Text>,
+  'recurring-bills/[id]/index': () => <Text>Página de alterar conta recorrente</Text>,
+  'recurring-bills/[id]/pay': () => <Text>Página de registrar pagamento</Text>,
+  'one-off-bills/new': () => <Text>Página da nova conta avulsa</Text>,
+  'entries/[id]/index': () => <Text>Página dos detalhes do lançamento</Text>,
+  'entries/[id]/contribute': () => <Text>Página de registrar contribuição</Text>,
+  'entries/[id]/receipt': () => <Text>Página do comprovante do lançamento</Text>,
+  'share-receipt': () => <Text>Página de compartilhar</Text>,
+  'receipt-preview': () => <Text>Página do comprovante anexado</Text>,
+  'tags/index': () => <Text>Página das tags</Text>,
+  'tags/new': () => <Text>Página da nova tag</Text>,
+  'tags/[id]': () => <Text>Página de alterar tag</Text>,
 };
 
 /** A sessão e, com ela, a leitura do e-mail na lista; sem sessão, a leitura fica parada. */
@@ -575,18 +575,15 @@ describe('RootLayout', () => {
       },
     );
 
-    it.each(TAPPED_ONCE_SCREENS)(
-      'Should reuse the $name screen on a second tap without a share',
-      async ({ plain }) => {
-        await renderAppAsMember();
+    it.each(TAPPED_ONCE_SCREENS)('Should reuse the $name screen on a second tap without a share', async ({ plain }) => {
+      await renderAppAsMember();
 
-        await act(async () => router.push(plain));
-        await act(async () => router.push(plain));
-        await act(async () => router.back());
+      await act(async () => router.push(plain));
+      await act(async () => router.push(plain));
+      await act(async () => router.back());
 
-        expect(screen.getByText('Página do início')).toBeOnTheScreen();
-      },
-    );
+      expect(screen.getByText('Página do início')).toBeOnTheScreen();
+    });
 
     // O leitor aberto sob o formulário guarda o estado do arquivo dele (falha, página); outro arquivo é outro leitor.
     it('Should open a new receipt preview for another file', async () => {
@@ -632,8 +629,10 @@ describe('RootLayout', () => {
         return state;
       });
       const inList = allowedEmailQueryScenarios.emailInList;
-      jest.mocked(useRealtime).mockImplementation(((_service: unknown, params: { email: string | null }) =>
-        params.email ? { status: 'success', data: inList.result } : { status: 'idle', data: null }) as never);
+      jest
+        .mocked(useRealtime)
+        .mockImplementation(((_service: unknown, params: { email: string | null }) =>
+          params.email ? { status: 'success', data: inList.result } : { status: 'idle', data: null }) as never);
       await renderRouter(ROUTES, { initialUrl });
     }
 
@@ -680,10 +679,12 @@ describe('RootLayout', () => {
 
     it('Should drop the share of an e-mail outside the allowed list', async () => {
       await coldStart('/share-receipt');
-      jest.mocked(useRealtime).mockImplementation(((_service: unknown, params: { email: string | null }) =>
-        params.email
-          ? { status: 'success', data: allowedEmailQueryScenarios.emailOutsideList.result }
-          : { status: 'idle', data: null }) as never);
+      jest
+        .mocked(useRealtime)
+        .mockImplementation(((_service: unknown, params: { email: string | null }) =>
+          params.email
+            ? { status: 'success', data: allowedEmailQueryScenarios.emailOutsideList.result }
+            : { status: 'idle', data: null }) as never);
 
       await act(async () => setAuth(signedInAuthState(signInWithFakeGoogleScenarios.outsiderSignsIn)));
 

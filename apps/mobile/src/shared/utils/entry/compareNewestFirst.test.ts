@@ -2,7 +2,9 @@ import { compareNewestFirst } from './compareNewestFirst';
 
 const at = (iso: string) => ({ toMillis: () => new Date(iso).getTime() });
 
-function sorted(entries: { name: string; date: string | null; paidOn?: string; createdAt: ReturnType<typeof at> | null }[]) {
+function sorted(
+  entries: { name: string; date: string | null; paidOn?: string; createdAt: ReturnType<typeof at> | null }[],
+) {
   return [...entries].sort(compareNewestFirst).map(({ name }) => name);
 }
 

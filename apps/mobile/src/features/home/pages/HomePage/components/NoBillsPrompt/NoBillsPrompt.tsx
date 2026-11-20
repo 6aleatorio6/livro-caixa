@@ -12,8 +12,8 @@ export function NoBillsPrompt() {
     <View style={styles.container}>
       <AppText variant="titleMediumEmphasized">Nenhuma conta recorrente ainda</AppText>
       <AppText variant="bodyMedium" color="onSurfaceVariant">
-        Cadastre as contas que a família paga todo mês. Elas aparecem aqui como a pagar, e o anel fecha conforme
-        vocês pagam.
+        Cadastre as contas que a família paga todo mês. Elas aparecem aqui como a pagar, e o anel fecha conforme vocês
+        pagam.
       </AppText>
       <Button
         label="Cadastrar contas recorrentes"

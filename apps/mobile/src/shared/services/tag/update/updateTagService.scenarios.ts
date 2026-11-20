@@ -49,4 +49,7 @@ export const updateTagRejectedScenarios = {
     input: [{ id: 'excluida', name: 'Lazer', color: 'moss' }],
     result: { code: 'TAG_NOT_FOUND', userMessage: 'Esta tag foi excluída.' },
   },
-} satisfies Record<string, IServiceScenario<[Pick<ITag, 'id' | 'name' | 'color'>], { code: string; userMessage: string }>>;
+} satisfies Record<
+  string,
+  IServiceScenario<[Pick<ITag, 'id' | 'name' | 'color'>], { code: string; userMessage: string }>
+>;

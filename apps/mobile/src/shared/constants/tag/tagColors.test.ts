@@ -2,7 +2,7 @@ import { TAG_COLORS } from './tagColors';
 
 describe('TAG_COLORS', () => {
   // O Firestore guarda a chave: mudar uma cor de nome ou de lugar reaponta as tags já criadas.
-  it('Should keep the eight keys in the picker\'s order', () => {
+  it("Should keep the eight keys in the picker's order", () => {
     expect(TAG_COLORS.map(({ color }) => color)).toEqual([
       'wood',
       'moss',

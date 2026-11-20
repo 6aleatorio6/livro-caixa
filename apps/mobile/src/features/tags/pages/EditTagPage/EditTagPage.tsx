@@ -42,7 +42,11 @@ export function EditTagPage() {
           >
             {/* Sem as duas listas de contas lidas, não dá para saber se a tag está em uso: a exclusão espera. */}
             {bills && oneOffTagIds ? (
-              <DeleteTagSection tag={tag} parts={tagUsageParts(bills, oneOffTagIds, tag.id)} onDeleted={() => router.back()} />
+              <DeleteTagSection
+                tag={tag}
+                parts={tagUsageParts(bills, oneOffTagIds, tag.id)}
+                onDeleted={() => router.back()}
+              />
             ) : null}
           </TagForm>
         ) : null}

@@ -90,7 +90,9 @@ export function PaymentsPage() {
                   label={choice.name}
                   isSelected={selection.markedUids.has(choice.uid)}
                   onPress={() =>
-                    setFilter(peopleFilterAfterPress({ mode: filter.mode, markedUids: selection.markedUids }, choice, choices))
+                    setFilter(
+                      peopleFilterAfterPress({ mode: filter.mode, markedUids: selection.markedUids }, choice, choices),
+                    )
                   }
                 />
               ))}

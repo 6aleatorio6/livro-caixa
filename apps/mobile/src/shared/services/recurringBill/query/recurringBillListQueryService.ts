@@ -21,7 +21,5 @@ export const recurringBillListQueryService = createRealtimeService({
         startsOn,
         tagId: tagId ?? null,
       }))
-      .sort(
-        (first, second) => first.dayOfMonth - second.dayOfMonth || first.name.localeCompare(second.name, 'pt-BR'),
-      ),
+      .sort((first, second) => first.dayOfMonth - second.dayOfMonth || first.name.localeCompare(second.name, 'pt-BR')),
 });

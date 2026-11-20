@@ -88,7 +88,11 @@ describe('TagsPage', () => {
   });
 
   it('Should say there is no tag yet and still offer to create one', async () => {
-    mockRealtime({ service: tagListQueryService, scenario: tagListQueryScenarios.noTagsDocument }, fiveBills, noOneOffBills);
+    mockRealtime(
+      { service: tagListQueryService, scenario: tagListQueryScenarios.noTagsDocument },
+      fiveBills,
+      noOneOffBills,
+    );
     await render(<TagsPage />);
 
     expect(screen.getByText('Nenhuma tag ainda.')).toBeOnTheScreen();

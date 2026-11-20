@@ -37,7 +37,14 @@ export interface IRecurringBillFormProps {
 }
 
 /** O formulário da conta recorrente, o mesmo ao cadastrar e ao alterar. */
-export function RecurringBillForm({ tags, hasTagsError, bill, submitLabel, onSubmit, children }: IRecurringBillFormProps) {
+export function RecurringBillForm({
+  tags,
+  hasTagsError,
+  bill,
+  submitLabel,
+  onSubmit,
+  children,
+}: IRecurringBillFormProps) {
   const { control, handleSubmit, formState } = useRecurringBillForm(
     undefined,
     bill ? recurringBillFormValuesOf(bill, hasTagsError ? null : tags) : { startsOn: firstDayOfThisMonth() },

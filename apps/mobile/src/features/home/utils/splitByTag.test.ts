@@ -48,7 +48,11 @@ describe('splitByTag', () => {
   });
 
   it('Should keep a tag with only to pay and break a tie by name', () => {
-    const summary = monthSummary({ month: '2026-10', bills: [bill('a', 'health', 500), bill('b', 'home', 700)], entries: [] });
+    const summary = monthSummary({
+      month: '2026-10',
+      bills: [bill('a', 'health', 500), bill('b', 'home', 700)],
+      entries: [],
+    });
 
     expect(splitByTag(summary, [health, home]).map(({ tag }) => tag?.name)).toEqual(['Casa', 'Saúde']);
   });
@@ -68,7 +72,11 @@ describe('splitByTag', () => {
   });
 
   it('Should put an entry or a bill whose tag is not in the list in the untagged row', () => {
-    const summary = monthSummary({ month: '2026-10', bills: [bill('a', 'gone', 500)], entries: [oneOff('x', 'gone', 300)] });
+    const summary = monthSummary({
+      month: '2026-10',
+      bills: [bill('a', 'gone', 500)],
+      entries: [oneOff('x', 'gone', 300)],
+    });
 
     expect(splitByTag(summary, [home])).toEqual([{ tag: null, paidCents: 300, toPayCents: 500 }]);
   });

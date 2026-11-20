@@ -34,7 +34,9 @@ jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', (
 jest.mock('@/shared/services/file/getReceiptContentService', () => ({ getReceiptContentService: jest.fn() }));
 jest.mock('expo-router', () => ({ router: { back: jest.fn() }, useLocalSearchParams: jest.fn() }));
 // A carga e a rolagem da imagem se conferem no aparelho; o teste lê as props que a tela passa.
-jest.mock('@/features/entries/components/ScrollableImage/ScrollableImage', () => ({ ScrollableImage: jest.fn(() => null) }));
+jest.mock('@/features/entries/components/ScrollableImage/ScrollableImage', () => ({
+  ScrollableImage: jest.fn(() => null),
+}));
 // As páginas são desenhadas pelo módulo nativo da `react-native-pdf`; o teste lê as props que a tela passa.
 jest.mock('@/features/entries/components/PdfPages/PdfPages', () => ({ PdfPages: jest.fn(() => null) }));
 // O arquivo no cache e o compartilhar do Android se conferem no `shareReceipt.test.ts` e no aparelho.

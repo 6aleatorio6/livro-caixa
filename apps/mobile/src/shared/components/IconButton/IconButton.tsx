@@ -14,7 +14,13 @@ export interface IIconButtonProps {
   color?: IColorRole;
 }
 
-export function IconButton({ icon: Icon, label, onPress, disabled = false, color = 'onSurfaceVariant' }: IIconButtonProps) {
+export function IconButton({
+  icon: Icon,
+  label,
+  onPress,
+  disabled = false,
+  color = 'onSurfaceVariant',
+}: IIconButtonProps) {
   const { theme } = useUnistyles();
 
   return (

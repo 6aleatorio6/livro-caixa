@@ -30,7 +30,12 @@ const oneOff = (id: string, tagId: string | null, amountCents: number): IPayment
 describe('entryGroupsByTag', () => {
   // "Água" vem antes de "Casa" pela ordem do português; pelo código do caractere, o "Á" iria depois do "C".
   it('Should group by tag in alphabetical order, with the untagged group last', () => {
-    const entries = [oneOff('a', 'utilities', 100), oneOff('b', null, 200), oneOff('c', 'home', 300), oneOff('d', 'water', 400)];
+    const entries = [
+      oneOff('a', 'utilities', 100),
+      oneOff('b', null, 200),
+      oneOff('c', 'home', 300),
+      oneOff('d', 'water', 400),
+    ];
 
     expect(entryGroupsByTag(entries, [utilities, home, water]).map((group) => group.tag?.name ?? null)).toEqual([
       'Água',

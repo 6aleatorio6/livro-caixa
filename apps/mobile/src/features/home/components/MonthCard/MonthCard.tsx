@@ -21,7 +21,11 @@ function centerOf(state: 'empty' | 'closed' | 'open', { month, summary }: IMonth
   const name = monthName(month);
 
   if (state === 'empty') {
-    return { label: `${name.charAt(0).toUpperCase()}${name.slice(1)}`, value: 'Sem contas', count: 'Nenhuma conta neste mês' };
+    return {
+      label: `${name.charAt(0).toUpperCase()}${name.slice(1)}`,
+      value: 'Sem contas',
+      count: 'Nenhuma conta neste mês',
+    };
   }
   if (state === 'closed') {
     return { label: 'Mês fechado', value: 'Tudo pago', count: `${summary.billCount} de ${summary.billCount} contas` };

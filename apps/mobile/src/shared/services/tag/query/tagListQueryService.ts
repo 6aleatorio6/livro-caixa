@@ -24,6 +24,8 @@ export const tagListQueryService = createRealtimeService({
   refs: () => [tagsRef()],
   resolve: ([settings]): ITag[] =>
     Object.entries((settings?.items ?? {}) as Record<string, unknown>)
-      .flatMap(([id, item]) => (isTagItem(item) ? [{ id, name: item.name, nameKey: item.nameKey, color: item.color }] : []))
+      .flatMap(([id, item]) =>
+        isTagItem(item) ? [{ id, name: item.name, nameKey: item.nameKey, color: item.color }] : [],
+      )
       .sort((first, second) => first.name.localeCompare(second.name, 'pt-BR')),
 });

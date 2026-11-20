@@ -12,7 +12,10 @@ import { tagListQueryScenarios } from '@/shared/services/tag/query/tagListQueryS
 import { removeTagService } from '@/shared/services/tag/remove/removeTagService';
 import { removeTagScenarios } from '@/shared/services/tag/remove/removeTagService.scenarios';
 import { updateTagService } from '@/shared/services/tag/update/updateTagService';
-import { updateTagRejectedScenarios, updateTagScenarios } from '@/shared/services/tag/update/updateTagService.scenarios';
+import {
+  updateTagRejectedScenarios,
+  updateTagScenarios,
+} from '@/shared/services/tag/update/updateTagService.scenarios';
 import { HOME_TAG_ID, UTILITIES_TAG_ID } from '@/shared/testing/tagFixtures';
 import { HEALTH_TAG_ID } from '@/shared/testing/tagFixtures';
 import { mockRealtime } from '@/shared/testing/mockRealtime';
@@ -137,8 +140,16 @@ describe('EditTagPage', () => {
 
   describe('Deleting', () => {
     it.each([
-      { name: 'Casa', id: HOME_TAG_ID, reason: 'A tag Casa está em 2 contas recorrentes. Para excluir, tire a tag delas.' },
-      { name: 'Serviços', id: UTILITIES_TAG_ID, reason: 'A tag Serviços está em 3 contas recorrentes. Para excluir, tire a tag delas.' },
+      {
+        name: 'Casa',
+        id: HOME_TAG_ID,
+        reason: 'A tag Casa está em 2 contas recorrentes. Para excluir, tire a tag delas.',
+      },
+      {
+        name: 'Serviços',
+        id: UTILITIES_TAG_ID,
+        reason: 'A tag Serviços está em 3 contas recorrentes. Para excluir, tire a tag delas.',
+      },
     ])('Should not let $name be deleted while bills use it, and say why', async ({ id, reason }) => {
       const { user } = await renderPage(id);
 
@@ -191,7 +202,10 @@ describe('EditTagPage', () => {
     });
 
     it('Should not offer to delete before the one-off bills are read', async () => {
-      await renderPage(HEALTH_TAG_ID, threeTags, fiveBills, { service: oneOffBillTagIdsQueryService, status: 'loading' });
+      await renderPage(HEALTH_TAG_ID, threeTags, fiveBills, {
+        service: oneOffBillTagIdsQueryService,
+        status: 'loading',
+      });
 
       expect(screen.getByLabelText('Nome da tag')).toBeOnTheScreen();
       expect(screen.queryByRole('button', { name: 'Excluir tag' })).not.toBeOnTheScreen();

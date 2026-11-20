@@ -13,5 +13,7 @@ export const allowedEmailQueryService = createRealtimeService({
   refs: ({ email }: { email: string | null }) =>
     email ? [doc(firestoreDb, 'allowedEmails', allowedEmailId(email))] : [],
   resolve: ([allowedEmail]): IAllowedEmail | null =>
-    allowedEmail ? { name: allowedEmail.name ?? null, uid: allowedEmail.uid ?? null, isAdmin: allowedEmail.isAdmin } : null,
+    allowedEmail
+      ? { name: allowedEmail.name ?? null, uid: allowedEmail.uid ?? null, isAdmin: allowedEmail.isAdmin }
+      : null,
 });
