@@ -82,7 +82,9 @@ export function ReceiptSummary({
       {action.label}
     </AppText>
   ) : null;
-  const description = `Comprovante: ${hasError ? `${errorMessage} ` : ''}${fileText}`;
+  // O rótulo de acessibilidade cobre os textos da linha: o título entra nele, ou o leitor de tela não diz de quem é o
+  // comprovante (numa lista de contribuições, quem contribuiu, quando e quanto).
+  const description = `Comprovante: ${hasError ? `${errorMessage} ` : heading ? `${heading}, ` : ''}${fileText}`;
 
   if (onOpen && action) {
     return (

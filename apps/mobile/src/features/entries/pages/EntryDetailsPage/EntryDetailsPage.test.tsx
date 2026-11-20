@@ -383,7 +383,10 @@ describe('EntryDetailsPage', () => {
 
       expect(screen.getByText('pix-luz-ana.jpg')).toBeOnTheScreen();
       expect(screen.getAllByRole('button', { name: /^Comprovante:/ })).toHaveLength(2);
-      await user.press(screen.getByRole('button', { name: 'Comprovante: pix-luz-ana.jpg. Ver' }));
+      // O leitor de tela lê quem contribuiu, quando e quanto, e não só o arquivo.
+      await user.press(
+        screen.getByRole('button', { name: 'Comprovante: Ana · 11/10 · R$ 40,00, pix-luz-ana.jpg. Ver' }),
+      );
 
       expect(router.push).toHaveBeenCalledTimes(1);
       expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]/receipt', params: { id: 'c-ana' } });
@@ -392,7 +395,9 @@ describe('EntryDetailsPage', () => {
     it('Should keep Ver off for a contribution whose receipt record has not arrived or is missing', async () => {
       await renderDetails(payment, pdfReceipt, noReceiptRecord, family, threeTags, monthWithContribution);
 
-      expect(screen.getByRole('button', { name: 'Comprovante: Nenhum arquivo anexado. Ver' })).toBeDisabled();
+      expect(
+        screen.getByRole('button', { name: 'Comprovante: Ana · 11/10 · R$ 40,00, Nenhum arquivo anexado. Ver' }),
+      ).toBeDisabled();
       expect(screen.getByRole('button', { name: 'Comprovante: comprovante-luz.pdf. Ver' })).toBeEnabled();
     });
 
@@ -482,8 +487,8 @@ describe('EntryDetailsPage', () => {
         expect(screen.getByText('Comprovante do pagamento')).toBeOnTheScreen();
         const receipts = screen.getAllByRole('button', { name: /^Comprovante:/ });
         expect(receipts).toHaveLength(2);
-        expect(receipts[0]).toHaveAccessibleName('Comprovante: pix-luz-ana.jpg. Ver');
-        expect(receipts[1]).toHaveAccessibleName('Comprovante: comprovante-luz.pdf. Ver');
+        expect(receipts[0]).toHaveAccessibleName('Comprovante: Comprovante da contribuição, pix-luz-ana.jpg. Ver');
+        expect(receipts[1]).toHaveAccessibleName('Comprovante: Comprovante do pagamento, comprovante-luz.pdf. Ver');
       });
 
       it("Should call the second receipt the one-off bill's when the contribution went to a one-off bill", async () => {
@@ -502,10 +507,14 @@ describe('EntryDetailsPage', () => {
       it('Should open each receipt with the id of the entry it belongs to', async () => {
         const { user } = await renderContribution();
 
-        await user.press(screen.getByRole('button', { name: /^Comprovante: pix-luz-ana.jpg/ }));
+        await user.press(
+          screen.getByRole('button', { name: /^Comprovante: Comprovante da contribuição, pix-luz-ana.jpg/ }),
+        );
         expect(router.push).toHaveBeenLastCalledWith({ pathname: '/entries/[id]/receipt', params: { id: 'c-ana' } });
 
-        await user.press(screen.getByRole('button', { name: /^Comprovante: comprovante-luz.pdf/ }));
+        await user.press(
+          screen.getByRole('button', { name: /^Comprovante: Comprovante do pagamento, comprovante-luz.pdf/ }),
+        );
         expect(router.push).toHaveBeenLastCalledWith({
           pathname: '/entries/[id]/receipt',
           params: { id: '2026-10_electricity' },
