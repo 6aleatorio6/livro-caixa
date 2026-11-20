@@ -8,7 +8,7 @@
 #   useSharedReceipt.test.ts cobre o que o hook faz com o arquivo resolvido.
 # - O PDF compartilhado desenhado na pré-visualização: só no aparelho (a biblioteca de PDF é nativa); PdfPages.test.tsx
 #   cobre a URI que ela recebe, `file:///` no lugar do `file:/` de uma barra que o expo-sharing entrega.
-# - A lista do mês com o comprovante e "Conta avulsa" por último, e o toque em "Registrar": ShareReceiptPage.test.tsx.
+# - A lista do mês com o comprovante e "Conta avulsa" por último, e o toque em "Pagar": ShareReceiptPage.test.tsx.
 # - O comprovante já no campo e o retorno ao Início depois de registrar: PayRecurringBillPage.test.tsx e
 #   sharedReceipt.test.ts.
 # - O toque no comprovante abrir o arquivo do cache em tela cheia: o PDF desenhado só no aparelho;
@@ -31,7 +31,7 @@ tags:
 - launchApp
 # A Água fica abaixo da dobra com as barras do sistema: a Internet, primeira da lista, diz que o Início abriu.
 - extendedWaitUntil:
-    visible: "Registrar Internet"
+    visible: "Pagar Internet"
     timeout: 30000
 - assertVisible: "2 de 6 contas"
 - runScript:
@@ -44,11 +44,11 @@ tags:
     timeout: 15000
 - assertVisible: "pix-agua-outubro.pdf"
 - assertVisible: "A pagar em .*"
-- assertVisible: "Registrar Internet"
+- assertVisible: "Pagar Internet"
 - assertVisible: "Uma conta que não se repete"
 - takeScreenshot: share-receipt--bills-to-pay
 # A lista tem duas Águas, a do mês atual e a do próximo: a primeira, a do mês atual, é a que se paga aqui.
-- tapOn: "Registrar Água"
+- tapOn: "Pagar Água"
 - extendedWaitUntil:
     visible: "vence dia 20 · previsto R\\$ 98,00"
     timeout: 10000
@@ -71,9 +71,9 @@ tags:
 - extendedWaitUntil:
     visible: "1 de 6 contas"
     timeout: 60000
-- assertNotVisible: "Registrar Água"
+- assertNotVisible: "Pagar Água"
 - assertNotVisible: "Qual conta você pagou?"
-- assertVisible: "Registrar Internet"
+- assertVisible: "Pagar Internet"
 - takeScreenshot: home--after-shared-payment
 - scrollUntilVisible:
     element: "Água"

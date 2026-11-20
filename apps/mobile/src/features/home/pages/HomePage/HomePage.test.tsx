@@ -307,11 +307,11 @@ describe('HomePage', () => {
     expect(router.push).toHaveBeenCalledWith('/recurring-bills');
   });
 
-  it('Should open the payment of the bill with the month of the screen when Registrar is pressed', async () => {
+  it('Should open the payment of the bill with the month of the screen when Pagar is pressed', async () => {
     mockRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);
 
-    await userEvent.setup().press(screen.getByRole('button', { name: 'Registrar Internet' }));
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Pagar Internet' }));
 
     expect(router.push).toHaveBeenCalledWith({
       pathname: '/recurring-bills/[id]/pay',
@@ -337,12 +337,12 @@ describe('HomePage', () => {
       scenario: entryMonthQueryScenarios.paymentDeletedWhileOpen,
     });
     await render(<HomePage />);
-    expect(screen.queryByRole('button', { name: 'Registrar Internet' })).not.toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Pagar Internet' })).not.toBeOnTheScreen();
     expect(screen.getByText('dia 15 · Ana')).toBeOnTheScreen();
 
     await act(async () => realtime.applyChange(entryMonthQueryService));
 
-    expect(screen.getByRole('button', { name: 'Registrar Internet' })).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Pagar Internet' })).toBeOnTheScreen();
     expect(screen.queryByText('dia 15 · Ana')).not.toBeOnTheScreen();
   });
 
@@ -377,12 +377,12 @@ describe('HomePage', () => {
       scenario: entryMonthQueryScenarios.paymentAddedWhileOpen,
     });
     await render(<HomePage />);
-    expect(screen.getByRole('button', { name: 'Registrar Internet' })).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Pagar Internet' })).toBeOnTheScreen();
     expect(screen.queryByText('dia 15 · Ana')).not.toBeOnTheScreen();
 
     await act(async () => realtime.applyChange(entryMonthQueryService));
 
-    expect(screen.queryByRole('button', { name: 'Registrar Internet' })).not.toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Pagar Internet' })).not.toBeOnTheScreen();
     expect(screen.getByText('dia 15 · Ana')).toBeOnTheScreen();
   });
 });

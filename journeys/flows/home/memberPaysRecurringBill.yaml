@@ -34,7 +34,7 @@ tags:
 - assertVisible: "R\\$ 217,90"
 - assertVisible: "2 de 6 contas"
 - takeScreenshot: home--before-payment
-- tapOn: Registrar Internet
+- tapOn: Pagar Internet
 - assertVisible: "vence dia 15 · previsto R\\$ 119,90"
 - assertVisible: "R\\$ 119,90"
 - tapOn: Valor pago
@@ -60,7 +60,7 @@ tags:
     visible: "1 de 6 contas"
     timeout: 20000
 - assertVisible: "R\\$ 98,00"
-- assertNotVisible: "Registrar Internet"
+- assertNotVisible: "Pagar Internet"
 - takeScreenshot: home--after-payment
 - scrollUntilVisible:
     element: "R\\$ 125,00"

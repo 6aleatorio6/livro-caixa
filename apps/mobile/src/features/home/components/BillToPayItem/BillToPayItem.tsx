@@ -15,13 +15,13 @@ export interface IBillToPayItemProps {
   contributionsSupport?: string;
   /** A tag, que abre o detalhe com a bolinha da cor dela; o leitor de tela lê o nome. */
   tag?: ITag;
-  /** Abre o registro do pagamento: a linha inteira e o botão "Registrar" fazem o mesmo. */
+  /** Abre o registro do pagamento: a linha inteira e o botão "Pagar" fazem o mesmo. */
   onPress: () => void;
 }
 
 /**
  * Uma conta a pagar no mês: a marca `tertiaryContainer`, a bolinha da tag com "R$ 119,90 · vence dia 15" e o botão
- * "Registrar". Com contribuições, o detalhe diz o que falta e de quem elas vieram: "faltam R$ 58,00 · R$ 40,00 de
+ * "Pagar". Com contribuições, o detalhe diz o que falta e de quem elas vieram: "faltam R$ 58,00 · R$ 40,00 de
  * Bruno · dia 20".
  */
 export function BillToPayItem({
@@ -46,13 +46,7 @@ export function BillToPayItem({
       markColor="tertiaryContainer"
       iconColor="onTertiaryContainer"
       trailing={
-        <Button
-          label="Registrar"
-          accessibilityLabel={`Registrar ${name}`}
-          variant="tertiary"
-          isCompact
-          onPress={onPress}
-        />
+        <Button label="Pagar" accessibilityLabel={`Pagar ${name}`} variant="tertiary" isCompact onPress={onPress} />
       }
       onPress={onPress}
     />
