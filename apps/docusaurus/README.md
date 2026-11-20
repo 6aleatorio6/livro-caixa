@@ -45,9 +45,37 @@ no ar.
 - **Link quebrado entre rotas.** O `onBrokenLinks: 'throw'` só é conferido no fim do `build`.
 - **Link de Markdown para um `.md` que não existe.** O `onBrokenMarkdownLinks` só avisa no terminal.
 - **Diagrama Mermaid quebrado.** O SVG é desenhado no navegador: confira a página aberta.
+- **DBML inválido.** O DBML só é lido no navegador, e o erro aparece lá (ver
+  [Diagramas DBML](#diagramas-dbml)).
 - **Erro que só acontece no navegador** e **aviso** do webpack.
 
 `pnpm test` roda os testes do plugin no `node --test`, com um compilador falso.
+
+## Diagramas DBML
+
+O componente `DbmlDiagram` do `@wjmpantig/docusaurus-plugin-dbml` desenha um diagrama interativo
+(arrastar, zoom), com uma aba *Code* que mostra o DBML. A página o importa junto com o arquivo
+`.dbml`, lido como texto pelo `raw-loader`, como em `docs/05-arquitetura/04-modelo-de-dados.md`:
+
+```mdx
+---
+mdx:
+  format: mdx
+---
+
+import DbmlDiagram from '@wjmpantig/docusaurus-plugin-dbml/DbmlDiagram';
+import dataModel from '!!raw-loader!./modelo-de-dados.dbml';
+
+<DbmlDiagram dbml={dataModel} height={700} />
+```
+
+O `import` só funciona em MDX, e a config lê o `.md` como CommonMark (`format: 'detect'`): o
+`mdx.format` do front matter faz a página ser lida como MDX sem trocar a extensão, e os links para
+ela continuam valendo. Importado, o `.dbml` passa a ser dependência da página no webpack: mudar o
+arquivo recompila a página, inclusive no cache em disco do `build`. O diagrama é desenhado no
+navegador, e o esquema não sai do site, ao contrário do plugin do dbdiagram.io, que embute o site
+deles com o DBML na URL. A altura é em pixels, 500 por padrão. As tabelas são posicionadas
+automaticamente, e as posições salvas no `.dbdiagram` não são lidas.
 
 ## Build
 

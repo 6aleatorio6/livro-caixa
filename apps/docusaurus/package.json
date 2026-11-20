@@ -17,14 +17,19 @@
     "netlify:preview": "pnpm build && pnpm dlx netlify-cli@latest deploy"
   },
   "dependencies": {
+    "@dbml/core": "^10.3.1",
     "@docusaurus/core": "3.10.1",
     "@docusaurus/faster": "3.10.1",
     "@docusaurus/plugin-content-docs": "3.10.1",
     "@docusaurus/preset-classic": "3.10.1",
     "@docusaurus/theme-mermaid": "3.10.1",
     "@mdx-js/react": "^3.0.0",
+    "@wjmpantig/docusaurus-plugin-dbml": "^2.0.0",
+    "@wjmpantig/react-dbml-renderer": "^2.0.0",
+    "@xyflow/react": "^12.12.1",
     "clsx": "^2.0.0",
     "prism-react-renderer": "^2.3.0",
+    "raw-loader": "^4.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

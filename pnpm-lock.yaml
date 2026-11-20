@@ -32,6 +32,9 @@ importers:
 
   apps/docusaurus:
     dependencies:
+      '@dbml/core':
+        specifier: ^10.3.1
+        version: 10.3.1
       '@docusaurus/core':
         specifier: 3.10.1
         version: 3.10.1(@docusaurus/faster@3.10.1(@docusaurus/types@3.10.1(@swc/core@1.16.20)(postcss@8.5.31)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(postcss@8.5.31))(@mdx-js/react@3.1.1(@types/react@19.3.0)(react@19.3.1))(@rspack/core@1.7.12)(@swc/core@1.16.20)(postcss@8.5.31)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)
@@ -50,12 +53,24 @@ importers:
       '@mdx-js/react':
         specifier: ^3.0.0
         version: 3.1.1(@types/react@19.3.0)(react@19.3.1)
+      '@wjmpantig/docusaurus-plugin-dbml':
+        specifier: ^2.0.0
+        version: 2.0.0(@dbml/core@10.3.1)(@wjmpantig/react-dbml-renderer@2.0.0(@dbml/core@10.3.1)(@xyflow/react@12.12.1(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@xyflow/react@12.12.1(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@wjmpantig/react-dbml-renderer':
+        specifier: ^2.0.0
+        version: 2.0.0(@dbml/core@10.3.1)(@xyflow/react@12.12.1(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@xyflow/react':
+        specifier: ^12.12.1
+        version: 12.12.1(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       clsx:
         specifier: ^2.0.0
         version: 2.1.1
       prism-react-renderer:
         specifier: ^2.3.0
         version: 2.4.1(react@19.3.1)
+      raw-loader:
+        specifier: ^4.0.2
+        version: 4.0.2(webpack@5.112.2(@swc/core@1.16.20)(postcss@8.5.31))
       react:
         specifier: ^19.0.0
         version: 19.3.1
@@ -191,7 +206,7 @@ importers:
         version: 1.7.1
       zustand:
         specifier: ^5.0.16
-        version: 5.0.16(@types/react@19.3.0)(react@19.3.0)
+        version: 5.0.16(@types/react@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0(react@19.3.0))
     devDependencies:
       '@firebase/rules-unit-testing':
         specifier: ^6.0.0
@@ -1448,6 +1463,21 @@ packages:
 
   '@dabh/diagnostics@2.0.9':
     resolution: {integrity: sha512-R6siwR65Hm+3yfgP7o8DKhNvputQAwfoz9zTc3kyDudnomj2/BcLmD+uGQQPICjuFUp8ounPBU+jmKsocwVVAg==}
+
+  '@dagrejs/dagre@1.1.8':
+    resolution: {integrity: sha512-5SEDlndt4W/LaVzPYJW+bSmSEZc9EzTf8rJ20WCKvjS5EAZAN0b+x0Yww7VMT4R3Wootkg+X9bUfUxazYw6Blw==}
+
+  '@dagrejs/graphlib@2.2.4':
+    resolution: {integrity: sha512-mepCf/e9+SKYy1d02/UkvSy6+6MoyXhVxP8lLDfA7BPE1X1d4dR0sZznmbM8/XVJ1GPM+Svnx7Xj6ZweByWUkw==}
+    engines: {node: '>17.0.0'}
+
+  '@dbml/core@10.3.1':
+    resolution: {integrity: sha512-swCpThxQchab6d6wP5gp/UFcArmptyIRFaAEUW8Z8oNrTYluVlh0Ru6AsB44JiA4+lVgNk0yeF1ewuOuFT3ZPA==}
+    engines: {node: '>=16'}
+
+  '@dbml/parse@10.3.1':
+    resolution: {integrity: sha512-l2T+RYUpkCxqSlqMnc3YOwJyLDnDDckddG26KO4vwtYGJKIPYautzBi+ypKxEMdLvuNpHN/HkRCteApeZei8TA==}
+    engines: {node: '>=18'}
 
   '@discoveryjs/json-ext@0.5.7':
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
@@ -4542,6 +4572,23 @@ packages:
   '@webassemblyjs/wast-printer@1.14.1':
     resolution: {integrity: sha512-kPSSXE6De1XOR820C90RIo2ogvZG+c3KiHzqUoO/F34Y2shGzesfqv7o57xrxovZJH/MetF5UjroJ/R/3isoiw==}
 
+  '@wjmpantig/docusaurus-plugin-dbml@2.0.0':
+    resolution: {integrity: sha512-emZzaU5Zc8Jxj3YyE95cou2ios9vHIT6glhra+6ZmtmrpbGaIZgZumALyssJsUeGs/lX8qgTKAinSPko0BHdWA==}
+    peerDependencies:
+      '@dbml/core': ^10.1.1
+      '@wjmpantig/react-dbml-renderer': ^2.0.0
+      '@xyflow/react': ^12.9.2
+      react: ^19.2.0
+      react-dom: ^19.2.0
+
+  '@wjmpantig/react-dbml-renderer@2.0.0':
+    resolution: {integrity: sha512-36zOvDxzG+LxhZZS3eIeHz/i8l7KPQGVZD7Ol4S7j9Aw1mnT9PXMLTo2y8cP6mEF7l7mLQvioT2k0xMgB4ZTew==}
+    peerDependencies:
+      '@dbml/core': ^10.1.1
+      '@xyflow/react': ^12.9.2
+      react: ^19
+      react-dom: ^19
+
   '@xmldom/xmldom@0.8.15':
     resolution: {integrity: sha512-/5NV/vDALVFDXgLmfsy9TRCBlKwO2LNBFzpzvb9iIj+jR+eSc6DLYYvVOdivT/jm7MtU6TebYuRmzEOI7w40UA==}
     engines: {node: '>=10.0.0'}
@@ -4555,6 +4602,22 @@ packages:
 
   '@xtuc/long@4.2.2':
     resolution: {integrity: sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==}
+
+  '@xyflow/react@12.12.1':
+    resolution: {integrity: sha512-g41OHmP+GL5wDBQKpgYt8AF6RlB4CrABtiStXhCMqdItK6gPdSpsuDk8V0YtdyvIvMPTjDJvkuLkz0JbSYu5Cw==}
+    peerDependencies:
+      '@types/react': '>=17'
+      '@types/react-dom': '>=17'
+      react: '>=17'
+      react-dom: '>=17'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
+  '@xyflow/system@0.0.84':
+    resolution: {integrity: sha512-96zfGFjH3oZ3T0MRdH4gJ0SlXuCIxbBuHVevZ4xry5UTxqjzjt010+LRdholgepq7jhrcaz1JNtzrETscwnkEA==}
 
   abbrev@5.0.0:
     resolution: {integrity: sha512-/XrFJgzQQQHpti1raDJC6m4ws6aNktmjBlhk8Fdlk7LwCEuDoieEJJY9OFHjfiFJFFRM2tK+Ky/IsfbbmlMu1w==}
@@ -4694,6 +4757,10 @@ packages:
   ansis@3.17.0:
     resolution: {integrity: sha512-0qWUglt9JEqLFr3w1I1pbrChn1grhaiAR2ocX1PP/flRmxgtwTzPFFFnfIlD6aMOLQZgSuCRlidD70lvx8yhzg==}
     engines: {node: '>=14'}
+
+  antlr4@4.13.2:
+    resolution: {integrity: sha512-QiVbZhyy4xAZ17UPEuG3YTOt8ZaoeOR1CvEAqrEsDBsOqINslaB147i9xqljZqoyf5S+EUlGStaj+t22LT9MOg==}
+    engines: {node: '>=16'}
 
   any-promise@1.3.0:
     resolution: {integrity: sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A==}
@@ -5178,6 +5245,9 @@ packages:
   cjson@0.3.3:
     resolution: {integrity: sha512-yKNcXi/Mvi5kb1uK0sahubYiyfUO2EUgOp4NcY9+8NX5Xmc+4yeNogZuLFkpLBBj7/QI9MjRUIuXrV9XOw5kVg==}
     engines: {node: '>= 0.3.0'}
+
+  classcat@5.0.5:
+    resolution: {integrity: sha512-JhZUT7JFcQy/EzW605k/ktHtncoo9vnyW/2GspNYwFlN1C/WmjuV/xtS04e9SOkL2sTdw0VAZ2UGCcQ9lR6p6w==}
 
   clean-css@5.3.3:
     resolution: {integrity: sha512-D5J+kHaVb/wKSFcyyV75uCn8fiY4sV38XJoe4CUyGQ+mOU/fMVYUdH1hJC+CJQ5uY3EnW27SbJYS4X8BiLrAFg==}
@@ -8050,6 +8120,10 @@ packages:
       '@types/react':
         optional: true
 
+  luxon@3.7.2:
+    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
+    engines: {node: '>=12'}
+
   make-dir@3.1.0:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
     engines: {node: '>=8'}
@@ -8916,6 +8990,9 @@ packages:
     resolution: {integrity: sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==}
     engines: {node: '>= 0.8'}
 
+  parsimmon@1.18.1:
+    resolution: {integrity: sha512-u7p959wLfGAhJpSDJVYXoyMCXWYwHia78HhRBWqk7AIbxdmlrfdp5wX0l3xv/iTSH5HvhN9K7o26hwwpgS5Nmw==}
+
   pascal-case@3.1.2:
     resolution: {integrity: sha512-uWlGT3YSnK9x3BQJaOdcZwrnV6hPpd8jFH1/ucpiLRPh/2zCVJKS19E4GvYHvaCcACn3foXZ0cLB9Wrx1KGe5g==}
 
@@ -8967,6 +9044,9 @@ packages:
   path-type@4.0.0:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
+
+  pathe@2.0.3:
+    resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
 
   pg-cloudflare@1.4.1:
     resolution: {integrity: sha512-6PQbsFWZcp9EmJEwy5cGQ2La+AMWpP46lgbb8X+U/XsHIUweYDNCpeuKck5RxL2MdVFi7krbbEi5nX4Zh7JhrQ==}
@@ -9039,6 +9119,10 @@ packages:
   plist@3.1.1:
     resolution: {integrity: sha512-ZIfcLJC+7E7FBFnDxm9MPmt7D+DidyQ26lewieO75AdhA2ayMtsJSES0iWzqJQbcVRSrTufQoy0DR94xHue0oA==}
     engines: {node: '>=10.4.0'}
+
+  pluralize@8.0.0:
+    resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
+    engines: {node: '>=4'}
 
   pngjs@3.4.0:
     resolution: {integrity: sha512-NCrCHhWmnQklfH4MtJMRjZ2a8c80qXeMlQMv2uVp9ISJMTt562SbGd6n2oq0PaPgKm7Z6pL9E2UlLIhC+SHL3w==}
@@ -9608,6 +9692,12 @@ packages:
   raw-body@3.0.2:
     resolution: {integrity: sha512-K5zQjDllxWkf7Z5xJdV0/B0WTNqx6vxG70zJE4N0kBs4LovmEYWJzQGxC9bS9RAKu3bgM40lrd5zoLJ12MQ5BA==}
     engines: {node: '>= 0.10'}
+
+  raw-loader@4.0.2:
+    resolution: {integrity: sha512-ZnScIV3ag9A4wPX/ZayxL/jZH+euYb6FcUinPcgiQW0+UBtEv0O6Q3lGd3cqJ+GHH+rksEv3Pj99oxJ3u3VIKA==}
+    engines: {node: '>= 10.13.0'}
+    peerDependencies:
+      webpack: ^4.0.0 || ^5.0.0
 
   rc@1.2.8:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
@@ -10900,6 +10990,11 @@ packages:
     peerDependencies:
       react: '>=16.8'
 
+  use-sync-external-store@1.7.0:
+    resolution: {integrity: sha512-6L+EeigHMQhdaIPNIFUKwfWJSwWFQ8gJbJ2DLOs5sDIegTwR9fRxvnM3uciHKjIZhFz+KAv2emhWMRvDmMcY8A==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -11292,6 +11387,21 @@ packages:
 
   zod@4.6.7:
     resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
+
+  zustand@4.5.7:
+    resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      '@types/react': '>=16.8'
+      immer: '>=9.0.6'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
 
   zustand@5.0.16:
     resolution: {integrity: sha512-Uv7e327ihlCfayfja3hDc0M64Upev1LWBKpRobdK4NyovDDPeeX4imWXc/wzC1yc6fkYPoAY/ncKVPAs2jrtQw==}
@@ -12749,6 +12859,28 @@ snapshots:
       '@so-ric/colorspace': 1.1.6
       enabled: 2.0.0
       kuler: 2.0.0
+
+  '@dagrejs/dagre@1.1.8':
+    dependencies:
+      '@dagrejs/graphlib': 2.2.4
+
+  '@dagrejs/graphlib@2.2.4': {}
+
+  '@dbml/core@10.3.1':
+    dependencies:
+      '@dbml/parse': 10.3.1
+      antlr4: 4.13.2
+      lodash: 4.18.1
+      lodash-es: 4.18.1
+      luxon: 3.7.2
+      parsimmon: 1.18.1
+      pluralize: 8.0.0
+
+  '@dbml/parse@10.3.1':
+    dependencies:
+      lodash-es: 4.18.1
+      luxon: 3.7.2
+      pathe: 2.0.3
 
   '@discoveryjs/json-ext@0.5.7': {}
 
@@ -16253,9 +16385,7 @@ snapshots:
       metro-runtime: 0.87.1
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-color@2.1.0': {}
 
@@ -17148,6 +17278,24 @@ snapshots:
       '@webassemblyjs/ast': 1.14.1
       '@xtuc/long': 4.2.2
 
+  '@wjmpantig/docusaurus-plugin-dbml@2.0.0(@dbml/core@10.3.1)(@wjmpantig/react-dbml-renderer@2.0.0(@dbml/core@10.3.1)(@xyflow/react@12.12.1(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@xyflow/react@12.12.1(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      '@dbml/core': 10.3.1
+      '@wjmpantig/react-dbml-renderer': 2.0.0(@dbml/core@10.3.1)(@xyflow/react@12.12.1(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@xyflow/react': 12.12.1(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+      unist-util-visit: 5.1.0
+
+  '@wjmpantig/react-dbml-renderer@2.0.0(@dbml/core@10.3.1)(@xyflow/react@12.12.1(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      '@dagrejs/dagre': 1.1.8
+      '@dbml/core': 10.3.1
+      '@xyflow/react': 12.12.1(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      clsx: 2.1.1
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+
   '@xmldom/xmldom@0.8.15': {}
 
   '@xmldom/xmldom@0.9.12': {}
@@ -17155,6 +17303,30 @@ snapshots:
   '@xtuc/ieee754@1.2.0': {}
 
   '@xtuc/long@4.2.2': {}
+
+  '@xyflow/react@12.12.1(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      '@xyflow/system': 0.0.84
+      classcat: 5.0.5
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+      zustand: 4.5.7(@types/react@19.3.0)(react@19.3.1)
+    optionalDependencies:
+      '@types/react': 19.3.0
+    transitivePeerDependencies:
+      - immer
+
+  '@xyflow/system@0.0.84':
+    dependencies:
+      '@types/d3-drag': 3.0.7
+      '@types/d3-interpolate': 3.0.4
+      '@types/d3-selection': 3.0.12
+      '@types/d3-transition': 3.0.9
+      '@types/d3-zoom': 3.0.9
+      d3-drag: 3.0.0
+      d3-interpolate: 3.0.1
+      d3-selection: 3.0.0
+      d3-zoom: 3.0.0
 
   abbrev@5.0.0:
     optional: true
@@ -17282,6 +17454,8 @@ snapshots:
   ansi-styles@6.2.3: {}
 
   ansis@3.17.0: {}
+
+  antlr4@4.13.2: {}
 
   any-promise@1.3.0: {}
 
@@ -17910,6 +18084,8 @@ snapshots:
   cjson@0.3.3:
     dependencies:
       json-parse-helpfulerror: 1.0.3
+
+  classcat@5.0.5: {}
 
   clean-css@5.3.3:
     dependencies:
@@ -21414,6 +21590,8 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.3.0
 
+  luxon@3.7.2: {}
+
   make-dir@3.1.0:
     dependencies:
       semver: 6.3.1
@@ -22723,6 +22901,8 @@ snapshots:
 
   parseurl@1.3.3: {}
 
+  parsimmon@1.18.1: {}
+
   pascal-case@3.1.2:
     dependencies:
       no-case: 3.0.4
@@ -22763,6 +22943,8 @@ snapshots:
   path-to-regexp@8.4.2: {}
 
   path-type@4.0.0: {}
+
+  pathe@2.0.3: {}
 
   pg-cloudflare@1.4.1:
     optional: true
@@ -22833,6 +23015,8 @@ snapshots:
       '@xmldom/xmldom': 0.9.12
       base64-js: 1.5.1
       xmlbuilder: 15.1.1
+
+  pluralize@8.0.0: {}
 
   pngjs@3.4.0: {}
 
@@ -23449,6 +23633,12 @@ snapshots:
       http-errors: 2.0.1
       iconv-lite: 0.7.3
       unpipe: 1.0.0
+
+  raw-loader@4.0.2(webpack@5.112.2(@swc/core@1.16.20)(postcss@8.5.31)):
+    dependencies:
+      loader-utils: 2.0.4
+      schema-utils: 3.3.0
+      webpack: 5.112.2(@swc/core@1.16.20)(postcss@8.5.31)
 
   rc@1.2.8:
     dependencies:
@@ -24941,6 +25131,15 @@ snapshots:
     dependencies:
       react: 19.3.0
 
+  use-sync-external-store@1.7.0(react@19.3.0):
+    dependencies:
+      react: 19.3.0
+    optional: true
+
+  use-sync-external-store@1.7.0(react@19.3.1):
+    dependencies:
+      react: 19.3.1
+
   util-deprecate@1.0.2: {}
 
   utila@0.4.0: {}
@@ -25438,9 +25637,17 @@ snapshots:
 
   zod@4.6.7: {}
 
-  zustand@5.0.16(@types/react@19.3.0)(react@19.3.0):
+  zustand@4.5.7(@types/react@19.3.0)(react@19.3.1):
+    dependencies:
+      use-sync-external-store: 1.7.0(react@19.3.1)
+    optionalDependencies:
+      '@types/react': 19.3.0
+      react: 19.3.1
+
+  zustand@5.0.16(@types/react@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0(react@19.3.0)):
     optionalDependencies:
       '@types/react': 19.3.0
       react: 19.3.0
+      use-sync-external-store: 1.7.0(react@19.3.0)
 
   zwitch@2.0.4: {}
