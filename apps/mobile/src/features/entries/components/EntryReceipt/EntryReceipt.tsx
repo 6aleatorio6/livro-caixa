@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import type { LucideIcon } from 'lucide-react-native';
 
 import { ReceiptSummary } from '@/shared/components/ReceiptSummary/ReceiptSummary';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
@@ -11,14 +12,17 @@ export interface IEntryReceiptProps {
   entry: IOwnedEntry | IContributionEntry;
   /** O texto de cima no lugar do tipo e do tamanho, para a folha que mostra mais de um comprovante. */
   heading?: string;
+  /** A marca no lugar do ícone do tipo de arquivo: as mãos com moeda na lista de contribuições. */
+  icon?: LucideIcon;
 }
 
 /** O comprovante de um lançamento nos detalhes: o arquivo e o Ver, que abre o comprovante inteiro com o id do lançamento. */
-export function EntryReceipt({ entry, heading }: IEntryReceiptProps) {
+export function EntryReceipt({ entry, heading, icon }: IEntryReceiptProps) {
   const { data: file } = useRealtime(receiptFileQueryService, { id: entry.receiptFileId });
 
   return (
     <ReceiptSummary
+      icon={icon}
       heading={heading}
       file={file ? { name: file.name, type: file.type, sizeBytes: file.sizeBytes } : null}
       disabled={!file}

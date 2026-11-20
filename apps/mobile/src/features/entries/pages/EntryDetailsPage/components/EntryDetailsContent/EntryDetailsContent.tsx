@@ -5,6 +5,7 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import { ContributionsSection } from '@/features/entries/components/ContributionsSection/ContributionsSection';
 import { DeleteEntryButton } from '@/features/entries/components/DeleteEntryButton/DeleteEntryButton';
+import { EntryReceipt } from '@/features/entries/components/EntryReceipt/EntryReceipt';
 import { OnlyAuthorNotice } from '@/features/entries/components/OnlyAuthorNotice/OnlyAuthorNotice';
 import { AppText } from '@/shared/components/AppText/AppText';
 import { Button } from '@/shared/components/Button/Button';
@@ -27,7 +28,6 @@ import { findTag } from '@/shared/utils/tag/findTag';
 
 import { ContributionSplit } from '../ContributionSplit/ContributionSplit';
 import { EntryDetailsHeader } from '../EntryDetailsHeader/EntryDetailsHeader';
-import { EntryReceipt } from '../EntryReceipt/EntryReceipt';
 
 export interface IEntryDetailsContentProps {
   entry: IOwnedEntry;
