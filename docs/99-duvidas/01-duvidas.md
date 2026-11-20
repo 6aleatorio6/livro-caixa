@@ -21,7 +21,7 @@ tema aparece na documentação.
 | D-13 | Uma tag pode ser alterada ou excluída? | 🟢 Respondido — qualquer membro altera; só se exclui sem uso; nome único |
 | D-14 | Como funciona a saída de um membro da lista de e-mails permitidos? | 🟢 Respondido — só sai quem não tem lançamento; um admin, sem verificação |
 | D-15 | O app é só em português e só em reais? | 🟢 Respondido — sim |
-| D-16 | Um mês que passou sem pagamento continua a pagar? | 🟢 Respondido — sim, só no próprio mês |
+| D-16 | Um mês que passou sem pagamento continua a pagar? | 🟢 Respondido — sim, e vira atrasada no mês atual (D-26) |
 | D-17 | Onde o easter egg do "Paia" aparece no app? | 🟢 Respondido — na logo, em todo lugar: splash, tela de entrada e ícone |
 | D-18 | Como o Maestro alcança o emulador do PC? | 🟢 Respondido — pela rede do PC, que o container divide |
 | D-19 | O JSON do Google falso leva o nome da pessoa? | 🟢 Respondido — sim, no campo `name` |
@@ -31,6 +31,8 @@ tema aparece na documentação.
 | D-23 | O comprovante em PDF abre dentro do app ou no leitor do celular? | 🟢 Respondido — dentro do app, com as páginas rolando |
 | D-24 | O app aceita PDF de mais de uma página? | 🟢 Respondido — sim, até 900 KB, guardado como está |
 | D-25 | Dá para pagar uma conta antes de o mês dela começar? | 🟢 Respondido — sim, só o próximo mês |
+| D-26 | Como se paga uma conta de um mês que já passou? | 🟢 Respondido — ela entra nas contas a pagar do mês atual, como atrasada; conta no mês em que é paga, e dá para pular o mês |
+| D-27 | Em que mês conta o pagamento atrasado de um mês com contribuições? | 🟢 Respondido — no mês da conta, como hoje |
 
 <!-- Status: 🔴 Em aberto · 🟡 Parcial — o que falta · 🟢 Respondido — a resposta -->
 
@@ -169,8 +171,9 @@ na conta avulsa.
 
 ## D-16 — Um mês que passou sem pagamento
 
-**Resposta:** a conta continua a pagar no próprio mês e não aparece no Início do mês seguinte. Cada
-mês mostra só as próprias contas.
+**Resposta:** a conta continua a pagar no próprio mês e, depois que ele passa, aparece também nas
+contas a pagar do Início do mês atual, como atrasada, até alguém pagá-la ou pular o mês (D-26). A primeira resposta, só
+no próprio mês, mudou em 20/11/2026.
 
 **Onde aparece:** [Contas Recorrentes](../03-funcionalidades/01-principal/02-contas-recorrentes.md),
 [Início](../03-funcionalidades/01-principal/01-inicio.md).
@@ -282,3 +285,30 @@ começo do mês seguinte.
 [Pagamento de Conta Recorrente](../03-funcionalidades/01-principal/03-pagamento-de-conta-recorrente.md),
 [Pagamentos](../03-funcionalidades/01-principal/06-pagamentos.md),
 [Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md).
+
+## D-26 — Pagar uma conta de um mês que já passou
+
+**Resposta:** um mês de conta recorrente que passou sem pagamento é uma conta atrasada. Ela aparece
+no começo das contas a pagar do Início do mês atual, sem seção própria, com o selo "Atrasada", e
+no compartilhamento do Android, na pílula "Atrasadas". Ela entra no que falta pagar do mês atual. O pagamento dela conta no mês em que é pago, não no mês da conta: a Água de
+outubro paga em novembro aparece só em novembro e sai de outubro. Pular o mês, na tela do
+pagamento, tira ele das contas a pagar sem contar em nenhum mês. O nome "Pular" é o mais comum nos
+apps de finanças para deixar uma ocorrência de lado. O Pular vale só para a conta atrasada, sem
+contribuições. A conta pulada fica só no Início do mês dela, e tocar nela abre o pagamento, direto,
+que conta no mês em que é pago. O pulo só se desfaz pelo aviso, logo depois de pular.
+
+**Onde aparece:** [Início](../03-funcionalidades/01-principal/01-inicio.md),
+[Contas Recorrentes](../03-funcionalidades/01-principal/02-contas-recorrentes.md),
+[Pagamento de Conta Recorrente](../03-funcionalidades/01-principal/03-pagamento-de-conta-recorrente.md),
+[Comprovantes](../03-funcionalidades/01-principal/05-comprovantes.md),
+[Pagamentos](../03-funcionalidades/01-principal/06-pagamentos.md).
+
+## D-27 — O pagamento atrasado de um mês com contribuições
+
+**Resposta:** no mês da conta, como hoje. Ex.: Bruno contribui com R$ 40,00 na Água de outubro, e
+Ana paga o resto em novembro: o pagamento, as contribuições e a Água inteira contam em outubro, e a
+Água sai das atrasadas. Só a atrasada sem contribuições conta no mês em que é paga. Foi a saída
+mais curta: o mês com contribuições já tem o pagamento sem dono no lugar do mês da conta, e levá-lo
+para outro mês mudaria as contribuições junto.
+
+**Onde aparece:** [Pagamento de Conta Recorrente](../03-funcionalidades/01-principal/03-pagamento-de-conta-recorrente.md).

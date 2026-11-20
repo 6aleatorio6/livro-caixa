@@ -80,8 +80,8 @@ escolhidas em outubro" com várias e, em "Todos", "Nenhum pagamento em outubro".
   todas em "Todos". O último chip marcado não desmarca.
 - Quem foi adicionado à lista de e-mails e ainda não entrou no app não tem chip: não tem lançamento.
   Se uma pessoa marcada sai da lista, o chip dela some, e sem ninguém marcado vale o "Você".
-- Cada lançamento entra no mês em que conta no Início: o pagamento, no mês da conta que ele paga; a
-  conta avulsa, no mês da data dela.
+- Cada lançamento entra no mês em que conta no Início: o pagamento, no mês da conta que ele paga, ou
+  no mês em que foi pago, se a conta estava atrasada; a conta avulsa, no mês da data dela.
 - Só quem registrou um lançamento pode alterá-lo ou excluí-lo. Os detalhes de uma contribuição só
   se abrem aqui, tocando na linha dela.
 - A contribuição entra no mês e na tag do lançamento que ela recebe, e é uma linha própria, logo

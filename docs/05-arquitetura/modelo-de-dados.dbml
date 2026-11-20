@@ -3,10 +3,11 @@
 // documento.
 //
 // Leituras do Início de um mês: a lista de allowedEmails inteira (dela sai o nome atual de quem
-// registrou cada lançamento), o documento único das tags, todas as contas recorrentes e os
-// lançamentos do mês (uma consulta por month). O que
-// falta pagar e as somas por tag e por membro são calculados no app, com o que já foi lido: não há
-// totais gravados. Trocar de mês lê só os lançamentos do novo mês.
+// registrou cada lançamento), o documento único das tags, todas as contas recorrentes, os
+// lançamentos do mês (uma consulta por month) e os billMonths do mês (outra consulta por month). No
+// mês atual, as atrasadas saem de mais duas consultas, das duas coleções, com month menor que o
+// atual, comparadas com os meses de cada conta. O que falta pagar e as somas por tag e por membro são
+// calculados no app, com o que já foi lido: não há totais gravados.
 //
 // Fora essas leituras, o app lê o documento settings/app uma vez ao abrir e a cada vez que o Início
 // volta a aparecer, para conferir a versão mínima. Ele é o único documento que se lê sem entrar.
@@ -25,9 +26,15 @@
 // AAAA-MM, para o fuso do celular não trocar o dia.
 
 Enum EntryKind {
-  recurringPayment [note: 'Pagamento de uma conta recorrente num mês']
+  recurringPayment [note: 'Pagamento de uma conta recorrente no mês dela (também o de um mês atrasado com contribuições, que conta no mês da conta)']
   oneOffBill [note: 'Conta avulsa']
   contribution [note: 'Contribuição: parte do valor de um pagamento ou de uma conta avulsa, posta por outro membro']
+  overduePayment [note: 'Pagamento de uma conta atrasada sem contribuições, feito num mês seguinte: conta no mês em que foi pago, com o selo De outubro']
+}
+
+Enum BillMonthStatus {
+  paidLater [note: 'Pago num mês seguinte, por um overduePayment: o mês da conta não a mostra mais nem a conta como atrasada']
+  skipped [note: 'Pulado: a família decidiu não pagar o mês atrasado. Não conta em nenhum mês e aparece só nas Puladas do mês dele']
 }
 
 Enum FileType {
@@ -68,32 +75,51 @@ Table recurringBills {
   startsOn varchar [not null, note: 'AAAA-MM-DD. Um mês só tem a conta se o vencimento dele cai nesta data ou depois']
   tagId varchar [ref: > tags.id, note: 'Opcional']
 
-  Note: 'Coleção pequena, lida inteira. Os meses não são gravados: cada mês a pagar sai deste cadastro. A exclusão apaga o documento, porque os pagamentos guardam a própria cópia do nome e da tag.'
+  Note: 'Coleção pequena, lida inteira. Os meses não são gravados: cada mês a pagar sai deste cadastro, e um mês anterior ao atual sem documento em entries (pagamento, com dono ou sem) nem em billMonths (pago depois ou pulado) é uma conta atrasada. A exclusão apaga o documento, porque os pagamentos guardam a própria cópia do nome e da tag.'
 }
 
 Table entries {
-  id varchar [pk, note: 'No pagamento, month + "_" + recurringBillId: o segundo pagamento do mês encontra o documento existente, e as regras recusam a escrita para qualquer pessoa, o autor inclusive. Na conta avulsa e na contribuição, um id gerado, que as regras não deixam ter a forma do pagamento (AAAA-MM_...), para elas não ocuparem o id de uma conta recorrente']
+  id varchar [pk, note: 'No recurringPayment, month + "_" + recurringBillId: o segundo pagamento do mês encontra o documento existente, e as regras recusam a escrita para qualquer pessoa, o autor inclusive, e também quando billMonths tem um documento com o mesmo id. Na conta avulsa, na contribuição e no overduePayment, um id gerado, que as regras não deixam ter a forma do pagamento (AAAA-MM_...), para eles não ocuparem o id de uma conta recorrente']
   kind EntryKind [not null]
-  month varchar [not null, note: 'AAAA-MM. Os lançamentos do Início vêm de uma consulta por este campo']
+  month varchar [not null, note: 'AAAA-MM. O mês em que o lançamento conta: os lançamentos do Início vêm de uma consulta por este campo. No overduePayment, o mês em que foi pago']
+  billMonth varchar [note: 'Só no overduePayment: AAAA-MM, o mês da conta atrasada, menor que o month. Dele sai o selo De outubro, sem ler o billMonths, que está em outro mês']
   entryId varchar [ref: > entries.id, note: 'Só na contribuição: o lançamento que ela recebe, o pagamento do mês (com dono ou sem) ou a conta avulsa. As regras exigem que ele exista ao fim do lote, com o mesmo month. A contribuição não tem name, date, tagId, dueDay nem expectedAmountCents: vêm desse lançamento']
-  recurringBillId varchar [ref: > recurringBills.id, note: 'Só no pagamento. As regras exigem que a conta exista na hora do pagamento; depois pode ficar apontando para uma conta já excluída']
-  name varchar [note: 'Na conta avulsa e no pagamento; no pagamento, cópia do nome da conta no momento do pagamento ou da primeira contribuição']
-  amountCents int [note: 'No pagamento, começa com o valor previsto e pode ser corrigido. Vazio no pagamento sem dono, cujo total é a soma das contribuições, calculada pelo app']
-  dueDay int [note: 'Só no pagamento: o dia (1 a 31) em que a conta vencia naquele mês, cópia no momento do pagamento (o dia 31 vira 30 num mês de 30 dias)']
-  expectedAmountCents int [note: 'Só no pagamento: cópia do valor previsto da conta no momento do pagamento ou da primeira contribuição, para o mês não mudar quando a conta mudar. O pagamento sem dono está pago quando a soma das contribuições alcança este valor']
+  recurringBillId varchar [ref: > recurringBills.id, note: 'No recurringPayment e no overduePayment. As regras exigem que a conta exista na hora do pagamento; depois pode ficar apontando para uma conta já excluída']
+  name varchar [note: 'Na conta avulsa, no recurringPayment e no overduePayment; nos dois últimos, cópia do nome da conta no momento do pagamento ou da primeira contribuição']
+  amountCents int [note: 'No recurringPayment e no overduePayment, começa com o valor previsto e pode ser corrigido. Vazio no pagamento sem dono, cujo total é a soma das contribuições, calculada pelo app']
+  dueDay int [note: 'No recurringPayment e no overduePayment: o dia (1 a 31) em que a conta vencia no mês dela, cópia no momento do pagamento (o dia 31 vira 30 num mês de 30 dias)']
+  expectedAmountCents int [note: 'No recurringPayment e no overduePayment: cópia do valor previsto da conta no momento do pagamento ou da primeira contribuição, para o mês não mudar quando a conta mudar. O pagamento sem dono está pago quando a soma das contribuições alcança este valor']
   date varchar [note: 'Só na conta avulsa: AAAA-MM-DD, preenchida com hoje. Trocar a data para outro mês muda o month junto']
-  tagId varchar [ref: > tags.id, note: 'Opcional. No pagamento, cópia da tag da conta no momento do pagamento']
-  paidBy varchar [ref: > allowedEmails.uid, note: 'O uid do login de quem registrou. Vazio só no pagamento sem dono, gravado na primeira contribuição de um mês sem pagamento; pagar esse mês é preencher o paidBy, o amountCents e o receiptFileId, por qualquer membro. As regras exigem o uid de quem grava (request.auth.uid) e só deixam o autor alterar ou excluir. O nome não é copiado: o app o acha na lista pelo uid, e uma troca de nome chega aos lançamentos antigos']
+  tagId varchar [ref: > tags.id, note: 'Opcional. No recurringPayment e no overduePayment, cópia da tag da conta no momento do pagamento']
+  paidBy varchar [ref: > allowedEmails.uid, note: 'O uid do login de quem registrou. Vazio só no pagamento sem dono, gravado na primeira contribuição de um mês sem pagamento; pagar esse mês é preencher o paidBy, o amountCents e o receiptFileId, por qualquer membro, e ele conta no mês da conta mesmo atrasado. As regras exigem o uid de quem grava (request.auth.uid) e só deixam o autor alterar ou excluir. O nome não é copiado: o app o acha na lista pelo uid, e uma troca de nome chega aos lançamentos antigos']
   createdAt timestamp [not null, note: 'Quando o lançamento foi registrado, gravado pelo servidor (serverTimestamp). Aparece nos detalhes do lançamento']
   receiptFileId varchar [ref: - files.id, note: 'O comprovante, vazio só no pagamento sem dono. As regras exigem que o registro exista ao fim do lote (getAfter) e tenha sido enviado por quem grava o lançamento']
 
   indexes {
-    (month, recurringBillId) [unique, note: 'Garantido pelo id do documento, não por um índice: o Firestore não tem índice único']
+    (month, recurringBillId) [unique, note: 'Só no recurringPayment. Garantido pelo id do documento, não por um índice: o Firestore não tem índice único']
     month
     tagId
   }
 
-  Note: 'Os lançamentos, pagamentos, contas avulsas e contribuições, numa coleção só: uma consulta traz o mês inteiro, e o app calcula com ela o que falta e a parte de cada membro, sem totais gravados. O pagamento sem dono nasce no lote da primeira contribuição de um mês sem pagamento, e qualquer membro o cria e apaga; a contribuição que vira pagamento, ou o contrário, é um lote só, com o mesmo comprovante. Só o autor altera: no pagamento, o valor pago e o comprovante; na conta avulsa, o nome, o valor, a data (e o month com ela), a tag e o comprovante. Trocar o comprovante é um lote: cria o files e o fileContents novos, atualiza o lançamento e apaga os antigos. Excluir é um lote que apaga o lançamento, o files e o fileContents dele. Excluir não desfaz o hasEntries.'
+  Note: 'Os lançamentos, tudo o que movimenta dinheiro, numa coleção só: uma consulta traz o mês inteiro, e o app calcula com ela o que falta e a parte de cada membro, sem totais gravados. O pagamento sem dono nasce no lote da primeira contribuição de um mês sem pagamento, e qualquer membro o cria e apaga; a contribuição que vira pagamento, ou o contrário, é um lote só, com o mesmo comprovante. O overduePayment nasce no mesmo lote do billMonths paidLater que aponta para ele, e excluí-lo apaga esse billMonths junto: a conta volta a ficar atrasada. Só o autor altera: no pagamento, o valor pago e o comprovante; na conta avulsa, o nome, o valor, a data (e o month com ela), a tag e o comprovante. Trocar o comprovante é um lote: cria o files e o fileContents novos, atualiza o lançamento e apaga os antigos. Excluir é um lote que apaga o lançamento, o files e o fileContents dele. Excluir não desfaz o hasEntries.'
+}
+
+Table billMonths {
+  id varchar [pk, note: 'month + "_" + recurringBillId, o mesmo id que o pagamento daquele mês teria em entries. As regras recusam criar um billMonths quando entries tem esse id (pago ou com contribuições), e o contrário: um mês da conta fica pago, pago depois ou pulado, nunca dois']
+  status BillMonthStatus [not null]
+  month varchar [not null, note: 'AAAA-MM, o mês da conta. Os billMonths do Início vêm de uma consulta por este campo. Só um mês anterior ao atual']
+  recurringBillId varchar [not null, ref: > recurringBills.id, note: 'A conta. As regras exigem que ela exista na hora de gravar; depois pode ficar apontando para uma conta já excluída']
+  entryId varchar [ref: - entries.id, note: 'Só no paidLater: o overduePayment que pagou o mês, que as regras exigem no mesmo lote (getAfter)']
+  name varchar [not null, note: 'Cópia do nome da conta na hora de gravar, para as Puladas mostrarem a conta mesmo excluída']
+  tagId varchar [ref: > tags.id, note: 'Opcional. Cópia da tag da conta na hora de gravar']
+  createdBy varchar [not null, ref: > allowedEmails.uid, note: 'O uid de quem pulou ou pagou depois (request.auth.uid)']
+  createdAt timestamp [not null, note: 'Gravado pelo servidor (serverTimestamp)']
+
+  indexes {
+    month
+  }
+
+  Note: 'O estado de um mês da conta que não é um pagamento comum, fora dos lançamentos para eles continuarem sendo só dinheiro. Qualquer membro pula um mês atrasado sem documento; só o Desfazer logo depois de pular apaga o skipped. Pagar um mês pulado troca o skipped por um paidLater, no lote do overduePayment. Um mês com contribuições não pode ser pulado: o pagamento sem dono já ocupa o id em entries.'
 }
 
 Table files {
