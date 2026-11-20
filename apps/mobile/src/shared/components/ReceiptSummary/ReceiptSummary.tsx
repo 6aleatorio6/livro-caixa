@@ -1,4 +1,4 @@
-import { FileCheck, FileX, Image, Paperclip } from 'lucide-react-native';
+import { FileCheck, FileX, Image, type LucideIcon, Paperclip } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
@@ -25,6 +25,8 @@ export interface IReceiptSummaryProps {
   isShared?: boolean;
   /** O texto de cima no lugar do tipo e do tamanho: de qual lançamento é o comprovante ("Comprovante do pagamento"). */
   heading?: string;
+  /** A marca no lugar da do tipo de arquivo: a da contribuição, por exemplo. */
+  icon?: LucideIcon;
 }
 
 /**
@@ -40,6 +42,7 @@ export function ReceiptSummary({
   disabled = false,
   isShared = false,
   heading,
+  icon,
 }: IReceiptSummaryProps) {
   const { theme } = useUnistyles();
 
@@ -50,7 +53,8 @@ export function ReceiptSummary({
   const iconColor =
     theme.colors[hasError ? 'onErrorContainer' : attached ? 'onPrimaryContainer' : 'onSecondaryContainer'];
   const Icon =
-    rejectedFileName !== undefined ? FileX : attached ? (attached.type === 'pdf' ? FileCheck : Image) : Paperclip;
+    icon ??
+    (rejectedFileName !== undefined ? FileX : attached ? (attached.type === 'pdf' ? FileCheck : Image) : Paperclip);
   const typeName = attached?.type === 'pdf' ? 'PDF' : 'Imagem';
   const attachedLabel = attached
     ? `${isShared ? 'Veio do compartilhamento · ' : ''}${typeName} · ${attached.wasReduced ? 'comprimida para ' : ''}${formatFileSize(attached.sizeBytes)}`

@@ -33,7 +33,7 @@ export function ContributionsSection({ contributions, people, closedReason }: IC
           {closedReason}
         </AppText>
       ) : null}
-      <View>
+      <View style={styles.list}>
         {contributions.map((contribution) => (
           <ContributionItem
             key={contribution.id}
@@ -48,5 +48,6 @@ export function ContributionsSection({ contributions, people, closedReason }: IC
 
 const styles = StyleSheet.create((theme) => ({
   section: { gap: theme.spacing.small },
+  list: { gap: theme.spacing.small },
   title: { flexDirection: 'row', gap: theme.spacing.extraSmallIncreased },
 }));

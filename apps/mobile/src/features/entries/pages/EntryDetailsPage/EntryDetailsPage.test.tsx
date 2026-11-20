@@ -59,6 +59,9 @@ const contributionReceipt = {
   service: receiptFileQueryService,
   scenario: receiptFileQueryScenarios.contributionReceipt,
 };
+// O registro do comprovante de uma contribuição que não chegou ou não existe: não há cenário do registro ausente com o
+// id de uma contribuição, e o estado sem dado (`loading`) entrega o mesmo `null`.
+const noReceiptRecord = { service: receiptFileQueryService, status: 'loading' as const };
 
 // O mock do lançamento lido pelo id: o `id` do cenário é o da rota.
 type IEntryMock = IRealtimeMock & { scenario: { input: { id: string } } };
@@ -281,8 +284,7 @@ describe('EntryDetailsPage', () => {
       expect(screen.getByText('R$ 147,35')).toBeOnTheScreen();
       expect(screen.getByRole('header', { name: 'Contribuições' })).toBeOnTheScreen();
       expect(screen.getByText('(R$ 40,00)')).toBeOnTheScreen();
-      expect(screen.getByText('Ana · 11/10')).toBeOnTheScreen();
-      expect(screen.getByText('R$ 40,00')).toBeOnTheScreen();
+      expect(screen.getByText('Ana · 11/10 · R$ 40,00')).toBeOnTheScreen();
     });
 
     it('Should not offer Contribuir to whoever registered the entry, and keep Excluir off while it has contributions', async () => {
@@ -320,7 +322,7 @@ describe('EntryDetailsPage', () => {
       expect(screen.getByRole('button', { name: 'Excluir' })).toBeDisabled();
     });
 
-    it("Should offer no Ver for a contribution in an entry's details: the entry's own receipt is the only one", async () => {
+    it("Should show each contribution's receipt with its own Ver, which opens the contribution's id", async () => {
       const { user } = await renderDetails(
         payment,
         pdfReceipt,
@@ -330,16 +332,19 @@ describe('EntryDetailsPage', () => {
         monthWithContribution,
       );
 
-      expect(screen.queryByText('pix-luz-ana.jpg')).not.toBeOnTheScreen();
-      const receipts = screen.getAllByRole('button', { name: /^Comprovante:/ });
-      expect(receipts).toHaveLength(1);
-      await user.press(receipts[0]);
+      expect(screen.getByText('pix-luz-ana.jpg')).toBeOnTheScreen();
+      expect(screen.getAllByRole('button', { name: /^Comprovante:/ })).toHaveLength(2);
+      await user.press(screen.getByRole('button', { name: 'Comprovante: pix-luz-ana.jpg. Ver' }));
 
       expect(router.push).toHaveBeenCalledTimes(1);
-      expect(router.push).toHaveBeenCalledWith({
-        pathname: '/entries/[id]/receipt',
-        params: { id: '2026-10_electricity' },
-      });
+      expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]/receipt', params: { id: 'c-ana' } });
+    });
+
+    it('Should keep Ver off for a contribution whose receipt record has not arrived or is missing', async () => {
+      await renderDetails(payment, pdfReceipt, noReceiptRecord, family, threeTags, monthWithContribution);
+
+      expect(screen.getByRole('button', { name: 'Comprovante: Nenhum arquivo anexado. Ver' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'Comprovante: comprovante-luz.pdf. Ver' })).toBeEnabled();
     });
 
     describe('A bill paid only by contributions', () => {
@@ -347,7 +352,7 @@ describe('EntryDetailsPage', () => {
       const november = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithContributions };
 
       it('Should disable Contribuir when the contributions reached the expected amount, and say why', async () => {
-        await renderDetails(reachedRent, family, threeTags, november);
+        await renderDetails(reachedRent, family, threeTags, november, noReceiptRecord);
 
         expect(screen.getByText('R$ 2.000,00')).toBeOnTheScreen();
         expect(screen.getByText('Chegaram ao previsto, então não dá para contribuir mais.')).toBeOnTheScreen();
@@ -356,18 +361,17 @@ describe('EntryDetailsPage', () => {
         expect(screen.queryByRole('button', { name: 'Excluir' })).not.toBeOnTheScreen();
       });
 
-      it('Should list each contribution as a text line, with no receipt of its own', async () => {
-        await renderDetails(reachedRent, family, threeTags, november);
+      it("Should list each contribution with its receipt, under the contributor's name, date and amount", async () => {
+        await renderDetails(reachedRent, family, threeTags, november, noReceiptRecord);
 
         // O Bruno contribuiu no dia 4, e a Carla, que a lista da família não tem (então "Alguém"), no dia 5.
-        expect(screen.getByText('Bruno · 04/11')).toBeOnTheScreen();
-        expect(screen.getByText('Alguém · 05/11')).toBeOnTheScreen();
-        expect(screen.getAllByText('R$ 1.000,00')).toHaveLength(2);
-        expect(screen.queryAllByRole('button', { name: /^Comprovante:/ })).toHaveLength(0);
+        expect(screen.getByText('Bruno · 04/11 · R$ 1.000,00')).toBeOnTheScreen();
+        expect(screen.getByText('Alguém · 05/11 · R$ 1.000,00')).toBeOnTheScreen();
+        expect(screen.getAllByRole('button', { name: /^Comprovante:/ })).toHaveLength(2);
       });
 
       it('Should open the payment of the month from "Anexar o comprovante da conta"', async () => {
-        const { user } = await renderDetails(reachedRent, family, threeTags, november);
+        const { user } = await renderDetails(reachedRent, family, threeTags, november, noReceiptRecord);
 
         await user.press(screen.getByRole('button', { name: 'Anexar o comprovante da conta' }));
 
