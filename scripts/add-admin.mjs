@@ -1,11 +1,9 @@
 // O `pnpm add-admin <email>`: faz da pessoa a admin do app, gravando `isAdmin: true` na entrada dela em
 // `allowedEmails` (o app não cria admin: as regras só deixam o console ou o Admin SDK fazer isso). Usa a conta
-// do `firebase login` e o Firestore de verdade; com `FIRESTORE_EMULATOR_HOST` definido, grava no emulador.
-// O ID da entrada é o e-mail em minúsculas. Uma entrada que já existe só ganha o `isAdmin`; as outras chaves
-// (`name`, `uid`, `hasEntries`) ficam como estão.
-import { createRequire } from 'node:module';
-
-const PROJECT_ID = process.env.GCLOUD_PROJECT ?? 'livro-caixa-f1782';
+// do `firebase login` e o Firestore de verdade (`firebase-rest.mjs`); com `FIRESTORE_EMULATOR_HOST` definido, grava
+// no emulador. O ID da entrada é o e-mail em minúsculas. Uma entrada que já existe só ganha o `isAdmin`; as outras
+// chaves (`name`, `uid`, `hasEntries`) ficam como estão.
+import { authorizedHeaders, firestoreBase, PROJECT_ID } from './firebase-rest.mjs';
 
 const email = process.argv[2]?.trim().toLowerCase();
 if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -13,25 +11,8 @@ if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
   process.exit(1);
 }
 
-async function authorization() {
-  if (process.env.FIRESTORE_EMULATOR_HOST) return 'Bearer owner';
-  const require = createRequire(import.meta.url);
-  const auth = require('firebase-tools/lib/auth');
-  const { CLOUD_PLATFORM } = require('firebase-tools/lib/scopes');
-  const account = auth.getGlobalDefaultAccount();
-  if (!account) {
-    console.error('Nenhuma conta do Firebase CLI: rode `pnpm exec firebase login`.');
-    process.exit(1);
-  }
-  const { access_token: token } = await auth.getAccessToken(account.tokens.refresh_token, [CLOUD_PLATFORM]);
-  return `Bearer ${token}`;
-}
-
-const host = process.env.FIRESTORE_EMULATOR_HOST
-  ? `http://${process.env.FIRESTORE_EMULATOR_HOST}`
-  : 'https://firestore.googleapis.com';
-const url = `${host}/v1/projects/${PROJECT_ID}/databases/(default)/documents/allowedEmails/${encodeURIComponent(email)}`;
-const headers = { Authorization: await authorization(), 'Content-Type': 'application/json' };
+const url = `${firestoreBase}/allowedEmails/${encodeURIComponent(email)}`;
+const headers = await authorizedHeaders();
 
 async function fail(response) {
   console.error(`Firestore respondeu ${response.status}: ${await response.text()}`);
