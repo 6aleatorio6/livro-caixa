@@ -154,7 +154,8 @@ Pré-requisitos: Node 22.22.1 ou mais novo (o mínimo do lint-staged) e pnpm 10.
 jornadas) pedem Java. O build Android pede o Android SDK e o `apps/mobile/google-services.json`,
 baixado do console do Firebase e mantido fora do Git. O `pnpm install` também liga o hook de commit
 (`.githooks/pre-commit`): cada commit formata e confere com o Oxlint os arquivos do app que leva e confere os
-tipos do app inteiro.
+tipos do app inteiro. Para o `git blame` pular o commit que só formatou o app, rode uma vez
+`git config blame.ignoreRevsFile .git-blame-ignore-revs`.
 
 ```sh
 pnpm install                 # instala o workspace
