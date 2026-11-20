@@ -11,6 +11,7 @@ other stack decision is made without being written there.
 - `pnpm install` at the root installs the workspace.
 - `pnpm dev:docs` serves the portal at `http://localhost:4000`.
 - `pnpm verify` runs the portal's tests and the build, which fails on a broken link.
+- `pnpm lint:rules` tests the app's local lint rules, in `lint/`.
 - `pnpm typecheck:mobile` type-checks the app; `pnpm mobile <script>` runs any script of
   `apps/mobile`.
 - `pnpm android` builds the app and opens it on the Android emulator. It needs the Android SDK,

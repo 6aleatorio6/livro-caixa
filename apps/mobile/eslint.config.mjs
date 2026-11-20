@@ -1,4 +1,3 @@
-import path from 'node:path';
 import js from '@eslint/js';
 import boundaries from 'eslint-plugin-boundaries';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
@@ -8,6 +7,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
+import exportsPlugin from '../../lint/exports.ts';
 
 /*
  * As convenções do código moram aqui, e não só em Markdown: cada regra abaixo vem do ESLint do
@@ -248,163 +248,6 @@ function restrictedImports(...exceptions) {
     },
   ];
 }
-
-// ---------------------------------------------------------------------------
-// Um arquivo, uma declaração exportada (.claude/rules/one-export-per-file.md).
-//
-// Conta função, classe, interface, tipo, enum e a constante que guarda função (hook, componente).
-// Constante de valor não conta, e o que não é exportado também não. A mesma regra está no ESLint
-// de um projeto anterior.
-// ---------------------------------------------------------------------------
-
-/** A constante guarda uma função — `const useToastStore = create(…)`, `const Screen = memo(…)`. */
-function holdsFunction(declarator) {
-  let init = declarator.init;
-  while (init && (init.type === 'TSAsExpression' || init.type === 'TSSatisfiesExpression')) init = init.expression;
-  if (!init || declarator.id.type !== 'Identifier') return false;
-  if (init.type === 'ArrowFunctionExpression' || init.type === 'FunctionExpression') return true;
-  return init.type === 'CallExpression' && /^(use[A-Z]|[A-Z][a-z])/.test(declarator.id.name);
-}
-
-/** As declarações exportadas que contam, com o nó onde o erro aparece. */
-function exportedDeclarations(program) {
-  const found = [];
-  for (const statement of program.body) {
-    if (statement.type !== 'ExportNamedDeclaration' || statement.source) continue;
-    const declaration = statement.declaration;
-    if (!declaration) {
-      for (const specifier of statement.specifiers) found.push({ name: specifier.exported.name, node: specifier });
-    } else if (declaration.type === 'VariableDeclaration') {
-      for (const declarator of declaration.declarations) {
-        if (holdsFunction(declarator)) found.push({ name: declarator.id.name, node: declarator });
-      }
-    } else if (declaration.id) {
-      found.push({ name: declaration.id.name, node: declaration });
-    }
-  }
-  // A interface de props mora com o componente: `IButtonProps` ao lado de `Button`.
-  const names = new Set(found.map(({ name }) => name));
-  return found.filter(({ name }) => !(/^I.+Props$/.test(name) && names.has(name.slice(1, -'Props'.length))));
-}
-
-/** Toda declaração exportada do arquivo, a constante de valor incluída, com o nó do erro e o tipo dele. */
-function allExportedDeclarations(program) {
-  const found = [];
-  for (const statement of program.body) {
-    if (statement.type !== 'ExportNamedDeclaration' || statement.source) continue;
-    const declaration = statement.declaration;
-    if (!declaration) {
-      for (const specifier of statement.specifiers) found.push({ name: specifier.exported.name, node: specifier });
-    } else if (declaration.type === 'VariableDeclaration') {
-      for (const declarator of declaration.declarations) {
-        if (declarator.id.type === 'Identifier') found.push({ name: declarator.id.name, node: declarator });
-      }
-    } else if (declaration.id?.type === 'Identifier') {
-      found.push({ name: declaration.id.name, node: declaration, kind: declaration.type });
-    }
-  }
-  return found;
-}
-
-const comparable = (name) => name.toLowerCase().replaceAll('_', '');
-
-/** Os nomes que o arquivo aceita: o dele, o `I<Nome>` do tipo e o `use<Nome>Store` de `<nome>.store.ts`. */
-function acceptedNames(filename) {
-  const base = path.basename(filename);
-  const stem = base.slice(0, base.indexOf('.'));
-  const names = [stem, `I${stem}`];
-  if (base.endsWith('.store.ts')) names.push(`use${stem}Store`);
-  return names.map(comparable);
-}
-
-/** Os nomes das constantes de topo do arquivo, exportadas ou não. */
-function topLevelConstNames(program) {
-  const names = new Set();
-  for (const statement of program.body) {
-    const declaration = statement.type === 'ExportNamedDeclaration' ? statement.declaration : statement;
-    if (declaration?.type !== 'VariableDeclaration' || declaration.kind !== 'const') continue;
-    for (const declarator of declaration.declarations) {
-      if (declarator.id.type === 'Identifier') names.add(declarator.id.name);
-    }
-  }
-  return names;
-}
-
-/** O corpo do tipo tem `typeof` de uma das constantes (`(typeof ROLES)[number]`). */
-function usesTypeofOf(node, constants) {
-  if (!node || typeof node.type !== 'string') return false;
-  if (node.type === 'TSTypeQuery') {
-    let name = node.exprName;
-    while (name.type === 'TSQualifiedName') name = name.left;
-    if (constants.has(name.name)) return true;
-  }
-  return Object.entries(node).some(([key, child]) => {
-    if (key === 'parent') return false;
-    return Array.isArray(child) ? child.some((item) => usesTypeofOf(item, constants)) : usesTypeofOf(child, constants);
-  });
-}
-
-const exportsPlugin = {
-  rules: {
-    'one-export-per-file': {
-      meta: { type: 'problem', docs: { description: 'Um arquivo, uma declaração exportada.' }, schema: [] },
-      create(context) {
-        return {
-          Program(program) {
-            const [first, ...others] = exportedDeclarations(program);
-            for (const { name, node } of others) {
-              context.report({
-                node,
-                message: `"${name}" vai para um arquivo próprio: este já exporta "${first.name}".`,
-              });
-            }
-          },
-        };
-      },
-    },
-    'name-matches-file': {
-      meta: { type: 'problem', docs: { description: 'Uma declaração exportada leva o nome do arquivo.' }, schema: [] },
-      create(context) {
-        return {
-          Program(program) {
-            const found = exportedDeclarations(program);
-            if (found.length === 0) return;
-            const accepted = acceptedNames(context.filename);
-            if (found.some(({ name }) => accepted.includes(comparable(name)))) return;
-            const stem = path.basename(context.filename).split('.')[0];
-            context.report({
-              node: found[0].node,
-              message: `O arquivo exporta ${found.map(({ name }) => `"${name}"`).join(', ')}, e nenhum leva o nome dele ("${stem}"): renomeie o arquivo ou a declaração.`,
-            });
-          },
-        };
-      },
-    },
-    'type-in-types-folder': {
-      meta: { type: 'problem', docs: { description: 'Tipo exportado mora numa pasta types/.' }, schema: [] },
-      create(context) {
-        const inTypesFolder = path.relative(context.cwd, context.filename).split(path.sep).includes('types');
-        return {
-          Program(program) {
-            if (inTypesFolder) return;
-            const exportedNames = new Set(allExportedDeclarations(program).map(({ name }) => name));
-            const constants = topLevelConstNames(program);
-            for (const { name, node, kind } of allExportedDeclarations(program)) {
-              if (kind !== 'TSInterfaceDeclaration' && kind !== 'TSTypeAliasDeclaration') continue;
-              const props = /^I(.+)Props$/.exec(name);
-              if (props && exportedNames.has(props[1])) continue;
-              if (usesTypeofOf(node, constants)) continue;
-              context.report({
-                node,
-                message: `O tipo "${name}" vai para uma pasta types/ (só o I<X>Props mora com o componente X, e o tipo derivado de uma constante do arquivo fica com ela).`,
-              });
-            }
-          },
-        };
-      },
-    },
-  },
-};
 
 export default defineConfig([
   globalIgnores(['.expo', 'android', 'ios', 'node_modules', 'expo-env.d.ts']),
