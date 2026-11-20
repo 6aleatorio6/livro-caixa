@@ -81,6 +81,8 @@ const { control, handleSubmit, formState } = useOneOffBillForm();
   version in its own folder, `src/shared/components/inputs/MoneyFieldSmart/MoneyFieldSmart.tsx`:
   `export const MoneyFieldSmart = createInputSmartWrapper(MoneyField);`.
 - The required mark comes from the schema, never from a prop typed by hand.
+- A schema's `.test()` is synchronous: `isFieldRequired` validates in sync mode, and the lint fails an
+  `async` function there. What only the server knows comes back on submit as a field error.
 
 ## Submit
 

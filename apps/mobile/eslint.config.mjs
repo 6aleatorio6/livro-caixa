@@ -1,3 +1,4 @@
+import path from 'node:path';
 import js from '@eslint/js';
 import boundaries from 'eslint-plugin-boundaries';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
@@ -134,7 +135,8 @@ const LIBRARY_BOOLEAN_PROPS = [
 ];
 
 // ---------------------------------------------------------------------------
-// Sintaxe proibida: export default (fora das rotas, que o expo-router exige) e cor literal.
+// Sintaxe proibida. O `no-restricted-syntax` guarda uma lista só por arquivo (a do último override que
+// casa), então cada override que mexe nele repete a lista inteira do seu arquivo.
 // ---------------------------------------------------------------------------
 
 const NO_DEFAULT_EXPORT = [
@@ -151,6 +153,62 @@ const NO_LITERAL_COLOR = [
   },
   { selector: 'Literal[value=/^(?:rgb|hsl)a?\\(/]', message: 'Cor só vem do tema (src/core/theme).' },
 ];
+
+// Espaçamento, raio e tipografia vêm do tema. O `0` e o `'auto'` não são medida do design.
+const THEME_KEYS =
+  'padding.*|margin.*|gap|rowGap|columnGap|borderRadius|border.*Radius|fontSize|lineHeight|letterSpacing|fontWeight|fontFamily';
+const NO_LITERAL_THEME_VALUE = [
+  {
+    selector: `Property[key.name=/^(?:${THEME_KEYS})$/][value.type='Literal']:not([value.value=0]):not([value.value='auto'])`,
+    message:
+      'O valor vem do tema: theme.spacing (padding, margin, gap), theme.radii (raios) ou theme.typography (fonte). Um valor do design sem token leva supressão com o motivo.',
+  },
+];
+
+// O Pressable é o que o leitor de tela anuncia: sem o papel e o rótulo ele é só "botão sem nome".
+const NO_PRESSABLE_WITHOUT_ACCESSIBILITY = ['accessibilityRole', 'accessibilityLabel'].map((attribute) => ({
+  selector: `JSXOpeningElement[name.name='Pressable']:not(:has(> JSXAttribute[name.name='${attribute}']))`,
+  message: `O Pressable leva ${attribute} (skill component-guidelines).`,
+}));
+
+// O `*` de obrigatório pergunta ao schema a cada mudança do formulário, e só em modo síncrono
+// (`isFieldRequired`, skill forms). Uma função `async` no `.test()` só quebra no uso.
+const NO_ASYNC_SCHEMA_TEST = [
+  {
+    // A função passada solta (`.test(nome, mensagem, fn)`) e a da forma de objeto (`.test({ test: fn })`).
+    selector: [
+      "CallExpression[callee.property.name='test'] > :matches(ArrowFunctionExpression, FunctionExpression)[async=true]",
+      "CallExpression[callee.property.name='test'] > ObjectExpression > Property[key.name='test'] > :matches(ArrowFunctionExpression, FunctionExpression)[async=true]",
+    ].join(', '),
+    message:
+      'O .test() do schema é síncrono: o isFieldRequired valida em modo síncrono, e o que só o servidor sabe chega no envio como erro de campo (skill forms).',
+  },
+];
+
+// A rota só reexporta a página: `export { XPage as default } from '@/features/…'`. O `_layout` e os `+*`
+// (`+not-found`, `+html`) montam a navegação e ficam de fora.
+const ONLY_ROUTE_REEXPORT = [
+  {
+    selector: "Program > :not(ExportNamedDeclaration[source.value=/^@.features./]:has(> ExportSpecifier[exported.name='default']))",
+    message:
+      "A rota só reexporta a página: export { XPage as default } from '@/features/…' (skill project-structure).",
+  },
+];
+
+// Todo mock de teste tem fábrica, e o que se espera da tela é `toBeOnTheScreen` (skill testing).
+const TEST_SYNTAX = [
+  {
+    selector: "CallExpression[callee.object.name='jest'][callee.property.name='mock'][arguments.length=1]",
+    message: 'Todo jest.mock tem fábrica: jest.mock(caminho, () => ({ … })) (skill testing).',
+  },
+  {
+    selector: 'CallExpression[callee.property.name=/^(?:toBeTruthy|toBeFalsy)$/]',
+    message: 'Use toBeOnTheScreen (ou o matcher que diz o que se espera), não toBeTruthy nem toBeFalsy (skill testing).',
+  },
+];
+
+/** O que vale em todo arquivo de src/, fora o que cada pasta decide por si (export default, tema, rota). */
+const SYNTAX_EVERYWHERE = [...NO_PRESSABLE_WITHOUT_ACCESSIBILITY, ...NO_ASYNC_SCHEMA_TEST];
 
 // ---------------------------------------------------------------------------
 // Nomes proibidos de importar e `../` de mais de um nível. A lista é uma só: o arquivo que é o lugar
@@ -229,7 +287,64 @@ function exportedDeclarations(program) {
   return found.filter(({ name }) => !(/^I.+Props$/.test(name) && names.has(name.slice(1, -'Props'.length))));
 }
 
-const oneExportPlugin = {
+/** Toda declaração exportada do arquivo, a constante de valor incluída, com o nó do erro e o tipo dele. */
+function allExportedDeclarations(program) {
+  const found = [];
+  for (const statement of program.body) {
+    if (statement.type !== 'ExportNamedDeclaration' || statement.source) continue;
+    const declaration = statement.declaration;
+    if (!declaration) {
+      for (const specifier of statement.specifiers) found.push({ name: specifier.exported.name, node: specifier });
+    } else if (declaration.type === 'VariableDeclaration') {
+      for (const declarator of declaration.declarations) {
+        if (declarator.id.type === 'Identifier') found.push({ name: declarator.id.name, node: declarator });
+      }
+    } else if (declaration.id?.type === 'Identifier') {
+      found.push({ name: declaration.id.name, node: declaration, kind: declaration.type });
+    }
+  }
+  return found;
+}
+
+const comparable = (name) => name.toLowerCase().replaceAll('_', '');
+
+/** Os nomes que o arquivo aceita: o dele, o `I<Nome>` do tipo e o `use<Nome>Store` de `<nome>.store.ts`. */
+function acceptedNames(filename) {
+  const base = path.basename(filename);
+  const stem = base.slice(0, base.indexOf('.'));
+  const names = [stem, `I${stem}`];
+  if (base.endsWith('.store.ts')) names.push(`use${stem}Store`);
+  return names.map(comparable);
+}
+
+/** Os nomes das constantes de topo do arquivo, exportadas ou não. */
+function topLevelConstNames(program) {
+  const names = new Set();
+  for (const statement of program.body) {
+    const declaration = statement.type === 'ExportNamedDeclaration' ? statement.declaration : statement;
+    if (declaration?.type !== 'VariableDeclaration' || declaration.kind !== 'const') continue;
+    for (const declarator of declaration.declarations) {
+      if (declarator.id.type === 'Identifier') names.add(declarator.id.name);
+    }
+  }
+  return names;
+}
+
+/** O corpo do tipo tem `typeof` de uma das constantes (`(typeof ROLES)[number]`). */
+function usesTypeofOf(node, constants) {
+  if (!node || typeof node.type !== 'string') return false;
+  if (node.type === 'TSTypeQuery') {
+    let name = node.exprName;
+    while (name.type === 'TSQualifiedName') name = name.left;
+    if (constants.has(name.name)) return true;
+  }
+  return Object.entries(node).some(([key, child]) => {
+    if (key === 'parent') return false;
+    return Array.isArray(child) ? child.some((item) => usesTypeofOf(item, constants)) : usesTypeofOf(child, constants);
+  });
+}
+
+const exportsPlugin = {
   rules: {
     'one-export-per-file': {
       meta: { type: 'problem', docs: { description: 'Um arquivo, uma declaração exportada.' }, schema: [] },
@@ -241,6 +356,47 @@ const oneExportPlugin = {
               context.report({
                 node,
                 message: `"${name}" vai para um arquivo próprio: este já exporta "${first.name}".`,
+              });
+            }
+          },
+        };
+      },
+    },
+    'name-matches-file': {
+      meta: { type: 'problem', docs: { description: 'Uma declaração exportada leva o nome do arquivo.' }, schema: [] },
+      create(context) {
+        return {
+          Program(program) {
+            const found = exportedDeclarations(program);
+            if (found.length === 0) return;
+            const accepted = acceptedNames(context.filename);
+            if (found.some(({ name }) => accepted.includes(comparable(name)))) return;
+            const stem = path.basename(context.filename).split('.')[0];
+            context.report({
+              node: found[0].node,
+              message: `O arquivo exporta ${found.map(({ name }) => `"${name}"`).join(', ')}, e nenhum leva o nome dele ("${stem}"): renomeie o arquivo ou a declaração.`,
+            });
+          },
+        };
+      },
+    },
+    'type-in-types-folder': {
+      meta: { type: 'problem', docs: { description: 'Tipo exportado mora numa pasta types/.' }, schema: [] },
+      create(context) {
+        const inTypesFolder = path.relative(context.cwd, context.filename).split(path.sep).includes('types');
+        return {
+          Program(program) {
+            if (inTypesFolder) return;
+            const exportedNames = new Set(allExportedDeclarations(program).map(({ name }) => name));
+            const constants = topLevelConstNames(program);
+            for (const { name, node, kind } of allExportedDeclarations(program)) {
+              if (kind !== 'TSInterfaceDeclaration' && kind !== 'TSTypeAliasDeclaration') continue;
+              const props = /^I(.+)Props$/.exec(name);
+              if (props && exportedNames.has(props[1])) continue;
+              if (usesTypeofOf(node, constants)) continue;
+              context.report({
+                node,
+                message: `O tipo "${name}" vai para uma pasta types/ (só o I<X>Props mora com o componente X, e o tipo derivado de uma constante do arquivo fica com ela).`,
               });
             }
           },
@@ -288,7 +444,13 @@ export default defineConfig([
         },
       ],
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      'no-restricted-syntax': ['error', ...NO_DEFAULT_EXPORT, ...NO_LITERAL_COLOR],
+      'no-restricted-syntax': [
+        'error',
+        ...NO_DEFAULT_EXPORT,
+        ...NO_LITERAL_COLOR,
+        ...NO_LITERAL_THEME_VALUE,
+        ...SYNTAX_EVERYWHERE,
+      ],
     },
   },
   // Arquivos e pastas como no app anterior: o arquivo leva o nome do que exporta, sem hífen. Componente,
@@ -315,19 +477,49 @@ export default defineConfig([
       'check-file/folder-naming-convention': ['error', { 'src/!(app)/**/': '@(+([a-zA-Z0-9])|\\(+([a-zA-Z0-9])\\))' }],
     },
   },
+  // As rotas exportam default (o expo-router exige), e as que não são layout só reexportam a página.
   {
     files: ['src/app/**/*.{ts,tsx}'],
-    rules: { 'no-restricted-syntax': ['error', ...NO_LITERAL_COLOR] },
+    rules: {
+      'no-restricted-syntax': ['error', ...NO_LITERAL_COLOR, ...NO_LITERAL_THEME_VALUE, ...SYNTAX_EVERYWHERE],
+    },
   },
-  // O tema é onde as cores literais moram, e o aumento de tipo do Unistyles (`interface
+  {
+    files: ['src/app/**/*.{ts,tsx}'],
+    ignores: ['src/app/**/_layout.tsx', 'src/app/**/+*.tsx'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        ...NO_LITERAL_COLOR,
+        ...NO_LITERAL_THEME_VALUE,
+        ...SYNTAX_EVERYWHERE,
+        ...ONLY_ROUTE_REEXPORT,
+      ],
+    },
+  },
+  // O tema é onde as cores e as medidas literais moram, e o aumento de tipo do Unistyles (`interface
   // UnistylesThemes`) precisa repetir o nome dele, sem o prefixo I.
   {
     files: ['src/core/theme/**/*.ts'],
     rules: {
-      'no-restricted-syntax': ['error', ...NO_DEFAULT_EXPORT],
+      'no-restricted-syntax': ['error', ...NO_DEFAULT_EXPORT, ...SYNTAX_EVERYWHERE],
       '@typescript-eslint/naming-convention': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
     },
+  },
+
+  // Os testes: as medidas do tema não valem neles, e as regras de mock e de matcher só valem neles. Os de
+  // fora de src/ (`__tests__`, `jest.setup.ts`) só levam as de teste, como no resto do que não é do app.
+  {
+    files: ['src/**/*.test.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': ['error', ...NO_DEFAULT_EXPORT, ...NO_LITERAL_COLOR, ...SYNTAX_EVERYWHERE, ...TEST_SYNTAX],
+    },
+  },
+  {
+    files: ['**/*.test.{ts,tsx}', 'jest.setup.ts'],
+    ignores: ['src/**'],
+    rules: { 'no-restricted-syntax': ['error', ...TEST_SYNTAX] },
   },
 
   // Nomes proibidos: testes, o que só monta teste e os arquivos que são o lugar certo do nome ficam de fora do
@@ -363,8 +555,45 @@ export default defineConfig([
   {
     files: ['src/**/*.{ts,tsx}'],
     ignores: ['src/**/*.test.{ts,tsx}', 'src/**/*.d.ts'],
-    plugins: { exports: oneExportPlugin },
+    plugins: { exports: exportsPlugin },
     rules: { 'exports/one-export-per-file': 'error' },
+  },
+  // O nome do arquivo e o lugar dos tipos. Ficam de fora as rotas (o nome é o do expo-router), os testes, o que só
+  // monta teste e os cenários, que levam o nome do serviço.
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/app/**', ...NOT_APP_CODE, 'src/**/*.d.ts'],
+    plugins: { exports: exportsPlugin },
+    rules: { 'exports/name-matches-file': 'error', 'exports/type-in-types-folder': 'error' },
+  },
+
+  // Onde cada arquivo mora: o que o nome diz que é decide a pasta. O Metro empacota tudo o que está em
+  // src/app como rota, então o teste da rota vai para `__tests__/app/`.
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    rules: {
+      'check-file/folder-match-with-fex': [
+        'error',
+        {
+          'use[A-Z]*.{ts,tsx}': '**/hooks/use*/',
+          'do[A-Z]*.ts': '**/utils/actions/',
+          '*QueryService.ts': 'src/shared/services/*/query/',
+          '[a-z]*Service.ts': 'src/shared/services/**/',
+          '*.scenarios.ts': 'src/shared/services/**/',
+          '*.contract.test.ts': 'src/shared/services/**/',
+          '*.store.ts': 'src/{core,shared}/store/',
+        },
+        { errorMessage: 'O arquivo "{{ target }}" mora em "{{ pattern }}" (skill project-structure).' },
+      ],
+      'check-file/filename-blocklist': [
+        'error',
+        { 'src/app/**/*.test.{ts,tsx}': '__tests__/app/' },
+        {
+          errorMessage:
+            'O Metro empacotaria o teste "{{ target }}" como rota: o teste da rota vai para __tests__/app/.',
+        },
+      ],
+    },
   },
 
   // Fronteiras entre as camadas e sem ciclo entre arquivos.

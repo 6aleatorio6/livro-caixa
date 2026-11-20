@@ -44,6 +44,7 @@ const styles = StyleSheet.create((theme, rt) => ({
     backgroundColor: theme.colors.surfaceContainerLow,
   },
   handle: { height: 24, alignItems: 'center', justifyContent: 'center' }, // a alça do design, sem token
+  // eslint-disable-next-line no-restricted-syntax -- a alça tem 4 de altura e metade disso de raio, sem token
   bar: { width: 32, height: 4, borderRadius: 2, backgroundColor: theme.colors.onSurfaceVariant, opacity: 0.4 },
   scroll: { flexShrink: 1 },
   content: { gap: theme.spacing.large },

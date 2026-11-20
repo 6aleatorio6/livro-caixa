@@ -96,7 +96,8 @@ const styles = StyleSheet.create((theme) => ({
     flex: 1,
     gap: theme.spacing.extraSmall,
     padding: theme.spacing.mediumIncreased,
-    borderRadius: 18, // o raio do design, sem token
+    // eslint-disable-next-line no-restricted-syntax -- o raio do design, sem token
+    borderRadius: 18,
     backgroundColor: theme.colors.surfaceContainerLowest,
   },
   legendLabel: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.extraSmallIncreased },

@@ -76,7 +76,7 @@ The helpers live in `src/shared/testing/`.
 without one loads the real module to copy its shape, the real module loads React Native Firebase,
 and Jest stops with "Native module NativeRNFBTurboApp is not registered". That includes the module of
 each realtime service the screen reaches: its object only needs to exist, because `mockRealtime`
-recognizes the service by identity.
+recognizes the service by identity. The lint fails a `jest.mock` with one argument.
 
 ### A realtime read
 
@@ -203,7 +203,8 @@ resolveSignIn();
 ## Queries and interactions
 
 In Testing Library 14, `render` and `renderHook` return a promise: await them. Use `screen`, never what `render` returns. Query
-priority: `getByRole` › `getByLabelText` › `getByPlaceholderText` › `getByText` › `getByTestId`.
+priority: `getByRole` › `getByLabelText` › `getByPlaceholderText` › `getByText` › `getByTestId`. The
+lint fails `toBeTruthy` and `toBeFalsy`: use `toBeOnTheScreen` or the matcher that says what is expected.
 
 ```tsx
 await render(<Button label="Entrar com Google" onPress={onPress} />);

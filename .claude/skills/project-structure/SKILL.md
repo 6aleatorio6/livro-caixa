@@ -181,5 +181,18 @@ export per file and the names. It also checks where each import comes from
   `createInputSmartWrapper.tsx` the controllers and `useAppForm.ts` `useForm`. Tests,
   `src/shared/testing` and `*.scenarios.ts` are left out.
 
-It can't see a file named after the wrong export, a misplaced file that respects the layers, or a
-local component left inside another one's file: those are on whoever writes and whoever reviews.
+It also checks the name and the place of each file:
+
+- **Name.** One of a file's exported declarations carries its name (`exports/name-matches-file`;
+  `I<Name>` and `use<Name>Store` count too, and a file that only exports value constants passes), and
+  a type lives in a `types/` folder (`exports/type-in-types-folder`), except the `I<X>Props` of an
+  exported `X` and a type derived with `typeof` from a constant of the same file.
+- **Place.** `use*` in `hooks/use*/`, `do*` in `utils/actions/`, `*QueryService` in
+  `src/shared/services/*/query/`, a camelCase `*Service`, `*.scenarios.ts` and `*.contract.test.ts`
+  in `src/shared/services`, `*.store.ts` in `src/{core,shared}/store/`; a test of a route goes in
+  `__tests__/app/`, never in `src/app`.
+- **Routes.** A route in `src/app` (not `_layout` or `+*`) only re-exports the page:
+  `export { XPage as default } from '@/features/…'`.
+
+It can't see a local component left inside another one's file: that is on whoever writes and
+whoever reviews.
