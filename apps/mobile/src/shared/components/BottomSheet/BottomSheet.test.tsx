@@ -34,7 +34,7 @@ describe('BottomSheet', () => {
       )) as typeof StyleSheet.create);
 
     // Importada só agora: a folha de estilos é criada quando o módulo carrega.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // oxlint-disable-next-line typescript/no-require-imports
     BottomSheet = require('./BottomSheet').BottomSheet;
   });
 

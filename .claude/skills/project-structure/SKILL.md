@@ -4,7 +4,7 @@ description: >-
   Where each file of apps/mobile lives and how it is named, following the earlier app's structure: the
   four layers of src/ (app, features, shared, core) and what each may import, the folder of a
   feature and of a page, the file names (PascalCase for components, pages and types, camelCase for
-  hooks, functions and services), and what apps/mobile/eslint.config.mjs already enforces. Use
+  hooks, functions and services), and what apps/mobile/oxlint.config.mts already enforces. Use
   before creating a file, folder, screen, feature, hook, store, service, type or component in
   apps/mobile, when moving one, and when the lint reports boundaries/dependencies, check-file or
   one-export-per-file. Triggers: "cria a tela", "nova feature", "onde coloco", "nova pasta", "novo
@@ -38,7 +38,7 @@ app ──► features ──► shared ──► core
 | `shared` | `shared`, `core` | `app`, `features` |
 | `core` | `core` | `app`, `features`, `shared` |
 
-`eslint-plugin-boundaries` enforces this table (`boundaries/dependencies`), and `import-x/no-cycle`
+`eslint-plugin-boundaries` enforces this table (`boundaries/dependencies`), and `import/no-cycle`
 forbids cycles. When a feature needs something from another one, that piece belongs in `shared`.
 `core` is the bottom: a core component styles itself from the theme (`AppToast` uses the theme's
 typography, not `AppText`, which is in `shared`).
@@ -151,15 +151,19 @@ changed module needs `pnpm android` on the developer's PC. E.g. `modules/receipt
 - **Suffixes:** `*Service` for a Firebase operation, `*QueryService` for a realtime read, `do*` for
   an action, `use*` for a hook.
 - **Types** start with `I` (`IAccessStatus`), generics with `T` (`TValue`); **booleans** with
-  `is/has/can/should/was` (`@typescript-eslint/naming-convention`) — `.claude/rules/self-explaining-code.md`.
+  `is/has/can/should/was`, which no lint checks: it is on whoever writes and whoever reviews —
+  `.claude/rules/self-explaining-code.md`.
 - **Named exports only**, outside `src/app`.
 - **Colors** only from the theme (`src/core/theme`): a literal `#hex`, `rgb()` or `hsl()` fails the
   lint.
 
 ## Checking
 
+The commit already formats, lints and type-checks what it carries, so these don't run between edits
+(`.claude/rules/lint-on-commit.md`); the branch review runs them on the whole app.
+
 ```bash
-pnpm mobile lint        # ESLint with the rules above
+pnpm mobile lint        # Oxlint with the rules above, then oxfmt --check
 pnpm typecheck:mobile   # tsc --noEmit
 ```
 

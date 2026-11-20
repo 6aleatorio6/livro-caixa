@@ -103,8 +103,9 @@ shared/    serviços do Firebase, componentes, hooks e utilitários usados por m
 core/      a base: AppContainer, tema, stores, tipos e utilitários sem dependência do resto
 ```
 
-O ESLint (`apps/mobile/eslint.config.mjs`) garante as fronteiras entre as camadas, os nomes de
-arquivo e um export por arquivo.
+O Oxlint (`apps/mobile/oxlint.config.mts`, com as regras locais em `lint/`) garante as fronteiras entre
+as camadas, de onde cada pacote é importado, os nomes e o lugar dos arquivos, um export por arquivo e as
+convenções de sintaxe das skills (cor e medidas do tema, acessibilidade, testes).
 
 ### Dados
 
@@ -156,7 +157,7 @@ baixado do console do Firebase e mantido fora do Git.
 ```sh
 pnpm install                 # instala o workspace
 pnpm typecheck:mobile        # tsc do app
-pnpm mobile lint             # ESLint do app
+pnpm mobile lint             # Oxlint do app
 pnpm test:mobile             # testes de unidade e de página
 pnpm test:contract           # serviços contra os emuladores do Firebase
 pnpm test:rules              # regras do Firestore

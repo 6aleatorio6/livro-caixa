@@ -24,7 +24,7 @@ describe('Screen', () => {
       )) as typeof StyleSheet.create);
 
     // Importada só agora: a folha de estilos da tela é criada quando o módulo carrega.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // oxlint-disable-next-line typescript/no-require-imports
     Screen = require('./Screen').Screen;
   });
 

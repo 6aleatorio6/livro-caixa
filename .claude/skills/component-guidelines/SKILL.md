@@ -22,7 +22,7 @@ Where the file goes: skill `project-structure`. How to test it: skill `testing`.
   `#hex`, `rgb()` or `hsl()` fails the lint, and so does a literal number or string in `padding*`,
   `margin*`, `gap`, `rowGap`, `columnGap`, `borderRadius`, `border*Radius`, `fontSize`, `lineHeight`,
   `letterSpacing`, `fontWeight` or `fontFamily` (`0` and `'auto'` pass). A measure the design has
-  no token for takes `// eslint-disable-next-line no-restricted-syntax -- <reason>`.
+  no token for takes `// oxlint-disable-next-line eslint-js/no-restricted-syntax -- <reason>`.
 - A style that depends on a prop is a function inside the sheet:
 
   ```tsx

@@ -194,7 +194,9 @@ resolveSignIn();
 - `describe` carries the name of the unit under test (`'Button'`, `'createAsyncAction'`,
   `'useAccess'`) or the subject in English (`'Sign-in'`).
 - `it` **always starts with "Should"** and says what should happen, in English:
-  `it('Should not call onPress while disabled')` — `.claude/rules/code-language.md`.
+  `it('Should not call onPress while disabled')` — `.claude/rules/code-language.md`. The lint checks
+  the "Should" in every `it` and `test` title (`jest/valid-title`) and fails an `it.only`
+  (`jest/no-focused-tests`).
 - Nest a `describe` only to group 3+ cases with the same trigger (`describe('When the e-mail is
   removed from the list')`).
 - Every `it` is Arrange → Act → Assert, and asserts what is visible (the screen, the callback

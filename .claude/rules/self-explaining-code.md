@@ -78,10 +78,11 @@ makes reading slower. There the decision is ADR-0054.
 
 **How to apply:**
 
-- `@typescript-eslint/naming-convention` in `apps/mobile/eslint.config.mjs` checks the boolean
-  prefix, with `LIBRARY_BOOLEAN_PROPS` as the list of props passed straight to React Native. The
-  rest of this rule (structure, misleading names, comments) no lint sees: it is on whoever writes
-  and whoever reviews.
+- The boolean prefix (`is/has/can/should/was`) is no longer checked by the lint: it needs the
+  variable's type, and Oxlint passes none to a JS plugin. A prop passed straight to React Native
+  (`disabled`, `visible`, `editable`) keeps the library's name. The rest of this rule (structure,
+  misleading names, comments) no lint sees either: the prefix and the rest are on whoever writes and
+  whoever reviews.
 - Fix what you are already touching; don't sweep the repository for names or comments.
 - Before deleting a comment, check that its fact moved into a name: losing a real constraint is
   worse than keeping the comment.

@@ -96,7 +96,7 @@ const styles = StyleSheet.create((theme) => ({
     flex: 1,
     gap: theme.spacing.extraSmall,
     padding: theme.spacing.mediumIncreased,
-    // eslint-disable-next-line no-restricted-syntax -- o raio do design, sem token
+    // oxlint-disable-next-line eslint-js/no-restricted-syntax -- o raio do design, sem token
     borderRadius: 18,
     backgroundColor: theme.colors.surfaceContainerLowest,
   },

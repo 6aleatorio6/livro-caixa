@@ -44,7 +44,7 @@ export function useAmountFromReceipt<TValues extends IAmountAndReceiptValues, TC
     }
     placedAmountCents.current = getValues(amountPath) as number | null;
     // O campo muda quando chega outro comprovante, não a cada render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react/exhaustive-deps
   }, [receipt]);
 
   return readAmountCents !== null && amountCents === readAmountCents ? receiptNote : undefined;

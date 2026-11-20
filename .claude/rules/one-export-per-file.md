@@ -35,8 +35,8 @@ and the component in its own file is its 2026-10-21 addendum.
 
 **How to apply:**
 
-- The `exports/one-export-per-file` rule of `apps/mobile/eslint.config.mjs`, ported from the earlier project,
-  checks it. It doesn't count local components: those are on whoever writes and whoever reviews.
+- The `exports/one-export-per-file` rule, in `lint/exports.ts` (loaded by `apps/mobile/oxlint.config.mts`;
+  `pnpm lint:rules` runs its tests), ported from the earlier project, checks it. It doesn't count local components: those are on whoever writes and whoever reviews.
 - Two more rules of the same plugin keep the files in line: `exports/name-matches-file` (one of the
   exported declarations carries the file's name, `I<Name>` and `use<Name>Store` included; a file
   with only value constants passes) and `exports/type-in-types-folder` (an exported `interface` or
