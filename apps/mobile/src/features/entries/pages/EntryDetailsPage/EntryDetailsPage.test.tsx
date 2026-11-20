@@ -55,6 +55,10 @@ const monthWithContribution = {
   service: entryMonthQueryService,
   scenario: entryMonthQueryScenarios.monthWithContributionToPayment,
 };
+const monthWithContributionToOneOffBill = {
+  service: entryMonthQueryService,
+  scenario: entryMonthQueryScenarios.monthWithContributionToOneOffBill,
+};
 const contributionReceipt = {
   service: receiptFileQueryService,
   scenario: receiptFileQueryScenarios.contributionReceipt,
@@ -276,15 +280,61 @@ describe('EntryDetailsPage', () => {
   });
 
   describe('Contributions', () => {
-    it('Should show who contributed and how much the payer keeps in the details', async () => {
+    it('Should show who contributed in the details', async () => {
       await renderDetails(payment, pdfReceipt, contributionReceipt, family, threeTags, monthWithContribution);
 
-      // A Luz de R$ 187,35 do Bruno, com R$ 40,00 da Ana.
-      expect(screen.getByText('Fica com você')).toBeOnTheScreen();
-      expect(screen.getByText('R$ 147,35')).toBeOnTheScreen();
       expect(screen.getByRole('header', { name: 'Contribuições' })).toBeOnTheScreen();
       expect(screen.getByText('(R$ 40,00)')).toBeOnTheScreen();
       expect(screen.getByText('Ana · 11/10 · R$ 40,00')).toBeOnTheScreen();
+    });
+
+    it('Should split the amount paid under the expected one: what the payer keeps and what the contributions add up to', async () => {
+      await renderDetails(payment, pdfReceipt, contributionReceipt, family, threeTags, monthWithContribution);
+
+      // A Luz de R$ 187,35 do Bruno, com R$ 40,00 da Ana: quem pagou e o valor dele numa ponta, as contribuições na outra.
+      const split = screen.getByLabelText('Você fica com R$ 147,35; as contribuições somam R$ 40,00');
+      const splitTexts = within(split)
+        .getAllByText(/./)
+        .map((text) => text.props.children);
+      expect(splitTexts).toEqual(['Você', 'R$ 147,35', 'Contribuições', 'R$ 40,00']);
+      expect(screen.queryByText('Fica com você')).not.toBeOnTheScreen();
+    });
+
+    it('Should name the member who paid in the split when another member opens the details', async () => {
+      jest.mocked(useAuthState).mockReturnValue(signedInAuthState(ana));
+      await renderDetails(payment, pdfReceipt, contributionReceipt, family, threeTags, monthWithContribution);
+
+      expect(screen.getByLabelText('Bruno fica com R$ 147,35; as contribuições somam R$ 40,00')).toBeOnTheScreen();
+    });
+
+    it('Should split a one-off bill with a contribution: the amount paid minus the contribution', async () => {
+      await renderDetails(
+        oneOffBill,
+        imageReceipt,
+        contributionReceipt,
+        family,
+        threeTags,
+        monthWithContributionToOneOffBill,
+      );
+
+      // A conserto da geladeira de R$ 350,00 do Bruno, com R$ 40,00 da Ana.
+      expect(screen.getByLabelText('Você fica com R$ 310,00; as contribuições somam R$ 40,00')).toBeOnTheScreen();
+    });
+
+    it('Should leave the split out of an entry with no contributions', async () => {
+      await renderDetails(payment, pdfReceipt, family, threeTags);
+
+      expect(screen.queryByLabelText(/fica com .*; as contribuições somam/)).not.toBeOnTheScreen();
+      expect(screen.queryByText('Contribuições')).not.toBeOnTheScreen();
+    });
+
+    it('Should show the payer with nothing left when the contributions cover the whole amount paid', async () => {
+      await renderDetails(payment, pdfReceipt, contributionReceipt, family, threeTags, {
+        service: entryMonthQueryService,
+        scenario: entryMonthQueryScenarios.monthWithFullyContributedPayment,
+      });
+
+      expect(screen.getByLabelText('Você fica com R$ 0,00; as contribuições somam R$ 187,35')).toBeOnTheScreen();
     });
 
     it('Should not offer Contribuir to whoever registered the entry, and keep Excluir off while it has contributions', async () => {
@@ -306,7 +356,6 @@ describe('EntryDetailsPage', () => {
         monthWithContribution,
       );
 
-      expect(screen.getByText('Fica com Bruno')).toBeOnTheScreen();
       await user.press(screen.getByRole('button', { name: 'Contribuir' }));
 
       expect(router.push).toHaveBeenCalledWith({
@@ -395,10 +444,6 @@ describe('EntryDetailsPage', () => {
       const contributionToOneOffBill = {
         service: entryQueryService,
         scenario: entryQueryScenarios.contributionToOneOffBill,
-      };
-      const monthWithContributionToOneOffBill = {
-        service: entryMonthQueryService,
-        scenario: entryMonthQueryScenarios.monthWithContributionToOneOffBill,
       };
 
       // A folha da contribuição da Ana na Luz do Bruno, com o comprovante dela e o do pagamento; `overrides` troca a

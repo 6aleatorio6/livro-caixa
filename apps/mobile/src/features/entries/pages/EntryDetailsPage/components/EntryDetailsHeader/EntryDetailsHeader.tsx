@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
@@ -16,6 +17,8 @@ export interface IEntryDetailsHeaderProps {
   amountCents: number;
   /** A linha embaixo do valor: o previsto, ou a conta que a contribuição recebe. */
   amountSupport?: string;
+  /** O que vai no bloco do valor, depois do previsto: a barra da divisão. */
+  children?: ReactNode;
 }
 
 /** O topo da folha de detalhes: a marca, o nome da conta, o tipo e o valor, com a linha que o explica. */
@@ -25,6 +28,7 @@ export function EntryDetailsHeader({
   subtitle,
   amountCents,
   amountSupport,
+  children,
 }: IEntryDetailsHeaderProps) {
   const { theme } = useUnistyles();
   const { icon: Icon, markColor, iconColor } = entryMarkOf(markKind);
@@ -52,6 +56,7 @@ export function EntryDetailsHeader({
             {amountSupport}
           </AppText>
         ) : null}
+        {children}
       </View>
     </>
   );

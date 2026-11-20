@@ -25,6 +25,7 @@ import { formatCents } from '@/shared/utils/format/formatCents';
 import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 import { findTag } from '@/shared/utils/tag/findTag';
 
+import { ContributionSplit } from '../ContributionSplit/ContributionSplit';
 import { EntryDetailsHeader } from '../EntryDetailsHeader/EntryDetailsHeader';
 import { EntryReceipt } from '../EntryReceipt/EntryReceipt';
 
@@ -57,14 +58,6 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
     contributions.length > 0
       ? `Com contribuições, ${isPayment ? 'o pagamento não pode ser excluído' : 'a conta não pode ser excluída'}.`
       : undefined;
-  // Com contribuições, quem pagou fica com o valor pago menos elas.
-  const payerPartRow =
-    contributions.length > 0 ? (
-      <DetailRow
-        label={`Fica com ${isAuthor ? 'você' : authorName}`}
-        value={formatCents(entry.amountCents - contributedCents)}
-      />
-    ) : null;
 
   return (
     <>
@@ -74,20 +67,26 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
         subtitle={isPayment ? formatPaymentTitle(entry.month) : 'Conta avulsa'}
         amountCents={entry.amountCents}
         amountSupport={isPayment ? `previsto ${formatCents(entry.expectedAmountCents)}` : undefined}
-      />
+      >
+        {contributions.length > 0 ? (
+          <ContributionSplit
+            payerName={isAuthor ? 'Você' : authorName}
+            payerCents={entry.amountCents - contributedCents}
+            contributedCents={contributedCents}
+          />
+        ) : null}
+      </EntryDetailsHeader>
 
       <View>
         {entry.kind === 'recurringPayment' ? (
           <>
             <DetailRow label="Pago por" value={authorName} />
-            {payerPartRow}
             <DetailRow label="Registrado em" value={formatIsoDate(entry.paidOn)} />
             <DetailRow label="Vencimento" value={`dia ${entry.dueDay}`} />
           </>
         ) : (
           <>
             <DetailRow label="Registrado por" value={authorName} />
-            {payerPartRow}
             <DetailRow label="Data" value={formatIsoDate(entry.date)} />
           </>
         )}
