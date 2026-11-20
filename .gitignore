@@ -21,3 +21,6 @@ journeys/.local/
 
 # Logs que os emuladores do Firebase gravam na pasta de onde sobem.
 *-debug.log
+
+# Os backups cifrados do `pnpm backup`: os dados da família, mesmo cifrados, não vão para o repositório.
+backups/

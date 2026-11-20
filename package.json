@@ -17,6 +17,7 @@
     "typecheck:mobile": "pnpm mobile typecheck",
     "test:mobile": "pnpm mobile test",
     "add-admin": "node scripts/add-admin.mjs",
+    "backup": "node scripts/backup.mjs",
     "firebase:emulators": "firebase emulators:start",
     "journeys:stack": "bash journeys/stack.sh",
     "journeys:test": "node journeys/test.ts",
