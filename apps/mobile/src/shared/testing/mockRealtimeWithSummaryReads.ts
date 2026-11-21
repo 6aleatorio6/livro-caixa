@@ -8,16 +8,17 @@ import type { IRealtimeMock } from '@/shared/types/testing/RealtimeMock';
 
 // Os meses de conta de outubro e de novembro de 2026 e as atrasadas lidas em cada um dos dois meses atuais possíveis
 // (outubro, o primeiro do app, e novembro). A leitura das atrasadas só roda no mês atual, e a parada (`idle`) atende
-// as telas dos outros meses e a leitura sem mês (`month: null`) do que não se lê: vem por último, porque um mock de
-// estado atende qualquer leitura do serviço.
+// as telas dos outros meses: vem por último, porque um mock de estado sem `input` atende qualquer leitura do serviço.
+// Os meses de conta e os lançamentos parados atendem só a leitura sem mês (`month: null`) do que não se lê: um mês
+// sem cenário ainda derruba o teste.
 const SUMMARY_READS: IRealtimeMock[] = [
   { service: billMonthQueryService, scenario: billMonthQueryScenarios.monthWithoutBillMonths },
   { service: billMonthQueryService, scenario: billMonthQueryScenarios.novemberWithoutBillMonths },
   { service: overdueSourcesQueryService, scenario: overdueSourcesQueryScenarios.noOverdue },
   { service: overdueSourcesQueryService, scenario: overdueSourcesQueryScenarios.octoberUnpaid },
   { service: overdueSourcesQueryService, status: 'idle' },
-  { service: billMonthQueryService, status: 'idle' },
-  { service: entryMonthQueryService, status: 'idle' },
+  { service: billMonthQueryService, status: 'idle', input: { month: null } },
+  { service: entryMonthQueryService, status: 'idle', input: { month: null } },
 ];
 
 /**

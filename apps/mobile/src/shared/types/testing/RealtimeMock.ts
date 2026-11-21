@@ -4,8 +4,11 @@ import type { IRealtimeStatus } from '@/shared/types/realtime/RealtimeStatus';
 
 import type { IServiceScenario } from './ServiceScenario';
 
-/** O que o `mockRealtime` entrega para um serviço: o resultado de um cenário, ou um estado sem dado. */
+/**
+ * O que o `mockRealtime` entrega para um serviço: o resultado de um cenário, ou um estado sem dado. O estado com
+ * `input` atende só a leitura com essa entrada; sem ele, atende qualquer leitura do serviço.
+ */
 export type IRealtimeMock = { service: IRealtimeService<never, readonly IRealtimeRef[], unknown> } & (
   | { scenario: IServiceScenario<unknown, unknown> }
-  | { status: Exclude<IRealtimeStatus, 'cached' | 'success'> }
+  | { status: Exclude<IRealtimeStatus, 'cached' | 'success'>; input?: unknown }
 );
