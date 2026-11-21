@@ -223,5 +223,29 @@ rule carries a pt-BR comment with the business reason.
   (`environment.mjs`), the logins (`profiles.mjs`), the refs, documents, batches and row helpers, all
   re-exported by `setup/index.mjs`; the cases that only change the login or the field are a table of rows, one `it`
   each, and a new rule starts with its failing rows.
+- **A hand mutation** (the red of a denial, which passes from the start against a default-deny
+  system) runs only the tests it should break, against one emulator kept up. The `before` of
+  `setup/environment.mjs` sends `firebase/firestore.rules` from disk to the emulator on every run,
+  so the mutated rule reaches it without a restart. From the repository root, start the emulator
+  once, as a background command, then for each mutation edit the rule, run, and revert:
+
+  ```sh
+  pnpm exec firebase -c firebase/firebase.test.json emulators:start --only firestore --project demo-livro-caixa
+  FIRESTORE_EMULATOR_HOST=127.0.0.1:8180 node --test --test-concurrency=1 \
+    --test-name-pattern='<the titles it should break>' firebase/rules-tests/<file>.test.mjs
+  ```
+
+  Measured on 2026-11-21, one mutation that breaks 2 tests: 31.7 s through `emulators:exec` with
+  the section's two files (136 tests), 9.4 s through `emulators:exec` with `--test-name-pattern`
+  on one file, and against the emulator already up 4.4 s on the first run and ~1.9 s after. The
+  `#33`'s 43 mutations took ~26 min the first way.
+  - The pattern is a regex: a `.` or `+` in a title matches more, a `(` turns into a group and an
+    unbalanced one aborts the run. A pattern that matches nothing still reports `# tests 1`, the
+    file itself, with `# suites 0`: with the mutation applied, `# fail` must equal the number of
+    titles you meant.
+  - At the end, stop the emulator with `pkill -f '[e]mulators:start'`, in a command of its own
+    (with the start in the same command line, the pattern matches that shell too), and check that
+    `ss -ltn | grep -E ':8180|:4410'` comes back empty. The same command clears one a dead
+    subagent left up: it holds the ports of `pnpm test:rules` and `pnpm test:contract`.
 
 Both run in this container, against the emulators: Java comes from the PC through the claude-box.
