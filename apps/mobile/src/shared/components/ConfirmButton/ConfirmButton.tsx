@@ -16,6 +16,8 @@ export interface IConfirmButtonProps {
   confirmVariant?: IConfirmDialogProps['confirmVariant'];
   /** O pedido confirmado está em andamento: o botão fica ocupado e não abre o diálogo de novo. */
   isLoading?: boolean;
+  /** Desliga o botão: o diálogo não abre. */
+  disabled?: boolean;
   /** Chamado depois que o diálogo fecha, com a ação confirmada. */
   onConfirm: () => void | Promise<void>;
 }
@@ -29,6 +31,7 @@ export function ConfirmButton({
   confirmLabel,
   confirmVariant,
   isLoading,
+  disabled,
   onConfirm,
 }: IConfirmButtonProps) {
   const [isConfirming, setIsConfirming] = useState(false);
@@ -40,7 +43,13 @@ export function ConfirmButton({
 
   return (
     <>
-      <Button label={label} variant={variant} isLoading={isLoading} onPress={() => setIsConfirming(true)} />
+      <Button
+        label={label}
+        variant={variant}
+        isLoading={isLoading}
+        disabled={disabled}
+        onPress={() => setIsConfirming(true)}
+      />
       <ConfirmDialog
         visible={isConfirming}
         title={title}

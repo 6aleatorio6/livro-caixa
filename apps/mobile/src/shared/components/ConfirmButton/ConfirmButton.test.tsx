@@ -2,7 +2,7 @@ import { render, screen, userEvent } from '@testing-library/react-native';
 
 import { ConfirmButton } from './ConfirmButton';
 
-async function renderButton(overrides: { isLoading?: boolean } = {}) {
+async function renderButton(overrides: { isLoading?: boolean; disabled?: boolean } = {}) {
   const onConfirm = jest.fn();
   await render(
     <ConfirmButton
@@ -53,6 +53,15 @@ describe('ConfirmButton', () => {
     await userEvent.setup().press(screen.getByRole('button', { name: 'Pular outubro' }));
 
     expect(screen.getByRole('button', { name: 'Pular outubro' })).toBeBusy();
+    expect(screen.queryByText('Pular a Internet de outubro?')).not.toBeOnTheScreen();
+  });
+
+  it('Should not open the dialog while it is disabled', async () => {
+    await renderButton({ disabled: true });
+
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Pular outubro' }));
+
+    expect(screen.getByRole('button', { name: 'Pular outubro' })).toBeDisabled();
     expect(screen.queryByText('Pular a Internet de outubro?')).not.toBeOnTheScreen();
   });
 });
