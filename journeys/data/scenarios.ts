@@ -199,6 +199,43 @@ async function writePayment(
   );
 }
 
+/**
+ * O mês atual do Início do design: as tags e as cinco contas, o Aluguel (R$ 1.800,00, dia 5) pago pela Ana, o
+ * Condomínio (R$ 450,00, dia 8) pelo Bruno, a Luz paga por R$ 187,35 (previsto R$ 210,00, dia 10) pela Ana e a avulsa
+ * Conserto da geladeira (R$ 350,00, Casa) do Bruno; a Internet (dia 15) e a Água (dia 20) ficam a pagar.
+ */
+async function writeHomeOfThisMonth(db: Firestore) {
+  const today = new Date();
+  const month = toDateText(today).slice(0, 7);
+  await writeTagsAndBills(db);
+    await writePayment(db, { month, billId: 'rent', amountCents: 180000, paidByEmail: ACCOUNTS.admin.email });
+    await writePayment(db, { month, billId: 'condo', amountCents: 45000, paidByEmail: ACCOUNTS.member.email });
+    await writePayment(db, { month, billId: 'electricity', amountCents: 18735, paidByEmail: ACCOUNTS.admin.email });
+    await writeOneOffBill(db, 'fridge', {
+      name: 'Conserto da geladeira',
+      amountCents: 35000,
+      date: new Date(today.getFullYear(), today.getMonth(), Math.min(12, today.getDate())),
+      tagId: 'casa',
+      paidByEmail: ACCOUNTS.member.email,
+    });
+}
+
+/** O mês ('AAAA-MM') anterior ao de `date`. */
+function previousMonthOf(date: Date) {
+  return toDateText(new Date(date.getFullYear(), date.getMonth() - 1, 1)).slice(0, 7);
+}
+
+/**
+ * O mês anterior pago inteiro pela Ana, com o previsto de cada conta: sem ele, o Início do mês atual abre com as cinco
+ * contas do mês anterior atrasadas no topo de "A pagar".
+ */
+async function writePreviousMonthPaid(db: Firestore) {
+  const previousMonth = previousMonthOf(new Date());
+  for (const [billId, bill] of Object.entries(BILLS_IN_USE)) {
+    await writePayment(db, { month: previousMonth, billId, amountCents: bill.expectedAmountCents, paidByEmail: ACCOUNTS.admin.email });
+  }
+}
+
 export const scenariosByName: Record<string, Scenario> = {
   /** O começo de cada fluxo: o Firestore apagado e a lista de e-mails com as contas liberadas. */
   async reset({ db, deleteAll }) {
@@ -265,25 +302,12 @@ export const scenariosByName: Record<string, Scenario> = {
     await writeOneOffBill(db, 'bakery', { name: 'Padaria', amountCents: 4200, date: today, paidByEmail: ACCOUNTS.admin.email });
   },
   /**
-   * O Início do design, sobre o que o `reset` deixou, no mês atual: as tags e as cinco contas, o Aluguel
-   * (R$ 1.800,00, dia 5) pago pela Ana, o Condomínio (R$ 450,00, dia 8) pelo Bruno, a Luz paga por R$ 187,35
-   * (previsto R$ 210,00, dia 10) pela Ana e a avulsa Conserto da geladeira (R$ 350,00, Casa) do Bruno;
-   * a Internet (dia 15) e a Água (dia 20) ficam a pagar.
+   * O Início do design, sobre o que o `reset` deixou: o mês atual do `writeHomeOfThisMonth` e o mês anterior pago
+   * inteiro (`writePreviousMonthPaid`).
    */
   async seedHome({ db }) {
-    const today = new Date();
-    const month = toDateText(today).slice(0, 7);
-    await writeTagsAndBills(db);
-    await writePayment(db, { month, billId: 'rent', amountCents: 180000, paidByEmail: ACCOUNTS.admin.email });
-    await writePayment(db, { month, billId: 'condo', amountCents: 45000, paidByEmail: ACCOUNTS.member.email });
-    await writePayment(db, { month, billId: 'electricity', amountCents: 18735, paidByEmail: ACCOUNTS.admin.email });
-    await writeOneOffBill(db, 'fridge', {
-      name: 'Conserto da geladeira',
-      amountCents: 35000,
-      date: new Date(today.getFullYear(), today.getMonth(), Math.min(12, today.getDate())),
-      tagId: 'casa',
-      paidByEmail: ACCOUNTS.member.email,
-    });
+    await writeHomeOfThisMonth(db);
+    await writePreviousMonthPaid(db);
   },
   /**
    * A tela de compartilhar do design: as contas do `seedHome` (a Internet e a Água ficam a pagar). O arquivo
@@ -301,15 +325,66 @@ export const scenariosByName: Record<string, Scenario> = {
     shareFixture(getParam(params, 'FILE'), { cold: params.COLD === 'true' });
   },
   /**
+   * As contas atrasadas do design, sobre o mês atual do Início. No mês anterior: o Aluguel e a Luz pagos, a
+   * Internet pulada pela Ana, o Condomínio sem pagamento (a atrasada) e a Água paga depois, neste mês, pela Ana: o
+   * `overduePayment` no mês atual e o `billMonths` `paidLater` que aponta para ele, como o `payOverdueBillService`.
+   */
+  async seedOverdueBills({ db }) {
+    await writeHomeOfThisMonth(db);
+    const today = new Date();
+    const month = toDateText(today).slice(0, 7);
+    const previousMonth = previousMonthOf(today);
+    await writePayment(db, { month: previousMonth, billId: 'rent', amountCents: 180000, paidByEmail: ACCOUNTS.admin.email });
+    await writePayment(db, {
+      month: previousMonth,
+      billId: 'electricity',
+      amountCents: 21000,
+      paidByEmail: ACCOUNTS.member.email,
+    });
+    const ana = await uidOf(db, ACCOUNTS.admin.email);
+    const { internet, water } = BILLS_IN_USE;
+    await setDoc(doc(db, 'billMonths', `${previousMonth}_internet`), {
+      status: 'skipped',
+      month: previousMonth,
+      recurringBillId: 'internet',
+      name: internet.name,
+      tagId: internet.tagId,
+      createdBy: ana,
+      createdAt: Timestamp.now(),
+    });
+    await writeEntryWithReceipt(db, 'overdue-water', ACCOUNTS.admin.email, {
+      kind: 'overduePayment',
+      month,
+      billMonth: previousMonth,
+      recurringBillId: 'water',
+      name: water.name,
+      amountCents: water.expectedAmountCents,
+      dueDay: Math.min(water.dayOfMonth, lastDayOf(previousMonth)),
+      expectedAmountCents: water.expectedAmountCents,
+      tagId: water.tagId,
+    });
+    await setDoc(doc(db, 'billMonths', `${previousMonth}_water`), {
+      status: 'paidLater',
+      month: previousMonth,
+      recurringBillId: 'water',
+      entryId: 'overdue-water',
+      name: water.name,
+      tagId: water.tagId,
+      createdBy: ana,
+      createdAt: Timestamp.now(),
+    });
+  },
+  /**
    * Os detalhes do lançamento do design, sobre o que o `reset` deixou, no mês atual: as tags e as cinco contas, a
    * Luz paga pela Ana (R$ 187,35, previsto R$ 210,00, dia 10, Serviços) com o `comprovante-luz.pdf` de duas
    * páginas e a avulsa Conserto da geladeira do Bruno (R$ 350,00, Casa) com o `recibo-conserto.jpg`. Os conteúdos
-   * existem de verdade em `fileContents`.
+   * existem de verdade em `fileContents`. O mês anterior fica pago inteiro (`writePreviousMonthPaid`).
    */
   async seedEntryDetails({ db }) {
     const today = new Date();
     const month = toDateText(today).slice(0, 7);
     await writeTagsAndBills(db);
+    await writePreviousMonthPaid(db);
     await writePayment(
       db,
       { month, billId: 'electricity', amountCents: 18735, paidByEmail: ACCOUNTS.admin.email },
