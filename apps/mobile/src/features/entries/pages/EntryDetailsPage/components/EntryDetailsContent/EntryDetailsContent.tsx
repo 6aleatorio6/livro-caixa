@@ -44,7 +44,7 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
   const { data: tags } = useRealtime(tagListQueryService, {});
   const { data: monthEntries } = useRealtime(entryMonthQueryService, { month: entry.month });
 
-  const isPayment = entry.kind === 'recurringPayment';
+  const isPayment = entry.kind !== 'oneOffBill';
   const isAuthor = signedInUid(authState) === entry.paidBy;
   const authorName = memberNameOf(entry.paidBy, people ?? []);
   // Uma tag apagada (só pelo SDK) deixa a conta sem a linha da tag.
@@ -78,16 +78,16 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
       </EntryDetailsHeader>
 
       <View>
-        {entry.kind === 'recurringPayment' ? (
+        {entry.kind === 'oneOffBill' ? (
+          <>
+            <DetailRow label="Registrado por" value={authorName} />
+            <DetailRow label="Data" value={formatIsoDate(entry.date)} />
+          </>
+        ) : (
           <>
             <DetailRow label="Pago por" value={authorName} />
             <DetailRow label="Registrado em" value={formatIsoDate(entry.paidOn)} />
             <DetailRow label="Vencimento" value={`dia ${entry.dueDay}`} />
-          </>
-        ) : (
-          <>
-            <DetailRow label="Registrado por" value={authorName} />
-            <DetailRow label="Data" value={formatIsoDate(entry.date)} />
           </>
         )}
         {tag ? <DetailRow label="Tag" value={tag.name} tagColor={tag.color} /> : null}

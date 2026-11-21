@@ -1,4 +1,5 @@
 import {
+  ANA,
   BOTH_IN_THE_LIST,
   BRUNO,
   CONTRIBUTION,
@@ -23,6 +24,8 @@ import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 // O Aluguel de novembro, pago só pelas contribuições do Bruno e da Carla: o pagamento sem dono alcançou o previsto.
 const NOVEMBER = entryMonthQueryScenarios.monthWithContributions;
 const REACHED_RENT = NOVEMBER.result.find(({ id }) => id === '2026-11_rent')!;
+// A Água de outubro que a Ana pagou em novembro.
+const OVERDUE = entryMonthQueryScenarios.monthWithOverduePayment;
 
 export const entryQueryScenarios = {
   reachedUnownedPayment: {
@@ -42,6 +45,13 @@ export const entryQueryScenarios = {
       write: { 'entries/2026-10_electricity': { ...PAYMENT_DOCUMENT, amountCents: 20000 } },
       result: { ...PAYMENT, amountCents: 20000 },
     },
+  },
+  // A Ana abre o pagamento atrasado dela: chega com o `billMonth`, o mês da conta.
+  overduePaymentOfTheMember: {
+    signedInAs: ANA,
+    given: OVERDUE.given,
+    input: { id: 'overdue-water' },
+    result: OVERDUE.result[0],
   },
   // A avulsa do Bruno; quem a lê é qualquer membro, e só o autor a altera ou exclui.
   oneOffBillOfTheMember: {

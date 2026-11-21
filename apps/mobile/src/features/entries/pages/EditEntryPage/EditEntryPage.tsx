@@ -33,6 +33,7 @@ import { findTag } from '@/shared/utils/tag/findTag';
 
 const TITLE_BY_KIND = {
   recurringPayment: 'Alterar pagamento',
+  overduePayment: 'Alterar pagamento',
   oneOffBill: 'Alterar conta avulsa',
   contribution: 'Alterar contribuição',
 } as const;

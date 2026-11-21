@@ -1,4 +1,5 @@
 import type { IContributionEntry } from '@/shared/types/entry/ContributionEntry';
+import type { IOverduePaymentEntry } from '@/shared/types/entry/OverduePaymentEntry';
 import type { IUnownedPaymentEntry } from '@/shared/types/entry/UnownedPaymentEntry';
 
 /** Os campos que todo lançamento da família tem. */
@@ -40,6 +41,11 @@ interface IRecurringPaymentEntry extends IEntryBase {
 
 /**
  * Um lançamento da família: uma conta avulsa já paga, o pagamento de uma conta recorrente (com dono ou, no mês com
- * contribuições, sem dono) ou uma contribuição.
+ * contribuições, sem dono), o pagamento de uma conta atrasada ou uma contribuição.
  */
-export type IEntry = IOneOffBillEntry | IRecurringPaymentEntry | IUnownedPaymentEntry | IContributionEntry;
+export type IEntry =
+  | IOneOffBillEntry
+  | IRecurringPaymentEntry
+  | IOverduePaymentEntry
+  | IUnownedPaymentEntry
+  | IContributionEntry;

@@ -11,6 +11,7 @@ export interface IOnlyAuthorNoticeProps {
 
 const SUBJECT_BY_KIND: Record<IEntry['kind'], string> = {
   recurringPayment: 'este pagamento',
+  overduePayment: 'este pagamento',
   oneOffBill: 'esta conta',
   contribution: 'esta contribuição',
 };

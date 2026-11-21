@@ -27,9 +27,9 @@ export function homeEntrySupportOf(entry: IBillEntry, entries: IEntry[], people:
 
   const memberName = memberNameOf(entry.paidBy, people);
   const parts =
-    entry.kind === 'recurringPayment'
-      ? [`dia ${entry.dueDay}`, memberName, contributionsSupportOf(contributions, people) ?? paymentTailOf(entry)]
-      : [formatDayMonth(entry.date), 'avulsa', memberName, contributionsSupportOf(contributions, people)];
+    entry.kind === 'oneOffBill'
+      ? [formatDayMonth(entry.date), 'avulsa', memberName, contributionsSupportOf(contributions, people)]
+      : [`dia ${entry.dueDay}`, memberName, contributionsSupportOf(contributions, people) ?? paymentTailOf(entry)];
 
   return parts.filter(Boolean).join(' · ');
 }
