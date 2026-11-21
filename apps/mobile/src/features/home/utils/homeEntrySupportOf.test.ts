@@ -29,6 +29,24 @@ const oneOff: IOwnedEntry = {
   date: '2026-10-12',
 };
 
+// A Água de outubro, paga em 5 de novembro: o pagamento atrasado conta em novembro e vencia no dia 20 de outubro.
+const overduePayment: IOwnedEntry = {
+  id: 'overdue-water',
+  kind: 'overduePayment',
+  month: '2026-11',
+  billMonth: '2026-10',
+  recurringBillId: 'water',
+  name: 'Água',
+  amountCents: 9800,
+  tagId: null,
+  paidBy: 'ana',
+  receiptFileId: 'f30',
+  dueDay: 20,
+  expectedAmountCents: 9800,
+  date: null,
+  paidOn: '2026-11-05',
+};
+
 describe('homeEntrySupportOf', () => {
   it('Should write the due day and who paid a payment, without the tag', () => {
     expect(homeEntrySupportOf(payment, [payment], people)).toBe('dia 5 · Ana');
@@ -67,5 +85,9 @@ describe('homeEntrySupportOf', () => {
     const entries = [contributionOf(rent.id, 'carla', 100000), contributionOf(rent.id, 'bruno', 100000), rent];
 
     expect(homeEntrySupportOf(rent, entries, people)).toBe('dia 5 · Bruno e Carla');
+  });
+
+  it('Should say the day an overdue bill was paid, not its due day', () => {
+    expect(homeEntrySupportOf(overduePayment, [overduePayment], people)).toBe('paga dia 5 · Ana');
   });
 });

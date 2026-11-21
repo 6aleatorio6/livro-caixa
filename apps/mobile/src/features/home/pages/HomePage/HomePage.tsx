@@ -6,9 +6,11 @@ import { StyleSheet } from 'react-native-unistyles';
 import { BillToPayItem } from '@/features/home/components/BillToPayItem/BillToPayItem';
 import { MonthCard } from '@/features/home/components/MonthCard/MonthCard';
 import { MonthListSection } from '@/features/home/components/MonthListSection/MonthListSection';
+import { SkippedBillItem } from '@/features/home/components/SkippedBillItem/SkippedBillItem';
 import { SplitRow } from '@/features/home/components/SplitRow/SplitRow';
 import { useOpenPendingShare } from '@/features/home/hooks/useOpenPendingShare/useOpenPendingShare';
 import { useMonthSummary } from '@/features/home/hooks/useMonthSummary/useMonthSummary';
+import { homeEntryBadgeOf } from '@/features/home/utils/homeEntryBadgeOf';
 import { homeEntrySupportOf } from '@/features/home/utils/homeEntrySupportOf';
 import { paidRowsOf } from '@/features/home/utils/paidRowsOf';
 import { splitByMember } from '@/features/home/utils/splitByMember';
@@ -29,6 +31,7 @@ import { contributionsSupportOf } from '@/shared/utils/entry/contributionsSuppor
 import { entryMarkKindOf } from '@/shared/utils/entry/entryMarkKindOf';
 import { memberPartsOf } from '@/shared/utils/entry/memberPartsOf';
 import { formatCents } from '@/shared/utils/format/formatCents';
+import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 import { tagDisplayOf } from '@/shared/utils/tag/tagDisplayOf';
 import { findTag } from '@/shared/utils/tag/findTag';
 import { checkAppVersion } from '@/shared/utils/version/checkAppVersion';
@@ -39,6 +42,11 @@ const SPLIT_OPTIONS = [
   { value: 'tag', label: 'Por tag' },
   { value: 'member', label: 'Por membro' },
 ] as const;
+
+/** Abre o registro do pagamento da conta no mês dela, que na atrasada é um mês anterior ao da tela. */
+function openPayment(billId: string, billMonth: string) {
+  router.push({ pathname: '/recurring-bills/[id]/pay', params: { id: billId, month: billMonth } });
+}
 
 /** O mês da família: o anel, a divisão por tag ou por membro e a lista com as contas a pagar e as pagas. */
 export function HomePage() {
@@ -117,17 +125,34 @@ export function HomePage() {
                 title="A pagar"
                 summary={{ count: summary.toPay.length, totalCents: summary.toPayCents }}
               >
-                {summary.toPay.map(({ bill, name, tagId, dueDate, contributions, remainingCents }) => (
-                  <BillToPayItem
-                    key={bill.id}
+                {/* O mês da conta, não o da tela: a atrasada do mês atual é de um mês anterior. */}
+                {summary.toPay.map(
+                  ({ bill, month: billMonth, name, tagId, dueDate, contributions, remainingCents, overdue }) => (
+                    <BillToPayItem
+                      key={`${billMonth}_${bill.id}`}
+                      name={name}
+                      remainingCents={remainingCents}
+                      dueDay={dayOf(dueDate)}
+                      contributionsSupport={contributionsSupportOf(contributions, people ?? [])}
+                      tag={findTag(tagId, tags)}
+                      billMonth={billMonth}
+                      overdue={overdue}
+                      onPress={() => openPayment(bill.id, billMonth)}
+                    />
+                  ),
+                )}
+              </MonthListSection>
+            ) : null}
+
+            {summary.skipped.length > 0 ? (
+              <MonthListSection title="Puladas" summary={{ count: summary.skipped.length }}>
+                {summary.skipped.map(({ recurringBillId, month: billMonth, name, tagId, createdBy }) => (
+                  <SkippedBillItem
+                    key={recurringBillId}
                     name={name}
-                    remainingCents={remainingCents}
-                    dueDay={dayOf(dueDate)}
-                    contributionsSupport={contributionsSupportOf(contributions, people ?? [])}
+                    skippedByName={memberNameOf(createdBy, people ?? [])}
                     tag={findTag(tagId, tags)}
-                    onPress={() =>
-                      router.push({ pathname: '/recurring-bills/[id]/pay', params: { id: bill.id, month } })
-                    }
+                    onPress={() => openPayment(recurringBillId, billMonth)}
                   />
                 ))}
               </MonthListSection>
@@ -141,6 +166,7 @@ export function HomePage() {
                     kind={entryMarkKindOf(entry)}
                     name={entry.name}
                     tag={findTag(entry.tagId, tags)}
+                    badge={homeEntryBadgeOf(entry)}
                     amountCents={billAmountOf(entry, summary.entries)}
                     onPress={() => router.push({ pathname: '/entries/[id]', params: { id: entry.id } })}
                     support={homeEntrySupportOf(entry, summary.entries, people ?? [])}

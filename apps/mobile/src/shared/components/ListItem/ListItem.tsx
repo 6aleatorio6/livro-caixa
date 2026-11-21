@@ -6,6 +6,7 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import type { IColorRole } from '@/core/types/ColorRole';
 
 import { AppText } from '@/shared/components/AppText/AppText';
+import { Badge, type IBadgeProps } from '@/shared/components/Badge/Badge';
 import { CircleMark } from '@/shared/components/CircleMark/CircleMark';
 import { ColorDot } from '@/shared/components/ColorDot/ColorDot';
 import { Decorative } from '@/shared/components/Decorative/Decorative';
@@ -20,6 +21,13 @@ export interface IListItemProps {
   support?: string;
   /** A tag de uma conta no Início: a bolinha da cor dela abre o apoio, e o leitor de tela lê o nome depois do título. */
   tag?: ITag;
+  /**
+   * O selo de estado ao lado do título ("De outubro"): o título encolhe com reticências antes dele, e o leitor de tela lê
+   * o título e depois o selo.
+   */
+  badge?: IBadgeProps;
+  /** A cor do título; a do texto apagado, de uma linha que não conta, vem daqui. */
+  titleColor?: IColorRole;
   /** A cor da marca (o círculo do ícone). */
   markColor?: IColorRole;
   /** A cor do ícone, que combina com a da marca. */
@@ -49,6 +57,8 @@ export function ListItem({
   title,
   support,
   tag,
+  badge,
+  titleColor = 'onSurface',
   markColor = 'secondaryContainer',
   iconColor = 'onSecondaryContainer',
   trailing,
@@ -67,7 +77,17 @@ export function ListItem({
         <Icon size={20} color={theme.colors[iconColor]} />
       </CircleMark>
       <View style={styles.texts}>
-        <AppText variant={isCompact ? 'titleMedium' : 'bodyLarge'}>{title}</AppText>
+        <View style={styles.titleRow}>
+          <AppText
+            variant={isCompact ? 'titleMedium' : 'bodyLarge'}
+            color={titleColor}
+            numberOfLines={badge ? 1 : undefined}
+            style={styles.title}
+          >
+            {title}
+          </AppText>
+          {badge ? <Badge {...badge} /> : null}
+        </View>
         {support ? (
           <View style={styles.support}>
             {tag ? <ColorDot color={tagColorRole(tag.color)} isSmall /> : null}
@@ -95,7 +115,7 @@ export function ListItem({
   return (
     <Pressable
       accessibilityRole={isSwitch ? 'switch' : 'button'}
-      accessibilityLabel={accessibilityLabel ?? (tag ? `${title}, ${tag.name}` : title)}
+      accessibilityLabel={accessibilityLabel ?? [title, badge?.label, tag?.name].filter(Boolean).join(', ')}
       accessibilityHint={isSwitch ? support : undefined}
       accessibilityState={isSwitch ? { checked: isOn } : undefined}
       onPress={onPress}
@@ -115,6 +135,8 @@ const styles = StyleSheet.create((theme) => ({
     opacity: isPressed ? theme.opacity.pressed : 1,
   }),
   texts: { flex: 1, gap: theme.spacing.extraExtraSmall },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.small },
+  title: { flexShrink: 1 },
   support: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.extraSmallIncreased },
   supportText: { flexShrink: 1 },
 }));

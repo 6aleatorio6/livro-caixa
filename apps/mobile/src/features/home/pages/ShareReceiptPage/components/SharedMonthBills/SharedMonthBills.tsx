@@ -24,7 +24,10 @@ export interface ISharedMonthBillsProps {
   people: IAllowedEmailListItem[] | null;
 }
 
-/** As contas a pagar de um mês, para escolher a que o comprovante paga: o toque segue no pagamento daquele mês. */
+/**
+ * As contas a pagar de um mês, para escolher a que o comprovante paga: o toque segue no pagamento do mês da conta, que
+ * na atrasada é um mês anterior ao da lista.
+ */
 export function SharedMonthBills({ month, summary, hasError, tags, people }: ISharedMonthBillsProps) {
   const { theme } = useUnistyles();
 
@@ -42,19 +45,26 @@ export function SharedMonthBills({ month, summary, hasError, tags, people }: ISh
           color={theme.colors.primary}
         />
       ) : null}
-      {summary?.toPay.map(({ bill, name, tagId, dueDate, contributions, remainingCents }) => (
-        <BillToPayItem
-          key={bill.id}
-          name={name}
-          remainingCents={remainingCents}
-          dueDay={dayOf(dueDate)}
-          contributionsSupport={contributionsSupportOf(contributions, people ?? [])}
-          tag={findTag(tagId, tags)}
-          onPress={() =>
-            router.push({ pathname: '/recurring-bills/[id]/pay', params: { id: bill.id, month, shared: '1' } })
-          }
-        />
-      ))}
+      {summary?.toPay.map(
+        ({ bill, month: billMonth, name, tagId, dueDate, contributions, remainingCents, overdue }) => (
+          <BillToPayItem
+            key={`${billMonth}_${bill.id}`}
+            name={name}
+            remainingCents={remainingCents}
+            dueDay={dayOf(dueDate)}
+            contributionsSupport={contributionsSupportOf(contributions, people ?? [])}
+            tag={findTag(tagId, tags)}
+            billMonth={billMonth}
+            overdue={overdue}
+            onPress={() =>
+              router.push({
+                pathname: '/recurring-bills/[id]/pay',
+                params: { id: bill.id, month: billMonth, shared: '1' },
+              })
+            }
+          />
+        ),
+      )}
       {summary?.toPay.length === 0 ? (
         <AppText variant="bodyMedium" color="onSurfaceVariant">
           Nenhuma conta a pagar em {monthName(month)}.

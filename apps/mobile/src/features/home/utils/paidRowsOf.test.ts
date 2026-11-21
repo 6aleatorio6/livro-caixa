@@ -1,3 +1,4 @@
+import { overduePaymentOf } from '@/shared/testing/overduePaymentOf';
 import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 
 import { paidRowsOf } from './paidRowsOf';
@@ -35,6 +36,13 @@ describe('paidRowsOf', () => {
     const rows = paidRowsOf([oneOff('Conserto', '2026-10-12'), payment('Luz', 20), payment('Aluguel', 5)]);
 
     expect(rows.map((row) => row.name)).toEqual(['Aluguel', 'Conserto', 'Luz']);
+  });
+
+  // A linha do pagamento atrasado diz "paga dia 5", não o dia 20 em que a conta vencia no mês dela.
+  it('Should order an overdue payment by the day it was paid', () => {
+    const rows = paidRowsOf([payment('Luz', 10), overduePaymentOf({ dueDay: 20, paidOn: '2026-11-05' })]);
+
+    expect(rows.map((row) => row.name)).toEqual(['Água', 'Luz']);
   });
 
   it('Should order by name on the same day', () => {
