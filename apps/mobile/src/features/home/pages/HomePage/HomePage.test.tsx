@@ -6,6 +6,10 @@ import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService.scenarios';
 import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
+import { billMonthQueryService } from '@/shared/services/billMonth/query/billMonthQueryService';
+import { billMonthQueryScenarios } from '@/shared/services/billMonth/query/billMonthQueryService.scenarios';
+import { overdueSourcesQueryService } from '@/shared/services/billMonth/query/overdueSourcesQueryService';
+import { overdueSourcesQueryScenarios } from '@/shared/services/billMonth/query/overdueSourcesQueryService.scenarios';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { entryMonthQueryScenarios } from '@/shared/services/entry/query/entryMonthQueryService.scenarios';
 import { recurringBillListQueryService } from '@/shared/services/recurringBill/query/recurringBillListQueryService';
@@ -14,6 +18,7 @@ import { tagListQueryService } from '@/shared/services/tag/query/tagListQuerySer
 import { tagListQueryScenarios } from '@/shared/services/tag/query/tagListQueryService.scenarios';
 import { mockRealtime } from '@/shared/testing/mockRealtime';
 import { signedInAuthState } from '@/shared/testing/signedInAuthState';
+import type { IRealtimeMock } from '@/shared/types/testing/RealtimeMock';
 import { checkAppVersion } from '@/shared/utils/version/checkAppVersion';
 
 import { HomePage } from './HomePage';
@@ -22,6 +27,10 @@ import { HomePage } from './HomePage';
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
 jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jest.fn() }));
 jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entryMonthQueryService: {} }));
+jest.mock('@/shared/services/billMonth/query/billMonthQueryService', () => ({ billMonthQueryService: {} }));
+jest.mock('@/shared/services/billMonth/query/overdueSourcesQueryService', () => ({
+  overdueSourcesQueryService: {},
+}));
 jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService', () => ({
   recurringBillListQueryService: {},
 }));
@@ -49,6 +58,25 @@ const familyMonth = { service: entryMonthQueryService, scenario: entryMonthQuery
 const november = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.nextMonthPaidEarly };
 const emptyMonth = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth };
 
+// As leituras dos meses de conta e das atrasadas, por mês visto. A das atrasadas só roda no mês atual: nos outros fica parada.
+const octoberBillMonths = { service: billMonthQueryService, scenario: billMonthQueryScenarios.monthWithoutBillMonths };
+const novemberBillMonths = {
+  service: billMonthQueryService,
+  scenario: billMonthQueryScenarios.novemberWithoutBillMonths,
+};
+const noOverdueInOctober = { service: overdueSourcesQueryService, scenario: overdueSourcesQueryScenarios.noOverdue };
+const octoberUnpaid = { service: overdueSourcesQueryService, scenario: overdueSourcesQueryScenarios.octoberUnpaid };
+const overdueNotRead = { service: overdueSourcesQueryService, status: 'idle' } as const;
+// Outubro é o mês atual e o mês visto, como na maioria dos testes.
+const octoberReads = [octoberBillMonths, noOverdueInOctober];
+const novemberSeenFromOctober = [novemberBillMonths, overdueNotRead];
+const novemberCurrent = [novemberBillMonths, octoberUnpaid];
+const octoberSeenFromNovember = [octoberBillMonths, overdueNotRead];
+
+function mockOctoberRealtime(...mocks: IRealtimeMock[]) {
+  return mockRealtime(...mocks, ...octoberReads);
+}
+
 beforeEach(() => {
   jest.clearAllMocks();
   // "Hoje" fixo, de outubro de 2026; o relógio segue andando para as animações não travarem.
@@ -67,7 +95,7 @@ afterEach(() => {
 describe('HomePage', () => {
   describe('The app version check', () => {
     it('Should check the app version each time the home gains focus', async () => {
-      mockRealtime(fiveBills, threeTags, family, familyMonth);
+      mockOctoberRealtime(fiveBills, threeTags, family, familyMonth);
       await render(<HomePage />);
       const onFocus = jest.mocked(useFocusEffect).mock.lastCall![0];
 
@@ -79,7 +107,7 @@ describe('HomePage', () => {
 
     // O `useFocusEffect` só aceita uma função ou nada de volta: a promessa da conferência avisaria no console.
     it('Should return nothing to the focus effect, which warns about a promise', async () => {
-      mockRealtime(fiveBills, threeTags, family, familyMonth);
+      mockOctoberRealtime(fiveBills, threeTags, family, familyMonth);
       await render(<HomePage />);
       const onFocus = jest.mocked(useFocusEffect).mock.lastCall![0];
 
@@ -92,7 +120,7 @@ describe('HomePage', () => {
       jest
         .mocked(getSharedPayloads)
         .mockReturnValue([{ value: 'content://x/pix.pdf', shareType: 'file', mimeType: 'application/pdf' }] as never);
-      mockRealtime(fiveBills, threeTags, family, familyMonth);
+      mockOctoberRealtime(fiveBills, threeTags, family, familyMonth);
 
       await render(<HomePage />);
 
@@ -102,7 +130,7 @@ describe('HomePage', () => {
 
     it('Should not open the share screen when nothing was shared', async () => {
       jest.mocked(getSharedPayloads).mockReturnValue([]);
-      mockRealtime(fiveBills, threeTags, family, familyMonth);
+      mockOctoberRealtime(fiveBills, threeTags, family, familyMonth);
 
       await render(<HomePage />);
 
@@ -116,7 +144,7 @@ describe('HomePage', () => {
 
     for (const scenario of [signInWithFakeGoogleScenarios.adminSignsIn, signInWithFakeGoogleScenarios.memberSignsIn]) {
       jest.mocked(useAuthState).mockReturnValue(signedInAuthState(scenario));
-      mockRealtime(fiveBills, threeTags, family, familyMonth);
+      mockOctoberRealtime(fiveBills, threeTags, family, familyMonth);
       const { unmount } = await render(<HomePage />);
       found.push(numbers.filter((text) => screen.queryAllByText(text).length > 0));
       await unmount();
@@ -127,7 +155,7 @@ describe('HomePage', () => {
   });
 
   it('Should count the payments and the one-off bill as paid and the bills without payment as to pay', async () => {
-    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    mockOctoberRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);
 
     expect(screen.getByText('Outubro de 2026')).toBeOnTheScreen();
@@ -139,7 +167,7 @@ describe('HomePage', () => {
   });
 
   it('Should list the bills to pay by expected amount and due day, before the paid ones', async () => {
-    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    mockOctoberRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);
 
     expect(screen.getByText('R$ 119,90 · vence dia 15')).toBeOnTheScreen();
@@ -149,7 +177,7 @@ describe('HomePage', () => {
   });
 
   it('Should list the paid ones by day, with who paid and the expected amount when it differs', async () => {
-    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    mockOctoberRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);
 
     expect(screen.getByText('dia 5 · Ana')).toBeOnTheScreen();
@@ -163,7 +191,7 @@ describe('HomePage', () => {
   });
 
   it('Should keep the due day and the expected amount of the payment when the bill changed afterwards', async () => {
-    mockRealtime(fiveBills, threeTags, family, {
+    mockOctoberRealtime(fiveBills, threeTags, family, {
       service: entryMonthQueryService,
       scenario: entryMonthQueryScenarios.monthWithPaymentOfAlteredBill,
     });
@@ -174,7 +202,7 @@ describe('HomePage', () => {
   });
 
   it('Should split what was paid by tag, with what is still to pay', async () => {
-    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    mockOctoberRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);
 
     expect(screen.getByRole('tab', { name: 'Por tag', selected: true })).toBeOnTheScreen();
@@ -185,7 +213,7 @@ describe('HomePage', () => {
   });
 
   it('Should show "Sem tag" last in the split by tag, with what has no tag', async () => {
-    mockRealtime(fiveBills, threeTags, family, {
+    mockOctoberRealtime(fiveBills, threeTags, family, {
       service: entryMonthQueryService,
       scenario: entryMonthQueryScenarios.monthWithEntries,
     });
@@ -199,14 +227,14 @@ describe('HomePage', () => {
   });
 
   it('Should not put everything in "Sem tag" while the tags load', async () => {
-    mockRealtime(fiveBills, { service: tagListQueryService, status: 'loading' }, family, familyMonth);
+    mockOctoberRealtime(fiveBills, { service: tagListQueryService, status: 'loading' }, family, familyMonth);
     await render(<HomePage />);
 
     expect(screen.queryByText('Sem tag')).not.toBeOnTheScreen();
   });
 
   it('Should split what was paid by member with the current name of the person', async () => {
-    mockRealtime(fiveBills, threeTags, renamedFamily, familyMonth);
+    mockOctoberRealtime(fiveBills, threeTags, renamedFamily, familyMonth);
     await render(<HomePage />);
 
     await userEvent.setup().press(screen.getByRole('tab', { name: 'Por membro' }));
@@ -220,9 +248,9 @@ describe('HomePage', () => {
 
   it('Should show the numbers of the previous month when the month is changed', async () => {
     jest.setSystemTime(new Date(2026, 10, 25));
-    mockRealtime(fiveBills, threeTags, family, november);
+    mockRealtime(fiveBills, threeTags, family, november, ...novemberCurrent);
     await render(<HomePage />);
-    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    mockRealtime(fiveBills, threeTags, family, familyMonth, ...octoberSeenFromNovember);
 
     await userEvent.setup().press(screen.getByRole('button', { name: 'Mês anterior' }));
 
@@ -232,9 +260,9 @@ describe('HomePage', () => {
   });
 
   it('Should show the bills to pay of the next month, and no month after it', async () => {
-    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    mockOctoberRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);
-    mockRealtime(fiveBills, threeTags, family, november);
+    mockRealtime(fiveBills, threeTags, family, november, ...novemberSeenFromOctober);
 
     await userEvent.setup().press(screen.getByRole('button', { name: 'Próximo mês' }));
 
@@ -248,12 +276,15 @@ describe('HomePage', () => {
 
   // O exemplo de novembro da página Contribuição: R$ 2.300,00 pagos, com a Luz a pagar pelo que falta.
   it('Should count the contributions in the month, in the rows and in the split by member', async () => {
-    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    mockOctoberRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);
-    mockRealtime(fiveBills, threeTags, family, {
-      service: entryMonthQueryService,
-      scenario: entryMonthQueryScenarios.monthWithContributions,
-    });
+    mockRealtime(
+      fiveBills,
+      threeTags,
+      family,
+      { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithContributions },
+      ...novemberSeenFromOctober,
+    );
     const user = userEvent.setup();
 
     await user.press(screen.getByRole('button', { name: 'Próximo mês' }));
@@ -272,7 +303,7 @@ describe('HomePage', () => {
   });
 
   it('Should show all bills to pay and a zero paid when the month has no entries', async () => {
-    mockRealtime(fiveBills, threeTags, family, emptyMonth);
+    mockOctoberRealtime(fiveBills, threeTags, family, emptyMonth);
     await render(<HomePage />);
 
     // No centro do anel e no total do mês.
@@ -282,7 +313,7 @@ describe('HomePage', () => {
   });
 
   it('Should show the closed month when every bill is paid', async () => {
-    mockRealtime(
+    mockOctoberRealtime(
       { service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.billWithDeletedTag },
       threeTags,
       family,
@@ -295,7 +326,7 @@ describe('HomePage', () => {
   });
 
   it('Should offer to register the bills when the family has none', async () => {
-    mockRealtime(noBills, threeTags, family, emptyMonth);
+    mockOctoberRealtime(noBills, threeTags, family, emptyMonth);
     await render(<HomePage />);
 
     expect(screen.getByText('Sem contas')).toBeOnTheScreen();
@@ -308,7 +339,7 @@ describe('HomePage', () => {
   });
 
   it('Should open the payment of the bill with the month of the screen when Pagar is pressed', async () => {
-    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    mockOctoberRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);
 
     await userEvent.setup().press(screen.getByRole('button', { name: 'Pagar Internet' }));
@@ -320,7 +351,7 @@ describe('HomePage', () => {
   });
 
   it('Should open the details of a paid entry when its row is pressed', async () => {
-    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    mockOctoberRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);
     const user = userEvent.setup();
 
@@ -332,7 +363,7 @@ describe('HomePage', () => {
   });
 
   it('Should bring a bill back to to pay when its payment is deleted with the screen open', async () => {
-    const realtime = mockRealtime(fiveBills, threeTags, family, {
+    const realtime = mockOctoberRealtime(fiveBills, threeTags, family, {
       service: entryMonthQueryService,
       scenario: entryMonthQueryScenarios.paymentDeletedWhileOpen,
     });
@@ -347,14 +378,14 @@ describe('HomePage', () => {
   });
 
   it('Should not offer to add a one-off bill', async () => {
-    mockRealtime(fiveBills, threeTags, family, familyMonth);
+    mockOctoberRealtime(fiveBills, threeTags, family, familyMonth);
     await render(<HomePage />);
 
     expect(screen.queryByText('Nova conta avulsa')).not.toBeOnTheScreen();
   });
 
   it('Should show nothing of the month while it is loading', async () => {
-    mockRealtime({ service: recurringBillListQueryService, status: 'loading' }, threeTags, family, {
+    mockOctoberRealtime({ service: recurringBillListQueryService, status: 'loading' }, threeTags, family, {
       service: entryMonthQueryService,
       status: 'loading',
     });
@@ -365,14 +396,14 @@ describe('HomePage', () => {
   });
 
   it('Should say the month could not be loaded when the read fails', async () => {
-    mockRealtime(fiveBills, threeTags, family, { service: entryMonthQueryService, status: 'error' });
+    mockOctoberRealtime(fiveBills, threeTags, family, { service: entryMonthQueryService, status: 'error' });
     await render(<HomePage />);
 
     expect(screen.getByText('Não deu para carregar o mês.')).toBeOnTheScreen();
   });
 
   it('Should move a bill from to pay to paid when its payment arrives with the screen open', async () => {
-    const realtime = mockRealtime(fiveBills, threeTags, family, {
+    const realtime = mockOctoberRealtime(fiveBills, threeTags, family, {
       service: entryMonthQueryService,
       scenario: entryMonthQueryScenarios.paymentAddedWhileOpen,
     });

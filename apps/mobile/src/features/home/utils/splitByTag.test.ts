@@ -1,5 +1,6 @@
 import { contributionOf } from '@/shared/testing/contributionOf';
 import { unownedPaymentOf } from '@/shared/testing/unownedPaymentOf';
+import type { IEntry } from '@/shared/types/entry/Entry';
 import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 import type { ITag } from '@/shared/types/tag/Tag';
@@ -33,10 +34,13 @@ const oneOff = (id: string, tagId: string | null, amountCents: number): IOwnedEn
   receiptFileId: 'f1',
 });
 
+// O mês visto é outubro de 2026, o atual, sem meses de conta nem atrasadas.
+const summaryOf = ({ bills, entries }: { bills: IRecurringBill[]; entries: IEntry[] }) =>
+  monthSummary({ month: '2026-10', currentMonth: '2026-10', billMonths: [], overdueBills: [], bills, entries });
+
 describe('splitByTag', () => {
   it('Should give the paid and the to pay of each tag, from the largest paid to the smallest', () => {
-    const summary = monthSummary({
-      month: '2026-10',
+    const summary = summaryOf({
       bills: [bill('rent', 'home', 100000), bill('plan', 'health', 30000)],
       entries: [oneOff('a', 'home', 2000), oneOff('b', 'health', 9000), oneOff('c', 'health', 1000)],
     });
@@ -48,8 +52,7 @@ describe('splitByTag', () => {
   });
 
   it('Should keep a tag with only to pay and break a tie by name', () => {
-    const summary = monthSummary({
-      month: '2026-10',
+    const summary = summaryOf({
       bills: [bill('a', 'health', 500), bill('b', 'home', 700)],
       entries: [],
     });
@@ -59,8 +62,7 @@ describe('splitByTag', () => {
 
   // Cada conta tem no máximo uma tag: com a linha sem tag, as linhas somam o mês inteiro.
   it('Should put what has no tag in the last row, with tag null, even when it paid the most', () => {
-    const summary = monthSummary({
-      month: '2026-10',
+    const summary = summaryOf({
       bills: [bill('a', null, 500), bill('rent', 'home', 100000)],
       entries: [oneOff('x', null, 300), oneOff('y', 'home', 100)],
     });
@@ -72,8 +74,7 @@ describe('splitByTag', () => {
   });
 
   it('Should put an entry or a bill whose tag is not in the list in the untagged row', () => {
-    const summary = monthSummary({
-      month: '2026-10',
+    const summary = summaryOf({
       bills: [bill('a', 'gone', 500)],
       entries: [oneOff('x', 'gone', 300)],
     });
@@ -82,7 +83,10 @@ describe('splitByTag', () => {
   });
 
   it('Should be empty when the month has nothing', () => {
-    const summary = monthSummary({ month: '2026-10', bills: [], entries: [] });
+    const summary = summaryOf({
+      bills: [],
+      entries: [],
+    });
 
     expect(splitByTag(summary, [home])).toEqual([]);
   });
@@ -95,8 +99,7 @@ describe('splitByTag', () => {
       expectedAmountCents: 20000,
     });
     const pharmacy = oneOff('pharmacy', 'health', 8000);
-    const summary = monthSummary({
-      month: '2026-10',
+    const summary = summaryOf({
       bills: [bill('light', 'home', 25000)],
       entries: [
         pharmacy,
@@ -119,8 +122,7 @@ describe('splitByTag', () => {
       tagId: null,
       expectedAmountCents: 20000,
     });
-    const summary = monthSummary({
-      month: '2026-10',
+    const summary = summaryOf({
       bills: [bill('light', 'home', 20000)],
       entries: [light, contributionOf(light.id, 'bruno', 5000)],
     });

@@ -24,7 +24,7 @@ export function SharedBillChoices() {
   // "Este mês" é o da abertura da tela, mesmo que a meia-noite do último dia passe com ela aberta.
   const [thisMonth] = useState(currentMonth);
   const [month, setMonth] = useState(thisMonth);
-  const monthSummary = useMonthSummary(month);
+  const monthSummary = useMonthSummary({ month, currentMonth: thisMonth });
   const { data: tags } = useRealtime(tagListQueryService, {});
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
   const uid = signedInUid(useAuthState());

@@ -47,9 +47,11 @@ export function HomePage() {
   useFocusEffect(() => {
     checkAppVersion();
   });
-  const [month, setMonth] = useState(currentMonth);
+  // "Este mês" é o da abertura da tela, mesmo que a meia-noite do último dia passe com ela aberta.
+  const [thisMonth] = useState(currentMonth);
+  const [month, setMonth] = useState(thisMonth);
   const [splitView, setSplitView] = useState<'tag' | 'member'>('tag');
-  const { bills, summary, hasError } = useMonthSummary(month);
+  const { bills, summary, hasError } = useMonthSummary({ month, currentMonth: thisMonth });
   const { data: tags } = useRealtime(tagListQueryService, {});
   const { data: people } = useRealtime(allowedEmailListQueryService, {});
 

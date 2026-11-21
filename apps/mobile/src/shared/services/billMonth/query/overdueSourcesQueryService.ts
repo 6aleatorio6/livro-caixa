@@ -12,14 +12,27 @@ import { createRealtimeService } from '@/shared/utils/serviceUtils/createRealtim
  * O que decide quais contas estão atrasadas: os lançamentos e os meses de conta (pagos depois ou pulados) de todos os
  * meses desde o primeiro do app até o anterior ao atual (`AAAA-MM`), cada lista do mês mais antigo ao mais novo; muda
  * na hora em que alguém lança, paga depois ou pula. Cada consulta filtra um campo só, o `month`, e não pede índice
- * composto. Um `kind` ou `status` que o app não conhece fica de fora.
+ * composto. Um `kind` ou `status` que o app não conhece fica de fora. Sem o mês atual (`null`: a tela mostra outro mês),
+ * a leitura fica parada.
  */
 export const overdueSourcesQueryService = createRealtimeService({
-  refs: ({ currentMonth }: { currentMonth: string }) => [
-    query(collection(firestoreDb, 'entries'), where('month', '>=', FIRST_MONTH), where('month', '<', currentMonth)),
-    query(collection(firestoreDb, 'billMonths'), where('month', '>=', FIRST_MONTH), where('month', '<', currentMonth)),
-  ],
-  resolve: ([entries, billMonths]): { entries: IEntry[]; billMonths: IBillMonth[] } => ({
+  refs: ({ currentMonth }: { currentMonth: string | null }) =>
+    currentMonth
+      ? [
+          query(
+            collection(firestoreDb, 'entries'),
+            where('month', '>=', FIRST_MONTH),
+            where('month', '<', currentMonth),
+          ),
+          query(
+            collection(firestoreDb, 'billMonths'),
+            where('month', '>=', FIRST_MONTH),
+            where('month', '<', currentMonth),
+          ),
+        ]
+      : [],
+  // Sem o mês atual, `resolve` não roda: a leitura parada não entrega nada.
+  resolve: ([entries = [], billMonths = []]): { entries: IEntry[]; billMonths: IBillMonth[] } => ({
     entries: entries.flatMap((document) => toEntry(document) ?? []),
     billMonths: billMonths.flatMap((document) => toBillMonth(document) ?? []),
   }),

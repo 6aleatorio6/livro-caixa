@@ -1,10 +1,14 @@
 import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 
+import { billMonthOf } from '@/shared/testing/billMonthOf';
 import { contributionOf } from '@/shared/testing/contributionOf';
+import { overduePaymentOf } from '@/shared/testing/overduePaymentOf';
 import { ownedPaymentOf } from '@/shared/testing/ownedPaymentOf';
 import { unownedPaymentOf } from '@/shared/testing/unownedPaymentOf';
 
+import type { IBillToPay } from '../types/BillToPay';
+import { billsToPayOf } from './billsToPayOf';
 import { monthSummary } from './monthSummary';
 
 const bill = (overrides: Partial<IRecurringBill> = {}): IRecurringBill => ({
@@ -47,11 +51,18 @@ const oneOff = (overrides: Partial<Extract<IOwnedEntry, { kind: 'oneOffBill' }>>
   ...overrides,
 });
 
+// O mês visto é o atual, sem meses de conta nem atrasadas, salvo quando o teste diz o contrário.
+const summaryOf = (
+  args: Pick<Parameters<typeof monthSummary>[0], 'month' | 'bills' | 'entries'> &
+    Partial<Parameters<typeof monthSummary>[0]>,
+) => monthSummary({ currentMonth: args.month, billMonths: [], overdueBills: [], ...args });
+
 describe('monthSummary', () => {
   it('Should be all zero in an empty month', () => {
-    expect(monthSummary({ month: '2026-10', bills: [], entries: [] })).toEqual({
+    expect(summaryOf({ month: '2026-10', bills: [], entries: [] })).toEqual({
       toPay: [],
       paid: [],
+      skipped: [],
       entries: [],
       toPayCents: 0,
       paidCents: 0,
@@ -61,11 +72,12 @@ describe('monthSummary', () => {
   });
 
   it('Should list a bill without payment as to pay, by the expected amount', () => {
-    const summary = monthSummary({ month: '2026-10', bills: [bill()], entries: [] });
+    const summary = summaryOf({ month: '2026-10', bills: [bill()], entries: [] });
 
     expect(summary.toPay).toEqual([
       {
         bill: bill(),
+        month: '2026-10',
         name: 'Aluguel',
         tagId: null,
         dueDate: '2026-10-05',
@@ -79,7 +91,7 @@ describe('monthSummary', () => {
 
   it('Should list a payment and a one-off bill as paid', () => {
     const entries = [payment(), oneOff()];
-    const summary = monthSummary({ month: '2026-10', bills: [bill()], entries });
+    const summary = summaryOf({ month: '2026-10', bills: [bill()], entries });
 
     expect(summary.paid).toEqual(entries);
     expect(summary.toPay).toEqual([]);
@@ -93,7 +105,7 @@ describe('monthSummary', () => {
       bill({ id: 'b', dayOfMonth: 10 }),
     ];
 
-    expect(monthSummary({ month: '2026-10', bills, entries: [] }).toPay.map(({ bill: { id } }) => id)).toEqual([
+    expect(summaryOf({ month: '2026-10', bills, entries: [] }).toPay.map(({ bill: { id } }) => id)).toEqual([
       'a',
       'b',
       'c',
@@ -104,8 +116,8 @@ describe('monthSummary', () => {
     const entries = [payment({ id: '2026-09_rent', month: '2026-09' })];
     const bills = [bill({ id: 'water', dayOfMonth: 8 })];
 
-    const september = monthSummary({ month: '2026-09', bills, entries });
-    const october = monthSummary({ month: '2026-10', bills, entries: [] });
+    const september = summaryOf({ month: '2026-09', bills, entries });
+    const october = summaryOf({ month: '2026-10', bills, entries: [] });
 
     expect(september.toPay.map(({ bill: { id } }) => id)).toEqual(['water']);
     expect(october.toPay.map(({ bill: { id } }) => id)).toEqual(['water']);
@@ -115,16 +127,17 @@ describe('monthSummary', () => {
   it('Should count in September a one-off bill paid on 30/09 and registered in October', () => {
     const entry = oneOff({ date: '2026-09-30', month: '2026-09' });
 
-    expect(monthSummary({ month: '2026-09', bills: [], entries: [entry] }).paid).toEqual([entry]);
-    expect(monthSummary({ month: '2026-10', bills: [], entries: [] }).paid).toEqual([]);
+    expect(summaryOf({ month: '2026-09', bills: [], entries: [entry] }).paid).toEqual([entry]);
+    expect(summaryOf({ month: '2026-10', bills: [], entries: [] }).paid).toEqual([]);
   });
 
   it('Should take a day 31 bill as due in a 30-day month', () => {
-    const summary = monthSummary({ month: '2026-04', bills: [bill({ dayOfMonth: 31 })], entries: [] });
+    const summary = summaryOf({ month: '2026-04', bills: [bill({ dayOfMonth: 31 })], entries: [] });
 
     expect(summary.toPay).toEqual([
       {
         bill: bill({ dayOfMonth: 31 }),
+        month: '2026-04',
         name: 'Aluguel',
         tagId: null,
         dueDate: '2026-04-30',
@@ -136,7 +149,7 @@ describe('monthSummary', () => {
   });
 
   it('Should leave out a bill whose due date is before its start', () => {
-    const summary = monthSummary({ month: '2026-10', bills: [bill({ startsOn: '2026-10-10' })], entries: [] });
+    const summary = summaryOf({ month: '2026-10', bills: [bill({ startsOn: '2026-10-10' })], entries: [] });
 
     expect(summary.toPay).toEqual([]);
     expect(summary.billCount).toBe(0);
@@ -146,31 +159,31 @@ describe('monthSummary', () => {
     const changed = bill({ expectedAmountCents: 120000 });
     const entries = [payment({ id: '2026-09_rent', month: '2026-09', amountCents: 100000 })];
 
-    expect(monthSummary({ month: '2026-09', bills: [changed], entries })).toMatchObject({
+    expect(summaryOf({ month: '2026-09', bills: [changed], entries })).toMatchObject({
       toPayCents: 0,
       paidCents: 100000,
     });
-    expect(monthSummary({ month: '2026-10', bills: [changed], entries: [] })).toMatchObject({
+    expect(summaryOf({ month: '2026-10', bills: [changed], entries: [] })).toMatchObject({
       toPayCents: 120000,
       paidCents: 0,
     });
   });
 
   it('Should keep the payments of a deleted bill as paid, without the bill to pay', () => {
-    const summary = monthSummary({ month: '2026-10', bills: [], entries: [payment()] });
+    const summary = summaryOf({ month: '2026-10', bills: [], entries: [payment()] });
 
     expect(summary.paid).toHaveLength(1);
     expect(summary).toMatchObject({ toPay: [], paidCents: 100000, totalCents: 100000, billCount: 1 });
   });
 
   it('Should take the paid amount, never a negative to pay, when a bill is paid above the expected', () => {
-    const summary = monthSummary({ month: '2026-10', bills: [bill()], entries: [payment({ amountCents: 130000 })] });
+    const summary = summaryOf({ month: '2026-10', bills: [bill()], entries: [payment({ amountCents: 130000 })] });
 
     expect(summary).toMatchObject({ toPayCents: 0, paidCents: 130000, totalCents: 130000, billCount: 1 });
   });
 
   it('Should keep the entries without tag in the total', () => {
-    const summary = monthSummary({
+    const summary = summaryOf({
       month: '2026-10',
       bills: [bill({ id: 'x', tagId: null })],
       entries: [oneOff({ tagId: null })],
@@ -187,12 +200,13 @@ describe('monthSummary', () => {
     it('Should keep a month with contributions below the expected amount to pay for what is left', () => {
       const entries = [electricity, contributionOf(electricity.id, 'ana', 10000)];
 
-      const summary = monthSummary({ month: '2026-10', bills: [electricityBill], entries });
+      const summary = summaryOf({ month: '2026-10', bills: [electricityBill], entries });
 
       expect(summary.toPay).toEqual([
         // O nome e a tag são as cópias do pagamento sem dono.
         {
           bill: electricityBill,
+          month: '2026-10',
           name: 'Luz',
           tagId: 'servicos',
           dueDate: '2026-10-20',
@@ -212,7 +226,7 @@ describe('monthSummary', () => {
         contributionOf(electricity.id, 'bruno', 10000),
       ];
 
-      const summary = monthSummary({ month: '2026-10', bills: [electricityBill], entries });
+      const summary = summaryOf({ month: '2026-10', bills: [electricityBill], entries });
 
       expect(summary.toPay).toEqual([]);
       expect(summary.paid).toEqual([electricity]);
@@ -226,7 +240,7 @@ describe('monthSummary', () => {
         contributionOf(electricity.id, 'bruno', 13000),
       ];
 
-      const summary = monthSummary({ month: '2026-10', bills: [electricityBill], entries });
+      const summary = summaryOf({ month: '2026-10', bills: [electricityBill], entries });
 
       expect(summary.paid).toEqual([electricity]);
       expect(summary).toMatchObject({ toPayCents: 0, paidCents: 23000, totalCents: 23000 });
@@ -242,7 +256,7 @@ describe('monthSummary', () => {
         expectedAmountCents: 200000,
       });
 
-      const summary = monthSummary({
+      const summary = summaryOf({
         month: '2026-10',
         bills: [rentBill],
         entries: [rent, contributionOf(rent.id, 'bruno', 50000)],
@@ -253,7 +267,7 @@ describe('monthSummary', () => {
     });
 
     it('Should keep the contributions of a deleted bill in the month, without what was left', () => {
-      const summary = monthSummary({
+      const summary = summaryOf({
         month: '2026-10',
         bills: [],
         entries: [electricity, contributionOf(electricity.id, 'bruno', 5000)],
@@ -265,7 +279,7 @@ describe('monthSummary', () => {
     it('Should keep the month total unchanged by contributions to a paid entry', () => {
       const rent = ownedPaymentOf({ amountCents: 100000, expectedAmountCents: 100000 });
 
-      const summary = monthSummary({
+      const summary = summaryOf({
         month: '2026-10',
         bills: [bill()],
         entries: [rent, contributionOf(rent.id, 'bruno', 40000)],
@@ -273,6 +287,92 @@ describe('monthSummary', () => {
 
       expect(summary.paid).toEqual([rent]);
       expect(summary).toMatchObject({ toPayCents: 0, paidCents: 100000, totalCents: 100000, billCount: 1 });
+    });
+  });
+  describe('With overdue bills and bill months', () => {
+    const water = bill({ id: 'water', name: 'Água', expectedAmountCents: 9000, dayOfMonth: 20, tagId: 'casa' });
+    const internet = bill({
+      id: 'internet',
+      name: 'Internet',
+      expectedAmountCents: 11990,
+      dayOfMonth: 10,
+      tagId: 'casa',
+    });
+    const rent = bill();
+    // A atrasada como `overdueBillsOf` a entrega: a conta sem pagamento no mês dela, marcada como de um mês anterior.
+    const overdueBillOf = (billOfOctober: IRecurringBill): IBillToPay => ({
+      ...billsToPayOf({ month: '2026-10', bills: [billOfOctober], entries: [], billMonths: [] })[0],
+      overdue: 'fromEarlierMonth',
+    });
+    const waterPaidLater = billMonthOf({
+      id: '2026-10_water',
+      status: 'paidLater',
+      recurringBillId: 'water',
+      name: 'Água',
+      entryId: 'overdue-water',
+    });
+
+    it('Should put the overdue bills before the bills of the current month and count them in the totals', () => {
+      const summary = summaryOf({
+        month: '2026-11',
+        bills: [water, internet, rent],
+        entries: [],
+        overdueBills: [overdueBillOf(water), overdueBillOf(internet)],
+      });
+
+      expect(summary.toPay.map(({ name, month, overdue }) => [name, month, overdue])).toEqual([
+        ['Água', '2026-10', 'fromEarlierMonth'],
+        ['Internet', '2026-10', 'fromEarlierMonth'],
+        ['Aluguel', '2026-11', undefined],
+        ['Internet', '2026-11', undefined],
+        ['Água', '2026-11', undefined],
+      ]);
+      expect(summary).toMatchObject({ toPayCents: 141980, paidCents: 0, totalCents: 141980, billCount: 5 });
+    });
+
+    it('Should flag a bill without payment as overdue in its own month when the screen shows an earlier month', () => {
+      const summary = summaryOf({ month: '2026-10', currentMonth: '2026-11', bills: [internet], entries: [] });
+
+      expect(summary.toPay).toMatchObject([{ name: 'Internet', month: '2026-10', overdue: 'inItsMonth' }]);
+    });
+
+    it('Should take a skipped month out of to pay and list it as skipped', () => {
+      const skippedInternet = billMonthOf();
+
+      const summary = summaryOf({
+        month: '2026-10',
+        currentMonth: '2026-11',
+        bills: [water, internet],
+        entries: [],
+        billMonths: [skippedInternet],
+      });
+
+      expect(summary.toPay.map(({ name }) => name)).toEqual(['Água']);
+      expect(summary.skipped).toEqual([skippedInternet]);
+      expect(summary).toMatchObject({ toPayCents: 9000, totalCents: 9000, billCount: 1 });
+    });
+
+    it('Should take a month paid later out of to pay without listing it as skipped', () => {
+      const summary = summaryOf({
+        month: '2026-10',
+        currentMonth: '2026-11',
+        bills: [water, internet],
+        entries: [],
+        billMonths: [waterPaidLater],
+      });
+
+      expect(summary.toPay.map(({ name }) => name)).toEqual(['Internet']);
+      expect(summary.skipped).toEqual([]);
+    });
+
+    it('Should list the overdue payment as paid in the month it was made, without paying the bill of that month', () => {
+      const overduePayment = overduePaymentOf();
+
+      const summary = summaryOf({ month: '2026-11', bills: [water], entries: [overduePayment] });
+
+      expect(summary.paid).toEqual([overduePayment]);
+      expect(summary.toPay).toMatchObject([{ name: 'Água', month: '2026-11' }]);
+      expect(summary).toMatchObject({ toPayCents: 9000, paidCents: 9000, totalCents: 18000, billCount: 2 });
     });
   });
 });

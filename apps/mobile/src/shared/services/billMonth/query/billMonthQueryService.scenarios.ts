@@ -67,6 +67,13 @@ export const billMonthQueryScenarios = {
     input: { month: '2026-10' },
     result: [],
   },
+  // Novembro, o mês depois do primeiro do app, ainda sem nenhum mês de conta: a leitura vem vazia.
+  novemberWithoutBillMonths: {
+    signedInAs: ANA,
+    given: BOTH_IN_THE_LIST,
+    input: { month: '2026-11' },
+    result: [],
+  },
   // Um `status` que o app não conhece (gravado por uma versão mais nova) fica de fora.
   monthWithUnknownStatus: {
     signedInAs: ANA,
