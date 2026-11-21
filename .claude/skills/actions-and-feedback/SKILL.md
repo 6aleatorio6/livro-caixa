@@ -38,6 +38,22 @@ router.back();
 | `run` | always: the service call, with the params the action receives |
 | `shouldShowLoader` | the person must wait and can't do anything else meanwhile (a save, an upload) |
 | `successMessage` | the result isn't visible on its own (a save that closes the screen) |
+| `successAction` | the success toast carries a button, chosen from the call's params and result (`(params, data) => { label, onPress }`); needs `successMessage` |
+
+```ts
+// src/features/home/utils/actions/doSkipBillMonth.ts
+export const doSkipBillMonth = createAsyncAction({
+  run: skipBillMonthService,
+  shouldShowLoader: true,
+  successMessage: ({ bill, month }) => `${bill.name} de ${monthName(month)} pulada.`,
+  successAction: ({ bill, month }) => ({
+    label: 'Desfazer',
+    onPress: () => {
+      doUndoSkipBillMonth({ bill, month });
+    },
+  }),
+});
+```
 
 On failure the action shows `errorUserMessage(error)` as an error toast and returns
 `{ data: null, error }`. It hides the loader in every outcome.
@@ -72,14 +88,15 @@ functions in `src/core/utils/storeActions/`:
 
 | Function | Effect |
 |---|---|
-| `showToast(message, kind)` | shows the toast (`'success'` or `'error'`) and hides it after 4 s; a new toast replaces the old one and restarts the time |
-| `hideToast()` | hides it now |
+| `showToast(message, kind, action?)` | shows the toast (`'success'` or `'error'`) and hides it after 4 s, or 6 s when it has an `action` (`{ label, onPress }`, the "Desfazer" button); a new toast replaces the old one and restarts the time |
+| `hideToast()` | hides it now and clears the timer that would hide it later |
 | `showLoader()` / `hideLoader()` | covers and uncovers the screen |
 
-Outside an action, call these functions; never `useToastStore.setState` from a screen. The stores
-live in `core` with the components that show them, so `core` never imports from `shared`. A new
-global store follows the same shape: the state interface in `core/types/`, `core/store/<name>.store.ts`
-with the Zustand hook, and one file per function that changes it in `core/utils/storeActions/`.
+Pressing the action's button runs its `onPress` and closes the toast. Outside an action, call these
+functions; never `useToastStore.setState` from a screen. The stores live in `core` with the components
+that show them, so `core` never imports from `shared`. A new global store follows the same shape: the
+state interface in `core/types/`, `core/store/<name>.store.ts` with the Zustand hook, and one file per
+function that changes it in `core/utils/storeActions/`.
 
 ## Testing
 

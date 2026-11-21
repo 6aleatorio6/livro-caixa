@@ -1,6 +1,6 @@
 import { recurringBillListQueryScenarios } from '@/shared/services/recurringBill/query/recurringBillListQueryService.scenarios';
 import { MISSING_RECEIPT_URI, RECEIPT_FIXTURE } from '@/shared/testing/contract/fixtures/receiptFixture';
-import { UTILITIES_TAG_ID } from '@/shared/testing/tagFixtures';
+import { HOME_TAG_ID, UTILITIES_TAG_ID } from '@/shared/testing/tagFixtures';
 import { testAccountUid } from '@/shared/testing/testAccountUid';
 import type { IRecurringPaymentInput } from '@/shared/types/entry/RecurringPaymentInput';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
@@ -30,6 +30,8 @@ const INTERNET_IN_THE_LIST = {
     tagId: INTERNET_BILL.tagId,
   },
 };
+// A Luz da lista de contas (dia 10, previsto R$ 210,00): o mês com contribuições mostra as cópias do pagamento sem dono.
+const ELECTRICITY_BILL = recurringBillListQueryScenarios.fiveBills.result.find(({ id }) => id === 'electricity')!;
 const BRUNO_WITHOUT_ENTRIES = {
   [`allowedEmails/${BRUNO}`]: { name: 'Bruno Souza', isAdmin: false, hasEntries: false },
   ...INTERNET_IN_THE_LIST,
@@ -92,6 +94,50 @@ export const payRecurringBillScenarios = {
       },
     },
     input: [{ ...INTERNET, amountCents: 12000 }],
+    result: undefined,
+  },
+  // A Luz de novembro tem R$ 100,00 da Ana, e o pagamento sem dono guardou o dia 20 e o previsto de R$ 200,00 (a conta de
+  // hoje diz dia 10 e R$ 210,00): a tela manda a conta com essas cópias, e o Bruno paga a conta inteira.
+  memberPaysElectricityWithContributions: {
+    signedInAs: BRUNO,
+    given: {
+      ...BRUNO_WITHOUT_ENTRIES,
+      'recurringBills/electricity': {
+        name: ELECTRICITY_BILL.name,
+        expectedAmountCents: ELECTRICITY_BILL.expectedAmountCents,
+        dayOfMonth: ELECTRICITY_BILL.dayOfMonth,
+        startsOn: ELECTRICITY_BILL.startsOn,
+        tagId: ELECTRICITY_BILL.tagId,
+      },
+      [`allowedEmails/${ANA}`]: { name: 'Ana Souza', isAdmin: true, hasEntries: true },
+      'entries/2026-11_electricity': {
+        kind: 'recurringPayment',
+        month: '2026-11',
+        recurringBillId: 'electricity',
+        name: 'Luz',
+        dueDay: 20,
+        expectedAmountCents: 20000,
+        tagId: HOME_TAG_ID,
+        createdAt: new Date('2026-11-08T12:00:00Z'),
+      },
+      'entries/c-ana': {
+        kind: 'contribution',
+        month: '2026-11',
+        entryId: '2026-11_electricity',
+        amountCents: 10000,
+        paidBy: testAccountUid(ANA),
+        createdAt: new Date('2026-11-08T12:00:00Z'),
+        receiptFileId: 'f-ana',
+      },
+    },
+    input: [
+      {
+        bill: { ...ELECTRICITY_BILL, dayOfMonth: 20, expectedAmountCents: 20000, tagId: HOME_TAG_ID },
+        month: '2026-11',
+        amountCents: 20000,
+        receipt: RECEIPT,
+      },
+    ],
     result: undefined,
   },
 } satisfies Record<string, IServiceScenario<[IRecurringPaymentInput], void>>;

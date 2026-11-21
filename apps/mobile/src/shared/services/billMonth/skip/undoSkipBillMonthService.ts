@@ -1,17 +1,18 @@
-import { deleteDoc, doc } from '@react-native-firebase/firestore';
+import { deleteDoc } from '@react-native-firebase/firestore';
 
 import { AppError } from '@/shared/exceptions/AppError';
-import { firestoreDb } from '@/shared/services/firebase/firestoreDb';
+import { billMonthRef } from '@/shared/services/billMonth/billMonthRef';
+import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 import { isPermissionDenied } from '@/shared/utils/handlerError/isPermissionDenied';
 
 /**
- * Desfaz o pulo: apaga o `billMonths` `skipped` de id `id`, e o mês volta a ser uma conta atrasada. O mês que já não
- * existe (o segundo Desfazer, ou outro membro desfez antes) termina sem erro. Se outro membro pagou o mês pulado no meio
- * disso, ele virou `paidLater`, a regra recusa a exclusão e o serviço lança `UNDO_SKIP_DENIED`.
+ * Desfaz o pulo: apaga o `billMonths` `skipped` do mês da conta, e o mês volta a ser uma conta atrasada. O mês que já
+ * não existe (o segundo Desfazer, ou outro membro desfez antes) termina sem erro. Se outro membro pagou o mês pulado no
+ * meio disso, ele virou `paidLater`, a regra recusa a exclusão e o serviço lança `UNDO_SKIP_DENIED`.
  */
-export async function undoSkipBillMonthService({ id }: { id: string }) {
+export async function undoSkipBillMonthService({ bill, month }: { bill: IRecurringBill; month: string }) {
   try {
-    await deleteDoc(doc(firestoreDb, 'billMonths', id));
+    await deleteDoc(billMonthRef(month, bill.id));
   } catch (error) {
     if (isPermissionDenied(error)) {
       throw new AppError(

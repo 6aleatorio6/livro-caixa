@@ -8,10 +8,13 @@ import { TopBar } from '@/shared/components/TopBar/TopBar';
 import { useSharedReceiptOpening } from '@/shared/hooks/useSharedReceiptOpening/useSharedReceiptOpening';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
+import { billMonthQueryService } from '@/shared/services/billMonth/query/billMonthQueryService';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { recurringBillListQueryService } from '@/shared/services/recurringBill/query/recurringBillListQueryService';
 import { tagListQueryService } from '@/shared/services/tag/query/tagListQueryService';
 import type { IBillEntry } from '@/shared/types/entry/BillEntry';
+import type { IRecurringPaymentInput } from '@/shared/types/entry/RecurringPaymentInput';
+import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 import { doAddContribution } from '@/shared/utils/actions/doAddContribution';
 import { currentMonth } from '@/shared/utils/date/currentMonth';
 import { contributionsOf } from '@/shared/utils/entry/contributionsOf';
@@ -22,19 +25,33 @@ import { findTag } from '@/shared/utils/tag/findTag';
 
 import { isMonthToPay } from '@/features/home/utils/isMonthToPay';
 import { PayRecurringBillForm } from '@/features/home/components/PayRecurringBillForm/PayRecurringBillForm';
+import { doPayOverdueBill } from '@/features/home/utils/actions/doPayOverdueBill';
 import { doPayRecurringBill } from '@/features/home/utils/actions/doPayRecurringBill';
+import { doSkipBillMonth } from '@/features/home/utils/actions/doSkipBillMonth';
 
 /** Onde qualquer membro registra o pagamento de uma conta recorrente no mês que o Início abriu. */
 export function PayRecurringBillPage() {
   // `attach=1`: o "Anexar o comprovante da conta" dos detalhes, que paga o mês que as contribuições já pagaram.
-  const { id, month, attach } = useLocalSearchParams<{ id: string; month: string; attach?: string }>();
+  const { id, month, attach, shared } = useLocalSearchParams<{
+    id: string;
+    month: string;
+    attach?: string;
+    shared?: string;
+  }>();
   const { initialReceipt, finish } = useSharedReceiptOpening();
   const { status, data: bills } = useRealtime(recurringBillListQueryService, {});
   const { data: tags } = useRealtime(tagListQueryService, {});
   // Do envio até a tela voltar: o próprio pagamento chega pela leitura do mês, e a tela não o toma por outro.
   const [isSubmitted, setIsSubmitted] = useState(false);
+  // Do "Pular" confirmado até a tela voltar: o botão fica ocupado e não abre a confirmação de novo.
+  const [isSkipping, setIsSkipping] = useState(false);
   const bill = bills?.find((candidate) => candidate.id === id);
   const isToPay = bill ? isMonthToPay(bill, month) : false;
+  const isEarlierMonth = isToPay && month < currentMonth();
+  // O mês de conta (pulado ou pago depois) só existe num mês anterior; nos outros a leitura fica parada.
+  const { status: billMonthsStatus, data: billMonths } = useRealtime(billMonthQueryService, {
+    month: isEarlierMonth ? month : null,
+  });
   // O mês da rota pode ser qualquer texto: sem um mês que se paga, a leitura é a do mês atual, e o resultado não vale.
   const { status: entriesStatus, data: entries } = useRealtime(entryMonthQueryService, {
     month: isToPay ? month : currentMonth(),
@@ -64,6 +81,42 @@ export function PayRecurringBillPage() {
     isToPay &&
     payment !== undefined &&
     (payment.paidBy !== null || (attach !== '1' && isFullyContributed(payment, entries ?? [])));
+  // A atrasada é a conta de um mês anterior ao atual que ainda não tem pagamento, e que se paga no mês de hoje. Com
+  // contribuições o mês segue o caminho de sempre: o pagamento é do mês dela, e não há o que pular.
+  const isOverdue = isEarlierMonth && payment === undefined;
+  const billMonthStatus = billMonths?.find((candidate) => candidate.recurringBillId === id)?.status;
+  const isPaidLater = isOverdue && billMonthStatus === 'paidLater';
+  // Quem chega pelo compartilhar veio pagar com o comprovante: pular fecharia a tela e o perderia.
+  const canSkip = isOverdue && billMonthStatus !== 'skipped' && shared !== '1';
+  // Os meses de conta só decidem a atrasada (paga depois, pulada): o formulário espera por eles só nela, ou a atrasada
+  // paga abriria sem saber. Num mês anterior com contribuições, eles não decidem nada.
+  const hasBillMonths = !isOverdue || Boolean(billMonths);
+  const isAlreadyPaid = isPaid || isPaidLater;
+
+  async function skipMonth(billToSkip: IRecurringBill, monthToSkip: string) {
+    setIsSkipping(true);
+    const { error } = await doSkipBillMonth({ bill: billToSkip, month: monthToSkip });
+    if (error) {
+      setIsSkipping(false);
+      return;
+    }
+    finish();
+  }
+
+  async function register(input: IRecurringPaymentInput, isContribution: boolean) {
+    if (isOverdue) {
+      const { month: billMonth, ...overdueInput } = input;
+      return doPayOverdueBill({ ...overdueInput, billMonth });
+    }
+    if (isContribution) {
+      return doAddContribution({
+        target: { bill: input.bill, month: input.month },
+        amountCents: input.amountCents,
+        receipt: input.receipt,
+      });
+    }
+    return doPayRecurringBill(input);
+  }
 
   return (
     <Screen>
@@ -74,12 +127,12 @@ export function PayRecurringBillPage() {
             Esta conta não está a pagar neste mês.
           </AppText>
         ) : null}
-        {isPaid && !isSubmitted ? (
+        {isAlreadyPaid && !isSubmitted ? (
           <AppText variant="bodyMedium" color="onSurfaceVariant">
-            Esta conta já foi paga neste mês.
+            {isPaidLater ? 'Esta conta já foi paga.' : 'Esta conta já foi paga neste mês.'}
           </AppText>
         ) : null}
-        {monthBill && isToPay && entries && (isSubmitted || !isPaid) ? (
+        {monthBill && isToPay && entries && hasBillMonths && (isSubmitted || !isAlreadyPaid) ? (
           <PayRecurringBillForm
             bill={monthBill}
             month={month}
@@ -87,16 +140,14 @@ export function PayRecurringBillPage() {
             contributedCents={contributedCents}
             contributionsSupport={contributionsSupportOf(contributions, people ?? [])}
             tag={findTag(monthBill.tagId, tags)}
+            isOverdue={isOverdue}
+            // O mês já pulado abre como atrasada, para ser pago, e não pode ser pulado de novo.
+            onSkip={canSkip ? () => skipMonth(monthBill, month) : undefined}
+            isSkipping={isSkipping}
             initialValues={{ receipt: initialReceipt }}
             onSubmit={async (input, isContribution) => {
               setIsSubmitted(true);
-              const { error } = isContribution
-                ? await doAddContribution({
-                    target: { bill: monthBill, month },
-                    amountCents: input.amountCents,
-                    receipt: input.receipt,
-                  })
-                : await doPayRecurringBill(input);
+              const { error } = await register(input, isContribution);
               if (error) setIsSubmitted(false);
               else finish();
             }}
@@ -108,7 +159,7 @@ export function PayRecurringBillPage() {
             Esta conta não existe mais.
           </AppText>
         ) : null}
-        {status === 'error' || entriesStatus === 'error' ? (
+        {status === 'error' || entriesStatus === 'error' || billMonthsStatus === 'error' ? (
           <AppText variant="bodyMedium" color="onSurfaceVariant">
             Não deu para carregar a conta.
           </AppText>

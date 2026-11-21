@@ -1,3 +1,4 @@
+import { recurringBillListQueryScenarios } from '@/shared/services/recurringBill/query/recurringBillListQueryService.scenarios';
 import {
   ANA,
   BOTH_IN_THE_LIST,
@@ -11,8 +12,13 @@ import type { undoSkipBillMonthService } from './undoSkipBillMonthService';
 
 type IUndoSkipBillMonthArguments = Parameters<typeof undoSkipBillMonthService>;
 
-// A pessoa é a conta de teste das jornadas: o Bruno pulou a Água de outubro e desfaz o pulo logo depois.
+// A pessoa é a conta de teste das jornadas: o Bruno pulou a Internet de outubro e desfaz o pulo logo depois.
 const BRUNO = 'bruno.souza@exemplo.com';
+
+// As contas da lista de contas: a tela desfaz o pulo da conta que a leitura entrega.
+const BILLS = recurringBillListQueryScenarios.fiveBills.result;
+const INTERNET_BILL = BILLS.find(({ id }) => id === 'internet')!;
+const WATER_BILL = BILLS.find(({ id }) => id === 'water')!;
 
 export const undoSkipBillMonthScenarios = {
   // O `skipped` some, e o mês volta a ser uma conta atrasada; os meses pulados das outras contas ficam.
@@ -20,18 +26,18 @@ export const undoSkipBillMonthScenarios = {
     signedInAs: BRUNO,
     given: {
       [`allowedEmails/${BRUNO}`]: { name: 'Bruno Souza', isAdmin: false, hasEntries: false },
-      'billMonths/2026-10_water': SKIPPED_WATER_DOCUMENT,
+      'billMonths/2026-10_internet': { ...SKIPPED_WATER_DOCUMENT, recurringBillId: 'internet', name: 'Internet' },
       'billMonths/2026-10_rent': { ...SKIPPED_WATER_DOCUMENT, recurringBillId: 'rent', name: 'Aluguel' },
       'billMonths/2026-10_gas': { ...SKIPPED_WATER_DOCUMENT, recurringBillId: 'gas', name: 'Gás' },
     },
-    input: [{ id: '2026-10_water' }],
+    input: [{ bill: INTERNET_BILL, month: '2026-10' }],
     result: undefined,
   },
   // O segundo Desfazer (ou o de outro membro, ao mesmo tempo) encontra o mês já apagado: termina sem erro.
   memberUndoesSkipAlreadyUndone: {
     signedInAs: BRUNO,
     given: { [`allowedEmails/${BRUNO}`]: { name: 'Bruno Souza', isAdmin: false, hasEntries: false } },
-    input: [{ id: '2026-10_water' }],
+    input: [{ bill: INTERNET_BILL, month: '2026-10' }],
     result: undefined,
   },
 } satisfies Record<string, IServiceScenario<IUndoSkipBillMonthArguments, void>>;
@@ -46,7 +52,7 @@ export const undoSkipBillMonthRejectedScenarios = {
       'entries/overdue-water': OVERDUE_PAYMENT_DOCUMENT,
       'billMonths/2026-10_water': PAID_LATER_WATER_DOCUMENT,
     },
-    input: [{ id: '2026-10_water' }],
+    input: [{ bill: WATER_BILL, month: '2026-10' }],
     result: { code: 'UNDO_SKIP_DENIED', userMessage: 'Não deu para desfazer o pulo. A conta já foi paga.' },
   },
 } satisfies Record<string, IServiceScenario<IUndoSkipBillMonthArguments, { code: string; userMessage: string }>>;

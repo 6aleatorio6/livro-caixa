@@ -14,7 +14,8 @@ describe('undoSkipBillMonthService', () => {
     'Should delete the skipped month of the scenario %s',
     async (_name, scenario) => {
       await arrangeScenario(scenario);
-      const [{ id }] = scenario.input;
+      const [{ bill, month }] = scenario.input;
+      const id = `${month}_${bill.id}`;
 
       expect(await undoSkipBillMonthService(...scenario.input)).toBe(scenario.result);
 
