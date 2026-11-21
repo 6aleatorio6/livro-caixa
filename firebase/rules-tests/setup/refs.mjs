@@ -19,3 +19,7 @@ export const fileOf = (firestore, id) => doc(firestore, 'files', id);
 export const fileContentOf = (firestore, id) => doc(firestore, 'fileContents', id);
 
 export const recurringBillsOf = (firestore) => collection(firestore, 'recurringBills');
+
+export const billMonthDocOf = (firestore, id) => doc(firestore, 'billMonths', id);
+
+export const billMonthsOf = (firestore) => collection(firestore, 'billMonths');

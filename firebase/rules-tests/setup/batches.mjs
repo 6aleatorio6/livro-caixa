@@ -1,7 +1,7 @@
 import { writeBatch } from 'firebase/firestore';
 
-import { contributionOf, oneOffBillOf, receiptContentOf, receiptFileOf, recurringPaymentOf } from './documents.mjs';
-import { entryDocOf, entryOf, fileContentOf, fileOf } from './refs.mjs';
+import { billMonthIdOf, contributionOf, oneOffBillOf, overduePaymentOf, paidLaterBillMonthOf, receiptContentOf, receiptFileOf, recurringPaymentOf } from './documents.mjs';
+import { billMonthDocOf, entryDocOf, entryOf, fileContentOf, fileOf } from './refs.mjs';
 
 // O registro e o conteúdo do comprovante entram e saem do lote juntos, como o app os grava.
 function addReceipt(batch, firestore, id, file) {
@@ -34,12 +34,17 @@ export function receiptBatch(firestore, id, { file = receiptFileOf(), content = 
 
 /**
  * O lote como o app grava: o registro e o conteúdo do arquivo, o lançamento e o `hasEntries: true` de `email`.
- * `file: null` deixa o registro e o conteúdo de fora, e `markHasEntries: false` deixa de fora o `hasEntries`.
+ * `file: null` deixa o registro e o conteúdo de fora, e `markHasEntries: false` deixa de fora o `hasEntries`;
+ * `extraBillMonths` são pares `[id, documento]` de `billMonths` que entram no mesmo lote.
  */
-export function addEntryBatch(firestore, { entryId, entry, fileId = entry.receiptFileId, file = receiptFileOf(), email = 'bruno@gmail.com', markHasEntries = true }) {
+export function addEntryBatch(
+  firestore,
+  { entryId, entry, fileId = entry.receiptFileId, file = receiptFileOf(), email = 'bruno@gmail.com', markHasEntries = true, extraBillMonths = [] },
+) {
   const batch = writeBatch(firestore);
   if (file !== null) addReceipt(batch, firestore, fileId, file);
   batch.set(entryDocOf(firestore, entryId), entry);
+  for (const [id, document] of extraBillMonths) batch.set(billMonthDocOf(firestore, id), document);
   if (markHasEntries) batch.update(entryOf(firestore, email), { hasEntries: true });
   return batch.commit();
 }
@@ -58,14 +63,16 @@ export function addPaymentBatch(firestore, { entry = recurringPaymentOf(), entry
 
 /**
  * O lote da contribuição como o app grava: o comprovante, a contribuição (`entryId`, id gerado) e o `hasEntries`. Na
- * primeira contribuição de um mês sem pagamento, `unownedPayment` entra no lote com o id `{month}_{recurringBillId}`.
+ * primeira contribuição de um mês sem pagamento, `unownedPayment` entra no lote com o id `{month}_{recurringBillId}`;
+ * `extraBillMonths` são pares `[id, documento]` de `billMonths` do mesmo lote.
  */
 export function addContributionBatch(firestore, { entryId = 'c1', entry = contributionOf(), unownedPayment = null, ...rest } = {}) {
   if (unownedPayment === null) return addEntryBatch(firestore, { entryId, entry, ...rest });
-  const { fileId = entry.receiptFileId, file = receiptFileOf(), email = 'bruno@gmail.com', markHasEntries = true } = rest;
+  const { fileId = entry.receiptFileId, file = receiptFileOf(), email = 'bruno@gmail.com', markHasEntries = true, extraBillMonths = [] } = rest;
   const batch = writeBatch(firestore);
   if (file !== null) addReceipt(batch, firestore, fileId, file);
   batch.set(entryDocOf(firestore, `${unownedPayment.month}_${unownedPayment.recurringBillId}`), unownedPayment);
+  for (const [id, document] of extraBillMonths) batch.set(billMonthDocOf(firestore, id), document);
   batch.set(entryDocOf(firestore, entryId), entry);
   if (markHasEntries) batch.update(entryOf(firestore, email), { hasEntries: true });
   return batch.commit();
@@ -115,5 +122,64 @@ export function deleteEntryBatch(firestore, { entryId, fileId }) {
   const batch = writeBatch(firestore);
   batch.delete(entryDocOf(firestore, entryId));
   if (fileId !== null) deleteReceipt(batch, firestore, fileId);
+  return batch.commit();
+}
+
+/**
+ * O lote do pagamento de uma conta atrasada como o app grava: o comprovante, o `overduePayment` (`entryId`, id gerado), o
+ * `billMonths` `paidLater` que aponta para ele e o `hasEntries`; `extraEntries` são trios `[id, lançamento, id do
+ * comprovante]` de outros pagamentos do lote, e `extraBillMonths` pares `[id, documento]` de outros `billMonths`. `entry: null` deixa o pagamento e o comprovante de
+ * fora; `billMonth: null` deixa o `billMonths` de fora. Com `updateBillMonth`, o `billMonths` já existe (pulado) e vira
+ * `paidLater` por um `update` dos campos que o app troca, mais `billMonthChanges`.
+ */
+export function payOverdueBatch(
+  firestore,
+  {
+    entryId = 'o1',
+    entry = overduePaymentOf(),
+    fileId = entry?.receiptFileId,
+    file = receiptFileOf(),
+    billMonth = paidLaterBillMonthOf(),
+    billMonthId = billMonth ? billMonthIdOf(billMonth) : null,
+    updateBillMonth = false,
+    billMonthChanges = {},
+    extraEntries = [],
+    extraBillMonths = [],
+    email = 'bruno@gmail.com',
+    markHasEntries = true,
+  } = {},
+) {
+  const batch = writeBatch(firestore);
+  if (entry !== null) {
+    if (file !== null) addReceipt(batch, firestore, fileId, file);
+    batch.set(entryDocOf(firestore, entryId), entry);
+  }
+  if (billMonth !== null && updateBillMonth) {
+    const { status, entryId: paidEntryId, createdBy, createdAt } = billMonth;
+    batch.update(billMonthDocOf(firestore, billMonthId), { status, entryId: paidEntryId, createdBy, createdAt, ...billMonthChanges });
+  } else if (billMonth !== null) {
+    batch.set(billMonthDocOf(firestore, billMonthId), billMonth);
+  }
+  for (const [id, document, extraFileId] of extraEntries) {
+    addReceipt(batch, firestore, extraFileId, receiptFileOf());
+    batch.set(entryDocOf(firestore, id), document);
+  }
+  for (const [id, document] of extraBillMonths) batch.set(billMonthDocOf(firestore, id), document);
+  if (markHasEntries) batch.update(entryOf(firestore, email), { hasEntries: true });
+  return batch.commit();
+}
+
+/**
+ * O lote que desfaz o pagamento atrasado como o app grava: apaga o `overduePayment`, o comprovante dele e o
+ * `billMonths` `paidLater`. `entryId: null` deixa o pagamento e o comprovante de fora; `billMonthId: null` deixa o
+ * `billMonths` de fora.
+ */
+export function deleteOverdueBatch(firestore, { entryId = 'o1', fileId = 'fod', billMonthId = billMonthIdOf() } = {}) {
+  const batch = writeBatch(firestore);
+  if (entryId !== null) {
+    batch.delete(entryDocOf(firestore, entryId));
+    deleteReceipt(batch, firestore, fileId);
+  }
+  if (billMonthId !== null) batch.delete(billMonthDocOf(firestore, billMonthId));
   return batch.commit();
 }
