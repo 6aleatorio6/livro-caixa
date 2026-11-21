@@ -1,4 +1,4 @@
-import { act, render, screen, userEvent } from '@testing-library/react-native';
+import { act, render, screen, userEvent, within } from '@testing-library/react-native';
 import { router } from 'expo-router';
 import { BackHandler } from 'react-native';
 
@@ -126,6 +126,32 @@ describe('ShareReceiptPage', () => {
     expect(screen.queryByText('Condomínio')).toBeNull();
   });
 
+  // Uma passada de renderização lê o mês atual uma vez; o mês que vem só entra na leitura quando a pílula é escolhida.
+  it('Should read this month once, and next month only while Mês que vem is chosen', async () => {
+    const realtime = mockRealtimeWithSummaryReads(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
+    await render(<ShareReceiptPage />);
+    const user = userEvent.setup();
+    const monthsReadInOnePass = async () => {
+      jest.mocked(useRealtime).mockClear();
+      await act(async () => realtime.applyChange(tagListQueryService));
+      const monthOf = (params: unknown) => (params as { month: string | null }).month;
+      return jest
+        .mocked(useRealtime)
+        .mock.calls.filter(([service, params]) => service === entryMonthQueryService && monthOf(params))
+        .map(([, params]) => monthOf(params));
+    };
+
+    expect(await monthsReadInOnePass()).toEqual(['2026-10']);
+
+    await user.press(screen.getByRole('tab', { name: 'Mês que vem' }));
+
+    expect(await monthsReadInOnePass()).toEqual(['2026-10', '2026-11']);
+
+    await user.press(screen.getByRole('tab', { name: 'Este mês' }));
+
+    expect(await monthsReadInOnePass()).toEqual(['2026-10']);
+  });
+
   it('Should mark the chosen pill as selected', async () => {
     mockRealtimeWithSummaryReads(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
     await render(<ShareReceiptPage />);
@@ -204,17 +230,77 @@ describe('ShareReceiptPage', () => {
   });
 
   // Em novembro, a Água de outubro sem pagamento é a atrasada, antes da Água de novembro: o pagamento é o de outubro.
-  it('Should open the payment of an overdue bill with the month of the bill and the shared flag', async () => {
-    jest.setSystemTime(new Date(2026, 10, 25));
-    mockRealtimeWithSummaryReads(family, fiveBills, threeTags, novemberPaidEarly);
+  describe('Overdue bills', () => {
+    beforeEach(() => {
+      jest.setSystemTime(new Date(2026, 10, 25));
+      mockRealtimeWithSummaryReads(family, fiveBills, threeTags, novemberPaidEarly);
+    });
+
+    const pillNames = () => screen.getAllByRole('tab').map((pill) => pill.props.accessibilityLabel);
+
+    it('Should put the Atrasadas pill before Este mês when a bill of an earlier month is overdue', async () => {
+      await render(<ShareReceiptPage />);
+
+      expect(pillNames()).toEqual(['Atrasadas', 'Este mês', 'Mês que vem']);
+      expect(screen.getByRole('tab', { name: 'Este mês', selected: true })).toBeOnTheScreen();
+    });
+
+    it('Should list the overdue bills with the month badge and open the payment of the month of the bill', async () => {
+      await render(<ShareReceiptPage />);
+      const user = userEvent.setup();
+
+      await user.press(screen.getByRole('tab', { name: 'Atrasadas' }));
+
+      expect(screen.getByRole('tab', { name: 'Atrasadas', selected: true })).toBeOnTheScreen();
+      expect(screen.getByRole('header', { name: 'Atrasadas' })).toBeOnTheScreen();
+      // O nome do item é o título, o selo e a tag: o selo e o "venceu dia 20" são os da linha da Água.
+      const waterRow = screen.getByRole('button', { name: /^Água, De outubro/ });
+      expect(within(waterRow).getByText('De outubro')).toBeOnTheScreen();
+      expect(within(waterRow).getByText(/ · venceu dia 20$/)).toBeOnTheScreen();
+
+      await user.press(screen.getByRole('button', { name: 'Pagar Água de outubro' }));
+
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/recurring-bills/[id]/pay',
+        params: { id: 'water', month: '2026-10', shared: '1' },
+      });
+    });
+
+    it('Should keep the overdue bills out of Este mês and the bills of the month out of Atrasadas', async () => {
+      await render(<ShareReceiptPage />);
+      const user = userEvent.setup();
+
+      // Este mês: só a Água de novembro, sem o selo da atrasada.
+      expect(screen.getByRole('button', { name: 'Pagar Água' })).toBeOnTheScreen();
+      expect(screen.queryByRole('button', { name: 'Pagar Água de outubro' })).toBeNull();
+      expect(screen.queryByText('De outubro')).toBeNull();
+
+      await user.press(screen.getByRole('tab', { name: 'Atrasadas' }));
+
+      expect(screen.getByRole('button', { name: 'Pagar Água de outubro' })).toBeOnTheScreen();
+      expect(screen.queryByRole('button', { name: 'Pagar Água' })).toBeNull();
+      expect(screen.queryByRole('button', { name: 'Pagar Aluguel' })).toBeNull();
+    });
+
+    it('Should not list the bills paid by others under Atrasadas', async () => {
+      // A Ana compartilha: o Condomínio de novembro é do Bruno e fica entre as pagas por outros em Este mês.
+      jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.adminSignsIn));
+      await render(<ShareReceiptPage />);
+      const user = userEvent.setup();
+      expect(screen.getByText('Já pagas por outros em novembro')).toBeOnTheScreen();
+
+      await user.press(screen.getByRole('tab', { name: 'Atrasadas' }));
+
+      expect(screen.queryByText(/^Já pagas por outros/)).toBeNull();
+      expect(screen.queryByRole('button', { name: 'Contribuir em Condomínio' })).toBeNull();
+    });
+  });
+
+  it('Should not offer Atrasadas when no bill is overdue', async () => {
+    mockRealtimeWithSummaryReads(family, fiveBills, threeTags, familyMonth, novemberPaidEarly);
     await render(<ShareReceiptPage />);
 
-    await userEvent.setup().press(screen.getByRole('button', { name: 'Pagar Água de outubro' }));
-
-    expect(router.push).toHaveBeenCalledWith({
-      pathname: '/recurring-bills/[id]/pay',
-      params: { id: 'water', month: '2026-10', shared: '1' },
-    });
+    expect(screen.queryByRole('tab', { name: 'Atrasadas' })).toBeNull();
   });
 
   it('Should open the new one-off bill with the shared flag', async () => {
@@ -404,6 +490,21 @@ describe('ShareReceiptPage', () => {
         pathname: '/entries/[id]/contribute',
         params: { id: '2026-10_electricity', shared: '1' },
       });
+    });
+
+    // O pagamento atrasado não recebe contribuições (as regras recusam): a Água de outubro que a Ana pagou em novembro
+    // não é uma conta para o Bruno contribuir.
+    it('Should not offer the overdue payment of another member to contribute to', async () => {
+      jest.setSystemTime(new Date(2026, 10, 25));
+      const overduePaymentMonth = {
+        service: entryMonthQueryService,
+        scenario: entryMonthQueryScenarios.monthWithOverduePayment,
+      };
+      mockRealtimeWithSummaryReads(family, fiveBills, threeTags, overduePaymentMonth);
+      await render(<ShareReceiptPage />);
+
+      expect(screen.queryByText(/^Já pagas por outros/)).toBeNull();
+      expect(screen.queryByRole('button', { name: 'Contribuir em Água' })).toBeNull();
     });
 
     it('Should leave out a bill with nothing left to receive', async () => {

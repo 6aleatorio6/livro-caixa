@@ -159,8 +159,16 @@ export const OVERDUE_PAYMENT_DOCUMENT = {
   paidBy: testAccountUid(BRUNO),
   receiptFileId: RECEIPT_FILE_ID,
 };
-export const OVERDUE_PAYMENT = entryOf<IOverduePaymentEntry>('overdue-water', {
+// A mesma Água, paga pela Ana com o comprovante `f30`: o pagamento que a Ana abre nos detalhes e na tela de alterar. As leituras
+// (`entryQueryScenarios.overduePaymentOfTheMember`, o mês de novembro) e os cenários de alterar e excluir dela usam este.
+export const ANA_OVERDUE_PAYMENT_FILE_ID = 'f30';
+export const ANA_OVERDUE_PAYMENT_DOCUMENT = {
   ...OVERDUE_PAYMENT_DOCUMENT,
+  paidBy: testAccountUid(ANA),
+  receiptFileId: ANA_OVERDUE_PAYMENT_FILE_ID,
+};
+export const ANA_OVERDUE_PAYMENT = entryOf<IOverduePaymentEntry>('overdue-water', {
+  ...ANA_OVERDUE_PAYMENT_DOCUMENT,
   date: null,
   paidOn: '2026-11-05',
 });
@@ -174,6 +182,7 @@ export const PAID_LATER_WATER_DOCUMENT = {
   tagId: UTILITIES_TAG_ID,
   createdBy: testAccountUid(BRUNO),
 };
+export const ANA_PAID_LATER_WATER_DOCUMENT = { ...PAID_LATER_WATER_DOCUMENT, createdBy: testAccountUid(ANA) };
 // A Água de outubro, pulada pelo Bruno em 3 de novembro, com as cópias da conta: o `skipped` não tem o campo `entryId`.
 export const SKIPPED_WATER_DOCUMENT = {
   status: 'skipped',

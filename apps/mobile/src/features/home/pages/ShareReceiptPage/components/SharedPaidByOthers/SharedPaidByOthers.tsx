@@ -10,6 +10,7 @@ import type { IAllowedEmailListItem } from '@/shared/types/allowedEmail/AllowedE
 import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { ITag } from '@/shared/types/tag/Tag';
 import { monthName } from '@/shared/utils/date/monthName';
+import { acceptsContributions } from '@/shared/utils/entry/acceptsContributions';
 import { isFullyContributed } from '@/shared/utils/entry/isFullyContributed';
 import { isOwnedEntry } from '@/shared/utils/entry/isOwnedEntry';
 import { formatCents } from '@/shared/utils/format/formatCents';
@@ -29,14 +30,15 @@ export interface ISharedPaidByOthersProps {
 
 /**
  * As contas do mês que outros membros já pagaram e ainda têm o que receber, para o comprovante compartilhado ser uma
- * contribuição: o toque segue na contribuição, com o comprovante. Ficam de fora as de quem compartilha e as que já
- * receberam tudo; sem nenhuma, a lista não aparece.
+ * contribuição: o toque segue na contribuição, com o comprovante. Ficam de fora as de quem compartilha, as que já
+ * receberam tudo e o pagamento de uma conta atrasada; sem nenhuma, a lista não aparece.
  */
 export function SharedPaidByOthers({ month, summary, tags, people, uid }: ISharedPaidByOthersProps) {
   const entries = summary?.entries ?? [];
   // Na ordem das contas pagas do Início: pelo dia, e no mesmo dia pelo nome.
   const bills = paidRowsOf(summary?.paid ?? []).filter(
-    (entry): entry is IOwnedEntry => isOwnedEntry(entry) && entry.paidBy !== uid && !isFullyContributed(entry, entries),
+    (entry): entry is IOwnedEntry =>
+      isOwnedEntry(entry) && acceptsContributions(entry) && entry.paidBy !== uid && !isFullyContributed(entry, entries),
   );
   if (bills.length === 0) return null;
 

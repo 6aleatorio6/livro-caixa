@@ -11,17 +11,19 @@ import { Notice } from '@/shared/components/Notice/Notice';
 import { PartialPaymentSwitch } from '@/shared/components/PartialPaymentSwitch/PartialPaymentSwitch';
 import { usePayRecurringBillForm } from '@/shared/hooks/usePayRecurringBillForm/usePayRecurringBillForm';
 import type { IConvertEntryInput } from '@/shared/types/entry/ConvertEntryInput';
-import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
+import type { IOwnedPaymentEntry } from '@/shared/types/entry/OwnedPaymentEntry';
 import type { IUpdateEntryInput } from '@/shared/types/entry/UpdateEntryInput';
 import type { IReceiptFile } from '@/shared/types/file/ReceiptFile';
 import type { ITag } from '@/shared/types/tag/Tag';
 import { formatIsoDate } from '@/shared/utils/date/formatIsoDate';
 import { monthName } from '@/shared/utils/date/monthName';
+import { acceptsContributions } from '@/shared/utils/entry/acceptsContributions';
 import { isContributionRegistration } from '@/shared/utils/entry/isContributionRegistration';
+import { paidBillMonthOf } from '@/shared/utils/entry/paidBillMonthOf';
 import { formatCents } from '@/shared/utils/format/formatCents';
 
 export interface IEditPaymentFormProps {
-  entry: Extract<IOwnedEntry, { kind: 'recurringPayment' }>;
+  entry: IOwnedPaymentEntry;
   /** A soma das contribuições que o pagamento recebeu, em centavos: o valor pago não fica abaixo dela. */
   contributedCents: number;
   /** A tag da conta, se ela ainda existe; sem ela o chip some. */
@@ -30,7 +32,7 @@ export interface IEditPaymentFormProps {
   currentReceipt?: IReceiptFile;
   /** Recebe o que o serviço de alterar pede; o formulário fica ocupado até a promessa terminar. */
   onSubmit: (input: IUpdateEntryInput) => Promise<void>;
-  /** Recebe o pagamento que vira contribuição, com o interruptor Paguei só uma parte ligado. */
+  /** Recebe o pagamento que vira contribuição, com o interruptor Paguei só uma parte ligado; o atrasado nunca o chama. */
   onConvert: (input: IConvertEntryInput) => Promise<void>;
   /** A exclusão pelo botão do fim da tela deu certo. */
   onDeleted: () => void;
@@ -39,7 +41,8 @@ export interface IEditPaymentFormProps {
 /**
  * A alteração do pagamento: a conta só para leitura, o valor pago e o comprovante, que são o que muda, o interruptor
  * Paguei só uma parte, que transforma o pagamento numa contribuição, e a exclusão. Com contribuições, o valor não fica
- * abaixo da soma delas, e o pagamento não é excluído.
+ * abaixo da soma delas, e o pagamento não é excluído. O pagamento de uma conta atrasada diz o mês da conta, não tem o
+ * interruptor (ele não vira contribuição) e fica um pagamento mesmo com o valor abaixo de 30% do previsto.
  */
 export function EditPaymentForm({
   entry,
@@ -59,7 +62,7 @@ export function EditPaymentForm({
 
   // O schema já recusou o valor vazio; sem arquivo novo, o comprovante fica o que está.
   const submit = handleSubmit(({ amountCents, receipt, isPartial }) =>
-    isContributionRegistration({ isPartial, amountCents }, expectedCents)
+    acceptsContributions(entry) && isContributionRegistration({ isPartial, amountCents }, expectedCents)
       ? onConvert({ entry, amountCents: amountCents as number, receipt })
       : onSubmit({ entry, changes: { amountCents: amountCents as number }, receipt }),
   );
@@ -67,7 +70,7 @@ export function EditPaymentForm({
   return (
     <View style={styles.form}>
       <BillHeading
-        label={`Pagamento de ${monthName(entry.month)}`}
+        label={`Pagamento de ${monthName(paidBillMonthOf(entry))}`}
         name={entry.name}
         tag={tag}
         details={`vence dia ${entry.dueDay} · previsto ${formatCents(expectedCents)}`}
@@ -81,11 +84,13 @@ export function EditPaymentForm({
             : 'Corrija se pagou outro valor.'
         }
       />
-      <PartialPaymentSwitch
-        form={form}
-        expectedCents={expectedCents}
-        supportText="Transforma este pagamento numa contribuição."
-      />
+      {acceptsContributions(entry) ? (
+        <PartialPaymentSwitch
+          form={form}
+          expectedCents={expectedCents}
+          supportText="Transforma este pagamento numa contribuição."
+        />
+      ) : null}
       <ReceiptFieldSmart control={control} name="receipt" currentReceipt={currentReceipt} entryId={entry.id} />
       <Notice
         icon={UserRound}

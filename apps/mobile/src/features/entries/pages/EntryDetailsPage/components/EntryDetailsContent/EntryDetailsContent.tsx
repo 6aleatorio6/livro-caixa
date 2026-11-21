@@ -19,8 +19,10 @@ import { tagListQueryService } from '@/shared/services/tag/query/tagListQuerySer
 import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import { formatIsoDate } from '@/shared/utils/date/formatIsoDate';
 import { formatPaymentTitle } from '@/shared/utils/date/formatPaymentTitle';
+import { acceptsContributions } from '@/shared/utils/entry/acceptsContributions';
 import { contributionsOf } from '@/shared/utils/entry/contributionsOf';
 import { isFullyContributed } from '@/shared/utils/entry/isFullyContributed';
+import { paidBillMonthOf } from '@/shared/utils/entry/paidBillMonthOf';
 import { sumCents } from '@/shared/utils/entry/sumCents';
 import { formatCents } from '@/shared/utils/format/formatCents';
 import { memberNameOf } from '@/shared/utils/person/memberNameOf';
@@ -36,7 +38,8 @@ export interface IEntryDetailsContentProps {
 /**
  * O corpo da folha de um lançamento com dono: o cabeçalho, as linhas, o comprovante, as contribuições que ele recebeu
  * e, no fim, o Contribuir de quem não o registrou e as ações do autor, ou o aviso de quem pode mudar. Com contribuições,
- * a folha diz com quanto quem pagou fica, e o Excluir fica desligado até elas saírem.
+ * a folha diz com quanto quem pagou fica, e o Excluir fica desligado até elas saírem. O pagamento de uma conta atrasada
+ * diz o mês da conta no subtítulo e não tem o Contribuir.
  */
 export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
   const authState = useAuthState();
@@ -64,7 +67,7 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
       <EntryDetailsHeader
         markKind={isPayment ? 'payment' : 'oneOff'}
         title={entry.name}
-        subtitle={isPayment ? formatPaymentTitle(entry.month) : 'Conta avulsa'}
+        subtitle={isPayment ? formatPaymentTitle(paidBillMonthOf(entry)) : 'Conta avulsa'}
         amountCents={entry.amountCents}
         amountSupport={isPayment ? `previsto ${formatCents(entry.expectedAmountCents)}` : undefined}
       >
@@ -134,13 +137,15 @@ export function EntryDetailsContent({ entry }: IEntryDetailsContentProps) {
         </View>
       ) : (
         <>
-          <Button
-            label="Contribuir"
-            variant="tonal"
-            icon={HandCoins}
-            disabled={!isMonthKnown || isClosed}
-            onPress={() => router.push({ pathname: '/entries/[id]/contribute', params: { id: entry.id } })}
-          />
+          {acceptsContributions(entry) ? (
+            <Button
+              label="Contribuir"
+              variant="tonal"
+              icon={HandCoins}
+              disabled={!isMonthKnown || isClosed}
+              onPress={() => router.push({ pathname: '/entries/[id]/contribute', params: { id: entry.id } })}
+            />
+          ) : null}
           <OnlyAuthorNotice authorName={authorName} kind={entry.kind} />
         </>
       )}

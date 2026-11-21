@@ -137,6 +137,16 @@ describe('ReceiptViewerPage', () => {
     });
   });
 
+  it('Should show an overdue payment below the receipt with the month of the bill, not the month it was paid in', async () => {
+    jest.mocked(getReceiptContentService).mockReturnValue(new Promise(() => {}));
+    const overduePayment = { service: entryQueryService, scenario: entryQueryScenarios.overduePaymentOfTheMember };
+
+    await renderViewer(overduePayment, { service: receiptFileQueryService, status: 'loading' }, family);
+
+    expect(screen.getByText('Água · R$ 90,00')).toBeOnTheScreen();
+    expect(screen.getByText('Pagamento de outubro de 2026 · registrado por Ana em 05/11/2026')).toBeOnTheScreen();
+  });
+
   it("Should open a contribution's receipt, saying below that it is a contribution, who registered it and when", async () => {
     jest.mocked(getReceiptContentService).mockReturnValue(new Promise(() => {}));
     const contribution = { service: entryQueryService, scenario: entryQueryScenarios.contribution };

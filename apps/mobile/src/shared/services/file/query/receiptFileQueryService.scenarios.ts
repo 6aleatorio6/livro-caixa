@@ -30,6 +30,16 @@ const CONTRIBUTION_FILE = {
   uploadedBy: testAccountUid(ANA),
 } as const;
 
+// O comprovante do pagamento atrasado que a Ana fez (`f30`, o `receiptFileId` do pagamento do cenário de entrada).
+const OVERDUE_PAYMENT_FILE_ID = 'f30';
+const OVERDUE_PAYMENT_FILE = {
+  name: 'comprovante-agua-outubro.jpg',
+  type: 'image',
+  contentType: 'image/jpeg',
+  sizeBytes: 88000,
+  uploadedBy: testAccountUid(ANA),
+} as const;
+
 const toReceiptFile = (id: string, { uploadedBy: _uploadedBy, ...file }: Record<string, unknown>) =>
   ({ id, ...file }) as IReceiptFile;
 
@@ -63,6 +73,13 @@ export const receiptFileQueryScenarios = {
     given: { ...BOTH_IN_THE_LIST, [`files/${RECEIPT_FILE_ID}`]: RECEIPT_TO_CHANGE_FILE },
     input: { id: RECEIPT_FILE_ID },
     result: toReceiptFile(RECEIPT_FILE_ID, RECEIPT_TO_CHANGE_FILE),
+  },
+  // A Ana lê o registro do comprovante do pagamento atrasado dela, que a tela de alterar abre.
+  overduePaymentReceipt: {
+    signedInAs: ANA,
+    given: { ...BOTH_IN_THE_LIST, [`files/${OVERDUE_PAYMENT_FILE_ID}`]: OVERDUE_PAYMENT_FILE },
+    input: { id: OVERDUE_PAYMENT_FILE_ID },
+    result: toReceiptFile(OVERDUE_PAYMENT_FILE_ID, OVERDUE_PAYMENT_FILE),
   },
   // Sem registro (um lançamento antigo, ou o registro apagado), a leitura entrega `null`.
   missingReceiptFile: {

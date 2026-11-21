@@ -1,5 +1,9 @@
 import {
   ANA,
+  ANA_OVERDUE_PAYMENT,
+  ANA_OVERDUE_PAYMENT_DOCUMENT,
+  ANA_OVERDUE_PAYMENT_FILE_ID,
+  ANA_PAID_LATER_WATER_DOCUMENT,
   CONTRIBUTION,
   CONTRIBUTION_DOCUMENT,
   CONTRIBUTION_FILE_ID,
@@ -7,9 +11,6 @@ import {
   BRUNO,
   ONE_OFF_BILL,
   ONE_OFF_BILL_DOCUMENT,
-  OVERDUE_PAYMENT,
-  OVERDUE_PAYMENT_DOCUMENT,
-  PAID_LATER_WATER_DOCUMENT,
   PAYMENT,
   PAYMENT_DOCUMENT,
   RECEIPT_FILE_ID,
@@ -74,18 +75,18 @@ export const deleteEntryScenarios = {
     input: [ONE_OFF_BILL],
     result: undefined,
   },
-  // A Água de outubro, paga em novembro: o pagamento atrasado, o `paidLater` do mês da conta e o comprovante somem no mesmo
-  // lote, e a conta volta a ficar atrasada.
+  // A Água de outubro, que a Ana pagou em novembro (o pagamento que as telas dela leem): o pagamento atrasado, o `paidLater`
+  // do mês da conta e o comprovante somem no mesmo lote, e a conta volta a ficar atrasada.
   memberDeletesOverduePayment: {
-    signedInAs: BRUNO,
+    signedInAs: ANA,
     given: {
       ...BOTH_IN_THE_LIST,
-      'entries/overdue-water': OVERDUE_PAYMENT_DOCUMENT,
-      'billMonths/2026-10_water': PAID_LATER_WATER_DOCUMENT,
-      ...receiptOf(RECEIPT_FILE_ID, BRUNO).fileDocuments,
+      'entries/overdue-water': ANA_OVERDUE_PAYMENT_DOCUMENT,
+      'billMonths/2026-10_water': ANA_PAID_LATER_WATER_DOCUMENT,
+      ...receiptOf(ANA_OVERDUE_PAYMENT_FILE_ID, ANA).fileDocuments,
     },
-    fileContentsGiven: receiptOf(RECEIPT_FILE_ID, BRUNO).fileContentIds,
-    input: [OVERDUE_PAYMENT],
+    fileContentsGiven: receiptOf(ANA_OVERDUE_PAYMENT_FILE_ID, ANA).fileContentIds,
+    input: [ANA_OVERDUE_PAYMENT],
     result: undefined,
   },
   // O conteúdo do comprovante não existe (um registro sem os bytes): a exclusão termina sem erro.

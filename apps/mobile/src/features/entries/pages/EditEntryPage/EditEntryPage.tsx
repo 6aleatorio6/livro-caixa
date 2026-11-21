@@ -24,6 +24,7 @@ import type { IConvertEntryInput } from '@/shared/types/entry/ConvertEntryInput'
 import type { IUpdateEntryInput } from '@/shared/types/entry/UpdateEntryInput';
 import { contributionsOf } from '@/shared/utils/entry/contributionsOf';
 import { isAuthoredEntry } from '@/shared/utils/entry/isAuthoredEntry';
+import { isOwnedPayment } from '@/shared/utils/entry/isOwnedPayment';
 import { sumCents } from '@/shared/utils/entry/sumCents';
 import { targetOf } from '@/shared/utils/entry/targetOf';
 import { receiptFileQueryService } from '@/shared/services/file/query/receiptFileQueryService';
@@ -89,7 +90,7 @@ export function EditEntryPage() {
         {entry && !isAuthor ? (
           <OnlyAuthorNotice authorName={memberNameOf(entry.paidBy, people ?? [])} kind={entry.kind} />
         ) : null}
-        {isAuthor && isReceiptKnown && monthEntries && entry.kind === 'recurringPayment' ? (
+        {isAuthor && isReceiptKnown && monthEntries && isOwnedPayment(entry) ? (
           <EditPaymentForm
             entry={entry}
             contributedCents={otherContributedCents}

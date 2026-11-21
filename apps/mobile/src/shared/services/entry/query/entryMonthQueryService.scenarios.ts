@@ -1,4 +1,5 @@
 import {
+  ANA_OVERDUE_PAYMENT_DOCUMENT,
   CONTRIBUTION,
   CONTRIBUTION_DOCUMENT,
   CONTRIBUTION_TO_ONE_OFF_BILL,
@@ -205,20 +206,7 @@ const NOVEMBER_PHARMACY = {
   receiptFileId: 'f26',
 };
 // A Água de outubro, paga pela Ana em 5 de novembro: conta em novembro, o mês em que foi paga, com o selo De outubro.
-const OVERDUE_WATER_PAYMENT = {
-  kind: 'overduePayment',
-  createdAt: november('05'),
-  month: '2026-11',
-  billMonth: '2026-10',
-  recurringBillId: 'water',
-  name: 'Água',
-  amountCents: 9000,
-  dueDay: 20,
-  expectedAmountCents: 9000,
-  tagId: UTILITIES_TAG_ID,
-  paidBy: testAccountUid(ANA),
-  receiptFileId: 'f30',
-};
+const OVERDUE_WATER_PAYMENT = ANA_OVERDUE_PAYMENT_DOCUMENT;
 const contribution = (createdAt: Date, entryId: string, amountCents: number, paidBy: string, receiptFileId: string) =>
   ({ kind: 'contribution', createdAt, month: '2026-11', entryId, amountCents, paidBy, receiptFileId }) as const;
 const BRUNO_ON_RENT = contribution(november('04'), '2026-11_rent', 100000, testAccountUid(BRUNO), 'f22');

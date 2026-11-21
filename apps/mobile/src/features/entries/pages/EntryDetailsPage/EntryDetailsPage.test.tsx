@@ -49,6 +49,12 @@ const pdfReceipt = { service: receiptFileQueryService, scenario: receiptFileQuer
 const imageReceipt = { service: receiptFileQueryService, scenario: receiptFileQueryScenarios.imageReceipt };
 const payment = { service: entryQueryService, scenario: entryQueryScenarios.paymentOfTheMember };
 const oneOffBill = { service: entryQueryService, scenario: entryQueryScenarios.oneOffBillOfTheMember };
+// A Água de outubro que a Ana pagou em novembro, lida no mês em que foi paga.
+const overduePayment = { service: entryQueryService, scenario: entryQueryScenarios.overduePaymentOfTheMember };
+const monthWithOverduePayment = {
+  service: entryMonthQueryService,
+  scenario: entryMonthQueryScenarios.monthWithOverduePayment,
+};
 // O mês do lançamento, sem contribuições: o padrão de toda folha que não diz outro.
 const monthWithoutContributions = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth };
 const monthWithContribution = {
@@ -128,6 +134,47 @@ describe('EntryDetailsPage', () => {
       await act(async () => realtime.applyChange(entryQueryService));
 
       expect(screen.getByText('R$ 200,00')).toBeOnTheScreen();
+    });
+  });
+
+  describe('The overdue payment', () => {
+    it('Should name the month of the bill, not the month it was paid in, with the expected amount and the due day', async () => {
+      jest.mocked(useAuthState).mockReturnValue(signedInAuthState(ana));
+      await renderDetails(overduePayment, noReceiptRecord, family, threeTags, monthWithOverduePayment);
+
+      expect(screen.getByText('Água')).toBeOnTheScreen();
+      expect(screen.getByText('Pagamento de outubro de 2026')).toBeOnTheScreen();
+      expect(screen.queryByText('Pagamento de novembro de 2026')).toBeNull();
+      expect(screen.getByText('previsto R$ 90,00')).toBeOnTheScreen();
+      expect(screen.getByText('05/11/2026')).toBeOnTheScreen();
+      expect(screen.getByText('dia 20')).toBeOnTheScreen();
+    });
+
+    it('Should not offer Contribuir to another member, only say who can change it', async () => {
+      await renderDetails(overduePayment, noReceiptRecord, family, threeTags, monthWithOverduePayment);
+
+      expect(screen.queryByRole('button', { name: 'Contribuir' })).toBeNull();
+      expect(screen.getByText('Só Ana pode alterar ou excluir este pagamento.')).toBeOnTheScreen();
+    });
+
+    it('Should say the bill goes back to overdue when the payment is deleted, and delete the entry that was read', async () => {
+      jest.mocked(useAuthState).mockReturnValue(signedInAuthState(ana));
+      const deletion = deleteEntryScenarios.memberDeletesOverduePayment;
+      mockServiceScenario(deleteEntryService, deletion);
+      const { user } = await renderDetails(overduePayment, noReceiptRecord, family, threeTags, monthWithOverduePayment);
+
+      await user.press(screen.getByRole('button', { name: 'Excluir' }));
+
+      expect(screen.getByText('Excluir o pagamento da Água?')).toBeOnTheScreen();
+      expect(
+        screen.getByText('A Água de outubro volta a ficar atrasada, e o comprovante é apagado.'),
+      ).toBeOnTheScreen();
+
+      await user.press(within(screen.getByTestId('confirm-dialog')).getByRole('button', { name: 'Excluir' }));
+
+      expect(deleteEntryService).toHaveBeenCalledWith(...deletion.input);
+      expect(router.back).toHaveBeenCalledTimes(1);
+      expect(showToast).toHaveBeenCalledWith('Pagamento excluído.', 'success');
     });
   });
 

@@ -1,5 +1,9 @@
 import {
   ANA,
+  ANA_OVERDUE_PAYMENT,
+  ANA_OVERDUE_PAYMENT_DOCUMENT,
+  ANA_OVERDUE_PAYMENT_FILE_ID,
+  ANA_PAID_LATER_WATER_DOCUMENT,
   BOTH_IN_THE_LIST,
   BRUNO,
   CONTRIBUTION,
@@ -11,9 +15,6 @@ import {
   ONE_OFF_BILL,
   ONE_OFF_BILL_DOCUMENT,
   ONE_OFF_BILL_WITHOUT_TAG_DOCUMENT,
-  OVERDUE_PAYMENT,
-  OVERDUE_PAYMENT_DOCUMENT,
-  PAID_LATER_WATER_DOCUMENT,
   PAYMENT,
   PAYMENT_DOCUMENT,
   RECEIPT_FILE_ID,
@@ -43,15 +44,16 @@ const PAYMENT_SETUP = (email = BRUNO) => ({
   },
   fileContentsGiven: receiptOf(RECEIPT_FILE_ID, email).fileContentIds,
 });
-// A Água de outubro paga em novembro, com o `paidLater` que a regra do pagamento atrasado deixa como está.
+// A Água de outubro que a Ana pagou em novembro (o pagamento que as telas dela leem), com o `paidLater` que a regra do
+// pagamento atrasado deixa como está.
 const OVERDUE_PAYMENT_SETUP = {
   given: {
     ...BOTH_IN_THE_LIST,
-    'entries/overdue-water': OVERDUE_PAYMENT_DOCUMENT,
-    'billMonths/2026-10_water': PAID_LATER_WATER_DOCUMENT,
-    ...receiptOf(RECEIPT_FILE_ID, BRUNO).fileDocuments,
+    'entries/overdue-water': ANA_OVERDUE_PAYMENT_DOCUMENT,
+    'billMonths/2026-10_water': ANA_PAID_LATER_WATER_DOCUMENT,
+    ...receiptOf(ANA_OVERDUE_PAYMENT_FILE_ID, ANA).fileDocuments,
   },
-  fileContentsGiven: receiptOf(RECEIPT_FILE_ID, BRUNO).fileContentIds,
+  fileContentsGiven: receiptOf(ANA_OVERDUE_PAYMENT_FILE_ID, ANA).fileContentIds,
 };
 const ONE_OFF_BILL_SETUP = (email = BRUNO) => ({
   given: {
@@ -101,21 +103,22 @@ export const updateEntryScenarios = {
     expectedEntry: PAYMENT_DOCUMENT,
     wasReceiptReplaced: true,
   },
-  // O pagamento atrasado muda como o pagamento: o valor pago corrigido para R$ 85,00, e o resto fica.
+  // O pagamento atrasado muda como o pagamento: o valor pago corrigido para R$ 20,00, abaixo de 30% do previsto de
+  // R$ 90,00, e o resto fica: nunca vira contribuição.
   memberChangesOverduePaymentAmount: {
-    signedInAs: BRUNO,
+    signedInAs: ANA,
     ...OVERDUE_PAYMENT_SETUP,
-    input: [{ entry: OVERDUE_PAYMENT, changes: { amountCents: 8500 }, receipt: null }],
+    input: [{ entry: ANA_OVERDUE_PAYMENT, changes: { amountCents: 2000 }, receipt: null }],
     result: undefined,
-    expectedEntry: { ...OVERDUE_PAYMENT_DOCUMENT, amountCents: 8500 },
+    expectedEntry: { ...ANA_OVERDUE_PAYMENT_DOCUMENT, amountCents: 2000 },
     wasReceiptReplaced: false,
   },
   memberReplacesOverduePaymentReceipt: {
-    signedInAs: BRUNO,
+    signedInAs: ANA,
     ...OVERDUE_PAYMENT_SETUP,
-    input: [{ entry: OVERDUE_PAYMENT, changes: { amountCents: 9000 }, receipt: NEW_RECEIPT }],
+    input: [{ entry: ANA_OVERDUE_PAYMENT, changes: { amountCents: 9000 }, receipt: NEW_RECEIPT }],
     result: undefined,
-    expectedEntry: OVERDUE_PAYMENT_DOCUMENT,
+    expectedEntry: ANA_OVERDUE_PAYMENT_DOCUMENT,
     wasReceiptReplaced: true,
   },
   // A Ana corrige a contribuição para R$ 30,00; o comprovante fica.
