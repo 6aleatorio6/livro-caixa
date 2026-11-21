@@ -22636,7 +22636,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "A confirmação de Pular outubro: a Água de outubro sai das atrasadas e não conta em nenhum mês. Volta a ser paga pelo Início de outubro.",
+                  "content": "A confirmação de Pular outubro: a Água de outubro sai das contas a pagar e não conta em nenhum mês; fica nas Puladas de outubro, de onde dá para pagá-la. Logo depois, o aviso com Desfazer.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -47393,7 +47393,7 @@
               "content": "Pular a Água de outubro?"
             },
             "fk2KD": {
-              "content": "Ela sai das atrasadas e não conta em nenhum mês. Dá para voltar a pagá-la pelo Início de outubro."
+              "content": "Ela sai das contas a pagar e não conta em nenhum mês. Fica nas Puladas de outubro, de onde dá para pagá-la depois."
             },
             "es7Xa/a8tkEj": {
               "fill": "$primary"
