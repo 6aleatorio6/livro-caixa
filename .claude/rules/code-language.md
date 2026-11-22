@@ -7,16 +7,11 @@
   constants and enum values;
 - file and folder names, images and role suffixes included (`.repository.ts`, `.page.tsx`) —
   except under `docs/`, whose folders and pages are documentation;
-- the API contract: routes, JSON fields (error and pagination envelopes included), *query*
-  parameters and **error codes** (`EMAIL_IN_USE`);
+- the routes of `src/app`;
 - cache keys, *store* names, *story* titles, `package.json` scripts, environment variables;
-- test sentences: the `it`/`test` **always starts with "Should"** and says what should happen
-  (`it('Should reject a repeated email')`); the `describe` carries the name of the function, class
-  or component under test, or the subject in English (`describe('Password reset')`);
 - database: tables, columns and enums;
-- the `message` of the errors the code handles by type (domain errors in the back-end, expected
-  errors in the web app) and of each invalid field they list: it is for the developer. The text for
-  the user goes in a separate field, in pt-BR;
+- the `message` of an `AppError`: it is for the developer. The text for the user goes in its
+  `userMessage`, in pt-BR (skill `actions-and-feedback`);
 - skills, rules and every `CLAUDE.md`.
 
 **In pt-BR:**
@@ -24,8 +19,8 @@
 - the documentation: `docs/` and the READMEs;
 - comments and JSDoc;
 - all text the user reads: the error message shown to them, labels, *placeholders*,
-  `aria-label`, e-mails, the descriptions in the API documentation;
-- log messages and those of the other exceptions (the plain `Error`, not a domain error) — including
+  `aria-label`, e-mails;
+- log messages and those of the other exceptions (the plain `Error`, not an `AppError`) — including
   the ones a test throws or checks;
 - sample data (names of people, areas, units);
 - commit messages (skill `commit-convention`) and branch names (`#NN-assunto`, root `CLAUDE.md`).
@@ -44,7 +39,5 @@ decision.
   the Portuguese sentence.
 - An instruction file may quote pt-BR where the quote is text: a page title, a folder of `docs/`, a
   phrase the user types.
-- Don't rename a migration that has already run: the migration tool stores its name in the
-  database.
 - Code examples in the documentation follow the same rule: identifiers in English, comments in
   pt-BR.

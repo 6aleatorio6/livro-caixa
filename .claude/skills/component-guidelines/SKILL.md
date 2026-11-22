@@ -34,9 +34,8 @@ Where the file goes: skill `project-structure`. How to test it: skill `testing`.
   ```
 
 - Safe areas come from the runtime (`rt.insets`), as in `Screen`, never from `SafeAreaView`.
-- The theme follows the phone (`adaptiveThemes`). Its values are provisional until the design's
-  variables exist (steps 2 to 5 of `design-from-scratch`); when they change, only
-  `src/core/theme` changes.
+- The theme follows the phone (`adaptiveThemes`); when its values change, only `src/core/theme`
+  changes.
 
 ## The base pieces
 
@@ -76,11 +75,6 @@ A control with an icon and no text still has a label.
 - The React Compiler is on (`experiments.reactCompiler` in `app.json`): no `useMemo`,
   `useCallback` or `memo` unless a measured case asks for it, and then with a comment saying why.
 - React 19 passes `ref` as a regular prop: no `forwardRef`.
-- One component per folder, named after it in PascalCase, with its test beside it
-  (`components/Button/Button.tsx`, `Button.test.tsx`) and its `I<Name>Props` interface in the same
-  file (`.claude/rules/one-export-per-file.md`). A sub-component used only by this one still gets
-  its own folder, in the page's or the feature's `components/`.
-- Named exports only.
 
 ## In tests
 

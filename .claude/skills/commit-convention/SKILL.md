@@ -44,11 +44,11 @@ of listing its parts, or split the commit (§3).
 | `build` | the pnpm workspace, the lockfile, `scripts/` that build or copy the code |
 | `chore` | tooling: `package.json` scripts, `.gitignore`, `.claude/skills/**`, an app's config |
 
-**Scope** — the app whose code changes: `mobile` or `docusaurus` (`back` and `web` belong to that project). No
-scope when the code changes in more than one app (`feat: entrada pelo Microsoft Entra ID` touched
-back and web there) or in none (`docs:`, `chore:` on root tooling). What follows the code doesn't
-count for the scope: a `refactor(back)` that also updates an ADR and a `.claude/rules` file is
-still `(back)`.
+**Scope** — the app or folder whose code changes: `mobile`, `docusaurus`, `journeys` (the Maestro
+flows and their data) or `firebase` (the rules and indexes in `firebase/`). No scope when the code
+changes in more than one of them or in none (`docs:`, `chore:` on root tooling). What follows the
+code doesn't count for the scope: a `refactor(mobile)` that also updates an ADR and a
+`.claude/rules` file is still `(mobile)`.
 
 **The body carries only what the diff does not show — why, or the constraint behind the change —
 in one to three sentences.** Before each sentence, ask whether someone reading the diff already
@@ -72,19 +72,12 @@ O nome diz de onde o e-mail vem: de um texto qualquer, que o método
 normaliza (tira os espaços das pontas e baixa a caixa).
 ```
 
-The commit in that history went on with the call sites that followed the new name, the ADR that
-cites it and "os 38 testes de users/domain passando" — the diff and the test run already say all of
-it.
-
 ## 2 — One change per commit, with everything that moves with it
 
 A commit is not limited to one area: a change lands whole. Its commit carries, together:
 
-- the code in every app it touches — `apps/back` **and** `apps/web` when the change crosses the
-  API;
+- the code in every app or folder it touches;
 - the tests that cover it;
-- the regenerated API contract and the types generated from it, once the API has them — a contract
-  change without them leaves the two apps out of step;
 - the documentation it changes: the ADR or the page of `docs/05-arquitetura/` that records the
   decision, the feature page;
 - the `.claude/rules/*.md` a new convention changes.
@@ -101,17 +94,14 @@ undo only that, without breaking anything else? If yes, the size is right.
   a feature + docs for something else, changes in two features that don't touch. Symptom in the
   message: it turns into an "and" list (`corrige X e também ajusta Y e limpa Z`).
 - **Too thin** — breaks a cohesive change into pieces that, on their own, leave the repo in an
-  incoherent state: the route without the screen that calls it, the entity without its migration,
-  the code without the regenerated contract, a convention without the rule and the ADR that state
+  incoherent state: the route without the screen that calls it, a convention without the rule and the ADR that state
   it.
 
-**Size: a few hundred hand-written lines per commit.** A regenerated contract travels along but
-doesn't count. A feature bigger than that is cut into deliverables that work alone, each one a
+**Size: a few hundred hand-written lines per commit.** A feature bigger than that is cut into deliverables that work alone, each one a
 commit with everything that moves with it — usually **reading** (the tables and their load, the
 `GET`, the screen as a read-only user sees it, the read permission), then **editing**
 (`PUT`/`PATCH`, rules, errors, DTOs, dialogs, Salvar, the edit permission). The reading files are
-the final ones minus the writing parts, so the editing diff shows only what editing adds. A
-migration never splits: it goes whole in the first commit that needs it. Decide the cut when
+the final ones minus the writing parts, so the editing diff shows only what editing adds. Decide the cut when
 planning, one plan section per commit: in that project, commits of 1,700 to 2,900 lines came out of plan
 sections sized by feature, and that branch had to be redone.
 

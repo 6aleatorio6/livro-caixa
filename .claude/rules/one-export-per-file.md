@@ -7,10 +7,7 @@ paths:
 
 In `apps/mobile`, **each file exports a single declaration**: one function, one class,
 one interface, one type or one enum. Never two in the same file. The file carries the name of what
-it exports, as in the earlier app: a component, page or class in PascalCase (`Button.tsx`,
-`SignInPage.tsx`, `AppError.ts`), a function or hook in camelCase (`createAsyncAction.ts`,
-`useRealtime.ts`), a type in PascalCase without the `I` (`RealtimeState.ts` exports
-`IRealtimeState`), a store as `<name>.store.ts` — skill `project-structure`.
+it exports — skill `project-structure`.
 
 **What counts and what doesn't:**
 
@@ -35,8 +32,8 @@ and the component in its own file is its 2026-10-21 addendum.
 
 **How to apply:**
 
-- The `exports/one-export-per-file` rule, in `lint/exports.ts` (loaded by `apps/mobile/oxlint.config.mts`;
-  `pnpm lint:rules` runs its tests), ported from the earlier project, checks it. It doesn't count local components: those are on whoever writes and whoever reviews.
+- The lint (`lint/exports.ts`) checks it, except a local component: that is on whoever writes and
+  whoever reviews.
 - Two more rules of the same plugin check the file's name against what it exports
   (`exports/name-matches-file`) and that a type lives in `types/` (`exports/type-in-types-folder`).
 - A type and a factory with the same name: the type stays in the file named after it, the factory

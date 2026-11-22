@@ -145,8 +145,7 @@ The scenario holds only the fields some screen reads. A screen that reads anothe
 ### A service with no contract
 
 A service on the exception list of `src/shared/services/serviceContracts.test.ts` is mocked with
-values written in the test, under a comment saying why. Today the list has one:
-`signInWithGoogleService`, because Google Sign-In is native and a person checks the real sign-in.
+values written in the test, under a comment saying why.
 
 ## Finding the cases and the expected value
 
@@ -194,8 +193,7 @@ resolveSignIn();
 - `describe` carries the name of the unit under test (`'Button'`, `'createAsyncAction'`,
   `'useAccess'`) or the subject in English (`'Sign-in'`).
 - `it` **always starts with "Should"** and says what should happen, in English:
-  `it('Should not call onPress while disabled')` — `.claude/rules/code-language.md`. The lint checks
-  it, and fails an `it.only`.
+  `it('Should not call onPress while disabled')`. The lint checks it, and fails an `it.only`.
 - Nest a `describe` only to group 3+ cases with the same trigger (`describe('When the e-mail is
   removed from the list')`).
 - Every `it` is Arrange → Act → Assert, and asserts what is visible (the screen, the callback

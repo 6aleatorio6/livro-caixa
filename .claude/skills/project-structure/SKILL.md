@@ -150,17 +150,9 @@ changed module needs `pnpm android` on the developer's PC. E.g. `modules/receipt
   with its component — `.claude/rules/one-export-per-file.md`.
 - **Suffixes:** `*Service` for a Firebase operation, `*QueryService` for a realtime read, `do*` for
   an action, `use*` for a hook.
-- **Types** start with `I` (`IAccessStatus`), generics with `T` (`TValue`); **booleans** with
-  `is/has/can/should/was`, which no lint checks: it is on whoever writes and whoever reviews —
-  `.claude/rules/self-explaining-code.md`.
-- **Named exports only**, outside `src/app`.
-- **Colors** only from the theme (`src/core/theme`): a literal `#hex`, `rgb()` or `hsl()` fails the
-  lint.
+- **Types** start with `I` (`IAccessStatus`), generics with `T` (`TValue`).
 
 ## Checking
-
-The commit already formats, lints and type-checks what it carries, so these don't run between edits
-(`.claude/rules/lint-on-commit.md`); the branch review runs them on the whole app.
 
 ```bash
 pnpm mobile lint        # Oxlint, then oxfmt --check
@@ -169,5 +161,4 @@ pnpm typecheck:mobile   # tsc --noEmit
 
 The lint's rules, with the message each refusal shows, are in `apps/mobile/oxlint.config.mts` and
 `lint/`: the layers, the packages each folder may import, the names and the place of files, and the
-routes that only re-export a page. It can't see a local component left inside another one's file:
-that is on whoever writes and whoever reviews.
+routes that only re-export a page.

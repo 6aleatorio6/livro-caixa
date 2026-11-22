@@ -10,33 +10,18 @@ journeys/
   package.json             only "type": "module", so Node and tsc read the .ts files as ES modules
   tsconfig.json            pnpm typecheck:journeys: test.ts, inspect.ts and data/
   stack.sh                 pnpm journeys:stack: the Firebase emulators and Metro
-  test.ts                  pnpm journeys:test: picks and prepares the device (ANDROID_SERIAL or
-                           the only one on adb; adb reverse of the stack's ports), deletes old
-                           rounds, serves the test data and runs Maestro
+  test.ts                  pnpm journeys:test
   inspect.ts               pnpm journeys:inspect: the screen's nodes, in dp, through adb
   flows/                   the journeys: only journeys (config.yaml runs every */*)
     config.yaml
     <feature>/<goal>.yaml  one journey per file
   steps/                   screen steps that several flows run (runFlow)
-    startAs.yaml           resets the data and signs in as the PROFILE: every flow starts here
-    signInAs.yaml          only signs in, with a LINK: switching accounts mid-flow
   data/                    the test data in the emulator's Firestore
-    server.ts              the HTTP server test.ts runs during the round, on port 4020; it receives the
-                           Firestore emulator's port from test.ts
-    scenarios.ts           the scenarios a flow asks for by name: reset, allowEmail, removeEmail…
-    accounts.ts            the test accounts (Ana, Bruno, Carla) and their sign-in link
-    firestore.ts           the emulator's Firestore as the project owner
-                           (@firebase/rules-unit-testing): deleteAll
-    share.ts               shareFixture: pushes a fixture to the phone's Downloads and shares it with the
-                           app through adb (the shareReceipt scenario)
-    fixtures.ts            a fixture's path, bytes and content type (by extension), for scenarios.ts
-                           and share.ts
     fixtures/              the small committed files scenarios read: the receipt contents a scenario
                            writes to fileContents (comprovante-luz.pdf, two pages; recibo-conserto.jpg)
                            and the files shareFixture pushes to the phone (pix-agua-outubro.pdf, one
                            page; pix-internet-outubro.pdf, one page of R$ 125,50 for the OCR to read;
                            comprovante-duas-paginas.pdf, R$ 87,40 only on its second page)
-    request.js             the Maestro side (runScript): asks for a scenario, copies the answer to output
   .local/                  (outside Git)
     explore/               throwaway flows, run like any other
     captures/<round>/      the newest 5 counted rounds: report.xml, commands.json, logs, captures
@@ -47,7 +32,7 @@ journeys/
 
 | What it is | Where |
 | --- | --- |
-| A journey | `flows/<feature>/<goal>.yaml`, the feature as a camelCase folder (`allowedEmails`) |
+| A journey | `flows/<feature>/<goal>.yaml`, the feature as a camelCase folder (`allowedEmails`) and the goal in camelCase |
 | A sequence of screen steps that two or more flows repeat and that must change together in all of them | `steps/<what it does>.yaml` |
 | A navigation shortcut (open a screen) | written in the flow, not a step |
 | Data a flow needs: a reset, a change mid-flow, a screen's seed | a scenario in `data/scenarios.ts`; a new parameter also in `data/request.js` |

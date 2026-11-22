@@ -35,11 +35,8 @@ on one of these:
   and the box adds 32 px of padding, even around a one-letter label; only a word longer than the
   wrap widens it. Four boxes side by side fit the column (744 px); a fifth makes the diagram 936 px
   wide and shrinks it, text included, to about 85%.
-- **The layout is ELK.** Mermaid 12 bundles it and makes it the default for flowchart, state, ER
-  and class diagrams (the theme's optional `@mermaid-js/layout-elk` peer is not needed and not
-  installed). Under ELK, extra dashes don't lengthen an edge (`a ----> d` lays out like `a --> d`)
-  and `flowchart.nodeSpacing`/`rankSpacing` do nothing. A diagram whose frontmatter asks for
-  `layout: dagre` gets both back (section *Layout under ELK* in
+- **The layout is ELK**, Mermaid 12's default for flowchart, state, ER and class diagrams: extra
+  dashes and `nodeSpacing`/`rankSpacing` do nothing (section *Layout under ELK* in
   [syntax-and-layout.md](references/syntax-and-layout.md)).
 - **A ```mermaid fence works the same in `.md` and `.mdx`**, and its body is literal in both — no
   escaping `{`, `<` or `|`. Anything after `mermaid` on the fence line (`title="…"`) is dropped:
@@ -174,8 +171,7 @@ them on the dev server (`pnpm dev:docs`) in light **and** dark mode.
   caret. The usual causes, and the silent misparses, are in section *Parse errors* of
   [syntax-and-layout.md](references/syntax-and-layout.md).
 - **Text too small** — the diagram outgrew the column. Switch `LR` to `TD`, split it (step 3), or
-  turn a chain into a sentence (step 1). Spacing options don't help: under ELK they do nothing, and
-  every box keeps its 152 px.
+  turn a chain into a sentence (step 1).
 - **Unreadable in dark mode** — a pinned color or theme; the dark PNG shows it. Remove it and carry
   the meaning with shape or line.
 - **Scrambled order** — reorder the declarations to reading order; then an invisible edge

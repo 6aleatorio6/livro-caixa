@@ -40,12 +40,9 @@ rule stays, even with one caller: it is the unit the domain test covers.
 
 ## Naming
 
-- **Booleans start with `is`, `has`, `can`, `should` or `was`**, in every app: variable,
-  parameter, component prop (`isOpen`, `isPending`) and API contract field (`isFromDirectory`).
-  Only a prop the *wrapper* passes straight to HTML or to the library keeps the library's name:
-  `required`, `disabled`, `autoFocus`, `multiline`, `replace`. A field the back-end translates for
-  a library follows the rule (`shouldTrustServerCertificate` becomes the driver's
-  `trustServerCertificate`).
+- **Booleans start with `is`, `has`, `can`, `should` or `was`**: variable, parameter and component
+  prop (`isOpen`, `isPending`). A prop passed straight to React Native (`disabled`, `visible`,
+  `editable`) keeps the library's name.
 - **State and intent get different names.** `option.isActive` is what the option is, and
   `shouldBeActive`, what it should become.
 - **Conditions in the affirmative.** `isInternalPath`, instead of four negated clauses.
@@ -78,13 +75,8 @@ makes reading slower. There the decision is ADR-0054.
 
 **How to apply:**
 
-- The boolean prefix (`is/has/can/should/was`) is no longer checked by the lint: it needs the
-  variable's type, and Oxlint passes none to a JS plugin. A prop passed straight to React Native
-  (`disabled`, `visible`, `editable`) keeps the library's name. The rest of this rule (structure,
-  misleading names, comments) no lint sees either: the prefix and the rest are on whoever writes and
-  whoever reviews.
+- No lint checks this rule, the boolean prefix included (it needs the variable's type, and Oxlint
+  passes none to a JS plugin): it is on whoever writes and whoever reviews.
 - Fix what you are already touching; don't sweep the repository for names or comments.
 - Before deleting a comment, check that its fact moved into a name: losing a real constraint is
   worse than keeping the comment.
-- Renaming an API contract field changes the contract: whatever is generated from it changes in the
-  same commit (skill `commit-convention`).

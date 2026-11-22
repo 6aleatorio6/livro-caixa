@@ -50,15 +50,12 @@ export function deleteRecurringBillService(billId: string) {
 
 - A ref is built where it is used, with `doc`/`collection` and the collection name of the model; a
   ref shared by several services gets its own file (`recurringBillRef.ts`).
-- Names (`.claude/rules/self-explaining-code.md`): a read that returns `null` when nothing is found
-  starts with `find`; one that throws, with `get`; a check that throws, with `ensure`.
 - Optional fields are written as `null`, never `undefined`: Firestore refuses `undefined`.
 - A write that must be atomic (an entry and its file record) is one `writeBatch`; a read-then-write
   (a tag name that must stay unique) is one `runTransaction`.
 - A query that combines a filter with an order, or filters on two fields, needs a composite index in
   production, and the emulator never asks for it: declare the index under `firebase/` in the same
   commit.
-- Screens never call a service: they call an action (skill `actions-and-feedback`).
 - Every service ships with its scenarios and its contract test, in the same commit
   ([Contract tests](#contract-tests)).
 
@@ -68,18 +65,9 @@ A screen that shows data listens to it. A query service, in `src/shared/services
 declares the refs and how to join them with `createRealtimeService`
 (`src/shared/utils/serviceUtils/createRealtimeService.ts`):
 
-```ts
-// src/shared/services/allowedEmail/query/allowedEmailQueryService.ts
-export const allowedEmailQueryService = createRealtimeService({
-  refs: ({ email }: { email: string | null }) =>
-    email ? [doc(firestoreDb, 'allowedEmails', allowedEmailId(email))] : [],
-  resolve: ([allowedEmail]) => allowedEmail !== null,
-});
-```
-
-```ts
-const { status, data: isAllowed } = useRealtime(allowedEmailQueryService, { email });
-```
+The real example is `src/shared/services/allowedEmail/query/allowedEmailQueryService.ts`: its `resolve`
+returns `IAllowedEmail | null`, and `ChangeNamePage.tsx` reads it with
+`useRealtime(allowedEmailQueryService, { email })`.
 
 `useRealtime` is in `src/shared/hooks/useRealtime/`, and the types (`IRealtimeState`, `IRefsData`…)
 in `src/shared/types/realtime/`.
@@ -111,23 +99,9 @@ src/shared/services/allowedEmail/query/
 One object per service, each key a case named after the situation, typed by `IServiceScenario`
 (`src/shared/types/testing/ServiceScenario.ts`). The people are the journeys' test accounts:
 
-```ts
-// As pessoas são as contas de teste das jornadas: Bruno está na lista, Carla não.
-const BRUNO = 'bruno.souza@exemplo.com';
-const CARLA = 'carla.lima@exemplo.com';
-const BRUNO_IN_THE_LIST = { [`allowedEmails/${BRUNO}`]: { isAdmin: false, hasEntries: false } };
-
-export const allowedEmailQueryScenarios = {
-  emailOutsideList: { signedInAs: CARLA, given: BRUNO_IN_THE_LIST, input: { email: CARLA }, result: false },
-  emailRemovedWhileOpen: {
-    signedInAs: BRUNO,
-    given: BRUNO_IN_THE_LIST,
-    input: { email: BRUNO },
-    result: true,
-    afterChange: { write: { [`allowedEmails/${BRUNO}`]: null }, result: false },
-  },
-} satisfies Record<string, IServiceScenario<{ email: string | null }, boolean>>;
-```
+The real example is `src/shared/services/allowedEmail/query/allowedEmailQueryService.scenarios.ts`:
+`emailOutsideList` delivers `null`, `emailInList` delivers `BRUNO_PERSON`, and
+`emailRemovedWhileOpen` ends on `null` through `afterChange`.
 
 - **`signedInAs`**: the account that calls, signed in through `signInWithFakeGoogleService`; `null`
   for no session.
@@ -147,20 +121,9 @@ cares about (the same account comes back with the same `uid`) is a plain `it` in
 
 ### The contract test
 
-```ts
-describe('allowedEmailQueryService', () => {
-  it.each(scenarioEntries(allowedEmailQueryScenarios))('Should deliver what the scenario %s says', async (_name, scenario) => {
-    await arrangeScenario(scenario);
-    const reading = listenTo(allowedEmailQueryService, scenario.input);
-
-    expect(await reading.next()).toBe(scenario.result);
-    if (scenario.afterChange) {
-      await writeWithoutRules(scenario.afterChange.write);
-      expect(await reading.next()).toBe(scenario.afterChange.result);
-    }
-  });
-});
-```
+The real example is
+`src/shared/services/allowedEmail/query/allowedEmailQueryService.contract.test.ts`, and each
+piece of it is explained below.
 
 - **`it.each(scenarioEntries(scenarios))`**, so a new scenario is a new case with nothing else to
   write. `scenarioEntries` lists them by the general `IServiceScenario` type: the `satisfies` keeps
@@ -248,4 +211,3 @@ rule carries a pt-BR comment with the business reason.
     `ss -ltn | grep -E ':8180|:4410'` comes back empty. The same command clears one a dead
     subagent left up: it holds the ports of `pnpm test:rules` and `pnpm test:contract`.
 
-Both run in this container, against the emulators: Java comes from the PC through the claude-box.

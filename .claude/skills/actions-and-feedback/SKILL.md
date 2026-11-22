@@ -58,10 +58,6 @@ export const doSkipBillMonth = createAsyncAction({
 On failure the action shows `errorUserMessage(error)` as an error toast and returns
 `{ data: null, error }`. It hides the loader in every outcome.
 
-An action used by one page lives in that page's `utils/actions/`; by several pages of a feature, in
-the feature's `utils/actions/`; never in `shared/` unless more than one feature calls it. One action
-per file, named after it: `do<Verb><Thing>.ts`.
-
 A cancel that isn't an error (the person closed the Google account picker) is not thrown: the
 service returns `null`, and the action returns `{ data: null, error: null }` without a toast.
 
@@ -94,9 +90,7 @@ functions in `src/core/utils/storeActions/`:
 
 Pressing the action's button runs its `onPress` and closes the toast. Outside an action, call these
 functions; never `useToastStore.setState` from a screen. The stores live in `core` with the components
-that show them, so `core` never imports from `shared`. A new global store follows the same shape: the
-state interface in `core/types/`, `core/store/<name>.store.ts` with the Zustand hook, and one file per
-function that changes it in `core/utils/storeActions/`.
+that show them, so `core` never imports from `shared`.
 
 ## Testing
 

@@ -3,12 +3,6 @@
 The design is made in Pencil, in `livro-caixa.pen`, following the `design-from-scratch` skill; the
 `design` skill reads it, edits it and checks a built screen against it.
 
-## The `.pen` only through the `pencil` MCP
-
-A `.pen` file is encrypted: it can only be read and edited through the `pencil` MCP, which acts on
-the file active in the editor. Check it with `get_app_state` before writing. An edit stays in the
-editor until the person saves in Pencil: ask for the save before a commit.
-
 ## Every file the `.pen` uses lives in this folder
 
 An image fill points to a file in `design/`, by a path relative to the `.pen` (`vision-board/…`,
@@ -31,9 +25,8 @@ of the Início with its content aligned to the end.
 
 ## Exporting
 
-Pencil runs on the PC, not in this container: `Export` writes to the PC's disk, and a path in the
-container's `/tmp` or scratchpad reports success and leaves nothing here. Export into the
-repository, under `journeys/.local/design/`, which Git ignores and the visual conference keeps.
+Export into the repository, under `journeys/.local/design/`, which Git ignores and the visual
+conference keeps.
 
 ## Proceed and choose
 
