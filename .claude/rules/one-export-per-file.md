@@ -37,12 +37,8 @@ and the component in its own file is its 2026-10-21 addendum.
 
 - The `exports/one-export-per-file` rule, in `lint/exports.ts` (loaded by `apps/mobile/oxlint.config.mts`;
   `pnpm lint:rules` runs its tests), ported from the earlier project, checks it. It doesn't count local components: those are on whoever writes and whoever reviews.
-- Two more rules of the same plugin keep the files in line: `exports/name-matches-file` (one of the
-  exported declarations carries the file's name, `I<Name>` and `use<Name>Store` included; a file
-  with only value constants passes) and `exports/type-in-types-folder` (an exported `interface` or
-  `type` lives in `types/`, except the `I<X>Props` of an exported `X` and a type built with `typeof`
-  from a constant of the same file). Both leave out `src/app`, tests, `src/shared/testing`,
-  `*.scenarios.ts` and `*.d.ts`.
+- Two more rules of the same plugin check the file's name against what it exports
+  (`exports/name-matches-file`) and that a type lives in `types/` (`exports/type-in-types-folder`).
 - A type and a factory with the same name: the type stays in the file named after it, the factory
   gets the prefix (`HttpClient.ts` + `createHttpClient.ts`).
 - A `let` variable that functions in different files change can't be imported and reassigned: give
