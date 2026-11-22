@@ -141,3 +141,10 @@ Table fileContents {
 
   Note: 'Os bytes de cada arquivo, separados do registro para os detalhes, que leem files em tempo real, não baixarem o arquivo. Todo membro lê um por id (nunca a lista). Só quem salvou o registro cria, no mesmo lote dele, e exclui, no lote que apaga o registro. Não há update.'
 }
+
+Table pushTokens {
+  token varchar [pk, note: 'Id do documento: o token do Expo do celular, no formato ExponentPushToken[...]. As regras não conferem o formato: isso fica com o app']
+  uid varchar [not null, note: 'O uid do login de quem está logado naquele celular. Quem entra num celular grava o mesmo token com o próprio uid, e o documento troca de dono (update)']
+
+  Note: 'O celular de cada membro para as notificações. Todo membro lê a coleção inteira, porque quem envia busca os tokens dos outros; cada um grava e apaga só o token com o próprio uid. Quem sai da lista deixa o token para trás, porque ninguém o apaga por ele: por isso quem envia filtra os tokens pelos uids que ainda estão em allowedEmails.'
+}
