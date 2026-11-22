@@ -23,3 +23,7 @@ export const recurringBillsOf = (firestore) => collection(firestore, 'recurringB
 export const overdueMonthDocOf = (firestore, id) => doc(firestore, 'overdueMonths', id);
 
 export const overdueMonthsOf = (firestore) => collection(firestore, 'overdueMonths');
+
+export const pushTokenDocOf = (firestore, token) => doc(firestore, 'pushTokens', token);
+
+export const pushTokensOf = (firestore) => collection(firestore, 'pushTokens');
