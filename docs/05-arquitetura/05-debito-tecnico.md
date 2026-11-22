@@ -16,11 +16,32 @@ paga o mês, o mesmo documento ganha o dono.
   (`UnownedPaymentDetails`) e tipos separados (`OwnedEntry`, `UnownedPaymentEntry`,
   `AuthoredEntry`). As regras têm um validador só para ele e ramos próprios para criar, ganhar dono,
   perder dono e excluir.
-- **Saída:** o mês com contribuições vira um documento da coleção `billMonths`, com
-  `status: contributed` e as cópias, e as contribuições apontam para ele, que tem o mesmo id do
-  pagamento do mês (`2026-11_rent`). Pagar o mês passa a ser criar um pagamento comum, e `entries`
-  fica só com dinheiro, como a `billMonths` já fez com o mês pago depois e o mês pulado
-  ([Modelo de Dados](04-modelo-de-dados.md)).
+- **Saída:** a contribuição de um mês de conta aponta para o mês, pelo id que o pagamento dele tem
+  (`2026-11_luz`), e não para um documento. Sem pagamento, nada existe nesse id, e o mês aparece a
+  pagar com o que falta; pagar o mês é criar um pagamento comum nesse id, e as contribuições passam a
+  ser dele sem mudar. `entries` fica só com lançamentos que têm dono, e uma migração apaga os
+  pagamentos sem dono ([Migrações de Dados](06-migracoes-de-dados.md)).
+- **O que se perde:** no mês só com contribuições, o nome, a tag, o vencimento e o previsto vêm da
+  conta como ela está, e não mais congelados na primeira contribuição. E as regras deixam de barrar
+  pular ou pagar depois um mês com contribuições, porque não fazem consulta e nada existe no id do
+  mês: o app esconde as duas ações nesse mês.
+- **O que ficou de fora:** guardar o mês com contribuições na coleção dos meses atrasados, com um
+  estado próprio e as cópias, que seria o mesmo pagamento sem dono em outra coleção, mudando de
+  coleção quando alguém paga; e separar as contribuições numa coleção só delas, que não muda nada
+  para quem usa e troca o filtro por tipo das telas por duas consultas.
 - **O que muda para quem usa:** nada.
-- **Quando:** num branch próprio, depois do das contas atrasadas, que cria a `billMonths`. O branch
-  mede de novo os arquivos, as checagens e as linhas das regras, antes e depois.
+- **Quando:** num trabalho próprio, depois das notificações. Ele mede de novo os arquivos, as
+  checagens e as linhas das regras, antes e depois.
+
+## O `minVersion` ao lado do `version`
+
+O documento `settings/app` guarda a versão mínima em dois campos: o `version`, que o app lê, e o
+`minVersion`, que só os apps anteriores às [migrações](06-migracoes-de-dados.md) leem. Toda migração
+grava os dois com o mesmo valor.
+
+- **Custo:** um campo a mais no `settings/app` e a linha do `pnpm migrate` que o grava. O app não o
+  lê.
+- **Saída:** apagar o campo. Sem ele, um app antigo abre como antes, então ele só sai quando nenhum
+  celular da família tiver instalado um app anterior às migrações, conferido em cada um.
+- **O que muda para quem usa:** nada.
+- **Quando:** sem data, depois de conferidos os celulares.

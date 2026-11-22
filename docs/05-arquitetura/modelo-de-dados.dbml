@@ -10,7 +10,8 @@
 // calculados no app, com o que já foi lido: não há totais gravados.
 //
 // Fora essas leituras, o app lê o documento settings/app uma vez ao abrir e a cada vez que o Início
-// volta a aparecer, para conferir a versão mínima. Ele é o único documento que se lê sem entrar.
+// volta a aparecer, para conferir a versão mínima, o version. Ele é o único documento que se lê sem
+// entrar.
 //
 // Sem servidor próprio: as regras de segurança do Firestore garantem o acesso, a autoria, o
 // pagamento único por mês e a trava de remoção do e-mail.
@@ -62,9 +63,10 @@ Table tags {
 }
 
 Table appSettings {
-  minVersion varchar [note: 'A versão mínima do app, três números separados por ponto, como "0.5.0". O app instalado abaixo dela mostra só a tela de atualização. Ausente ou fora desse formato, o app abre como antes']
+  version varchar [note: 'A versão do app que os dados exigem, três números separados por ponto, como "0.5.0": a versão mínima. O app instalado abaixo dela mostra só a tela de atualização. Ausente ou fora desse formato, o app abre como antes. Só as migrações a gravam, cada uma conferindo que o banco está na versão da migração anterior; o init, num banco sem ela, grava "0.0.0"']
+  minVersion varchar [note: 'O campo antigo da versão mínima, que só os apps anteriores às migrações leem. Toda migração o grava com o mesmo valor do version: apagá-lo destravaria um app antigo']
 
-  Note: 'O documento único settings/app. Qualquer um o lê, até sem entrar: a tela de atualização aparece antes do login. Ninguém o grava pelo app: ele muda pelo console do Firebase, só depois de o APK da versão nova chegar à família.'
+  Note: 'O documento único settings/app. Qualquer um o lê, até sem entrar: a tela de atualização aparece antes do login. Ninguém o grava pelo app: ele muda só pelas migrações, que rodam depois de o APK da versão nova chegar à família.'
 }
 
 Table recurringBills {

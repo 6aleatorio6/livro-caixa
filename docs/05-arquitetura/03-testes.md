@@ -120,14 +120,16 @@ por definição, porque cada verificação de uma jornada também tem um teste n
 ## Como roda
 
 Tudo roda no container da IA. O Java dos emuladores do Firebase vem do PC de quem desenvolve. O
-contrato e as regras sobem os próprios emuladores a cada rodada, com a configuração de
-`firebase/firebase.test.json`, e não rodam ao mesmo tempo, porque dividem essas portas.
+contrato, as regras e as [migrações de dados](06-migracoes-de-dados.md#os-testes) sobem os próprios
+emuladores a cada rodada, com a configuração de `firebase/firebase.test.json`, e não rodam ao mesmo
+tempo, porque dividem essas portas.
 
 | Camada | Comando |
 |---|---|
 | Unidade e página | `pnpm test:mobile` |
 | Contrato | `pnpm test:contract` |
 | Regras | `pnpm test:rules` |
+| Migrações de dados | `pnpm test:migrations` |
 
 O contrato e as regras rodam a cada mudança num serviço, num cenário ou numa regra, como o teste de
 endpoint roda a cada mudança na api.
