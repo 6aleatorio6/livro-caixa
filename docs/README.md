@@ -43,6 +43,7 @@ App de celular para controlar o financeiro de uma família.
 - [Testes](05-arquitetura/03-testes.md)
 - [Modelo de Dados](05-arquitetura/04-modelo-de-dados.md)
 - [Débito Técnico](05-arquitetura/05-debito-tecnico.md)
+- [Migrações de Dados](05-arquitetura/06-migracoes-de-dados.md)
 
 > **Seções de trabalho interno**, numeradas no fim para ficarem após o conteúdo principal:
 > `97-reviews` (revisões da documentação), `98-rascunhos` (material em elaboração) e

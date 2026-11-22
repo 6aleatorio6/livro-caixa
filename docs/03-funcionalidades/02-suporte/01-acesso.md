@@ -65,13 +65,17 @@ mesma cuida dele.
 
 ## Versão mínima
 
-O app tem uma versão mínima, guardada no documento `settings/app`, no campo `minVersion` (por exemplo,
-`"0.5.0"`). Quem está com uma versão abaixo dela não usa o app até instalar a nova.
+O app tem uma versão mínima, guardada no documento `settings/app`, no campo `version` (por exemplo,
+`"0.5.0"`): a versão do app que os dados exigem. Quem está com uma versão abaixo dela não usa o app
+até instalar a nova.
 
-- O documento muda pelo console do Firebase: o app não tem tela para isso, e as regras não deixam o
-  app gravá-lo. Qualquer um o lê, até sem entrar com a conta Google, porque a tela de atualização
-  aparece antes do login.
-- O app compara a própria versão com o `minVersion` número a número (maior, menor e correção): a
+- O `version` muda só pelas [migrações de dados](../../05-arquitetura/06-migracoes-de-dados.md),
+  inclusive quando a versão nova não muda nenhum dado: o app não tem tela para isso, e as regras não
+  deixam o app gravá-lo. Qualquer um o lê, até sem entrar com a conta Google, porque a tela de
+  atualização aparece antes do login.
+- Os apps anteriores às migrações leem o campo antigo, o `minVersion`, que toda migração grava com o
+  mesmo valor do `version`.
+- O app compara a própria versão com o `version` número a número (maior, menor e correção): a
   0.10.0 passa por um mínimo de 0.9.0, o que a comparação como texto erraria. A versão igual à mínima
   passa.
 - O app confere quando abre do zero e sempre que o [Início](../01-principal/01-inicio.md) volta a
@@ -81,7 +85,7 @@ O app tem uma versão mínima, guardada no documento `settings/app`, no campo `m
 - Abaixo do mínimo, o app mostra só a tela "Atualize o app", com a versão instalada e a exigida. Ela
   não tem botão: a saída é instalar a versão nova. Nenhuma outra tela fica disponível, nem a de
   entrada, nem para quem já está logado e liberado.
-- Sem o documento ou com um `minVersion` que não é uma versão de três números separados por ponto, o
+- Sem o documento ou com um `version` que não é uma versão de três números separados por ponto, o
   app abre como antes.
 - Sem internet, a conferência usa o que o celular guardou da última leitura do documento: depois de o
   mínimo ser lido uma vez, a trava vale também sem rede, porque um app desatualizado não deve ser
@@ -90,8 +94,8 @@ O app tem uma versão mínima, guardada no documento `settings/app`, no campo `m
   o app abre.
 - A trava vale da versão que a traz em diante. A 0.3.0 não a tem e continua funcionando até a família
   instalar uma versão que a tenha.
-- Quem cuida do app sobe o mínimo no console do Firebase só depois de o APK da versão nova chegar à
-  família. Quem ficar para trás vê a tela de atualização até instalar.
+- A migração que sobe o mínimo roda só depois de o APK da versão nova chegar à família. Quem ficar
+  para trás vê a tela de atualização até instalar.
 
 ## Entrar com biometria
 
@@ -156,7 +160,7 @@ desligada.
       como antes.
 - [ ] Depois de ler o mínimo uma vez, o app abaixo dele continua na tela de atualização também sem
       internet.
-- [ ] Um `minVersion` malformado não barra o app.
+- [ ] Um `version` malformado não barra o app.
 - [ ] A 0.10.0 passa por um mínimo de 0.9.0, e a versão igual à mínima também passa.
 - [ ] Qualquer um lê o documento `settings/app`, até sem entrar, e ninguém o grava pelo app.
 - [ ] Com a opção ligada, abrir o app do zero pede a biometria.
