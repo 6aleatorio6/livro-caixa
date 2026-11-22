@@ -24,7 +24,7 @@ import { mkdirSync, rmSync, statSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { firestoreBase, listDocuments, PROJECT_ID, request, usingEmulator } from './firebase-rest.mjs';
+import { documentPath, firestoreBase, listDocuments, PROJECT_ID, request, usingEmulator } from './firebase-rest.mjs';
 
 if (usingEmulator !== Boolean(process.env.FIREBASE_AUTH_EMULATOR_HOST)) {
   console.error('Defina FIRESTORE_EMULATOR_HOST e FIREBASE_AUTH_EMULATOR_HOST juntos: o backup copia os dois.');
@@ -59,7 +59,7 @@ async function* documentRecords(collectionId) {
   for await (const document of listDocuments(collectionId, { pageSize, readTime })) {
     yield {
       kind: 'document',
-      path: document.name.slice(document.name.indexOf('/documents/') + '/documents/'.length),
+      path: documentPath(document.name),
       fields: document.fields ?? {},
       createTime: document.createTime,
       updateTime: document.updateTime,
