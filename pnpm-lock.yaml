@@ -54,10 +54,10 @@ importers:
         specifier: ^3.0.0
         version: 3.1.1(@types/react@19.3.0)(react@19.3.1)
       '@wjmpantig/docusaurus-plugin-dbml':
-        specifier: ^2.0.0
+        specifier: 2.0.0
         version: 2.0.0(@dbml/core@10.3.1)(@wjmpantig/react-dbml-renderer@2.0.0(@dbml/core@10.3.1)(@xyflow/react@12.12.1(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@xyflow/react@12.12.1(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@wjmpantig/react-dbml-renderer':
-        specifier: ^2.0.0
+        specifier: 2.0.0
         version: 2.0.0(@dbml/core@10.3.1)(@xyflow/react@12.12.1(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@xyflow/react':
         specifier: ^12.12.1
