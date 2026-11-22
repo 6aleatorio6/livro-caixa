@@ -66,6 +66,10 @@ jest.mock('expo-file-system', () => ({
 }));
 // O layout das abas chama o hook do nome, que tem teste próprio e carregaria o serviço de escrita.
 jest.mock('@/features/auth/hooks/useEnsureOwnName/useEnsureOwnName', () => ({ useEnsureOwnName: jest.fn() }));
+// Pelo mesmo motivo, o cadastro do celular para as notificações, que grava o token.
+jest.mock('@/features/notifications/hooks/usePushRegistration/usePushRegistration', () => ({
+  usePushRegistration: jest.fn(),
+}));
 
 const SIGNED_OUT: IAuthState = { status: 'signedOut' };
 

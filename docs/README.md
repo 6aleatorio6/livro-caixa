@@ -31,6 +31,7 @@ App de celular para controlar o financeiro de uma família.
 - [Acesso](03-funcionalidades/02-suporte/01-acesso.md)
 - [Tags](03-funcionalidades/02-suporte/02-tags.md)
 - [Configurações](03-funcionalidades/02-suporte/03-configuracoes.md)
+- [Notificações](03-funcionalidades/02-suporte/04-notificacoes.md)
 
 ### 4. Escopo Excluído
 

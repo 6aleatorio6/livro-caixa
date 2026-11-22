@@ -12,6 +12,8 @@ import { NoAccessPage } from './NoAccessPage';
 // Mocks com fábrica: o módulo real carregaria o React Native Firebase, que não roda no Jest.
 jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jest.fn() }));
 jest.mock('@/shared/services/auth/signOutService', () => ({ signOutService: jest.fn() }));
+// O token do celular tem o teste do `removeThisDevicePushToken`; aqui a saída só chama o serviço de sair.
+jest.mock('@/shared/utils/notifications/removeThisDevicePushToken', () => ({ removeThisDevicePushToken: jest.fn() }));
 
 beforeEach(() => {
   jest.clearAllMocks();

@@ -114,6 +114,14 @@ Esta página registra só o que já foi decidido. O código do app fica em `apps
   permissões `USE_BIOMETRIC` e `USE_FINGERPRINT` do Android entram pelo manifesto da biblioteca. É nativa, então
   a instalação também pede um APK novo. A opção de pedir a biometria fica guardada no aparelho, e não
   no Firestore: vale para aquele celular, não para a conta.
+- **Notificações pelo serviço de push do Expo, sem servidor**, com o `expo-notifications`, do próprio
+  Expo, que sai junto com o SDK
+  ([Notificações](../03-funcionalidades/02-suporte/04-notificacoes.md)). O celular que registra o
+  lançamento envia direto ao Expo, que entrega pelo Firebase Cloud Messaging; o endereço de cada celular
+  fica na coleção `pushTokens`, do Firestore. O Expo serve só para as notificações, e o APK continua
+  saindo do `pnpm apk`. O que o Expo precisa para enviar pelo FCM do projeto está em
+  [Notificações por Push](07-notificacoes-por-push.md). O plugin do pacote pede um APK novo e põe no
+  app o ícone e a cor das notificações.
 
 Ficaram de fora:
 
@@ -129,6 +137,16 @@ Ficaram de fora:
   Reanimated 4, porque o `maximumZoomScale` do `ScrollView` é só do iOS e as bibliotecas de zoom
   estavam paradas ou não foram testadas com o Gesture Handler 3. Saiu a pedido: a imagem na largura
   da tela, rolando, lê melhor um print longo. A foto com letra miúda perde a ampliação.
+- **Um servidor para enviar as notificações:** uma Cloud Function pediria o plano Blaze, o pago
+  conforme o uso, e um agendador no GitHub Actions seria outra peça fora do app. Sem servidor, o
+  envio parte do celular de quem registra o lançamento.
+- **Uma versão própria da notificação na tela de bloqueio:** o Android aceita uma segunda versão,
+  mais vaga, só para a tela de bloqueio, mas o `expo-notifications` não deixa o app passá-la, e ela
+  pediria um módulo nativo. A notificação vai completa, e quem quer privacidade liga o ajuste
+  "Notificações sensíveis" do Android, que esconde o texto na tela de bloqueio, como nos outros apps.
+- **Um interruptor de notificações dentro do app:** pediria guardar a opção no celular, sincronizá-la
+  com o token e tratar a permissão negada no Android. A linha Notificações de Configurações abre os
+  ajustes do Android para o app, onde a pessoa liga, desliga e escolhe por canal.
 - **Cloud Storage no plano Blaze:** guarda arquivos de qualquer tamanho, mas pede uma conta de
   faturamento, e a ativação pedia um pagamento antecipado.
 - **Cloudinary:** sem um servidor, o celular só envia por um *preset* sem assinatura, que qualquer
