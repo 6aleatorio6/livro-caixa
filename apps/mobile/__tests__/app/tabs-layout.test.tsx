@@ -4,12 +4,17 @@ import { renderRouter, screen } from 'expo-router/testing-library';
 import { Text } from 'react-native';
 
 import { useEnsureOwnName } from '@/features/auth/hooks/useEnsureOwnName/useEnsureOwnName';
+import { usePushRegistration } from '@/features/notifications/hooks/usePushRegistration/usePushRegistration';
 
 import TabsLayout from '@/app/(tabs)/_layout';
 
 // O nome da primeira entrada tem o teste do próprio hook; aqui só se confere que o layout o chama. Mock
 // com fábrica: o módulo real carregaria o React Native Firebase, que não roda no Jest.
 jest.mock('@/features/auth/hooks/useEnsureOwnName/useEnsureOwnName', () => ({ useEnsureOwnName: jest.fn() }));
+// O cadastro do celular tem o teste do próprio hook; o módulo nativo das notificações não roda no Jest.
+jest.mock('@/features/notifications/hooks/usePushRegistration/usePushRegistration', () => ({
+  usePushRegistration: jest.fn(),
+}));
 
 async function renderTabs() {
   await renderRouter(
@@ -28,6 +33,12 @@ describe('TabsLayout', () => {
     await renderTabs();
 
     expect(useEnsureOwnName).toHaveBeenCalled();
+  });
+
+  it('Should register the phone for notifications when the person opens the tabs', async () => {
+    await renderTabs();
+
+    expect(usePushRegistration).toHaveBeenCalled();
   });
 
   it('Should open on Início and keep it when its tab is pressed again', async () => {

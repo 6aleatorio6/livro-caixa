@@ -1,6 +1,7 @@
 import { act, render, screen, userEvent } from '@testing-library/react-native';
 import { authenticateAsync, isEnrolledAsync } from 'expo-local-authentication';
 import { router } from 'expo-router';
+import { Linking } from 'react-native';
 
 import { useToastStore } from '@/core/store/toast.store';
 import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
@@ -38,6 +39,8 @@ jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService',
 }));
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 jest.mock('@/shared/services/auth/signOutService', () => ({ signOutService: jest.fn() }));
+// O token do celular tem o teste do `removeThisDevicePushToken`; aqui a saída só chama o serviço de sair.
+jest.mock('@/shared/utils/notifications/removeThisDevicePushToken', () => ({ removeThisDevicePushToken: jest.fn() }));
 // A biblioteca nativa e o arquivo da opção (que o teste do arquivo cobre) ficam de fora: a página só decide o que
 // pedir e o que gravar.
 jest.mock('expo-local-authentication', () => ({ isEnrolledAsync: jest.fn(), authenticateAsync: jest.fn() }));
@@ -206,13 +209,26 @@ describe('SettingsPage', () => {
     it('Should announce as buttons only the entries that lead somewhere', async () => {
       await render(<SettingsPage />);
 
-      // Os dois da pessoa logada (Alterar nome e Sair da conta) e as duas linhas da família.
+      // Os dois da pessoa logada (Alterar nome e Sair da conta), as Notificações e as duas linhas da família.
       expect(screen.getAllByRole('button').map((button) => button.props.accessibilityLabel)).toEqual([
         'Alterar nome',
         'Sair da conta',
+        'Notificações',
         'Contas recorrentes',
         'Tags',
       ]);
+    });
+
+    describe('Notifications row', () => {
+      it('Should open the Android settings of the app when Notificações is pressed', async () => {
+        const openSettings = jest.spyOn(Linking, 'openSettings').mockResolvedValue();
+        await render(<SettingsPage />);
+
+        await userEvent.setup().press(screen.getByRole('button', { name: 'Notificações' }));
+
+        expect(openSettings).toHaveBeenCalledTimes(1);
+        openSettings.mockRestore();
+      });
     });
 
     describe('Biometrics option', () => {
@@ -224,18 +240,19 @@ describe('SettingsPage', () => {
         jest.mocked(isEnrolledAsync).mockResolvedValue(true);
       }
 
-      it('Should not show the section on a phone without a fingerprint or face registered', async () => {
+      it('Should show the section with only the notifications on a phone without a fingerprint or face registered', async () => {
         await render(<SettingsPage />);
 
-        expect(screen.queryByText('Neste celular')).not.toBeOnTheScreen();
+        expect(screen.getByText('Neste celular')).toBeOnTheScreen();
+        expect(screen.getByText('Abre os ajustes do Android para o app')).toBeOnTheScreen();
         expect(screen.queryByRole('switch', { name: 'Entrar com biometria' })).not.toBeOnTheScreen();
       });
 
-      it('Should show the section with the option off when the phone has a fingerprint or face registered', async () => {
+      it('Should show the option off when the phone has a fingerprint or face registered', async () => {
         allowBiometrics();
         await render(<SettingsPage />);
 
-        expect(await screen.findByText('Neste celular')).toBeOnTheScreen();
+        expect(await screen.findByRole('switch', { name: 'Entrar com biometria' })).toBeOnTheScreen();
         expect(
           screen.getByText('Pede a digital ou o rosto ao abrir o app e depois de 10 minutos fora'),
         ).toBeOnTheScreen();
@@ -251,10 +268,10 @@ describe('SettingsPage', () => {
       });
 
       // A aba continua montada: quem cadastra a digital no Android e volta ao app tem de ver a opção sem reabrir o app.
-      it('Should show the section when a fingerprint is registered while the app is in the background', async () => {
+      it('Should show the option when a fingerprint is registered while the app is in the background', async () => {
         const appState = mockAppState();
         await render(<SettingsPage />);
-        expect(screen.queryByText('Neste celular')).not.toBeOnTheScreen();
+        expect(screen.queryByRole('switch', { name: 'Entrar com biometria' })).not.toBeOnTheScreen();
 
         allowBiometrics();
         await act(() => appState.change('background'));
@@ -264,7 +281,7 @@ describe('SettingsPage', () => {
       });
 
       // O bloqueio continua pedindo (pelo PIN do aparelho) com a opção ligada: sem a linha, a pessoa não a desliga.
-      it('Should keep the section with the option on, so it can be turned off, after the biometrics were removed from the phone', async () => {
+      it('Should keep the option on, so it can be turned off, after the biometrics were removed from the phone', async () => {
         useBiometricLockStore.setState({ isEnabled: true });
         const user = userEvent.setup();
         await render(<SettingsPage />);
@@ -275,7 +292,7 @@ describe('SettingsPage', () => {
 
         expect(authenticateAsync).not.toHaveBeenCalled();
         expect(writeBiometricsEnabled).toHaveBeenCalledWith(false);
-        expect(screen.queryByText('Neste celular')).not.toBeOnTheScreen();
+        expect(screen.queryByRole('switch', { name: 'Entrar com biometria' })).not.toBeOnTheScreen();
       });
 
       it('Should ask for the biometrics once and turn the option on and write it when it succeeds', async () => {

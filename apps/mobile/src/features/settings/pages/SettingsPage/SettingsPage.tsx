@@ -17,9 +17,9 @@ import { doSignOut } from '@/shared/utils/actions/doSignOut';
 import { signedInEmail } from '@/shared/utils/auth/signedInEmail';
 
 import { AdminSection } from './components/AdminSection/AdminSection';
-import { BiometricsSection } from './components/BiometricsSection/BiometricsSection';
 import { RecurringBillsRow } from './components/RecurringBillsRow/RecurringBillsRow';
 import { TagsRow } from './components/TagsRow/TagsRow';
+import { ThisPhoneSection } from './components/ThisPhoneSection/ThisPhoneSection';
 
 /** A terceira aba: quem está logado com a saída, o que se usa pouco e a versão do app. */
 export function SettingsPage() {
@@ -44,7 +44,7 @@ export function SettingsPage() {
           <IconButton icon={LogOut} label="Sair da conta" onPress={() => doSignOut()} />
         </View>
 
-        <BiometricsSection />
+        <ThisPhoneSection />
 
         <View style={styles.section}>
           <AppText variant="labelMedium" color="onSurfaceVariant">
