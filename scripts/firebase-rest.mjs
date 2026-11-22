@@ -4,9 +4,11 @@ import { createRequire } from 'node:module';
 
 export const PROJECT_ID = process.env.GCLOUD_PROJECT ?? 'livro-caixa-f1782';
 export const usingEmulator = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
+/** O caminho dos documentos do banco, que começa o nome de cada documento e as URLs da API REST. */
+export const documentsPath = `projects/${PROJECT_ID}/databases/(default)/documents`;
 export const firestoreBase = `${
   usingEmulator ? `http://${process.env.FIRESTORE_EMULATOR_HOST}` : 'https://firestore.googleapis.com'
-}/v1/projects/${PROJECT_ID}/databases/(default)/documents`;
+}/v1/${documentsPath}`;
 
 async function authorization() {
   if (usingEmulator) return 'Bearer owner';
@@ -33,8 +35,57 @@ export function authorizedHeaders() {
 /** Uma chamada que precisa dar certo: devolve o JSON da resposta ou lança o erro com o status e o corpo. */
 export async function request(url, init) {
   const response = await fetch(url, { headers: await authorizedHeaders(), ...init });
-  if (!response.ok) throw new Error(`${url} respondeu ${response.status}: ${await response.text()}`);
+  if (!response.ok) {
+    const error = new Error(`${url} respondeu ${response.status}: ${await response.text()}`);
+    error.status = response.status;
+    throw error;
+  }
   return response.json();
+}
+
+/** O nome completo de um documento (`settings/app`), que um `Write` da API REST leva no lugar do caminho. */
+export function documentName(path) {
+  return `${documentsPath}/${path}`;
+}
+
+/** O caminho (`settings/app`) de um nome completo de documento: o inverso do `documentName`. */
+export function documentPath(name) {
+  return name.slice(name.indexOf('/documents/') + '/documents/'.length);
+}
+
+const post = (body) => ({ method: 'POST', body: JSON.stringify(body) });
+
+/** Abre uma transação de leitura e escrita e devolve o id dela. */
+export async function beginTransaction() {
+  const { transaction } = await request(`${firestoreBase}:beginTransaction`, post({ options: { readWrite: {} } }));
+  return transaction;
+}
+
+/**
+ * Um documento (`{ name, fields }`), ou `null` se ele não existe. Com `transaction`, a leitura é da transação e vai pelo
+ * `:batchGet` de um documento: o `GET` com `?transaction=` nunca responde no emulador, e prende a trava da transação.
+ */
+export async function getDocument(path, { transaction } = {}) {
+  if (transaction) {
+    const [result] = await request(`${firestoreBase}:batchGet`, post({ documents: [documentName(path)], transaction }));
+    return result.found ?? null;
+  }
+  try {
+    return await request(`${firestoreBase}/${path}`);
+  } catch (error) {
+    if (error.status === 404) return null;
+    throw error;
+  }
+}
+
+/** Grava as escritas (`Write` da API REST) num commit só; com `transaction`, encerra a transação junto. */
+export function commit(writes, { transaction } = {}) {
+  return request(`${firestoreBase}:commit`, post({ writes, transaction }));
+}
+
+/** Desfaz a transação e solta as travas dos documentos que ela leu. */
+export function rollback(transaction) {
+  return request(`${firestoreBase}:rollback`, post({ transaction }));
 }
 
 /**
@@ -52,10 +103,7 @@ export async function* listDocuments(collectionId, { pageSize = 300, fields, rea
     };
     if (fields) structuredQuery.select = { fields: fields.map((fieldPath) => ({ fieldPath })) };
     if (lastName) structuredQuery.startAt = { values: [{ referenceValue: lastName }], before: false };
-    const results = await request(`${firestoreBase}:runQuery`, {
-      method: 'POST',
-      body: JSON.stringify({ structuredQuery, readTime }),
-    });
+    const results = await request(`${firestoreBase}:runQuery`, post({ structuredQuery, readTime }));
     const documents = results.flatMap((result) => (result.document ? [result.document] : []));
     yield* documents;
     if (documents.length < pageSize) return;
