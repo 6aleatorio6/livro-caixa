@@ -31,6 +31,12 @@ other stack decision is made without being written there.
 - `pnpm test:contract` runs every service against the Firebase emulators, scenario by scenario
   (skill `firestore-services`). It and `pnpm test:rules` start emulators of their own on other ports
   (`firebase/firebase.test.json`), so they run with the journeys' stack up, one at a time.
+- `pnpm migrate` runs the pending data migrations of `firebase/migrations/` on the real Firestore, up
+  to the version of the root `package.json` (equal to the app's), after a `pnpm backup` and a
+  confirmation; `pnpm migrate:init` marks a database without `settings/app.version`, once. Both are
+  the developer's, like the backup: the session writes migrations and tests them with
+  `pnpm test:migrations`, on the same ports as `pnpm test:rules`, never at the same time —
+  [docs/05-arquitetura/06-migracoes-de-dados.md](docs/05-arquitetura/06-migracoes-de-dados.md).
 - `pnpm journeys:stack` starts the journeys' stack (the Firebase emulators and Metro with the app
   pointed at them) and `pnpm journeys:test` runs the Maestro flows, both in this container, against
   the Android 15 emulator of the PC (`Livro_Caixa_API_35`): skill `app-journeys`.
