@@ -12,3 +12,4 @@ vêm de terceiros. O "paia" usa a fonte Caveat, do Google Fonts, sob a SIL Open 
 | adaptive-foreground.png | o primeiro plano do ícone adaptativo (1024 px, transparente) | a prancha `hn2Oy`, sem o fundo: a marca com o "paia" maior e sem as pautas, para se ler a 48 dp |
 | icon.png | o ícone opaco do `app.json` (1024 px) | a mesma prancha, com o fundo `#C6ECCB` |
 | adaptive-monochrome.png | o ícone temático do Android 13 (1024 px, transparente) | `mark-mono.png` na prancha, com o "paia" recortado: um script zera o alfa onde a exportação do "paia" sozinho tem tinta |
+| notification-icon.png | o ícone pequeno da notificação, em branco sobre fundo transparente (96 px, a marca em 80 px no centro) | `mark-mono.png` com a cor trocada por branco e o alfa mantido, recortada e reduzida por um script: o Android usa só o alfa e pinta o ícone de uma cor |
