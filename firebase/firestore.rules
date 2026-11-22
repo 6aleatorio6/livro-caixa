@@ -570,5 +570,25 @@ service cloud.firestore {
       allow delete: if isInList()
         && (resource == null || !existsAfter(receiptFile()));
     }
+
+    // O celular de cada membro para as notificações: o id é o token do Expo e o único campo, `uid`, é de quem
+    // está logado naquele celular. Todo membro lê (quem envia busca os tokens dos outros), e cada um grava e
+    // apaga só os tokens com o próprio `uid`. Gravar um token que já existe é `update`: é o celular que troca de
+    // dono quando outra pessoa entra nele, e o `uid` novo tem de ser o de quem grava. A regra NÃO confere que o
+    // id é um token do Expo: isso fica com o app.
+    match /pushTokens/{token} {
+      allow get, list: if isInList();
+
+      allow create, update: if isInList()
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.keys().hasAll(['uid'])
+        && request.resource.data.uid == request.auth.uid;
+
+      // Quem assume um celular com o próprio uid passa a poder apagar o documento dele. Um membro
+      // poderia assim tirar o celular de outro da lista de envio até ele abrir o app de novo:
+      // aceito numa família, em troca de a troca de pessoa no mesmo celular funcionar.
+      allow delete: if isInList()
+        && resource.data.uid == request.auth.uid;
+    }
   }
 }
