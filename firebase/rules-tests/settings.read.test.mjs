@@ -27,7 +27,7 @@ describe('settings get of another document', () => {
 
 // `settings/app` guarda a versão mínima do app e qualquer um o lê, até sem sessão: a tela de atualização aparece antes do login.
 describe('settings get of the app settings', () => {
-  beforeEach(() => asOwner((firestore) => setDoc(settingsDocOf(firestore, 'app'), { minVersion: '0.5.0' })));
+  beforeEach(() => asOwner((firestore) => setDoc(settingsDocOf(firestore, 'app'), { version: '0.5.0' })));
 
   const cases = rowsFor([...MEMBERS, ...OUTSIDERS], 'read the app settings', true);
 

@@ -75,7 +75,7 @@ the new listener answers), the error reads as `loading`, and 30 s of failed read
 ## In front of the access: the minimum version
 
 The real layout has one guard more, before the access ones: `update-required`, open while the
-installed version is below `settings/app.minVersion` (`checkAppVersion`, `useAppVersionLockStore`).
+installed version is below `settings/app.version` (`checkAppVersion`, `useAppVersionLockStore`).
 The access guards read `guardedStatus`, which is `null` while an update is required, so every other
 screen closes, sign-in included. The splash waits for the first version check too
 (`hasCheckedVersion`); with an update required it no longer waits for the session.
