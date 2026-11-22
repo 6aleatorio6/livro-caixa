@@ -41,15 +41,15 @@ router.back();
 | `successAction` | the success toast carries a button, chosen from the call's params and result (`(params, data) => { label, onPress }`); needs `successMessage` |
 
 ```ts
-// src/features/home/utils/actions/doSkipBillMonth.ts
-export const doSkipBillMonth = createAsyncAction({
-  run: skipBillMonthService,
+// src/features/home/utils/actions/doSkipOverdueMonth.ts
+export const doSkipOverdueMonth = createAsyncAction({
+  run: skipOverdueMonthService,
   shouldShowLoader: true,
   successMessage: ({ bill, month }) => `${bill.name} de ${monthName(month)} pulada.`,
   successAction: ({ bill, month }) => ({
     label: 'Desfazer',
     onPress: () => {
-      doUndoSkipBillMonth({ bill, month });
+      doUndoSkipOverdueMonth({ bill, month });
     },
   }),
 });

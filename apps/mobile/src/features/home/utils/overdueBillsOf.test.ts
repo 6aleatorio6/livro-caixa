@@ -1,4 +1,4 @@
-import { billMonthOf } from '@/shared/testing/billMonthOf';
+import { overdueMonthOf } from '@/shared/testing/overdueMonthOf';
 import { contributionOf } from '@/shared/testing/contributionOf';
 import { ownedPaymentOf } from '@/shared/testing/ownedPaymentOf';
 import { unownedPaymentOf } from '@/shared/testing/unownedPaymentOf';
@@ -23,7 +23,7 @@ const internet: IRecurringBill = {
 };
 
 const overdueOf = (args: Partial<Parameters<typeof overdueBillsOf>[0]>) =>
-  overdueBillsOf({ bills: [water, internet], entries: [], billMonths: [], currentMonth: '2026-11', ...args });
+  overdueBillsOf({ bills: [water, internet], entries: [], overdueMonths: [], currentMonth: '2026-11', ...args });
 
 describe('overdueBillsOf', () => {
   it('Should list the bills of an earlier month without payment, by due date', () => {
@@ -43,9 +43,9 @@ describe('overdueBillsOf', () => {
     const overdue = overdueOf({
       bills: [water, internet, rent, gas],
       entries: [ownedPaymentOf({ id: '2026-10_water', recurringBillId: 'water', name: 'Água' })],
-      billMonths: [
-        billMonthOf(),
-        billMonthOf({
+      overdueMonths: [
+        overdueMonthOf(),
+        overdueMonthOf({
           id: '2026-10_gas',
           status: 'paidLater',
           recurringBillId: 'gas',
@@ -85,7 +85,7 @@ describe('overdueBillsOf', () => {
   });
 
   it('Should take a skipped month out of that month only', () => {
-    const overdue = overdueOf({ currentMonth: '2026-12', bills: [internet], billMonths: [billMonthOf()] });
+    const overdue = overdueOf({ currentMonth: '2026-12', bills: [internet], overdueMonths: [overdueMonthOf()] });
 
     expect(overdue.map(({ month }) => month)).toEqual(['2026-11']);
   });

@@ -1,7 +1,7 @@
-import { billMonthQueryService } from '@/shared/services/billMonth/query/billMonthQueryService';
-import { billMonthQueryScenarios } from '@/shared/services/billMonth/query/billMonthQueryService.scenarios';
-import { overdueSourcesQueryService } from '@/shared/services/billMonth/query/overdueSourcesQueryService';
-import { overdueSourcesQueryScenarios } from '@/shared/services/billMonth/query/overdueSourcesQueryService.scenarios';
+import { overdueMonthQueryService } from '@/shared/services/overdueMonth/query/overdueMonthQueryService';
+import { overdueMonthQueryScenarios } from '@/shared/services/overdueMonth/query/overdueMonthQueryService.scenarios';
+import { overdueSourcesQueryService } from '@/shared/services/overdueMonth/query/overdueSourcesQueryService';
+import { overdueSourcesQueryScenarios } from '@/shared/services/overdueMonth/query/overdueSourcesQueryService.scenarios';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { mockRealtime } from '@/shared/testing/mockRealtime';
 import type { IRealtimeMock } from '@/shared/types/testing/RealtimeMock';
@@ -12,12 +12,12 @@ import type { IRealtimeMock } from '@/shared/types/testing/RealtimeMock';
 // Os meses de conta e os lançamentos parados atendem só a leitura sem mês (`month: null`) do que não se lê: um mês
 // sem cenário ainda derruba o teste.
 const SUMMARY_READS: IRealtimeMock[] = [
-  { service: billMonthQueryService, scenario: billMonthQueryScenarios.monthWithoutBillMonths },
-  { service: billMonthQueryService, scenario: billMonthQueryScenarios.novemberWithoutBillMonths },
+  { service: overdueMonthQueryService, scenario: overdueMonthQueryScenarios.monthWithoutOverdueMonths },
+  { service: overdueMonthQueryService, scenario: overdueMonthQueryScenarios.novemberWithoutOverdueMonths },
   { service: overdueSourcesQueryService, scenario: overdueSourcesQueryScenarios.noOverdue },
   { service: overdueSourcesQueryService, scenario: overdueSourcesQueryScenarios.octoberUnpaid },
   { service: overdueSourcesQueryService, status: 'idle' },
-  { service: billMonthQueryService, status: 'idle', input: { month: null } },
+  { service: overdueMonthQueryService, status: 'idle', input: { month: null } },
   { service: entryMonthQueryService, status: 'idle', input: { month: null } },
 ];
 

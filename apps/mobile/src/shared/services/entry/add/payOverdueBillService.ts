@@ -2,7 +2,7 @@ import { collection, doc, serverTimestamp, writeBatch } from '@react-native-fire
 
 import { AppError } from '@/shared/exceptions/AppError';
 import { allowedEmailId } from '@/shared/services/allowedEmail/allowedEmailId';
-import { billMonthRef } from '@/shared/services/billMonth/billMonthRef';
+import { overdueMonthRef } from '@/shared/services/overdueMonth/overdueMonthRef';
 import { addReceiptToBatch } from '@/shared/services/entry/addReceiptToBatch';
 import { firebaseAuth } from '@/shared/services/firebase/firebaseAuth';
 import { firestoreDb } from '@/shared/services/firebase/firestoreDb';
@@ -14,8 +14,8 @@ import { paymentCopiesOf } from '@/shared/utils/recurringBill/paymentCopiesOf';
 /**
  * Registra, no mês de hoje, o pagamento de um mês atrasado de uma conta recorrente por quem está logado. Lê o comprovante
  * (falha: `RECEIPT_UNREADABLE`, nada gravado) e grava num lote só o registro e o conteúdo do arquivo, o `overduePayment`
- * (id gerado, com as cópias da conta e o dia do vencimento no mês dela), o `billMonths` `paidLater` que aponta para ele e
- * o `hasEntries: true`. O `billMonths` é um `set`: cria o documento de um mês sem estado ou troca o `skipped` de um mês
+ * (id gerado, com as cópias da conta e o dia do vencimento no mês dela), o `overdueMonths` `paidLater` que aponta para ele e
+ * o `hasEntries: true`. O `overdueMonths` é um `set`: cria o documento de um mês sem estado ou troca o `skipped` de um mês
  * pulado. Se o mês já foi pago depois (por outro membro) ou tem pagamento, a regra recusa o lote
  * (`firestore/permission-denied`) e o serviço lança `ALREADY_SETTLED`.
  */
@@ -36,7 +36,7 @@ export async function payOverdueBillService({ bill, billMonth, amountCents, rece
     createdAt: serverTimestamp(),
     receiptFileId,
   });
-  batch.set(billMonthRef(billMonth, bill.id), {
+  batch.set(overdueMonthRef(billMonth, bill.id), {
     status: 'paidLater',
     month: billMonth,
     recurringBillId: bill.id,

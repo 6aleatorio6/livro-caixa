@@ -9,8 +9,8 @@ import {
   addPaymentBatch,
   asOwner,
   assertAccess,
-  billMonthDocOf,
-  billMonthIdOf,
+  overdueMonthDocOf,
+  overdueMonthIdOf,
   contributionOf,
   deleteOverdueBatch,
   entryDocOf,
@@ -18,7 +18,7 @@ import {
   monthFromNow,
   oneOffBillOf,
   overduePaymentOf,
-  paidLaterBillMonthOf,
+  paidLaterOverdueMonthOf,
   payOverdueBatch,
   receiptFileOf,
   recurringBillOf,
@@ -27,7 +27,7 @@ import {
   seedOverduePayment,
   seedSkippedMonth,
   signedInAs,
-  skippedBillMonthOf,
+  skippedOverdueMonthOf,
   unownedPaymentOf,
 } from './setup/index.mjs';
 
@@ -37,10 +37,10 @@ const CURRENT = monthFromNow(0);
 const PREVIOUS = monthFromNow(-1);
 
 /**
- * Uma linha do lote do pagamento atrasado: `entry`, `file` e `billMonth` trocam campos do pagamento, do registro e
- * do `paidLater`; `batch` troca o resto do lote (`entry: null` e `billMonth: null` os deixam de fora).
+ * Uma linha do lote do pagamento atrasado: `entry`, `file` e `overdueMonth` trocam campos do pagamento, do registro e
+ * do `paidLater`; `batch` troca o resto do lote (`entry: null` e `overdueMonth: null` os deixam de fora).
  */
-function row(title, isAllowed, { entry = {}, file = {}, billMonth = {}, batch = {}, as = bruno, arrange } = {}) {
+function row(title, isAllowed, { entry = {}, file = {}, overdueMonth = {}, batch = {}, as = bruno, arrange } = {}) {
   return {
     title,
     isAllowed,
@@ -49,7 +49,7 @@ function row(title, isAllowed, { entry = {}, file = {}, billMonth = {}, batch = 
     batch: {
       entry: overduePaymentOf(entry),
       file: receiptFileOf(file),
-      billMonth: paidLaterBillMonthOf(billMonth),
+      overdueMonth: paidLaterOverdueMonthOf(overdueMonth),
       ...batch,
     },
   };
@@ -67,7 +67,7 @@ describe('overduePayment create by profile', () => {
       as: ana,
       entry: { paidBy: 'uid-ana' },
       file: { uploadedBy: 'uid-ana' },
-      billMonth: { createdBy: 'uid-ana' },
+      overdueMonth: { createdBy: 'uid-ana' },
       batch: { email: 'ana@gmail.com' },
     }),
     ...OUTSIDERS.map(({ who, as }) => row(`Should not let ${who} pay an overdue bill`, false, { as })),
@@ -79,32 +79,32 @@ describe('overduePayment create by profile', () => {
 // Em cada linha, o lote é o do Bruno com os campos trocados: o que a linha troca é o que ela prova.
 describe('overduePayment create by a member', () => {
   const cases = [
-    row('Should let a member pay an overdue bill without a tag', true, { entry: { tagId: undefined }, billMonth: { tagId: undefined } }),
-    row('Should not let a member pay an overdue bill without the paid-later month in the batch', false, { batch: { billMonth: null } }),
+    row('Should let a member pay an overdue bill without a tag', true, { entry: { tagId: undefined }, overdueMonth: { tagId: undefined } }),
+    row('Should not let a member pay an overdue bill without the paid-later month in the batch', false, { batch: { overdueMonth: null } }),
     row('Should not let a member write the paid-later month without the payment in the batch', false, { batch: { entry: null } }),
     row('Should not let a member pay an overdue bill with a billMonth equal to the month', false, {
       entry: { billMonth: CURRENT },
-      billMonth: { month: CURRENT },
+      overdueMonth: { month: CURRENT },
     }),
     row('Should not let a member pay an overdue bill with a billMonth after the month', false, {
       entry: { billMonth: monthFromNow(1) },
-      billMonth: { month: monthFromNow(1) },
+      overdueMonth: { month: monthFromNow(1) },
     }),
     row('Should not let a member pay an overdue bill with an id shaped like a payment', false, {
       batch: { entryId: `${CURRENT}_internet` },
-      billMonth: { entryId: `${CURRENT}_internet` },
+      overdueMonth: { entryId: `${CURRENT}_internet` },
     }),
     row('Should not let a member pay as overdue a month already paid in entries', false, {
-      arrange: (firestore) => setDoc(entryDocOf(firestore, billMonthIdOf()), recurringPaymentOf({ month: PREVIOUS })),
+      arrange: (firestore) => setDoc(entryDocOf(firestore, overdueMonthIdOf()), recurringPaymentOf({ month: PREVIOUS })),
     }),
     row('Should not let a member pay an overdue bill in a future month', false, { entry: { month: monthFromNow(1) } }),
     row('Should not let a member pay an overdue bill of a month before 2026-10', false, {
       entry: { billMonth: '2026-09' },
-      billMonth: { month: '2026-09' },
+      overdueMonth: { month: '2026-09' },
     }),
     row('Should not let a member pay an overdue bill of a bill that does not exist', false, {
       entry: { recurringBillId: 'naoexiste' },
-      billMonth: { recurringBillId: 'naoexiste' },
+      overdueMonth: { recurringBillId: 'naoexiste' },
     }),
     row('Should not let a member pay an overdue bill paid by another person', false, { entry: { paidBy: 'uid-ana' } }),
     row('Should not let a member pay an overdue bill without the file record in the batch', false, { batch: { file: null } }),
@@ -123,13 +123,13 @@ describe('overduePayment create by a member', () => {
     row('Should not let a member pay an overdue bill with an empty name', false, { entry: { name: '' } }),
     row('Should not let a member pay an overdue bill with dueDay 32', false, { entry: { dueDay: 32 } }),
     row('Should not let a member pay an overdue bill of the kind recurringPayment', false, { entry: { kind: 'recurringPayment' } }),
-    row('Should not let a member pay an overdue bill pointing the paid-later month to another entry', false, { billMonth: { entryId: 'o2' } }),
-    row('Should not let a member pay an overdue bill with a paid-later month of another person', false, { billMonth: { createdBy: 'uid-ana' } }),
+    row('Should not let a member pay an overdue bill pointing the paid-later month to another entry', false, { overdueMonth: { entryId: 'o2' } }),
+    row('Should not let a member pay an overdue bill with a paid-later month of another person', false, { overdueMonth: { createdBy: 'uid-ana' } }),
     row('Should not let a member point a paid-later month to a one-off bill', false, {
       batch: { entry: oneOffBillOf({ receiptFileId: 'f1' }), entryId: 'o1' },
     }),
     row('Should not let a member pay an overdue bill with a skipped month in the batch instead of the paid-later month', false, {
-      batch: { billMonth: skippedBillMonthOf() },
+      batch: { overdueMonth: skippedOverdueMonthOf() },
     }),
     row('Should not let a member pay the same overdue bill twice in one batch', false, {
       batch: { extraEntries: [['o2', overduePaymentOf({ receiptFileId: 'f2' }), 'f2']] },
@@ -142,59 +142,59 @@ describe('overduePayment create by a member', () => {
     // recusado por não ser da conta nem do mês do pagamento.
     row('Should not let a member write a second paid-later month of another bill pointing to the same payment', false, {
       arrange: (firestore) => setDoc(recurringBillOf(firestore, 'agua'), { ...SEEDED_BILL, name: 'Água' }),
-      batch: { extraBillMonths: [[billMonthIdOf({ recurringBillId: 'agua' }), paidLaterBillMonthOf({ recurringBillId: 'agua', name: 'Água' })]] },
+      batch: { extraOverdueMonths: [[overdueMonthIdOf({ recurringBillId: 'agua' }), paidLaterOverdueMonthOf({ recurringBillId: 'agua', name: 'Água' })]] },
     }),
     row('Should not let a member write a second paid-later month of another month pointing to the same payment', false, {
-      batch: { extraBillMonths: [[billMonthIdOf({ month: CURRENT }), paidLaterBillMonthOf({ month: CURRENT })]] },
+      batch: { extraOverdueMonths: [[overdueMonthIdOf({ month: CURRENT }), paidLaterOverdueMonthOf({ month: CURRENT })]] },
     }),
   ];
 
   itEach(cases, run);
 });
 
-// O mês pulado vira pago depois no lote do pagamento, com um `update` do `billMonths`.
+// O mês pulado vira pago depois no lote do pagamento, com um `update` do `overdueMonths`.
 describe('overduePayment payment of a skipped month', () => {
   const cases = [
-    row('Should let a member pay a skipped month', true, { arrange: seedSkippedMonth, batch: { updateBillMonth: true } }),
+    row('Should let a member pay a skipped month', true, { arrange: seedSkippedMonth, batch: { updateOverdueMonth: true } }),
     row('Should let a member pay a month skipped by another member', true, {
       arrange: (firestore) => seedSkippedMonth(firestore, { createdBy: 'uid-ana' }),
-      batch: { updateBillMonth: true },
+      batch: { updateOverdueMonth: true },
     }),
     row('Should not let a member turn a skipped month into paid-later without the payment', false, {
       arrange: seedSkippedMonth,
-      batch: { entry: null, updateBillMonth: true },
+      batch: { entry: null, updateOverdueMonth: true },
     }),
     row('Should not let a member pay a skipped month and change its month', false, {
       arrange: seedSkippedMonth,
-      batch: { updateBillMonth: true, billMonthChanges: { month: monthFromNow(-2) } },
+      batch: { updateOverdueMonth: true, overdueMonthChanges: { month: monthFromNow(-2) } },
     }),
     // O pagamento copia o nome e a tag da conta de agora, que podem ter mudado depois do pulo.
     row('Should let a member pay a skipped month of a bill renamed after the skip', true, {
       arrange: seedSkippedMonth,
-      batch: { updateBillMonth: true, billMonthChanges: { name: 'Outro nome' } },
+      batch: { updateOverdueMonth: true, overdueMonthChanges: { name: 'Outro nome' } },
     }),
     row('Should let a member pay a skipped month of a bill whose tag changed after the skip', true, {
       arrange: seedSkippedMonth,
-      batch: { updateBillMonth: true, billMonthChanges: { tagId: 't2' } },
+      batch: { updateOverdueMonth: true, overdueMonthChanges: { tagId: 't2' } },
     }),
     row('Should let a member pay a skipped month of a bill that lost its tag after the skip', true, {
       arrange: seedSkippedMonth,
-      batch: { updateBillMonth: true, billMonthChanges: { tagId: deleteField() } },
+      batch: { updateOverdueMonth: true, overdueMonthChanges: { tagId: deleteField() } },
     }),
     row('Should not let a member pay a month that is already paid-later', false, {
       arrange: seedOverduePayment,
-      batch: { entryId: 'o2', entry: overduePaymentOf({ receiptFileId: 'f1' }), billMonth: paidLaterBillMonthOf({ entryId: 'o2' }), updateBillMonth: true },
+      batch: { entryId: 'o2', entry: overduePaymentOf({ receiptFileId: 'f1' }), overdueMonth: paidLaterOverdueMonthOf({ entryId: 'o2' }), updateOverdueMonth: true },
     }),
   ];
 
   itEach(cases, run);
 });
 
-// Um mês da conta fica pago, pago depois ou pulado, nunca dois: o `entries` e o `billMonths` do mesmo id se excluem.
-describe('recurringPayment create in a month that has a billMonths', () => {
+// Um mês da conta fica pago, pago depois ou pulado, nunca dois: o `entries` e o `overdueMonths` do mesmo id se excluem.
+describe('recurringPayment create in a month that has a overdueMonths', () => {
   const payment = { entry: recurringPaymentOf({ month: PREVIOUS }) };
   const contribution = {
-    entry: contributionOf({ month: PREVIOUS, entryId: billMonthIdOf() }),
+    entry: contributionOf({ month: PREVIOUS, entryId: overdueMonthIdOf() }),
     unownedPayment: unownedPaymentOf({ month: PREVIOUS }),
   };
   const cases = [
@@ -217,7 +217,7 @@ describe('recurringPayment create in a month that has a billMonths', () => {
     {
       title: 'Should let a member pay a month when only another bill was skipped',
       isAllowed: true,
-      arrange: (firestore) => setDoc(billMonthDocOf(firestore, billMonthIdOf({ recurringBillId: 'luz' })), skippedBillMonthOf({ recurringBillId: 'luz', name: 'Luz' })),
+      arrange: (firestore) => setDoc(overdueMonthDocOf(firestore, overdueMonthIdOf({ recurringBillId: 'luz' })), skippedOverdueMonthOf({ recurringBillId: 'luz', name: 'Luz' })),
       batch: payment,
       run: addPaymentBatch,
     },
@@ -229,22 +229,22 @@ describe('recurringPayment create in a month that has a billMonths', () => {
   });
 });
 
-// O `entries` e o `billMonths` do mesmo mês também não nascem juntos: cada um confere o outro no fim do lote, e não
+// O `entries` e o `overdueMonths` do mesmo mês também não nascem juntos: cada um confere o outro no fim do lote, e não
 // antes dele, senão um lote só criaria os dois.
-describe('recurringPayment and skipped billMonths of the same month in one batch', () => {
-  const skippedMonth = [[billMonthIdOf(), skippedBillMonthOf()]];
+describe('recurringPayment and skipped overdueMonths of the same month in one batch', () => {
+  const skippedMonth = [[overdueMonthIdOf(), skippedOverdueMonthOf()]];
   const cases = [
     {
       title: 'Should not let a member pay a month and skip it in the same batch',
-      run: () => addPaymentBatch(bruno(), { entry: recurringPaymentOf({ month: PREVIOUS }), extraBillMonths: skippedMonth }),
+      run: () => addPaymentBatch(bruno(), { entry: recurringPaymentOf({ month: PREVIOUS }), extraOverdueMonths: skippedMonth }),
     },
     {
       title: 'Should not let a member create the unowned payment of a month and skip it in the same batch',
       run: () =>
         addContributionBatch(bruno(), {
-          entry: contributionOf({ month: PREVIOUS, entryId: billMonthIdOf() }),
+          entry: contributionOf({ month: PREVIOUS, entryId: overdueMonthIdOf() }),
           unownedPayment: unownedPaymentOf({ month: PREVIOUS }),
-          extraBillMonths: skippedMonth,
+          extraOverdueMonths: skippedMonth,
         }),
     },
   ];
@@ -318,7 +318,7 @@ describe('overduePayment delete', () => {
   const cases = [
     { title: 'Should let the author delete the overdue payment together with the paid-later month', as: bruno, batch: {}, isAllowed: true },
     { title: 'Should not let another member delete the overdue payment together with the paid-later month', as: ana, batch: {}, isAllowed: false },
-    { title: 'Should not let the author delete the overdue payment and keep the paid-later month', as: bruno, batch: { billMonthId: null }, isAllowed: false },
+    { title: 'Should not let the author delete the overdue payment and keep the paid-later month', as: bruno, batch: { overdueMonthId: null }, isAllowed: false },
     ...OUTSIDERS.map(({ who, as }) => ({ title: `Should not let ${who} delete the overdue payment`, as, batch: {}, isAllowed: false })),
   ];
 

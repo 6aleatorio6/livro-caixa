@@ -2,8 +2,8 @@ import { renderHook } from '@testing-library/react-native';
 
 import { mockRealtimeWithSummaryReads } from '@/shared/testing/mockRealtimeWithSummaryReads';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
-import { billMonthQueryService } from '@/shared/services/billMonth/query/billMonthQueryService';
-import { overdueSourcesQueryService } from '@/shared/services/billMonth/query/overdueSourcesQueryService';
+import { overdueMonthQueryService } from '@/shared/services/overdueMonth/query/overdueMonthQueryService';
+import { overdueSourcesQueryService } from '@/shared/services/overdueMonth/query/overdueSourcesQueryService';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { entryMonthQueryScenarios } from '@/shared/services/entry/query/entryMonthQueryService.scenarios';
 import { recurringBillListQueryService } from '@/shared/services/recurringBill/query/recurringBillListQueryService';
@@ -13,8 +13,8 @@ import { useMonthSummary } from './useMonthSummary';
 
 // Mocks com fábrica: o módulo real carregaria o React Native Firebase, que não roda no Jest.
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
-jest.mock('@/shared/services/billMonth/query/billMonthQueryService', () => ({ billMonthQueryService: {} }));
-jest.mock('@/shared/services/billMonth/query/overdueSourcesQueryService', () => ({
+jest.mock('@/shared/services/overdueMonth/query/overdueMonthQueryService', () => ({ overdueMonthQueryService: {} }));
+jest.mock('@/shared/services/overdueMonth/query/overdueSourcesQueryService', () => ({
   overdueSourcesQueryService: {},
 }));
 jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entryMonthQueryService: {} }));
@@ -63,7 +63,7 @@ describe('useMonthSummary', () => {
     mockRealtimeWithSummaryReads(
       fiveBills,
       { service: entryMonthQueryService, status: 'loading' },
-      { service: billMonthQueryService, status: 'loading' },
+      { service: overdueMonthQueryService, status: 'loading' },
     );
 
     await renderHook(() => useMonthSummary({ month: '2026-12', currentMonth: CURRENT_MONTH }));
@@ -90,13 +90,13 @@ describe('useMonthSummary', () => {
     mockRealtimeWithSummaryReads(
       fiveBills,
       { service: entryMonthQueryService, status: 'idle' },
-      { service: billMonthQueryService, status: 'idle' },
+      { service: overdueMonthQueryService, status: 'idle' },
     );
 
     const { result } = await renderHook(() => useMonthSummary({ month: null, currentMonth: CURRENT_MONTH }));
 
     expect(useRealtime).toHaveBeenCalledWith(entryMonthQueryService, { month: null });
-    expect(useRealtime).toHaveBeenCalledWith(billMonthQueryService, { month: null });
+    expect(useRealtime).toHaveBeenCalledWith(overdueMonthQueryService, { month: null });
     expect(useRealtime).toHaveBeenCalledWith(overdueSourcesQueryService, { currentMonth: null });
     expect(result.current.summary).toBeNull();
   });
@@ -113,7 +113,7 @@ describe('useMonthSummary', () => {
   });
 
   it('Should have no summary while the bill months have not arrived', async () => {
-    mockRealtimeWithSummaryReads(fiveBills, octoberEntries, { service: billMonthQueryService, status: 'loading' });
+    mockRealtimeWithSummaryReads(fiveBills, octoberEntries, { service: overdueMonthQueryService, status: 'loading' });
 
     const { result } = await renderHook(() => useMonthSummary({ month: '2026-10', currentMonth: CURRENT_MONTH }));
 
@@ -121,7 +121,7 @@ describe('useMonthSummary', () => {
   });
 
   it('Should tell an error in the bill months read', async () => {
-    mockRealtimeWithSummaryReads(fiveBills, octoberEntries, { service: billMonthQueryService, status: 'error' });
+    mockRealtimeWithSummaryReads(fiveBills, octoberEntries, { service: overdueMonthQueryService, status: 'error' });
 
     const { result } = await renderHook(() => useMonthSummary({ month: '2026-10', currentMonth: CURRENT_MONTH }));
 

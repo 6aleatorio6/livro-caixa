@@ -1,17 +1,17 @@
-import { skipBillMonthService } from '@/shared/services/billMonth/skip/skipBillMonthService';
+import { skipOverdueMonthService } from '@/shared/services/overdueMonth/skip/skipOverdueMonthService';
 import { monthName } from '@/shared/utils/date/monthName';
 import { createAsyncAction } from '@/shared/utils/handlerError/createAsyncAction';
 
-import { doUndoSkipBillMonth } from './doUndoSkipBillMonth';
+import { doUndoSkipOverdueMonth } from './doUndoSkipOverdueMonth';
 
-export const doSkipBillMonth = createAsyncAction({
-  run: skipBillMonthService,
+export const doSkipOverdueMonth = createAsyncAction({
+  run: skipOverdueMonthService,
   shouldShowLoader: true,
   successMessage: ({ bill, month }) => `${bill.name} de ${monthName(month)} pulada.`,
   successAction: ({ bill, month }) => ({
     label: 'Desfazer',
     onPress: () => {
-      doUndoSkipBillMonth({ bill, month });
+      doUndoSkipOverdueMonth({ bill, month });
     },
   }),
 });

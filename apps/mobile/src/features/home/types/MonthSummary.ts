@@ -1,4 +1,4 @@
-import type { IBillMonth } from '@/shared/types/billMonth/BillMonth';
+import type { IOverdueMonth } from '@/shared/types/overdueMonth/OverdueMonth';
 import type { IBillEntry } from '@/shared/types/entry/BillEntry';
 import type { IEntry } from '@/shared/types/entry/Entry';
 
@@ -14,7 +14,7 @@ export interface IMonthSummary {
   /** As contas pagas: os lançamentos com dono e os pagamentos sem dono cujas contribuições alcançaram o previsto. */
   paid: IBillEntry[];
   /** Os meses de conta pulados do mês: a conta não conta no mês, nem como a pagar nem como paga. */
-  skipped: IBillMonth[];
+  skipped: IOverdueMonth[];
   /** Os lançamentos do mês, contribuições incluídas, para somar cada conta e cada parte. */
   entries: IEntry[];
   /** O que falta das contas a pagar, atrasadas incluídas: o previsto menos as contribuições. */

@@ -38,7 +38,7 @@ export const payOverdueBillScenarios = {
   // A Ana pulou a Água de outubro, e o Bruno a paga: o `skipped` vira `paidLater`.
   memberPaysSkippedBill: {
     signedInAs: BRUNO,
-    given: { ...BRUNO_WITHOUT_ENTRIES, 'billMonths/2026-10_water': SKIPPED_WATER },
+    given: { ...BRUNO_WITHOUT_ENTRIES, 'overdueMonths/2026-10_water': SKIPPED_WATER },
     input: [OCTOBER_WATER],
     result: undefined,
   },
@@ -52,7 +52,7 @@ export const payOverdueBillRejectedScenarios = {
     given: {
       ...BRUNO_WITHOUT_ENTRIES,
       'entries/overdue-water': { ...OVERDUE_PAYMENT_DOCUMENT, paidBy: testAccountUid(ANA) },
-      'billMonths/2026-10_water': { ...PAID_LATER_WATER_DOCUMENT, createdBy: testAccountUid(ANA) },
+      'overdueMonths/2026-10_water': { ...PAID_LATER_WATER_DOCUMENT, createdBy: testAccountUid(ANA) },
     },
     input: [OCTOBER_WATER],
     result: { code: 'ALREADY_SETTLED', userMessage: 'Esta conta já foi paga ou pulada.' },

@@ -1,4 +1,4 @@
-import { billMonthQueryScenarios } from '@/shared/services/billMonth/query/billMonthQueryService.scenarios';
+import { overdueMonthQueryScenarios } from '@/shared/services/overdueMonth/query/overdueMonthQueryService.scenarios';
 import {
   BOTH_IN_THE_LIST,
   BRUNO,
@@ -8,7 +8,7 @@ import {
   PAYMENT_DOCUMENT,
 } from '@/shared/testing/entryFixtures';
 import { entryOf } from '@/shared/testing/entryOf';
-import type { IBillMonth } from '@/shared/types/billMonth/BillMonth';
+import type { IOverdueMonth } from '@/shared/types/overdueMonth/OverdueMonth';
 import type { IEntry } from '@/shared/types/entry/Entry';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 
@@ -36,10 +36,10 @@ const OCTOBER_GIVEN = {
   'entries/september-bill': SEPTEMBER_BILL,
 };
 
-const SKIPPED = billMonthQueryScenarios.monthWithSkippedBill;
+const SKIPPED = overdueMonthQueryScenarios.monthWithSkippedBill;
 const SKIPPED_INTERNET = SKIPPED.result[0];
-const SKIPPED_INTERNET_DOCUMENT = SKIPPED.given['billMonths/2026-10_internet'];
-const SEPTEMBER_BILL_MONTH = SKIPPED.given['billMonths/2026-09_rent'];
+const SKIPPED_INTERNET_DOCUMENT = SKIPPED.given['overdueMonths/2026-10_internet'];
+const SEPTEMBER_BILL_MONTH = SKIPPED.given['overdueMonths/2026-09_rent'];
 // Um mês de conta de novembro não existe com novembro como o mês atual; a leitura o deixa de fora do mesmo jeito.
 const NOVEMBER_BILL_MONTH = { ...SKIPPED_INTERNET_DOCUMENT, month: '2026-11', recurringBillId: 'water' };
 const DECEMBER_BILL_MONTH = { ...SKIPPED_INTERNET_DOCUMENT, month: '2026-12', recurringBillId: 'water' };
@@ -59,25 +59,25 @@ export const overdueSourcesQueryScenarios = {
     signedInAs: BRUNO,
     given: {
       ...OCTOBER_GIVEN,
-      'billMonths/2026-09_rent': SEPTEMBER_BILL_MONTH,
-      'billMonths/2026-11_water': NOVEMBER_BILL_MONTH,
+      'overdueMonths/2026-09_rent': SEPTEMBER_BILL_MONTH,
+      'overdueMonths/2026-11_water': NOVEMBER_BILL_MONTH,
     },
     input: { currentMonth: '2026-11' },
-    result: { entries: OCTOBER_ENTRIES, billMonths: [] },
+    result: { entries: OCTOBER_ENTRIES, overdueMonths: [] },
   },
   // A Internet de outubro foi pulada: vem o mês de conta dela, e a Água segue sem pagamento.
   octoberWithSkipped: {
     signedInAs: BRUNO,
-    given: { ...OCTOBER_GIVEN, 'billMonths/2026-10_internet': SKIPPED_INTERNET_DOCUMENT },
+    given: { ...OCTOBER_GIVEN, 'overdueMonths/2026-10_internet': SKIPPED_INTERNET_DOCUMENT },
     input: { currentMonth: '2026-11' },
-    result: { entries: OCTOBER_ENTRIES, billMonths: [SKIPPED_INTERNET] },
+    result: { entries: OCTOBER_ENTRIES, overdueMonths: [SKIPPED_INTERNET] },
   },
   // Com outubro, o primeiro mês do app, como o mês atual, não há mês anterior a ler: nada chega, nem o que é de outubro.
   noOverdue: {
     signedInAs: BRUNO,
-    given: { ...OCTOBER_GIVEN, 'billMonths/2026-10_internet': SKIPPED_INTERNET_DOCUMENT },
+    given: { ...OCTOBER_GIVEN, 'overdueMonths/2026-10_internet': SKIPPED_INTERNET_DOCUMENT },
     input: { currentMonth: '2026-10' },
-    result: { entries: [], billMonths: [] },
+    result: { entries: [], overdueMonths: [] },
   },
   // Em dezembro, o intervalo tem dois meses: outubro e novembro, do mais antigo ao mais novo; o que é de dezembro fica de
   // fora.
@@ -87,9 +87,9 @@ export const overdueSourcesQueryScenarios = {
       ...OCTOBER_GIVEN,
       'entries/air-conditioner': AIR_CONDITIONER,
       'entries/december-bill': DECEMBER_BILL,
-      'billMonths/2026-10_internet': SKIPPED_INTERNET_DOCUMENT,
-      'billMonths/2026-11_water': NOVEMBER_BILL_MONTH,
-      'billMonths/2026-12_water': DECEMBER_BILL_MONTH,
+      'overdueMonths/2026-10_internet': SKIPPED_INTERNET_DOCUMENT,
+      'overdueMonths/2026-11_water': NOVEMBER_BILL_MONTH,
+      'overdueMonths/2026-12_water': DECEMBER_BILL_MONTH,
     },
     input: { currentMonth: '2026-12' },
     result: {
@@ -98,21 +98,24 @@ export const overdueSourcesQueryScenarios = {
         entryOf('air-conditioner', AIR_CONDITIONER),
         entryOf('november-bill', NOVEMBER_BILL),
       ],
-      billMonths: [
+      overdueMonths: [
         SKIPPED_INTERNET,
         { ...SKIPPED_INTERNET, id: '2026-11_water', month: '2026-11', recurringBillId: 'water' },
       ],
     },
   },
   // O Bruno pula a Internet com a leitura aberta: o mês de conta chega.
-  billMonthAddedWhileOpen: {
+  overdueMonthAddedWhileOpen: {
     signedInAs: BRUNO,
     given: OCTOBER_GIVEN,
     input: { currentMonth: '2026-11' },
-    result: { entries: OCTOBER_ENTRIES, billMonths: [] as IBillMonth[] },
+    result: { entries: OCTOBER_ENTRIES, overdueMonths: [] as IOverdueMonth[] },
     afterChange: {
-      write: { 'billMonths/2026-10_internet': SKIPPED_INTERNET_DOCUMENT },
-      result: { entries: OCTOBER_ENTRIES, billMonths: [SKIPPED_INTERNET] },
+      write: { 'overdueMonths/2026-10_internet': SKIPPED_INTERNET_DOCUMENT },
+      result: { entries: OCTOBER_ENTRIES, overdueMonths: [SKIPPED_INTERNET] },
     },
   },
-} satisfies Record<string, IServiceScenario<{ currentMonth: string }, { entries: IEntry[]; billMonths: IBillMonth[] }>>;
+} satisfies Record<
+  string,
+  IServiceScenario<{ currentMonth: string }, { entries: IEntry[]; overdueMonths: IOverdueMonth[] }>
+>;

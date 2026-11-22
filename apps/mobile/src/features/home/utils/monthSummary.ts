@@ -1,4 +1,4 @@
-import type { IBillMonth } from '@/shared/types/billMonth/BillMonth';
+import type { IOverdueMonth } from '@/shared/types/overdueMonth/OverdueMonth';
 import type { IEntry } from '@/shared/types/entry/Entry';
 import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 import { isOwnedEntry } from '@/shared/utils/entry/isOwnedEntry';
@@ -17,7 +17,7 @@ import { billsToPayOf } from './billsToPayOf';
  * contribuição) e não o da conta; a pagar, ela conta pelo que falta. Os lançamentos com dono e os pagamentos sem dono
  * que alcançaram o previsto estão pagos, e o pago é a soma das partes de cada membro. Não olha quem está logado.
  *
- * Um mês de conta (`billMonths`) tira a conta do a pagar do mês: o pulado vai para `skipped`, o pago depois só some,
+ * Um mês de conta (`overdueMonths`) tira a conta do a pagar do mês: o pulado vai para `skipped`, o pago depois só some,
  * porque o pagamento dele está no mês em que foi feito. As atrasadas dos meses anteriores (`overdueBills`, de
  * `overdueBillsOf`, que só o mês atual recebe) vêm antes das contas do mês e entram nos totais, e a conta sem
  * pagamento de um mês anterior ao atual (`currentMonth`) é a atrasada no mês dela.
@@ -27,24 +27,24 @@ export function monthSummary({
   currentMonth,
   bills,
   entries,
-  billMonths,
+  overdueMonths,
   overdueBills,
 }: {
   month: string;
   currentMonth: string;
   bills: IRecurringBill[];
   entries: IEntry[];
-  billMonths: IBillMonth[];
+  overdueMonths: IOverdueMonth[];
   overdueBills: IBillToPay[];
 }): IMonthSummary {
   const monthEntries = entries.filter((entry) => entry.month === month);
-  const monthBillMonths = billMonths.filter((billMonth) => billMonth.month === month);
+  const monthOverdueMonths = overdueMonths.filter((overdueMonth) => overdueMonth.month === month);
 
   const paid = monthEntries.flatMap((entry) =>
     isOwnedEntry(entry) || (isUnownedPayment(entry) && isFullyContributed(entry, monthEntries)) ? [entry] : [],
   );
 
-  const toPayOfMonth = billsToPayOf({ month, bills, entries, billMonths }).map((billToPay): IBillToPay =>
+  const toPayOfMonth = billsToPayOf({ month, bills, entries, overdueMonths }).map((billToPay): IBillToPay =>
     month < currentMonth ? { ...billToPay, overdue: 'inItsMonth' } : billToPay,
   );
   const toPay = [...overdueBills, ...toPayOfMonth];
@@ -55,7 +55,7 @@ export function monthSummary({
   return {
     toPay,
     paid,
-    skipped: monthBillMonths.filter(({ status }) => status === 'skipped'),
+    skipped: monthOverdueMonths.filter(({ status }) => status === 'skipped'),
     entries: monthEntries,
     toPayCents,
     paidCents,

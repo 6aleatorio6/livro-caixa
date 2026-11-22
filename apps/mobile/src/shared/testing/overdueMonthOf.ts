@@ -1,9 +1,9 @@
-import type { IBillMonth } from '@/shared/types/billMonth/BillMonth';
+import type { IOverdueMonth } from '@/shared/types/overdueMonth/OverdueMonth';
 
 // Os meses de conta dos testes de unidade, de outubro de 2026.
 
 /** O mês de conta, por padrão a Internet de outubro que a Ana pulou em 3 de novembro. */
-export function billMonthOf(overrides: Partial<IBillMonth> = {}): IBillMonth {
+export function overdueMonthOf(overrides: Partial<IOverdueMonth> = {}): IOverdueMonth {
   return {
     id: '2026-10_internet',
     status: 'skipped',

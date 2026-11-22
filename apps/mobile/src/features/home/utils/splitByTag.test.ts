@@ -36,7 +36,7 @@ const oneOff = (id: string, tagId: string | null, amountCents: number): IOwnedEn
 
 // O mês visto é outubro de 2026, o atual, sem meses de conta nem atrasadas.
 const summaryOf = ({ bills, entries }: { bills: IRecurringBill[]; entries: IEntry[] }) =>
-  monthSummary({ month: '2026-10', currentMonth: '2026-10', billMonths: [], overdueBills: [], bills, entries });
+  monthSummary({ month: '2026-10', currentMonth: '2026-10', overdueMonths: [], overdueBills: [], bills, entries });
 
 describe('splitByTag', () => {
   it('Should give the paid and the to pay of each tag, from the largest paid to the smallest', () => {

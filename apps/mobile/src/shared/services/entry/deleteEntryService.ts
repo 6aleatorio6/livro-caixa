@@ -1,7 +1,7 @@
 import { doc, writeBatch } from '@react-native-firebase/firestore';
 
 import { AppError } from '@/shared/exceptions/AppError';
-import { billMonthRef } from '@/shared/services/billMonth/billMonthRef';
+import { overdueMonthRef } from '@/shared/services/overdueMonth/overdueMonthRef';
 import { deleteReceiptFromBatch } from '@/shared/services/entry/deleteReceiptFromBatch';
 import { firestoreDb } from '@/shared/services/firebase/firestoreDb';
 import type { IAuthoredEntry } from '@/shared/types/entry/AuthoredEntry';
@@ -15,7 +15,7 @@ import { isPermissionDenied } from '@/shared/utils/handlerError/isPermissionDeni
 /**
  * Exclui um lançamento de quem está logado: um lote apaga o lançamento, o registro e o conteúdo do comprovante
  * (`files/{receiptFileId}` e `fileContents/{receiptFileId}`). No pagamento de uma conta atrasada, o lote apaga também o
- * `billMonths` `paidLater` do mês da conta, e a conta volta a ficar atrasada. Na última contribuição de um pagamento sem dono, o lote
+ * `overdueMonths` `paidLater` do mês da conta, e a conta volta a ficar atrasada. Na última contribuição de um pagamento sem dono, o lote
  * apaga também o pagamento, e o mês volta a seguir a conta: o serviço sabe disso pelos lançamentos do mês que a tela
  * leu (`monthEntries`). A recusa das regras (outra pessoa) lança `ENTRY_DELETE_DENIED` e nada muda.
  */
@@ -24,7 +24,7 @@ export async function deleteEntryService(entry: IAuthoredEntry, monthEntries: IE
   batch.delete(doc(firestoreDb, 'entries', entry.id));
   deleteReceiptFromBatch(batch, entry.receiptFileId);
   if (entry.kind === 'overduePayment') {
-    batch.delete(billMonthRef(entry.billMonth, entry.recurringBillId));
+    batch.delete(overdueMonthRef(entry.billMonth, entry.recurringBillId));
   }
   if (entry.kind === 'contribution' && isLastOfUnownedPayment(entry, monthEntries)) {
     batch.delete(doc(firestoreDb, 'entries', entry.entryId));

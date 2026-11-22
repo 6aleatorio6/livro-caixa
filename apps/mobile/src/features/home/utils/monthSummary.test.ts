@@ -1,7 +1,7 @@
 import type { IOwnedEntry } from '@/shared/types/entry/OwnedEntry';
 import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 
-import { billMonthOf } from '@/shared/testing/billMonthOf';
+import { overdueMonthOf } from '@/shared/testing/overdueMonthOf';
 import { contributionOf } from '@/shared/testing/contributionOf';
 import { overduePaymentOf } from '@/shared/testing/overduePaymentOf';
 import { ownedPaymentOf } from '@/shared/testing/ownedPaymentOf';
@@ -55,7 +55,7 @@ const oneOff = (overrides: Partial<Extract<IOwnedEntry, { kind: 'oneOffBill' }>>
 const summaryOf = (
   args: Pick<Parameters<typeof monthSummary>[0], 'month' | 'bills' | 'entries'> &
     Partial<Parameters<typeof monthSummary>[0]>,
-) => monthSummary({ currentMonth: args.month, billMonths: [], overdueBills: [], ...args });
+) => monthSummary({ currentMonth: args.month, overdueMonths: [], overdueBills: [], ...args });
 
 describe('monthSummary', () => {
   it('Should be all zero in an empty month', () => {
@@ -301,10 +301,10 @@ describe('monthSummary', () => {
     const rent = bill();
     // A atrasada como `overdueBillsOf` a entrega: a conta sem pagamento no mês dela, marcada como de um mês anterior.
     const overdueBillOf = (billOfOctober: IRecurringBill): IBillToPay => ({
-      ...billsToPayOf({ month: '2026-10', bills: [billOfOctober], entries: [], billMonths: [] })[0],
+      ...billsToPayOf({ month: '2026-10', bills: [billOfOctober], entries: [], overdueMonths: [] })[0],
       overdue: 'fromEarlierMonth',
     });
-    const waterPaidLater = billMonthOf({
+    const waterPaidLater = overdueMonthOf({
       id: '2026-10_water',
       status: 'paidLater',
       recurringBillId: 'water',
@@ -337,14 +337,14 @@ describe('monthSummary', () => {
     });
 
     it('Should take a skipped month out of to pay and list it as skipped', () => {
-      const skippedInternet = billMonthOf();
+      const skippedInternet = overdueMonthOf();
 
       const summary = summaryOf({
         month: '2026-10',
         currentMonth: '2026-11',
         bills: [water, internet],
         entries: [],
-        billMonths: [skippedInternet],
+        overdueMonths: [skippedInternet],
       });
 
       expect(summary.toPay.map(({ name }) => name)).toEqual(['Água']);
@@ -358,7 +358,7 @@ describe('monthSummary', () => {
         currentMonth: '2026-11',
         bills: [water, internet],
         entries: [],
-        billMonths: [waterPaidLater],
+        overdueMonths: [waterPaidLater],
       });
 
       expect(summary.toPay.map(({ name }) => name)).toEqual(['Internet']);

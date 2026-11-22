@@ -1,5 +1,5 @@
 import { FIRST_MONTH } from '@/shared/constants/date/firstMonth';
-import type { IBillMonth } from '@/shared/types/billMonth/BillMonth';
+import type { IOverdueMonth } from '@/shared/types/overdueMonth/OverdueMonth';
 import type { IEntry } from '@/shared/types/entry/Entry';
 import type { IRecurringBill } from '@/shared/types/recurringBill/RecurringBill';
 import { shiftMonth } from '@/shared/utils/date/shiftMonth';
@@ -16,18 +16,18 @@ import { billsToPayOf } from './billsToPayOf';
 export function overdueBillsOf({
   bills,
   entries,
-  billMonths,
+  overdueMonths,
   currentMonth,
 }: {
   bills: IRecurringBill[];
   entries: IEntry[];
-  billMonths: IBillMonth[];
+  overdueMonths: IOverdueMonth[];
   currentMonth: string;
 }): IBillToPay[] {
   const overdueBills: IBillToPay[] = [];
   for (let month = FIRST_MONTH; month < currentMonth; month = shiftMonth(month, 1)) {
     overdueBills.push(
-      ...billsToPayOf({ month, bills, entries, billMonths }).map((billToPay): IBillToPay => ({
+      ...billsToPayOf({ month, bills, entries, overdueMonths }).map((billToPay): IBillToPay => ({
         ...billToPay,
         overdue: 'fromEarlierMonth',
       })),

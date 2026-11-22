@@ -7,8 +7,8 @@ import { useAuthState } from '@/shared/hooks/useAuthState/useAuthState';
 import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService';
 import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService.scenarios';
 import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
-import { billMonthQueryService } from '@/shared/services/billMonth/query/billMonthQueryService';
-import { billMonthQueryScenarios } from '@/shared/services/billMonth/query/billMonthQueryService.scenarios';
+import { overdueMonthQueryService } from '@/shared/services/overdueMonth/query/overdueMonthQueryService';
+import { overdueMonthQueryScenarios } from '@/shared/services/overdueMonth/query/overdueMonthQueryService.scenarios';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { entryMonthQueryScenarios } from '@/shared/services/entry/query/entryMonthQueryService.scenarios';
 import { recurringBillListQueryService } from '@/shared/services/recurringBill/query/recurringBillListQueryService';
@@ -25,8 +25,8 @@ import { HomePage } from './HomePage';
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
 jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jest.fn() }));
 jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entryMonthQueryService: {} }));
-jest.mock('@/shared/services/billMonth/query/billMonthQueryService', () => ({ billMonthQueryService: {} }));
-jest.mock('@/shared/services/billMonth/query/overdueSourcesQueryService', () => ({
+jest.mock('@/shared/services/overdueMonth/query/overdueMonthQueryService', () => ({ overdueMonthQueryService: {} }));
+jest.mock('@/shared/services/overdueMonth/query/overdueSourcesQueryService', () => ({
   overdueSourcesQueryService: {},
 }));
 jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService', () => ({
@@ -69,8 +69,8 @@ const novemberWithOverduePayment = {
 const emptyMonth = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.emptyMonth };
 
 const octoberWithSkippedBill = {
-  service: billMonthQueryService,
-  scenario: billMonthQueryScenarios.monthWithSkippedBill,
+  service: overdueMonthQueryService,
+  scenario: overdueMonthQueryScenarios.monthWithSkippedBill,
 };
 
 // Novembro é o mês atual: a Luz de outubro foi paga e a Água de outubro, não. Em novembro o mês anterior é outubro, o

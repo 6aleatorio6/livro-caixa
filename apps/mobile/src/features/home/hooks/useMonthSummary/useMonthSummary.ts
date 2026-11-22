@@ -1,8 +1,8 @@
 import { monthSummary } from '@/features/home/utils/monthSummary';
 import { overdueBillsOf } from '@/features/home/utils/overdueBillsOf';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
-import { billMonthQueryService } from '@/shared/services/billMonth/query/billMonthQueryService';
-import { overdueSourcesQueryService } from '@/shared/services/billMonth/query/overdueSourcesQueryService';
+import { overdueMonthQueryService } from '@/shared/services/overdueMonth/query/overdueMonthQueryService';
+import { overdueSourcesQueryService } from '@/shared/services/overdueMonth/query/overdueSourcesQueryService';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { recurringBillListQueryService } from '@/shared/services/recurringBill/query/recurringBillListQueryService';
 
@@ -17,20 +17,20 @@ export function useMonthSummary({ month, currentMonth }: { month: string | null;
   const isThisMonth = month === currentMonth;
   const { status: billsStatus, data: bills } = useRealtime(recurringBillListQueryService, {});
   const { status: entriesStatus, data: entries } = useRealtime(entryMonthQueryService, { month });
-  const { status: billMonthsStatus, data: billMonths } = useRealtime(billMonthQueryService, { month });
+  const { status: overdueMonthsStatus, data: overdueMonths } = useRealtime(overdueMonthQueryService, { month });
   const { status: overdueStatus, data: overdueSources } = useRealtime(overdueSourcesQueryService, {
     currentMonth: isThisMonth ? currentMonth : null,
   });
 
-  const hasError = [billsStatus, entriesStatus, billMonthsStatus, overdueStatus].includes('error');
-  const hasReads = month !== null && bills && entries && billMonths && (overdueSources || !isThisMonth);
+  const hasError = [billsStatus, entriesStatus, overdueMonthsStatus, overdueStatus].includes('error');
+  const hasReads = month !== null && bills && entries && overdueMonths && (overdueSources || !isThisMonth);
   const summary = hasReads
     ? monthSummary({
         month,
         currentMonth,
         bills,
         entries,
-        billMonths,
+        overdueMonths,
         overdueBills: overdueSources ? overdueBillsOf({ bills, currentMonth, ...overdueSources }) : [],
       })
     : null;

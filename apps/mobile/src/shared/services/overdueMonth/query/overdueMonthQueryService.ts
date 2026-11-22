@@ -1,8 +1,8 @@
 import { collection, query, where, type DocumentData } from '@react-native-firebase/firestore';
 
-import { toBillMonth } from '@/shared/services/billMonth/query/toBillMonth';
+import { toOverdueMonth } from '@/shared/services/overdueMonth/query/toOverdueMonth';
 import { firestoreDb } from '@/shared/services/firebase/firestoreDb';
-import type { IBillMonth } from '@/shared/types/billMonth/BillMonth';
+import type { IOverdueMonth } from '@/shared/types/overdueMonth/OverdueMonth';
 import { createRealtimeService } from '@/shared/utils/serviceUtils/createRealtimeService';
 
 /**
@@ -10,19 +10,19 @@ import { createRealtimeService } from '@/shared/utils/serviceUtils/createRealtim
  * alguém paga ou pula um. O que o servidor ainda não carimbou é o mais novo, e a ordem é feita aqui para a consulta
  * não pedir índice composto. Um `status` que o app não conhece fica de fora.
  */
-export const billMonthQueryService = createRealtimeService({
+export const overdueMonthQueryService = createRealtimeService({
   // Sem o mês (a tela ainda espera o que o diz), a leitura fica parada.
   refs: ({ month }: { month: string | null }) =>
-    month ? [query(collection(firestoreDb, 'billMonths'), where('month', '==', month))] : [],
+    month ? [query(collection(firestoreDb, 'overdueMonths'), where('month', '==', month))] : [],
   // Sem o mês, `resolve` não roda: a leitura parada não entrega nada.
-  resolve: ([billMonths = []]): IBillMonth[] =>
-    [...billMonths]
+  resolve: ([overdueMonths = []]): IOverdueMonth[] =>
+    [...overdueMonths]
       .sort(
         (first, second) => createdAtMillisOf(first) - createdAtMillisOf(second) || first.id.localeCompare(second.id),
       )
       .flatMap((document) => {
-        const billMonth = toBillMonth(document);
-        return billMonth ? [billMonth] : [];
+        const overdueMonth = toOverdueMonth(document);
+        return overdueMonth ? [overdueMonth] : [];
       }),
 });
 

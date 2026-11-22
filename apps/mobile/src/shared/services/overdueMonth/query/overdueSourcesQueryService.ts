@@ -1,10 +1,10 @@
 import { collection, query, where } from '@react-native-firebase/firestore';
 
 import { FIRST_MONTH } from '@/shared/constants/date/firstMonth';
-import { toBillMonth } from '@/shared/services/billMonth/query/toBillMonth';
+import { toOverdueMonth } from '@/shared/services/overdueMonth/query/toOverdueMonth';
 import { toEntry } from '@/shared/services/entry/query/toEntry';
 import { firestoreDb } from '@/shared/services/firebase/firestoreDb';
-import type { IBillMonth } from '@/shared/types/billMonth/BillMonth';
+import type { IOverdueMonth } from '@/shared/types/overdueMonth/OverdueMonth';
 import type { IEntry } from '@/shared/types/entry/Entry';
 import { createRealtimeService } from '@/shared/utils/serviceUtils/createRealtimeService';
 
@@ -25,15 +25,15 @@ export const overdueSourcesQueryService = createRealtimeService({
             where('month', '<', currentMonth),
           ),
           query(
-            collection(firestoreDb, 'billMonths'),
+            collection(firestoreDb, 'overdueMonths'),
             where('month', '>=', FIRST_MONTH),
             where('month', '<', currentMonth),
           ),
         ]
       : [],
   // Sem o mês atual, `resolve` não roda: a leitura parada não entrega nada.
-  resolve: ([entries = [], billMonths = []]): { entries: IEntry[]; billMonths: IBillMonth[] } => ({
+  resolve: ([entries = [], overdueMonths = []]): { entries: IEntry[]; overdueMonths: IOverdueMonth[] } => ({
     entries: entries.flatMap((document) => toEntry(document) ?? []),
-    billMonths: billMonths.flatMap((document) => toBillMonth(document) ?? []),
+    overdueMonths: overdueMonths.flatMap((document) => toOverdueMonth(document) ?? []),
   }),
 });

@@ -2,9 +2,9 @@ import { recurringBillListQueryScenarios } from '@/shared/services/recurringBill
 import { UNOWNED_PAYMENT_DOCUMENT } from '@/shared/testing/entryFixtures';
 import type { IServiceScenario } from '@/shared/types/testing/ServiceScenario';
 
-import type { skipBillMonthService } from './skipBillMonthService';
+import type { skipOverdueMonthService } from './skipOverdueMonthService';
 
-type ISkipBillMonthArguments = Parameters<typeof skipBillMonthService>;
+type ISkipOverdueMonthArguments = Parameters<typeof skipOverdueMonthService>;
 
 // A pessoa é a conta de teste das jornadas: o Bruno é membro.
 const BRUNO = 'bruno.souza@exemplo.com';
@@ -20,7 +20,7 @@ const BRUNO_AND_THE_BILL = {
 };
 const OCTOBER_INTERNET = { bill: INTERNET_BILL, month: '2026-10' };
 
-export const skipBillMonthScenarios = {
+export const skipOverdueMonthScenarios = {
   // Outubro da Internet, sem documento nenhum: o `skipped` guarda o nome e a tag da conta e quem pulou.
   memberSkipsOverdueMonth: {
     signedInAs: BRUNO,
@@ -35,10 +35,10 @@ export const skipBillMonthScenarios = {
     input: [{ ...OCTOBER_INTERNET, bill: { ...INTERNET_BILL, tagId: null } }],
     result: undefined,
   },
-} satisfies Record<string, IServiceScenario<ISkipBillMonthArguments, void>>;
+} satisfies Record<string, IServiceScenario<ISkipOverdueMonthArguments, void>>;
 
 /** Os casos recusados: o serviço lança `AppError`, e a `result` é o que o erro carrega. */
-export const skipBillMonthRejectedScenarios = {
+export const skipOverdueMonthRejectedScenarios = {
   // Outubro da Internet tem contribuições, e o pagamento sem dono ocupa o id do mês: o mês não pode ser pulado.
   monthWithContributions: {
     signedInAs: BRUNO,
@@ -49,4 +49,4 @@ export const skipBillMonthRejectedScenarios = {
       userMessage: 'Não deu para pular esta conta. Ela já foi paga ou tem contribuições.',
     },
   },
-} satisfies Record<string, IServiceScenario<ISkipBillMonthArguments, { code: string; userMessage: string }>>;
+} satisfies Record<string, IServiceScenario<ISkipOverdueMonthArguments, { code: string; userMessage: string }>>;

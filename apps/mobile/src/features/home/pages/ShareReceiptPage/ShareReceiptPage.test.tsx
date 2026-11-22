@@ -29,8 +29,8 @@ jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jes
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({
   allowedEmailListQueryService: {},
 }));
-jest.mock('@/shared/services/billMonth/query/billMonthQueryService', () => ({ billMonthQueryService: {} }));
-jest.mock('@/shared/services/billMonth/query/overdueSourcesQueryService', () => ({
+jest.mock('@/shared/services/overdueMonth/query/overdueMonthQueryService', () => ({ overdueMonthQueryService: {} }));
+jest.mock('@/shared/services/overdueMonth/query/overdueSourcesQueryService', () => ({
   overdueSourcesQueryService: {},
 }));
 jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entryMonthQueryService: {} }));

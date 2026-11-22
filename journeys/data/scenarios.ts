@@ -327,7 +327,7 @@ export const scenariosByName: Record<string, Scenario> = {
   /**
    * As contas atrasadas do design, sobre o mês atual do Início. No mês anterior: o Aluguel e a Luz pagos, a
    * Internet pulada pela Ana, o Condomínio sem pagamento (a atrasada) e a Água paga depois, neste mês, pela Ana: o
-   * `overduePayment` no mês atual e o `billMonths` `paidLater` que aponta para ele, como o `payOverdueBillService`.
+   * `overduePayment` no mês atual e o `overdueMonths` `paidLater` que aponta para ele, como o `payOverdueBillService`.
    */
   async seedOverdueBills({ db }) {
     await writeHomeOfThisMonth(db);
@@ -343,7 +343,7 @@ export const scenariosByName: Record<string, Scenario> = {
     });
     const ana = await uidOf(db, ACCOUNTS.admin.email);
     const { internet, water } = BILLS_IN_USE;
-    await setDoc(doc(db, 'billMonths', `${previousMonth}_internet`), {
+    await setDoc(doc(db, 'overdueMonths', `${previousMonth}_internet`), {
       status: 'skipped',
       month: previousMonth,
       recurringBillId: 'internet',
@@ -363,7 +363,7 @@ export const scenariosByName: Record<string, Scenario> = {
       expectedAmountCents: water.expectedAmountCents,
       tagId: water.tagId,
     });
-    await setDoc(doc(db, 'billMonths', `${previousMonth}_water`), {
+    await setDoc(doc(db, 'overdueMonths', `${previousMonth}_water`), {
       status: 'paidLater',
       month: previousMonth,
       recurringBillId: 'water',

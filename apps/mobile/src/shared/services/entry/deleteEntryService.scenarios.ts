@@ -82,7 +82,7 @@ export const deleteEntryScenarios = {
     given: {
       ...BOTH_IN_THE_LIST,
       'entries/overdue-water': ANA_OVERDUE_PAYMENT_DOCUMENT,
-      'billMonths/2026-10_water': ANA_PAID_LATER_WATER_DOCUMENT,
+      'overdueMonths/2026-10_water': ANA_PAID_LATER_WATER_DOCUMENT,
       ...receiptOf(ANA_OVERDUE_PAYMENT_FILE_ID, ANA).fileDocuments,
     },
     fileContentsGiven: receiptOf(ANA_OVERDUE_PAYMENT_FILE_ID, ANA).fileContentIds,

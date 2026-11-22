@@ -4,8 +4,8 @@ import { after, before, beforeEach } from 'node:test';
 import { initializeTestEnvironment } from '@firebase/rules-unit-testing';
 import { setDoc } from 'firebase/firestore';
 
-import { SEEDED_BILL, SEEDED_TAG, billMonthIdOf, oneOffBillOf, overduePaymentOf, paidLaterBillMonthOf, receiptContentOf, receiptFileOf, recurringPaymentOf, skippedBillMonthOf } from './documents.mjs';
-import { billMonthDocOf, entryDocOf, entryOf, fileContentOf, fileOf, recurringBillOf, tagsDocOf } from './refs.mjs';
+import { SEEDED_BILL, SEEDED_TAG, overdueMonthIdOf, oneOffBillOf, overduePaymentOf, paidLaterOverdueMonthOf, receiptContentOf, receiptFileOf, recurringPaymentOf, skippedOverdueMonthOf } from './documents.mjs';
+import { overdueMonthDocOf, entryDocOf, entryOf, fileContentOf, fileOf, recurringBillOf, tagsDocOf } from './refs.mjs';
 
 // O ambiente dos testes das regras: cada arquivo `*.test.mjs` importa o `setup/`, que liga os emuladores
 // do Firestore (`pnpm test:rules`, no PC, que tem o Java) e semeia a lista antes de cada caso. Os
@@ -62,19 +62,19 @@ export function asOwner(write) {
 
 /** O mês pulado da internet do mês anterior, gravado por fora das regras. */
 export function seedSkippedMonth(firestore, overrides = {}) {
-  const billMonth = skippedBillMonthOf(overrides);
-  return setDoc(billMonthDocOf(firestore, billMonthIdOf(billMonth)), billMonth);
+  const overdueMonth = skippedOverdueMonthOf(overrides);
+  return setDoc(overdueMonthDocOf(firestore, overdueMonthIdOf(overdueMonth)), overdueMonth);
 }
 
 /**
- * O pagamento atrasado do Bruno (`o1`, com o comprovante `fod`) e o `billMonths` `paidLater` que aponta para ele,
+ * O pagamento atrasado do Bruno (`o1`, com o comprovante `fod`) e o `overdueMonths` `paidLater` que aponta para ele,
  * gravados por fora das regras.
  */
 export function seedOverduePayment(firestore) {
-  const paidLater = paidLaterBillMonthOf();
+  const paidLater = paidLaterOverdueMonthOf();
   return Promise.all([
     seedReceipt(firestore, 'fod'),
     setDoc(entryDocOf(firestore, 'o1'), overduePaymentOf({ receiptFileId: 'fod' })),
-    setDoc(billMonthDocOf(firestore, billMonthIdOf(paidLater)), paidLater),
+    setDoc(overdueMonthDocOf(firestore, overdueMonthIdOf(paidLater)), paidLater),
   ]);
 }

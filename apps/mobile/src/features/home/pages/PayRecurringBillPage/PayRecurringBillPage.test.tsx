@@ -9,15 +9,15 @@ import { allowedEmailListQueryService } from '@/shared/services/allowedEmail/que
 import { allowedEmailListQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailListQueryService.scenarios';
 import { allowedEmailQueryService } from '@/shared/services/allowedEmail/query/allowedEmailQueryService';
 import { allowedEmailQueryScenarios } from '@/shared/services/allowedEmail/query/allowedEmailQueryService.scenarios';
-import { billMonthQueryService } from '@/shared/services/billMonth/query/billMonthQueryService';
-import { billMonthQueryScenarios } from '@/shared/services/billMonth/query/billMonthQueryService.scenarios';
-import { skipBillMonthService } from '@/shared/services/billMonth/skip/skipBillMonthService';
+import { overdueMonthQueryService } from '@/shared/services/overdueMonth/query/overdueMonthQueryService';
+import { overdueMonthQueryScenarios } from '@/shared/services/overdueMonth/query/overdueMonthQueryService.scenarios';
+import { skipOverdueMonthService } from '@/shared/services/overdueMonth/skip/skipOverdueMonthService';
 import {
-  skipBillMonthRejectedScenarios,
-  skipBillMonthScenarios,
-} from '@/shared/services/billMonth/skip/skipBillMonthService.scenarios';
-import { undoSkipBillMonthService } from '@/shared/services/billMonth/skip/undoSkipBillMonthService';
-import { undoSkipBillMonthScenarios } from '@/shared/services/billMonth/skip/undoSkipBillMonthService.scenarios';
+  skipOverdueMonthRejectedScenarios,
+  skipOverdueMonthScenarios,
+} from '@/shared/services/overdueMonth/skip/skipOverdueMonthService.scenarios';
+import { undoSkipOverdueMonthService } from '@/shared/services/overdueMonth/skip/undoSkipOverdueMonthService';
+import { undoSkipOverdueMonthScenarios } from '@/shared/services/overdueMonth/skip/undoSkipOverdueMonthService.scenarios';
 import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
 import { entryMonthQueryService } from '@/shared/services/entry/query/entryMonthQueryService';
 import { entryMonthQueryScenarios } from '@/shared/services/entry/query/entryMonthQueryService.scenarios';
@@ -52,7 +52,7 @@ import { PayRecurringBillPage } from './PayRecurringBillPage';
 jest.mock('@/shared/hooks/useRealtime/useRealtime', () => ({ useRealtime: jest.fn() }));
 jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jest.fn() }));
 jest.mock('@/shared/services/entry/query/entryMonthQueryService', () => ({ entryMonthQueryService: {} }));
-jest.mock('@/shared/services/billMonth/query/billMonthQueryService', () => ({ billMonthQueryService: {} }));
+jest.mock('@/shared/services/overdueMonth/query/overdueMonthQueryService', () => ({ overdueMonthQueryService: {} }));
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailQueryService', () => ({ allowedEmailQueryService: {} }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailListQueryService', () => ({
@@ -63,8 +63,12 @@ jest.mock('@/shared/services/recurringBill/query/recurringBillListQueryService',
 }));
 jest.mock('@/shared/services/entry/add/payRecurringBillService', () => ({ payRecurringBillService: jest.fn() }));
 jest.mock('@/shared/services/entry/add/payOverdueBillService', () => ({ payOverdueBillService: jest.fn() }));
-jest.mock('@/shared/services/billMonth/skip/skipBillMonthService', () => ({ skipBillMonthService: jest.fn() }));
-jest.mock('@/shared/services/billMonth/skip/undoSkipBillMonthService', () => ({ undoSkipBillMonthService: jest.fn() }));
+jest.mock('@/shared/services/overdueMonth/skip/skipOverdueMonthService', () => ({
+  skipOverdueMonthService: jest.fn(),
+}));
+jest.mock('@/shared/services/overdueMonth/skip/undoSkipOverdueMonthService', () => ({
+  undoSkipOverdueMonthService: jest.fn(),
+}));
 jest.mock('@/shared/services/entry/add/addContributionService', () => ({ addContributionService: jest.fn() }));
 jest.mock('@/shared/utils/file/pickReceiptFile', () => ({ pickReceiptFile: jest.fn() }));
 jest.mock('@/shared/utils/file/prepareReceipt', () => ({ prepareReceipt: jest.fn() }));
@@ -75,7 +79,7 @@ jest.mock('expo-router', () => ({
   useLocalSearchParams: jest.fn(),
 }));
 
-type IBillMonthsScenario = (typeof billMonthQueryScenarios)[keyof typeof billMonthQueryScenarios];
+type IOverdueMonthsScenario = (typeof overdueMonthQueryScenarios)[keyof typeof overdueMonthQueryScenarios];
 
 const scenario = payRecurringBillScenarios.memberPaysBill;
 const [paymentOfScenario] = scenario.input;
@@ -107,12 +111,12 @@ describe('PayRecurringBillPage', () => {
 
   async function renderPage(
     id = paymentOfScenario.bill.id,
-    { month, entriesScenario = entryMonthQueryScenarios.emptyMonth, billMonthsScenario, shared, attach } = {
+    { month, entriesScenario = entryMonthQueryScenarios.emptyMonth, overdueMonthsScenario, shared, attach } = {
       month: paymentOfScenario.month,
     } as {
       month?: string;
       entriesScenario?: (typeof entryMonthQueryScenarios)[keyof typeof entryMonthQueryScenarios];
-      billMonthsScenario?: IBillMonthsScenario;
+      overdueMonthsScenario?: IOverdueMonthsScenario;
       shared?: string;
       attach?: string;
     },
@@ -122,9 +126,9 @@ describe('PayRecurringBillPage', () => {
       { service: entryMonthQueryService, scenario: entriesScenario },
       // Os meses de conta só são lidos num mês anterior ao atual: o teste dá o cenário que a tela lê, e nos outros a
       // leitura fica parada (`idle`, sem mês). Um mês anterior sem cenário derruba o teste.
-      billMonthsScenario
-        ? { service: billMonthQueryService, scenario: billMonthsScenario }
-        : { service: billMonthQueryService, status: 'idle', input: { month: null } },
+      overdueMonthsScenario
+        ? { service: overdueMonthQueryService, scenario: overdueMonthsScenario }
+        : { service: overdueMonthQueryService, status: 'idle', input: { month: null } },
       { service: recurringBillListQueryService, scenario: recurringBillListQueryScenarios.fiveBills },
       { service: tagListQueryService, scenario: tagListQueryScenarios.threeTags },
       { service: allowedEmailQueryService, scenario: allowedEmailQueryScenarios.emailInList },
@@ -487,18 +491,18 @@ describe('PayRecurringBillPage', () => {
     const SKIP_OCTOBER = 'Pular outubro';
     const overduePayment = payOverdueBillScenarios.memberPaysOverdueBill;
     const [overdueInput] = overduePayment.input;
-    const skip = skipBillMonthScenarios.memberSkipsOverdueMonth;
+    const skip = skipOverdueMonthScenarios.memberSkipsOverdueMonth;
     const [skipInput] = skip.input;
-    const undo = undoSkipBillMonthScenarios.memberUndoesSkip;
+    const undo = undoSkipOverdueMonthScenarios.memberUndoesSkip;
 
     // Os meses de conta de outubro, que a tela lê no mês atrasado: sem nenhum pulado nem pago depois, por padrão.
     async function renderOverduePage(
-      overrides: { id?: string; billMonthsScenario?: IBillMonthsScenario; shared?: string } = {},
+      overrides: { id?: string; overdueMonthsScenario?: IOverdueMonthsScenario; shared?: string } = {},
     ) {
       jest.setSystemTime(new Date(2026, 10, 25));
       return renderPage(overrides.id ?? overdueInput.bill.id, {
         month: '2026-10',
-        billMonthsScenario: overrides.billMonthsScenario ?? billMonthQueryScenarios.monthWithoutBillMonths,
+        overdueMonthsScenario: overrides.overdueMonthsScenario ?? overdueMonthQueryScenarios.monthWithoutOverdueMonths,
         shared: overrides.shared,
       });
     }
@@ -576,8 +580,8 @@ describe('PayRecurringBillPage', () => {
     });
 
     it('Should ask before skipping, skip the month, close the screen and offer to undo it', async () => {
-      mockServiceScenario(skipBillMonthService, skip);
-      mockServiceScenario(undoSkipBillMonthService, undo);
+      mockServiceScenario(skipOverdueMonthService, skip);
+      mockServiceScenario(undoSkipOverdueMonthService, undo);
       const user = await renderOverduePage({ id: skipInput.bill.id });
 
       await user.press(screen.getByRole('button', { name: SKIP_OCTOBER }));
@@ -588,11 +592,11 @@ describe('PayRecurringBillPage', () => {
           'Ela sai das contas a pagar e não conta em nenhum mês. Fica nas Puladas de outubro, de onde dá para pagá-la depois.',
         ),
       ).toBeOnTheScreen();
-      expect(skipBillMonthService).not.toHaveBeenCalled();
+      expect(skipOverdueMonthService).not.toHaveBeenCalled();
 
       await user.press(screen.getByRole('button', { name: 'Pular' }));
 
-      expect(skipBillMonthService).toHaveBeenCalledWith(...skip.input);
+      expect(skipOverdueMonthService).toHaveBeenCalledWith(...skip.input);
       expect(router.back).toHaveBeenCalledTimes(1);
       expect(showToast).toHaveBeenCalledWith('Internet de outubro pulada.', 'success', {
         label: 'Desfazer',
@@ -602,7 +606,7 @@ describe('PayRecurringBillPage', () => {
       const action = jest.mocked(showToast).mock.calls[0][2];
       await act(async () => action?.onPress());
 
-      expect(undoSkipBillMonthService).toHaveBeenCalledWith(...undo.input);
+      expect(undoSkipOverdueMonthService).toHaveBeenCalledWith(...undo.input);
     });
 
     it('Should not skip when the dialog is cancelled', async () => {
@@ -611,14 +615,14 @@ describe('PayRecurringBillPage', () => {
       await user.press(screen.getByRole('button', { name: SKIP_OCTOBER }));
       await user.press(screen.getByRole('button', { name: 'Cancelar' }));
 
-      expect(skipBillMonthService).not.toHaveBeenCalled();
+      expect(skipOverdueMonthService).not.toHaveBeenCalled();
       expect(router.back).not.toHaveBeenCalled();
       expect(screen.queryByText('Pular a Internet de outubro?')).not.toBeOnTheScreen();
     });
 
     it('Should show the toast and stay on the screen when the skip is refused', async () => {
-      const rejected = skipBillMonthRejectedScenarios.monthWithContributions;
-      mockServiceRejection(skipBillMonthService, rejected);
+      const rejected = skipOverdueMonthRejectedScenarios.monthWithContributions;
+      mockServiceRejection(skipOverdueMonthService, rejected);
       const user = await renderOverduePage({ id: skipInput.bill.id });
 
       await confirmSkip(user);
@@ -630,7 +634,7 @@ describe('PayRecurringBillPage', () => {
 
     it('Should skip once when the Pular button is pressed again while the request is running', async () => {
       let resolveSkip!: () => void;
-      jest.mocked(skipBillMonthService).mockReturnValue(
+      jest.mocked(skipOverdueMonthService).mockReturnValue(
         new Promise<void>((resolve) => {
           resolveSkip = resolve;
         }),
@@ -640,7 +644,7 @@ describe('PayRecurringBillPage', () => {
       await confirmSkip(user);
       await user.press(screen.getByRole('button', { name: SKIP_OCTOBER }));
 
-      expect(skipBillMonthService).toHaveBeenCalledTimes(1);
+      expect(skipOverdueMonthService).toHaveBeenCalledTimes(1);
       expect(screen.queryByText('Pular a Internet de outubro?')).not.toBeOnTheScreen();
       await act(async () => resolveSkip());
     });
@@ -648,7 +652,7 @@ describe('PayRecurringBillPage', () => {
     it('Should open a skipped month as overdue, without the Pular, so it can be paid', async () => {
       await renderOverduePage({
         id: skipInput.bill.id,
-        billMonthsScenario: billMonthQueryScenarios.monthWithSkippedBill,
+        overdueMonthsScenario: overdueMonthQueryScenarios.monthWithSkippedBill,
       });
 
       expect(screen.getByText('Atrasada')).toBeOnTheScreen();
@@ -659,7 +663,7 @@ describe('PayRecurringBillPage', () => {
     it('Should say the bill was already paid, without the form, when the month was paid later', async () => {
       await renderOverduePage({
         id: 'water',
-        billMonthsScenario: billMonthQueryScenarios.monthWithPaidLaterBill,
+        overdueMonthsScenario: overdueMonthQueryScenarios.monthWithPaidLaterBill,
       });
 
       expect(screen.getByText('Esta conta já foi paga.')).toBeOnTheScreen();
@@ -683,7 +687,7 @@ describe('PayRecurringBillPage', () => {
       const user = await renderPage('electricity', {
         month: '2026-11',
         entriesScenario: entryMonthQueryScenarios.monthWithContributions,
-        billMonthsScenario: billMonthQueryScenarios.novemberWithoutBillMonths,
+        overdueMonthsScenario: overdueMonthQueryScenarios.novemberWithoutOverdueMonths,
       });
 
       expect(screen.queryByText('Atrasada')).not.toBeOnTheScreen();

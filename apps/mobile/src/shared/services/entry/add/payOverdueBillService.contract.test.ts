@@ -55,7 +55,7 @@ describe('payOverdueBillService', () => {
         },
       ]);
       // O mês da conta fica pago depois, apontando para o pagamento, seja de um mês sem documento, seja de um pulado.
-      expect(await readCollectionWithoutRules('billMonths')).toEqual([
+      expect(await readCollectionWithoutRules('overdueMonths')).toEqual([
         {
           id: `${billMonth}_${bill.id}`,
           status: 'paidLater',
@@ -88,8 +88,8 @@ describe('payOverdueBillService', () => {
     expect((await readCollectionWithoutRules('entries')).map(({ id }) => id)).toEqual(
       givenIdsOf(scenario.given, 'entries'),
     );
-    expect((await readCollectionWithoutRules('billMonths')).map(({ id }) => id)).toEqual(
-      givenIdsOf(scenario.given, 'billMonths'),
+    expect((await readCollectionWithoutRules('overdueMonths')).map(({ id }) => id)).toEqual(
+      givenIdsOf(scenario.given, 'overdueMonths'),
     );
     expect(await readWithoutRules(`allowedEmails/${scenario.signedInAs}`)).toMatchObject({ hasEntries: false });
   });

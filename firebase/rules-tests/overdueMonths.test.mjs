@@ -7,9 +7,9 @@ import {
   OUTSIDERS,
   asOwner,
   assertAccess,
-  billMonthDocOf,
-  billMonthIdOf,
-  billMonthsOf,
+  overdueMonthDocOf,
+  overdueMonthIdOf,
+  overdueMonthsOf,
   deleteOverdueBatch,
   entryDocOf,
   itEach,
@@ -19,7 +19,7 @@ import {
   seedOverduePayment,
   seedSkippedMonth,
   signedInAs,
-  skippedBillMonthOf,
+  skippedOverdueMonthOf,
   unownedPaymentOf,
 } from './setup/index.mjs';
 
@@ -30,16 +30,16 @@ const PREVIOUS = monthFromNow(-1);
 
 /** Uma linha de `create`: `doc` troca campos do mês pulado do Bruno e `id` troca o id (o padrão sai do mês e da conta). */
 function row(title, isAllowed, { doc = {}, id, as = bruno, arrange } = {}) {
-  const billMonth = skippedBillMonthOf(doc);
-  return { title, isAllowed, as, arrange, id: id ?? billMonthIdOf(billMonth), billMonth };
+  const overdueMonth = skippedOverdueMonthOf(doc);
+  return { title, isAllowed, as, arrange, id: id ?? overdueMonthIdOf(overdueMonth), overdueMonth };
 }
 
-async function run({ as, arrange, id, billMonth, isAllowed }) {
+async function run({ as, arrange, id, overdueMonth, isAllowed }) {
   if (arrange) await asOwner(arrange);
-  return assertAccess(isAllowed, setDoc(billMonthDocOf(as(), id), billMonth));
+  return assertAccess(isAllowed, setDoc(overdueMonthDocOf(as(), id), overdueMonth));
 }
 
-describe('billMonths skip by profile', () => {
+describe('overdueMonths skip by profile', () => {
   const cases = [
     row('Should let a member skip a past month', true),
     row('Should let the admin skip a past month', true, { as: ana, doc: { createdBy: 'uid-ana' } }),
@@ -55,9 +55,9 @@ describe('billMonths skip by profile', () => {
 });
 
 // Em cada linha, o documento é o do Bruno com os campos trocados: o que a linha troca é o que ela prova.
-describe('billMonths skip by a member', () => {
-  const paidMonthOfInternet = (firestore) => setDoc(entryDocOf(firestore, billMonthIdOf()), recurringPaymentOf({ month: PREVIOUS }));
-  const unownedMonthOfInternet = (firestore) => setDoc(entryDocOf(firestore, billMonthIdOf()), unownedPaymentOf({ month: PREVIOUS }));
+describe('overdueMonths skip by a member', () => {
+  const paidMonthOfInternet = (firestore) => setDoc(entryDocOf(firestore, overdueMonthIdOf()), recurringPaymentOf({ month: PREVIOUS }));
+  const unownedMonthOfInternet = (firestore) => setDoc(entryDocOf(firestore, overdueMonthIdOf()), unownedPaymentOf({ month: PREVIOUS }));
   const cases = [
     row('Should let a member skip a month without a tag', true, { doc: { tagId: undefined } }),
     row('Should not let a member skip the current month', false, { doc: { month: CURRENT } }),
@@ -85,40 +85,40 @@ describe('billMonths skip by a member', () => {
   itEach(cases, run);
 });
 
-describe('billMonths read', () => {
+describe('overdueMonths read', () => {
   const cases = [...rowsFor(MEMBERS, 'read a month', true), ...rowsFor(OUTSIDERS, 'read a month', false)];
 
   itEach(cases, async ({ as, isAllowed }) => {
     await asOwner(seedSkippedMonth);
-    await assertAccess(isAllowed, getDoc(billMonthDocOf(as(), billMonthIdOf())));
-    await assertAccess(isAllowed, getDocs(billMonthsOf(as())));
+    await assertAccess(isAllowed, getDoc(overdueMonthDocOf(as(), overdueMonthIdOf())));
+    await assertAccess(isAllowed, getDocs(overdueMonthsOf(as())));
   });
 });
 
-describe('billMonths delete', () => {
+describe('overdueMonths delete', () => {
   const cases = [...rowsFor(MEMBERS, 'delete the skipped month', true), ...rowsFor(OUTSIDERS, 'delete the skipped month', false)];
 
   itEach(cases, async ({ as, isAllowed }) => {
     await asOwner(seedSkippedMonth);
-    return assertAccess(isAllowed, deleteDoc(billMonthDocOf(as(), billMonthIdOf())));
+    return assertAccess(isAllowed, deleteDoc(overdueMonthDocOf(as(), overdueMonthIdOf())));
   });
 });
 
 // O segundo Desfazer, ou o de outro membro ao mesmo tempo, encontra o mês já apagado: passa, e nada muda.
-describe('billMonths delete of a month that no longer exists', () => {
+describe('overdueMonths delete of a month that no longer exists', () => {
   const cases = [
     ...rowsFor(MEMBERS, 'delete a month that no longer exists', true),
     ...rowsFor(OUTSIDERS, 'delete a month that no longer exists', false),
   ];
 
-  itEach(cases, ({ as, isAllowed }) => assertAccess(isAllowed, deleteDoc(billMonthDocOf(as(), billMonthIdOf()))));
+  itEach(cases, ({ as, isAllowed }) => assertAccess(isAllowed, deleteDoc(overdueMonthDocOf(as(), overdueMonthIdOf()))));
 });
 
 // O `paidLater` só sai junto do `overduePayment` que o aponta: sozinho, a conta ficaria paga sem pagamento.
-describe('billMonths delete of a paid-later month', () => {
+describe('overdueMonths delete of a paid-later month', () => {
   const cases = [
-    { title: 'Should not let the author delete the paid-later month alone', run: () => deleteDoc(billMonthDocOf(bruno(), billMonthIdOf())), isAllowed: false },
-    { title: 'Should not let another member delete the paid-later month alone', run: () => deleteDoc(billMonthDocOf(ana(), billMonthIdOf())), isAllowed: false },
+    { title: 'Should not let the author delete the paid-later month alone', run: () => deleteDoc(overdueMonthDocOf(bruno(), overdueMonthIdOf())), isAllowed: false },
+    { title: 'Should not let another member delete the paid-later month alone', run: () => deleteDoc(overdueMonthDocOf(ana(), overdueMonthIdOf())), isAllowed: false },
     {
       title: 'Should not let the author delete the paid-later month in a batch that keeps the payment',
       run: () => deleteOverdueBatch(bruno(), { entryId: null }),
@@ -126,7 +126,7 @@ describe('billMonths delete of a paid-later month', () => {
     },
     {
       title: 'Should let anyone delete a paid-later month whose payment no longer exists',
-      run: () => deleteDoc(billMonthDocOf(ana(), billMonthIdOf())),
+      run: () => deleteDoc(overdueMonthDocOf(ana(), overdueMonthIdOf())),
       isAllowed: true,
       arrange: (firestore) => deleteDoc(entryDocOf(firestore, 'o1')),
     },
@@ -141,7 +141,7 @@ describe('billMonths delete of a paid-later month', () => {
 
 // Um mês muda de estado uma vez, de pulado para pago depois, no lote do pagamento (veja `entries.overdue`): fora
 // disso o documento não é alterado por ninguém.
-describe('billMonths update outside the payment batch', () => {
+describe('overdueMonths update outside the payment batch', () => {
   const cases = [
     { title: 'Should not let a member rename a skipped month', seed: 'skipped', data: { name: 'Outro nome' } },
     { title: 'Should not let a member change the month of a skipped month', seed: 'skipped', data: { month: monthFromNow(-2) } },
@@ -151,6 +151,6 @@ describe('billMonths update outside the payment batch', () => {
 
   itEach(cases, async ({ seed, data }) => {
     await asOwner(seed === 'skipped' ? seedSkippedMonth : seedOverduePayment);
-    return assertAccess(false, updateDoc(billMonthDocOf(bruno(), billMonthIdOf()), data));
+    return assertAccess(false, updateDoc(overdueMonthDocOf(bruno(), overdueMonthIdOf()), data));
   });
 });

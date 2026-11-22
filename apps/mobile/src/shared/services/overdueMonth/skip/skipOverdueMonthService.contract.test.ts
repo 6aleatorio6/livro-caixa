@@ -7,22 +7,22 @@ import { readCollectionWithoutRules } from '@/shared/testing/contract/readCollec
 import { scenarioEntries } from '@/shared/testing/contract/scenarioEntries';
 import { testAccountUid } from '@/shared/testing/testAccountUid';
 
-import { skipBillMonthService } from './skipBillMonthService';
-import { skipBillMonthRejectedScenarios, skipBillMonthScenarios } from './skipBillMonthService.scenarios';
+import { skipOverdueMonthService } from './skipOverdueMonthService';
+import { skipOverdueMonthRejectedScenarios, skipOverdueMonthScenarios } from './skipOverdueMonthService.scenarios';
 
-type ISkipBillMonthArguments = Parameters<typeof skipBillMonthService>;
+type ISkipOverdueMonthArguments = Parameters<typeof skipOverdueMonthService>;
 
-describe('skipBillMonthService', () => {
-  it.each(scenarioEntries<ISkipBillMonthArguments, void>(skipBillMonthScenarios))(
+describe('skipOverdueMonthService', () => {
+  it.each(scenarioEntries<ISkipOverdueMonthArguments, void>(skipOverdueMonthScenarios))(
     'Should write the skipped month of the scenario %s',
     async (_name, scenario) => {
       await arrangeScenario(scenario);
       const [{ bill, month }] = scenario.input;
 
-      expect(await skipBillMonthService(...scenario.input)).toBe(scenario.result);
+      expect(await skipOverdueMonthService(...scenario.input)).toBe(scenario.result);
 
       // O mês pulado tem o id `{mês}_{conta}`, sem `entryId`, com o nome e a tag da conta (sem tag, sem o campo) e quem pulou.
-      expect(await readCollectionWithoutRules('billMonths')).toEqual([
+      expect(await readCollectionWithoutRules('overdueMonths')).toEqual([
         {
           id: `${month}_${bill.id}`,
           status: 'skipped',
@@ -38,16 +38,18 @@ describe('skipBillMonthService', () => {
   );
 
   it.each(
-    scenarioEntries<ISkipBillMonthArguments, { code: string; userMessage: string }>(skipBillMonthRejectedScenarios),
+    scenarioEntries<ISkipOverdueMonthArguments, { code: string; userMessage: string }>(
+      skipOverdueMonthRejectedScenarios,
+    ),
   )('Should refuse to skip the month of the scenario %s', async (_name, scenario) => {
     await arrangeScenario(scenario);
 
-    const refusal = skipBillMonthService(...scenario.input);
+    const refusal = skipOverdueMonthService(...scenario.input);
 
     await expect(refusal).rejects.toBeInstanceOf(AppError);
     await expect(refusal).rejects.toMatchObject(scenario.result);
     // Nada novo: nenhum mês de conta, e os lançamentos que já estavam ficam.
-    expect(await readCollectionWithoutRules('billMonths')).toEqual([]);
+    expect(await readCollectionWithoutRules('overdueMonths')).toEqual([]);
     expect((await readCollectionWithoutRules('entries')).map(({ id }) => id)).toEqual(
       givenIdsOf(scenario.given, 'entries'),
     );

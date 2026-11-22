@@ -107,7 +107,7 @@ export function overduePaymentOf(overrides = {}) {
 }
 
 /** O mês pulado válido, gravado pelo Bruno: a internet do mês anterior, com os campos trocados em `overrides`. */
-export function skippedBillMonthOf(overrides = {}) {
+export function skippedOverdueMonthOf(overrides = {}) {
   return withoutUndefined({
     status: 'skipped',
     month: monthFromNow(-1),
@@ -121,12 +121,12 @@ export function skippedBillMonthOf(overrides = {}) {
 }
 
 /** O mês pago depois, válido, gravado pelo Bruno: o pulado mais o `entryId` do pagamento atrasado (`o1`). */
-export function paidLaterBillMonthOf(overrides = {}) {
-  return skippedBillMonthOf({ status: 'paidLater', entryId: 'o1', ...overrides });
+export function paidLaterOverdueMonthOf(overrides = {}) {
+  return skippedOverdueMonthOf({ status: 'paidLater', entryId: 'o1', ...overrides });
 }
 
-/** O id de um `billMonths`: o mesmo que o pagamento daquele mês teria em `entries`. */
-export function billMonthIdOf({ month = monthFromNow(-1), recurringBillId = 'internet' } = {}) {
+/** O id de um `overdueMonths`: o mesmo que o pagamento daquele mês teria em `entries`. */
+export function overdueMonthIdOf({ month = monthFromNow(-1), recurringBillId = 'internet' } = {}) {
   return `${month}_${recurringBillId}`;
 }
 
