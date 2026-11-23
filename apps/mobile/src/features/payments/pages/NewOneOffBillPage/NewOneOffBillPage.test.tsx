@@ -33,6 +33,7 @@ jest.mock('@/shared/hooks/useAuthState/useAuthState', () => ({ useAuthState: jes
 jest.mock('@/shared/services/tag/query/tagListQueryService', () => ({ tagListQueryService: {} }));
 jest.mock('@/shared/services/allowedEmail/query/allowedEmailQueryService', () => ({ allowedEmailQueryService: {} }));
 jest.mock('@/shared/services/entry/add/addOneOffBillService', () => ({ addOneOffBillService: jest.fn() }));
+jest.mock('@/shared/utils/notifications/notifyFamilyOfEntry', () => ({ notifyFamilyOfEntry: jest.fn() }));
 jest.mock('@/shared/utils/file/pickReceiptFile', () => ({ pickReceiptFile: jest.fn() }));
 jest.mock('@/shared/utils/file/prepareReceipt', () => ({ prepareReceipt: jest.fn() }));
 // O aviso se esconde num timer de 4 s, que seguraria o Jest depois do teste.
@@ -237,9 +238,9 @@ describe('NewOneOffBillPage', () => {
   });
 
   it('Should call the service once when the button is pressed twice while saving', async () => {
-    let resolveSave!: () => void;
+    let resolveSave!: (entryId: string) => void;
     jest.mocked(addOneOffBillService).mockReturnValue(
-      new Promise<void>((resolve) => {
+      new Promise<string>((resolve) => {
         resolveSave = resolve;
       }),
     );
@@ -250,7 +251,7 @@ describe('NewOneOffBillPage', () => {
     await user.press(screen.getByRole('button', { name: SUBMIT }));
 
     expect(addOneOffBillService).toHaveBeenCalledTimes(1);
-    await act(async () => resolveSave());
+    await act(async () => resolveSave(scenario.result));
   });
 
   it('Should stay on the screen with the data when the service fails', async () => {

@@ -23,6 +23,9 @@ const BRUNO_WITHOUT_ENTRIES = {
   [`allowedEmails/${ANA}`]: { name: 'Ana Souza', isAdmin: true, hasEntries: true },
   ...WATER_IN_THE_LIST,
 };
+// O id do pagamento é gerado pelo Firestore: o contrato confere que o serviço devolve o id gravado, e este é só o
+// exemplo que o mock das páginas devolve.
+const GENERATED_ENTRY_ID = 'overduePaymentEntryId';
 const OCTOBER_WATER = { bill: WATER_BILL, billMonth: '2026-10', amountCents: 9400, receipt: RECEIPT };
 // A Ana pulou a Água de outubro em 3 de novembro, com as cópias da conta.
 const SKIPPED_WATER = { ...SKIPPED_WATER_DOCUMENT, createdBy: testAccountUid(ANA) };
@@ -33,16 +36,16 @@ export const payOverdueBillScenarios = {
     signedInAs: BRUNO,
     given: BRUNO_WITHOUT_ENTRIES,
     input: [OCTOBER_WATER],
-    result: undefined,
+    result: GENERATED_ENTRY_ID,
   },
   // A Ana pulou a Água de outubro, e o Bruno a paga: o `skipped` vira `paidLater`.
   memberPaysSkippedBill: {
     signedInAs: BRUNO,
     given: { ...BRUNO_WITHOUT_ENTRIES, 'overdueMonths/2026-10_water': SKIPPED_WATER },
     input: [OCTOBER_WATER],
-    result: undefined,
+    result: GENERATED_ENTRY_ID,
   },
-} satisfies Record<string, IServiceScenario<[IOverduePaymentInput], void>>;
+} satisfies Record<string, IServiceScenario<[IOverduePaymentInput], string>>;
 
 /** Os casos recusados: o serviço lança `AppError`, e a `result` é o que o erro carrega. */
 export const payOverdueBillRejectedScenarios = {

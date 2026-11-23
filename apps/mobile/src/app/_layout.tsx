@@ -8,6 +8,7 @@ import { useAccess } from '@/features/auth/hooks/useAccess/useAccess';
 import { AppLockedScreen } from '@/features/biometrics/components/AppLockedScreen/AppLockedScreen';
 import { useBiometricLock } from '@/features/biometrics/hooks/useBiometricLock/useBiometricLock';
 import { useDiscardShareWithoutAccess } from '@/features/home/hooks/useDiscardShareWithoutAccess/useDiscardShareWithoutAccess';
+import { useOpenTappedNotification } from '@/features/notifications/hooks/useOpenTappedNotification/useOpenTappedNotification';
 import { useAppVersionLockStore } from '@/shared/store/appVersionLock.store';
 import { checkAppVersion } from '@/shared/utils/version/checkAppVersion';
 
@@ -31,6 +32,8 @@ export default function RootLayout() {
   const isUpdateRequired = requiredVersion !== null;
   // Abaixo do mínimo, nenhuma guarda de acesso abre: só a tela de atualização, até para quem está logado e liberado.
   const guardedStatus = isUpdateRequired ? null : accessStatus;
+  // O toque segue as guardas: com a tela de atualização, o lançamento está fechado e o toque espera.
+  useOpenTappedNotification(guardedStatus);
   const [hasCheckedVersion, setHasCheckedVersion] = useState(false);
   useEffect(() => {
     checkAppVersion().then(() => setHasCheckedVersion(true));
