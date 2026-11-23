@@ -24433,7 +24433,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Neste celular ganha a linha Notificações, com um interruptor, abaixo da biometria: desligar para de receber neste celular.",
+                  "content": "Neste celular ganha a linha Notificações, abaixo da biometria, que abre os ajustes do Android para o app: é lá que se desligam as notificações. A seção aparece mesmo no celular sem biometria.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -46396,7 +46396,7 @@
                       "fill": "$on-surface-variant",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "Avisa os lançamentos da família e, na véspera, as contas a pagar",
+                      "content": "Abre os ajustes do Android para o app",
                       "lineHeight": "$body-small-line-height",
                       "fontFamily": "$font-family",
                       "fontSize": "$body-small-size",
@@ -46406,51 +46406,14 @@
                   ]
                 },
                 {
-                  "type": "frame",
-                  "id": "LiBoN",
-                  "name": "Interruptor",
-                  "width": 52,
-                  "height": 32,
-                  "fill": "$primary",
-                  "cornerRadius": 16,
-                  "stroke": {
-                    "type": "color",
-                    "color": "$primary",
-                    "enabled": false
-                  },
-                  "strokeWidth": 2,
-                  "strokeAlignment": "inner",
-                  "padding": [
-                    0,
-                    4
-                  ],
-                  "justifyContent": "end",
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "dvPo9",
-                      "name": "Alça",
-                      "width": 24,
-                      "height": 24,
-                      "fill": "$on-primary",
-                      "cornerRadius": 12,
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "icon",
-                          "id": "A1JOR",
-                          "name": "Marca",
-                          "width": 16,
-                          "height": 16,
-                          "icon": "check",
-                          "library": "lucide",
-                          "fill": "$on-primary-container"
-                        }
-                      ]
-                    }
-                  ]
+                  "type": "icon",
+                  "id": "YfPtQ",
+                  "name": "Seta",
+                  "width": 24,
+                  "height": 24,
+                  "icon": "chevron-right",
+                  "library": "lucide",
+                  "fill": "$on-surface-variant"
                 }
               ]
             }
@@ -46719,7 +46682,8 @@
               "content": "9:00",
               "lineHeight": 1,
               "fontFamily": "$font-family",
-              "fontSize": 72
+              "fontSize": 72,
+              "fontWeight": "normal"
             },
             {
               "type": "text",
