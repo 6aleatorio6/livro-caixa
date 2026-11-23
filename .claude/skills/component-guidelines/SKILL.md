@@ -18,11 +18,9 @@ Where the file goes: skill `project-structure`. How to test it: skill `testing`.
 - Import `StyleSheet` from `react-native-unistyles`, never from `react-native` (the lint fails it): the
   Babel plugin rewrites these style sheets so the light/dark switch happens without a re-render.
 - Every value comes from the theme (`src/core/theme`): `theme.colors.<role>` (the Material 3
-  color roles), `theme.typography.<role>`, `theme.spacing.<size>`, `theme.radii.<size>`. A literal
-  `#hex`, `rgb()` or `hsl()` fails the lint, and so does a literal number or string in `padding*`,
-  `margin*`, `gap`, `rowGap`, `columnGap`, `borderRadius`, `border*Radius`, `fontSize`, `lineHeight`,
-  `letterSpacing`, `fontWeight` or `fontFamily` (`0` and `'auto'` pass). A measure the design has
-  no token for takes `// oxlint-disable-next-line eslint-js/no-restricted-syntax -- <reason>`.
+  color roles), `theme.typography.<role>`, `theme.spacing.<size>`, `theme.radii.<size>`. The lint
+  fails a literal color, spacing, radius or font value; a measure the design has no token for takes
+  `// oxlint-disable-next-line eslint-js/no-restricted-syntax -- <reason>`.
 - A style that depends on a prop is a function inside the sheet:
 
   ```tsx
@@ -35,17 +33,15 @@ Where the file goes: skill `project-structure`. How to test it: skill `testing`.
   }));
   ```
 
-- Safe areas come from the runtime (`rt.insets`), as in `Screen`.
-- The theme follows the phone (`adaptiveThemes`). Its values are provisional until the design's
-  variables exist (steps 2 to 5 of `design-from-scratch`); when they change, only
-  `src/core/theme` changes.
+- Safe areas come from the runtime (`rt.insets`), as in `Screen`, never from `SafeAreaView`.
+- The theme follows the phone (`adaptiveThemes`); when its values change, only `src/core/theme`
+  changes.
 
 ## The base pieces
 
 - **Text:** always `AppText` (`src/shared/components/AppText/AppText.tsx`) with a `variant` (typography
-  role) and a `color` (color role). The lint fails a `Text` from React Native everywhere but
-  `AppText.tsx` and `core`, which can't import `shared`: its components style text from
-  `theme.typography` directly. `SafeAreaView` fails too: the margins come from `rt.insets`, as in `Screen`.
+  role) and a `color` (color role). Only `core`, which can't import `shared`, uses React Native's
+  `Text`, styled from `theme.typography`.
 - **Pressable:** always with `accessibilityRole` and `accessibilityLabel`; the lint fails one without.
 - **Screen root:** `Screen` (`src/shared/components/Screen/Screen.tsx`): the theme background and the
   system bars' insets.
@@ -79,11 +75,6 @@ A control with an icon and no text still has a label.
 - The React Compiler is on (`experiments.reactCompiler` in `app.json`): no `useMemo`,
   `useCallback` or `memo` unless a measured case asks for it, and then with a comment saying why.
 - React 19 passes `ref` as a regular prop: no `forwardRef`.
-- One component per folder, named after it in PascalCase, with its test beside it
-  (`components/Button/Button.tsx`, `Button.test.tsx`) and its `I<Name>Props` interface in the same
-  file (`.claude/rules/one-export-per-file.md`). A sub-component used only by this one still gets
-  its own folder, in the page's or the feature's `components/`.
-- Named exports only.
 
 ## In tests
 

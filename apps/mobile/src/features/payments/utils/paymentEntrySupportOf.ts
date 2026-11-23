@@ -1,5 +1,6 @@
 import type { IAllowedEmailListItem } from '@/shared/types/allowedEmail/AllowedEmailListItem';
 import { formatDayMonth } from '@/shared/utils/date/formatDayMonth';
+import { monthName } from '@/shared/utils/date/monthName';
 import { paymentTailOf } from '@/shared/utils/entry/paymentTailOf';
 import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 
@@ -8,10 +9,11 @@ import type { IPaymentRow } from '../types/PaymentRow';
 
 /**
  * O detalhe da linha de uma parte em Pagamentos, sem a tag (o grupo diz). A parte de quem pagou: "pago em 05/10" (e o
- * previsto, quando o pago foi outro valor) ou, na conta avulsa, "12/10 · avulsa"; havendo contribuições, que ela é só
- * uma parte ("sua parte" no chip de quem está logado, "parte de Ana" nos demais). A contribuição: "contribuição em
- * 12/10", "para Ana" (quem pagou a conta). Com várias pessoas marcadas, ou todas, o nome vai no fim, de quem pagou ou
- * de quem contribuiu, porque o chip não diz de quem é a linha.
+ * previsto, quando o pago foi outro valor); na conta avulsa, "12/10 · avulsa"; no pagamento de uma conta atrasada,
+ * "de outubro · pago em 05/11". Havendo contribuições, ela é só uma parte: "sua parte" no chip de quem está logado,
+ * "parte de Ana" nos demais. A contribuição: "contribuição em 12/10", "para Ana" (quem pagou a conta). Com várias
+ * pessoas marcadas, ou todas, o nome vai no fim, de quem pagou ou de quem contribuiu, porque o chip não diz de quem é
+ * a linha.
  */
 export function paymentEntrySupportOf(
   { entry, uid, amountCents, contribution }: IPaymentRow,
@@ -33,7 +35,12 @@ export function paymentEntrySupportOf(
   const owner = isPart ? partLabel : payerLabel;
   const tail = entry.paidBy !== null && !isPart ? paymentTailOf(entry) : undefined;
   const paid =
-    entry.kind === 'oneOffBill' ? [formatDayMonth(entry.date), 'avulsa'] : [`pago em ${formatDayMonth(entry.paidOn)}`];
+    entry.kind === 'oneOffBill'
+      ? [formatDayMonth(entry.date), 'avulsa']
+      : [
+          entry.kind === 'overduePayment' ? `de ${monthName(entry.billMonth)}` : undefined,
+          `pago em ${formatDayMonth(entry.paidOn)}`,
+        ];
 
   return joinSupport([...paid, owner, tail]);
 }

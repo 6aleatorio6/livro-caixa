@@ -1,4 +1,5 @@
 import { contributionOf } from '@/shared/testing/contributionOf';
+import { overduePaymentOf } from '@/shared/testing/overduePaymentOf';
 import { ownedPaymentOf } from '@/shared/testing/ownedPaymentOf';
 import { personOf } from '@/shared/testing/personOf';
 import { unownedPaymentOf } from '@/shared/testing/unownedPaymentOf';
@@ -57,6 +58,14 @@ describe('paymentEntrySupportOf', () => {
 
     it('Should write the date and the one-off mark of a one-off bill, without the tag', () => {
       expect(supportsOf([oneOff], ['ana'])).toEqual(['12/10 · avulsa']);
+    });
+
+    // O pagamento atrasado conta em novembro, o mês em que foi pago: a linha diz de que mês era a conta.
+    it('Should say the month of the bill before the payment date of an overdue payment', () => {
+      const overdue = overduePaymentOf({ paidOn: '2026-11-05' });
+
+      expect(supportsOf([overdue], ['ana'])).toEqual(['de outubro · pago em 05/11']);
+      expect(supportsOf([overdue], EVERYONE)).toEqual(['de outubro · pago em 05/11 · Ana']);
     });
 
     // Com várias pessoas marcadas, nenhum chip diz de quem é a linha: a linha diz.

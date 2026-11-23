@@ -1,8 +1,11 @@
 import { fireEvent, render, screen, userEvent } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
+
+import { lightTheme } from '@/core/theme/lightTheme';
 
 import { ConfirmDialog } from './ConfirmDialog';
 
-async function renderDialog(overrides: { visible?: boolean } = {}) {
+async function renderDialog(overrides: { visible?: boolean; confirmVariant?: 'text' | 'textDestructive' } = {}) {
   const onConfirm = jest.fn();
   const onCancel = jest.fn();
   await render(
@@ -52,5 +55,19 @@ describe('ConfirmDialog', () => {
     await renderDialog({ visible: false });
 
     expect(screen.queryByText('Excluir a tag Saúde?')).toBeNull();
+  });
+
+  it('Should color the confirm label as destructive by default', async () => {
+    await renderDialog();
+
+    const label = screen.getByText('Excluir');
+    expect(StyleSheet.flatten(label.props.style).color).toBe(lightTheme.colors.error);
+  });
+
+  it('Should color the confirm label as a plain text button with the text variant', async () => {
+    await renderDialog({ confirmVariant: 'text' });
+
+    const label = screen.getByText('Excluir');
+    expect(StyleSheet.flatten(label.props.style).color).toBe(lightTheme.colors.primary);
   });
 });

@@ -68,8 +68,8 @@ the new listener answers), the error reads as `loading`, and 30 s of failed read
 - **A new screen of the app** goes under the `allowed` guard. A screen outside every guard is open
   to anyone: never leave one there.
 - **A screen for the admin only** goes in a `Stack.Protected guard={isAdmin}` nested inside the
-  `allowed` guard. `useAccess` returns `{ status, isAdmin }`, with `isAdmin` read from the person's
-  `allowedEmails` entry and true only while the status is `allowed`: losing the flag with the
+  `allowed` guard. `isAdmin` is read from the person's
+  `allowedEmails` entry and is true only while the status is `allowed`: losing the flag with the
   screen open takes the person off it, as a removal from the list does.
 
 ## In front of the access: the minimum version

@@ -7,14 +7,14 @@ import { formatCents } from '@/shared/utils/format/formatCents';
 import { pluralize } from '@/shared/utils/format/pluralize';
 
 export interface IMonthListSectionProps {
-  /** "A pagar" ou "Pagas". */
+  /** "A pagar", "Pagas" ou "Puladas". */
   title: string;
-  /** O resumo "2 contas · R$ 217,90" ao lado do título; sem ele só o título. */
-  summary?: { count: number; totalCents: number };
+  /** O resumo "2 contas · R$ 217,90" ao lado do título; sem o total, só a contagem ("1 conta"); sem o resumo, só o título. */
+  summary?: { count: number; totalCents?: number };
   children: ReactNode;
 }
 
-/** Uma seção da lista do mês: o título, o resumo "2 contas · R$ 217,90" (quando dado) e as linhas. */
+/** Uma seção da lista do mês: o título, o resumo "2 contas · R$ 217,90" ou só "1 conta" (quando dado) e as linhas. */
 export function MonthListSection({ title, summary, children }: IMonthListSectionProps) {
   return (
     <View style={styles.section}>
@@ -24,7 +24,8 @@ export function MonthListSection({ title, summary, children }: IMonthListSection
         </AppText>
         {summary ? (
           <AppText variant="labelMedium" color="onSurfaceVariant">
-            {pluralize(summary.count, 'conta', 'contas')} · {formatCents(summary.totalCents)}
+            {pluralize(summary.count, 'conta', 'contas')}
+            {summary.totalCents === undefined ? '' : ` · ${formatCents(summary.totalCents)}`}
           </AppText>
         ) : null}
       </View>

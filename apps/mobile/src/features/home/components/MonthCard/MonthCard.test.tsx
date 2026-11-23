@@ -15,6 +15,7 @@ const summaryOf = ({
 }: Record<string, number>): IMonthSummary => ({
   toPay: Array.from({ length: toPayCount }, () => ({
     bill,
+    month: '2026-10',
     name: bill.name,
     tagId: null,
     dueDate: '2026-10-05',
@@ -23,6 +24,7 @@ const summaryOf = ({
     remainingCents: 0,
   })),
   paid: [],
+  skipped: [],
   entries: [],
   paidCents,
   totalCents,

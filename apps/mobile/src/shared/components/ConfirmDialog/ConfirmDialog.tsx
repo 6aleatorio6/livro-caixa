@@ -3,20 +3,34 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
 import { Button } from '@/shared/components/Button/Button';
+import type { IButtonVariant } from '@/shared/types/components/ButtonVariant';
 
 export interface IConfirmDialogProps {
   visible: boolean;
   title: string;
   message?: string;
-  /** O rótulo da ação que confirma ("Excluir"); ela é a destrutiva, à direita de "Cancelar". */
+  /** O rótulo da ação que confirma ("Excluir"), à direita de "Cancelar". */
   confirmLabel: string;
+  /** `textDestructive` (o padrão) para a ação que apaga ("Excluir"); `text` para a que só pede o aval ("Pular"). */
+  confirmVariant?: Extract<IButtonVariant, 'text' | 'textDestructive'>;
   onConfirm: () => void;
   /** Chamado pelo "Cancelar" e pelo botão voltar do Android. */
   onCancel: () => void;
 }
 
-/** O diálogo que pede a confirmação de uma ação que desfaz algo, sobre o véu do tema. */
-export function ConfirmDialog({ visible, title, message, confirmLabel, onConfirm, onCancel }: IConfirmDialogProps) {
+/**
+ * O diálogo que pede a confirmação de uma ação, a que apaga ("Excluir") ou a que só pede o aval ("Pular"), sobre o véu
+ * do tema.
+ */
+export function ConfirmDialog({
+  visible,
+  title,
+  message,
+  confirmLabel,
+  confirmVariant = 'textDestructive',
+  onConfirm,
+  onCancel,
+}: IConfirmDialogProps) {
   return (
     <Modal
       testID="confirm-dialog"
@@ -39,7 +53,7 @@ export function ConfirmDialog({ visible, title, message, confirmLabel, onConfirm
           ) : null}
           <View style={styles.actions}>
             <Button variant="text" label="Cancelar" onPress={onCancel} />
-            <Button variant="textDestructive" label={confirmLabel} onPress={onConfirm} />
+            <Button variant={confirmVariant} label={confirmLabel} onPress={onConfirm} />
           </View>
         </View>
       </View>

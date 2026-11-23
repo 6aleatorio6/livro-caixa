@@ -4,8 +4,8 @@ import { after, before, beforeEach } from 'node:test';
 import { initializeTestEnvironment } from '@firebase/rules-unit-testing';
 import { setDoc } from 'firebase/firestore';
 
-import { SEEDED_BILL, SEEDED_TAG, oneOffBillOf, receiptContentOf, receiptFileOf, recurringPaymentOf } from './documents.mjs';
-import { entryDocOf, entryOf, fileContentOf, fileOf, recurringBillOf, tagsDocOf } from './refs.mjs';
+import { SEEDED_BILL, SEEDED_TAG, overdueMonthIdOf, oneOffBillOf, overduePaymentOf, paidLaterOverdueMonthOf, receiptContentOf, receiptFileOf, recurringPaymentOf, skippedOverdueMonthOf } from './documents.mjs';
+import { overdueMonthDocOf, entryDocOf, entryOf, fileContentOf, fileOf, recurringBillOf, tagsDocOf } from './refs.mjs';
 
 // O ambiente dos testes das regras: cada arquivo `*.test.mjs` importa o `setup/`, que liga os emuladores
 // do Firestore (`pnpm test:rules`, no PC, que tem o Java) e semeia a lista antes de cada caso. Os
@@ -58,4 +58,23 @@ export function seedReceipt(firestore, id, overrides = {}) {
 /** Grava ou muda a lista por fora das regras, como quem administra pelo console. */
 export function asOwner(write) {
   return testEnvironment.withSecurityRulesDisabled((context) => write(context.firestore()));
+}
+
+/** O mês pulado da internet do mês anterior, gravado por fora das regras. */
+export function seedSkippedMonth(firestore, overrides = {}) {
+  const overdueMonth = skippedOverdueMonthOf(overrides);
+  return setDoc(overdueMonthDocOf(firestore, overdueMonthIdOf(overdueMonth)), overdueMonth);
+}
+
+/**
+ * O pagamento atrasado do Bruno (`o1`, com o comprovante `fod`) e o `overdueMonths` `paidLater` que aponta para ele,
+ * gravados por fora das regras.
+ */
+export function seedOverduePayment(firestore) {
+  const paidLater = paidLaterOverdueMonthOf();
+  return Promise.all([
+    seedReceipt(firestore, 'fod'),
+    setDoc(entryDocOf(firestore, 'o1'), overduePaymentOf({ receiptFileId: 'fod' })),
+    setDoc(overdueMonthDocOf(firestore, overdueMonthIdOf(paidLater)), paidLater),
+  ]);
 }

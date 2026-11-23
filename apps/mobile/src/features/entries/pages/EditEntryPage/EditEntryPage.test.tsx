@@ -326,6 +326,50 @@ describe('EditEntryPage', () => {
     });
   });
 
+  // A Água de outubro que a Ana pagou em novembro: a tela chega ao formulário pelo `kind` do lançamento.
+  describe('The overdue payment', () => {
+    const overduePayment = { service: entryQueryService, scenario: entryQueryScenarios.overduePaymentOfTheMember };
+    const overdueReceipt = {
+      service: receiptFileQueryService,
+      scenario: receiptFileQueryScenarios.overduePaymentReceipt,
+    };
+    const novemberMonth = {
+      service: entryMonthQueryService,
+      scenario: entryMonthQueryScenarios.monthWithOverduePayment,
+    };
+
+    async function renderOverduePayment() {
+      jest.mocked(useAuthState).mockReturnValue(signedInAuthState(signInWithFakeGoogleScenarios.adminSignsIn));
+      const user = await renderEdit(overduePayment, overdueReceipt, family, threeTags, novemberMonth);
+      await act(async () => jest.advanceTimersByTimeAsync(500));
+      return user;
+    }
+
+    it('Should name the month of the bill, with no switch to turn the payment into a contribution', async () => {
+      await renderOverduePayment();
+
+      expect(screen.getByText('Alterar pagamento')).toBeOnTheScreen();
+      expect(screen.getByText('Pagamento de outubro')).toBeOnTheScreen();
+      expect(screen.queryByRole('switch', { name: 'Paguei só uma parte' })).toBeNull();
+      expect(screen.queryByText('Transforma este pagamento numa contribuição.')).toBeNull();
+    });
+
+    it('Should save an amount below 30% of the expected as a change of the payment, never as a contribution', async () => {
+      const change = updateEntryScenarios.memberChangesOverduePaymentAmount;
+      mockServiceScenario(updateEntryService, change);
+      const user = await renderOverduePayment();
+
+      await user.clear(screen.getByLabelText('Valor pago'));
+      await user.type(screen.getByLabelText('Valor pago'), String(change.input[0].changes.amountCents));
+      await user.press(screen.getByRole('button', { name: SAVE }));
+
+      expect(updateEntryService).toHaveBeenCalledWith(...change.input);
+      expect(convertEntryService).not.toHaveBeenCalled();
+      expect(showToast).toHaveBeenCalledWith('Pagamento alterado.', 'success');
+      expect(router.back).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('Paguei só uma parte', () => {
     const SWITCH = { name: 'Paguei só uma parte' };
     const contributionReceipt = {

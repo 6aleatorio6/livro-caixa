@@ -1,5 +1,9 @@
 import {
   ANA,
+  ANA_OVERDUE_PAYMENT,
+  ANA_OVERDUE_PAYMENT_DOCUMENT,
+  ANA_OVERDUE_PAYMENT_FILE_ID,
+  ANA_PAID_LATER_WATER_DOCUMENT,
   BOTH_IN_THE_LIST,
   BRUNO,
   CONTRIBUTION,
@@ -40,6 +44,17 @@ const PAYMENT_SETUP = (email = BRUNO) => ({
   },
   fileContentsGiven: receiptOf(RECEIPT_FILE_ID, email).fileContentIds,
 });
+// A Água de outubro que a Ana pagou em novembro (o pagamento que as telas dela leem), com o `paidLater` que a regra do
+// pagamento atrasado deixa como está.
+const OVERDUE_PAYMENT_SETUP = {
+  given: {
+    ...BOTH_IN_THE_LIST,
+    'entries/overdue-water': ANA_OVERDUE_PAYMENT_DOCUMENT,
+    'overdueMonths/2026-10_water': ANA_PAID_LATER_WATER_DOCUMENT,
+    ...receiptOf(ANA_OVERDUE_PAYMENT_FILE_ID, ANA).fileDocuments,
+  },
+  fileContentsGiven: receiptOf(ANA_OVERDUE_PAYMENT_FILE_ID, ANA).fileContentIds,
+};
 const ONE_OFF_BILL_SETUP = (email = BRUNO) => ({
   given: {
     ...BOTH_IN_THE_LIST,
@@ -86,6 +101,24 @@ export const updateEntryScenarios = {
     input: [{ entry: PAYMENT, changes: { amountCents: 18735 }, receipt: NEW_RECEIPT }],
     result: undefined,
     expectedEntry: PAYMENT_DOCUMENT,
+    wasReceiptReplaced: true,
+  },
+  // O pagamento atrasado muda como o pagamento: o valor pago corrigido para R$ 20,00, abaixo de 30% do previsto de
+  // R$ 90,00, e o resto fica: nunca vira contribuição.
+  memberChangesOverduePaymentAmount: {
+    signedInAs: ANA,
+    ...OVERDUE_PAYMENT_SETUP,
+    input: [{ entry: ANA_OVERDUE_PAYMENT, changes: { amountCents: 2000 }, receipt: null }],
+    result: undefined,
+    expectedEntry: { ...ANA_OVERDUE_PAYMENT_DOCUMENT, amountCents: 2000 },
+    wasReceiptReplaced: false,
+  },
+  memberReplacesOverduePaymentReceipt: {
+    signedInAs: ANA,
+    ...OVERDUE_PAYMENT_SETUP,
+    input: [{ entry: ANA_OVERDUE_PAYMENT, changes: { amountCents: 9000 }, receipt: NEW_RECEIPT }],
+    result: undefined,
+    expectedEntry: ANA_OVERDUE_PAYMENT_DOCUMENT,
     wasReceiptReplaced: true,
   },
   // A Ana corrige a contribuição para R$ 30,00; o comprovante fica.

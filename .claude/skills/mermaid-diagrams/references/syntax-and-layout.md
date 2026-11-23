@@ -158,9 +158,6 @@ Never: `style` per node, a hex `fill`, frontmatter `theme`/`themeVariables`/`loo
 ## When Mermaid changes version
 
 `@docusaurus/theme-mermaid` accepts `mermaid >=11.6.0`, so the version comes from the lockfile:
-this repository's first install resolved 12.2.0. Going from 11 to 12 changed three things measured
-here: ELK became the default layout (and took away extra dashes and the spacing options), the
-flowchart wrap went from 200 px to 120 px, and every box got the 152 px minimum width. The default
-look is still `classic` on 12.2.0. After a lockfile update brings another version, run
+this repository's first install resolved 12.2.0, whose default look is `classic`. After a lockfile update brings another version, run
 `check-mermaid.mjs docs` and `render-mermaid.mjs` on every page with a diagram, measure again what
 this file and the facts at the top of the SKILL.md state, and update both.

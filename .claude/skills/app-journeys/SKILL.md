@@ -30,7 +30,7 @@ Three commands, all from the repository root:
 - `pnpm journeys:stack` (`journeys/stack.sh`): the stack.
 - `pnpm journeys:test [<flow> | tag:<name>]` (`journeys/test.ts`): picks the device (the
   `ANDROID_SERIAL` one, or the only one on adb; with two and no variable it stops and lists the
-  serials), prepares it (app drawing on, animations off: see the ATD trap; the `adb reverse` of
+  serials), prepares it (app drawing on, animations off: see the black-screenshot trap; the `adb reverse` of
   the stack's ports), deletes old rounds, serves the test data and runs Maestro on that device.
 - `pnpm journeys:inspect [<selector>…]` (`journeys/inspect.ts`): the screen's nodes, in dp.
 
@@ -152,8 +152,6 @@ documentation's "Testes" page). A journey is never the only test of a behavior.
 
 ## Writing the journey
 
-- One flow per file: `journeys/flows/<feature>/<goal>.yaml`, the goal in camelCase English
-  (`outsiderSeesNoAccess.yaml`). `journeys/flows/config.yaml` picks up every subfolder.
 - The flow's header comment, after the goal, has a `# Coberto por:` list: one line per check in the
   flow, with the tests that cover it. A review reads it to see the flow is redundant, and a change
   that moves or renames one of those tests updates the list in the same commit.
@@ -178,15 +176,9 @@ documentation's "Testes" page). A journey is never the only test of a behavior.
         SCENARIO: removeAdmin
         EMAIL: ${output.accounts.admin.email}
   ```
-
-  A new kind of data (a screen's seed with the design's names and values) is a new scenario in
-  TypeScript, never a loose `.js`: Maestro's `runScript` has no Node and no `import`. A new
-  parameter goes into `ScenarioParams` and into `data/request.js`. `pnpm typecheck:journeys`
-  checks the TypeScript.
 - One assertion per state checked (`assertVisible`, `assertNotVisible`), then
   `takeScreenshot: <screen>--<state>`: Maestro saves it in the flow's own artifact folder and
   rejects a path outside it. Absence is proven with `assertNotVisible`, never by a missing step.
-- Comments in pt-BR, identifiers and file names in English (`.claude/rules/code-language.md`).
 - A journey goes in the same commit as the behavior it checks and the cheaper tests that cover it
   (skill `commit-convention`).
 
@@ -242,13 +234,9 @@ throwaway flow before the round counts as passing.
 - **The emulator loses its network** (`wlan0` NO-CARRIER, `ping 10.0.2.2` says "Network is
   unreachable"; Firestore fails with ENETUNREACH; twice in G4). Toggling wifi or airplane
   mode doesn't bring the virtual AP back; `adb reboot` does, without the person. Wait for
-  `sys.boot_completed`, then redo `adb reverse tcp:8081 tcp:8081` (the reboot drops it, and the app
-  shows "Unable to load script") and `debug.hwui.drawing_enabled` (below).
+  `sys.boot_completed`, then run the round again.
 - **Port 4020 taken:** `pnpm journeys:test` serves the test data there and refuses to start; another
   round is running.
-- **"Unable to load script" after the emulator was opened again:** a new boot drops the
-  `adb reverse` that `pnpm android` set, and `signInAs` fails waiting for "Entrar com Google".
-  `adb reverse tcp:8081 tcp:8081`, then the flow again.
 - **The file picker's files live only on the device.** `home/memberPaysRecurringBill` picks
   `recibo-pequeno.pdf`, and `payments/memberRegistersOneOffBillWithReducedReceipt` picks
   `recibo-grande.pdf` (over 900 KB, refused) and `foto-grande.jpg` (over 900 KB, reduced) from
@@ -258,15 +246,12 @@ throwaway flow before the round counts as passing.
   22 MB), then `adb push` each to `/sdcard/Download/` and send `MEDIA_SCANNER_SCAN_FILE` for it.
 - **The status and navigation bars take height:** a list item near the end of the Início (the
   Água) sits below the fold. Wait for the first item, or scroll to the one the flow needs.
-- **`clearState`** erases the session and the cached data: every flow signs in again.
-- **A native change** needs `pnpm android` on the PC again; Metro alone won't bring it. A change
-  to a config plugin (`app.config.ts`, a plugin's options in `app.json`) needs
-  `cd apps/mobile && npx expo prebuild --platform android --no-install` on the PC first:
+- **A change to a config plugin** (`app.config.ts`, a plugin's options in `app.json`) needs
+  `cd apps/mobile && npx expo prebuild --platform android --no-install` on the PC before
+  `pnpm android`:
   `expo run:android` only runs the prebuild when `android/` is missing, so the plugin never reaches
   the APK (2026-11-08: the `configChanges` plugin was built without it, and `cmd package
   resolve-activity` still showed the old `configChanges=0x80000fb3`).
-- **The first bundle** after `clearState` takes a while: `signInAs` waits up to 60 s for the
-  sign-in screen.
 - **The adb version:** use only the PC's adb, the one the claude-box puts on the `PATH`. A client
   of another version kills the PC's adb server and starts its own.
 - **Android 16 makes every tap take about 10 s.** `expo-splash-screen` holds the app's drawing
@@ -279,16 +264,10 @@ throwaway flow before the round counts as passing.
   physical 420) makes the screen narrower in dp than the design's 411, so every comparison with
   the `.pen` drifts and everything looks oversized. `adb shell wm density reset`, then relaunch
   the app.
-- **The ATD image** (`google_atd`, the AVD's image until 2026-10-25) **boots with app drawing off**
-  (`debug.hwui.drawing_enabled=0`), and has no
-  SystemUI: no status or navigation bar, no system splash, an empty black home. Apps run, the view
-  hierarchy is full and the assertions pass, but every window stays black, screenshots and the
-  person's emulator window included (the window freezes on the boot animation's last frame).
-  `pnpm journeys:test` and `pnpm android` (`scripts/android.sh`) set the property back to 1, which
-  lasts until the next boot and reaches only app processes started after it. When the emulator was
-  opened after the last round or after `pnpm android`: `adb shell setprop debug.hwui.drawing_enabled
-  1`, then relaunch the app; no root and no framework restart needed. A black screenshot over a full
-  hierarchy is this, or the next trap.
+- **A black screenshot over a full view hierarchy** is the ATD image's `drawing_enabled=0` (the
+  journeys' command and `scripts/android.sh` set it back each run). When the emulator was opened
+  after the last run: `adb shell setprop debug.hwui.drawing_enabled 1`, then relaunch the app. Or
+  the next trap.
 - **A session left from an earlier stack holds the splash forever.** The Auth emulator starts
   empty, so a session the app kept has an invalid refresh token (`INVALID_REFRESH_TOKEN` in the
   logcat). Firestore retries `UNAUTHENTICATED` without ever failing, `useAccess` stays `loading`,

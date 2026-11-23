@@ -150,53 +150,15 @@ changed module needs `pnpm android` on the developer's PC. E.g. `modules/receipt
   with its component — `.claude/rules/one-export-per-file.md`.
 - **Suffixes:** `*Service` for a Firebase operation, `*QueryService` for a realtime read, `do*` for
   an action, `use*` for a hook.
-- **Types** start with `I` (`IAccessStatus`), generics with `T` (`TValue`); **booleans** with
-  `is/has/can/should/was`, which no lint checks: it is on whoever writes and whoever reviews —
-  `.claude/rules/self-explaining-code.md`.
-- **Named exports only**, outside `src/app`.
-- **Colors** only from the theme (`src/core/theme`): a literal `#hex`, `rgb()` or `hsl()` fails the
-  lint.
+- **Types** start with `I` (`IAccessStatus`), generics with `T` (`TValue`).
 
 ## Checking
 
-The commit already formats, lints and type-checks what it carries, so these don't run between edits
-(`.claude/rules/lint-on-commit.md`); the branch review runs them on the whole app.
-
 ```bash
-pnpm mobile lint        # Oxlint with the rules above, then oxfmt --check
+pnpm mobile lint        # Oxlint, then oxfmt --check
 pnpm typecheck:mobile   # tsc --noEmit
 ```
 
-The lint checks the case of files (PascalCase for components, pages and types, camelCase for
-hooks, services, utils and stores), folders with no hyphen (or a `(Group)` folder), the layers, one
-export per file and the names. It also checks where each import comes from
-(`boundaries/dependencies` with `checkAllOrigins`, `no-restricted-imports`):
-
-- **Packages.** `@react-native-firebase/*` only in `src/shared` and tests; `firebase`, `@firebase/*`,
-  `@testing-library/*` and `expo-router/testing-library` only in tests and `src/shared/testing`;
-  `zustand` only in `*.store.ts`; `@hookform/resolvers` only in `useAppForm.ts`;
-  `react-native-safe-area-context` and `@expo/vector-icons` nowhere.
-- **Layers.** A page or component `.tsx` imports no `*Service`, only a `*QueryService` (the `do*`
-  action and the hook of the page folder import the service); `src/core/store` is imported only from
-  `src/core` and tests.
-- **Names.** No `StyleSheet`, `Text` or `SafeAreaView` from `react-native`; no `useMemo`,
-  `useCallback`, `memo` or `forwardRef` from `react`; no `useForm`, `Controller` or `useController`
-  from `react-hook-form`; no `../../` (use `@/`). `AppText.tsx` and `src/core` may use `Text`,
-  `createInputSmartWrapper.tsx` the controllers and `useAppForm.ts` `useForm`. Tests,
-  `src/shared/testing` and `*.scenarios.ts` are left out.
-
-It also checks the name and the place of each file:
-
-- **Name.** One of a file's exported declarations carries its name (`exports/name-matches-file`;
-  `I<Name>` and `use<Name>Store` count too, and a file that only exports value constants passes), and
-  a type lives in a `types/` folder (`exports/type-in-types-folder`), except the `I<X>Props` of an
-  exported `X` and a type derived with `typeof` from a constant of the same file.
-- **Place.** `use*` in `hooks/use*/`, `do*` in `utils/actions/`, `*QueryService` in
-  `src/shared/services/*/query/`, a camelCase `*Service`, `*.scenarios.ts` and `*.contract.test.ts`
-  in `src/shared/services`, `*.store.ts` in `src/{core,shared}/store/`; a test of a route goes in
-  `__tests__/app/`, never in `src/app`.
-- **Routes.** A route in `src/app` (not `_layout` or `+*`) only re-exports the page:
-  `export { XPage as default } from '@/features/…'`.
-
-It can't see a local component left inside another one's file: that is on whoever writes and
-whoever reviews.
+The lint's rules, with the message each refusal shows, are in `apps/mobile/oxlint.config.mts` and
+`lint/`: the layers, the packages each folder may import, the names and the place of files, and the
+routes that only re-export a page.

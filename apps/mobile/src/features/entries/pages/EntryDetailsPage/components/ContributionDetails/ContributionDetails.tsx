@@ -36,6 +36,7 @@ export interface IContributionDetailsProps {
 /** O título do comprovante da conta que a contribuição recebe, pelo tipo dela. */
 const BILL_RECEIPT_HEADINGS = {
   recurringPayment: 'Comprovante do pagamento',
+  overduePayment: 'Comprovante do pagamento',
   oneOffBill: 'Comprovante da conta avulsa',
 } as const satisfies Record<IBillEntry['kind'], string>;
 

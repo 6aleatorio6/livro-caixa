@@ -31,6 +31,21 @@ describe('ListItem', () => {
     expect(screen.queryByText(/Caraguá/)).not.toBeOnTheScreen();
   });
 
+  it('Should show the badge beside the title and read it after the title in the button label', async () => {
+    await render(
+      <ListItem
+        icon={Tag}
+        title="Água"
+        badge={{ label: 'De outubro', background: 'errorContainer', color: 'onErrorContainer' }}
+        tag={{ id: 'servicos', name: 'Serviços', nameKey: 'servicos', color: 'blue' }}
+        onPress={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByText('De outubro')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Água, De outubro, Serviços' })).toBeOnTheScreen();
+  });
+
   it('Should label the button with the accessibilityLabel instead of the title and the tag', async () => {
     await render(
       <ListItem

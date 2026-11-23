@@ -1,10 +1,8 @@
-import { useState } from 'react';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { AppText } from '@/shared/components/AppText/AppText';
-import { Button } from '@/shared/components/Button/Button';
-import { ConfirmDialog } from '@/shared/components/ConfirmDialog/ConfirmDialog';
+import { ConfirmButton } from '@/shared/components/ConfirmButton/ConfirmButton';
 
 export interface IDeleteWithConfirmProps {
   /** O rótulo do botão que abre a confirmação ("Excluir tag"). */
@@ -21,7 +19,7 @@ export interface IDeleteWithConfirmProps {
   onConfirm: () => void | Promise<void>;
 }
 
-/** O botão de excluir que abre a confirmação; confirmada, o diálogo fecha e `onConfirm` faz a exclusão. */
+/** O `ConfirmButton` de excluir, com o botão destrutivo e o "Excluir" no diálogo, e o motivo de estar desligado. */
 export function DeleteWithConfirm({
   label,
   dialogTitle,
@@ -31,29 +29,22 @@ export function DeleteWithConfirm({
   shouldShowReason = true,
   onConfirm,
 }: IDeleteWithConfirmProps) {
-  const [isConfirming, setIsConfirming] = useState(false);
-
-  async function confirm() {
-    setIsConfirming(false);
-    await onConfirm();
-  }
-
   return (
     <View style={styles.section}>
-      <Button label={label} variant="textDestructive" disabled={disabled} onPress={() => setIsConfirming(true)} />
+      <ConfirmButton
+        label={label}
+        variant="textDestructive"
+        title={dialogTitle}
+        message={dialogMessage}
+        confirmLabel="Excluir"
+        disabled={disabled}
+        onConfirm={onConfirm}
+      />
       {disabled && disabledReason && shouldShowReason ? (
         <AppText variant="bodySmall" color="onSurfaceVariant" style={styles.reason}>
           {disabledReason}
         </AppText>
       ) : null}
-      <ConfirmDialog
-        visible={isConfirming}
-        title={dialogTitle}
-        message={dialogMessage}
-        confirmLabel="Excluir"
-        onConfirm={confirm}
-        onCancel={() => setIsConfirming(false)}
-      />
     </View>
   );
 }

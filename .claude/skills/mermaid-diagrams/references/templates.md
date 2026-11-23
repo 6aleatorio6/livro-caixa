@@ -182,14 +182,10 @@ the colors never carry meaning there.
 
 ## Types to avoid or use with care
 
-- **`C4Context` / `C4Container`** — experimental, lays out by statement order, fixed colors that
-  ignore dark mode, no legend. Draw C4-style context/container views as a flowchart with subgraphs.
-- **`architecture-beta`** — force-directed layout where siblings can overlap, only five built-in
-  icons. Same answer: flowchart with subgraphs.
-- **`mindmap`** — radial layout, hierarchy by relative indentation (`root((Texto))`). `accTitle`
-  and `accDescr` break its parse; the lead-in sentence has to carry the title.
+- **`mindmap`** — radial layout, hierarchy by relative indentation (`root((Texto))`); the
+  lead-in sentence has to carry the title.
 - **`block`** — a manual grid (`columns 3`, `a:2` to span) for stacked-layer pictures when a
-  flowchart keeps reordering the layers. `accTitle` breaks its parse too.
+  flowchart keeps reordering the layers.
 - **`gantt`** — dates rot. Only for a plan whose dates are part of the decision being documented;
   add `todayMarker off` so the picture does not change every day.
 - **Icons** (`@{ icon: "fa:…" }`, `fa:fa-x` in labels) need an icon pack the site does not

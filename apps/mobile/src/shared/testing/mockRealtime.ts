@@ -28,9 +28,13 @@ export function mockRealtime(...mocks: IRealtimeMock[]) {
     }, []);
 
     const serviceMocks = mocks.filter((candidate) => candidate.service === service);
+    // Sem mock que atenda a leitura, o primeiro cenário a recusa no `expect`: um estado com `input` não atende outra.
     const mock =
-      serviceMocks.find((candidate) => 'status' in candidate || isSameInput(candidate.scenario.input, params)) ??
-      serviceMocks[0];
+      serviceMocks.find((candidate) =>
+        'status' in candidate
+          ? !('input' in candidate) || isSameInput(candidate.input, params)
+          : isSameInput(candidate.scenario.input, params),
+      ) ?? serviceMocks.find((candidate) => 'scenario' in candidate);
     if (!mock) throw new Error(`O useRealtime não tem mock para a leitura com ${JSON.stringify(params)}.`);
     if ('status' in mock) return { status: mock.status, data: null };
     // A tela tem de ler com a entrada do cenário: o contrato só conferiu o serviço com ela.

@@ -7,20 +7,24 @@ import type { IAsyncActionOptions } from '@/shared/types/asyncAction/AsyncAction
 import type { IAsyncActionResult } from '@/shared/types/asyncAction/AsyncActionResult';
 
 /**
- * Embrulha uma chamada assíncrona com o retorno à pessoa: o carregamento, o aviso de sucesso e o
- * aviso de erro. A ação nunca lança: devolve `{ data, error }`.
+ * Embrulha uma chamada assíncrona com o retorno à pessoa: o carregamento, o aviso de sucesso (com o botão da ação, se
+ * ela pede um) e o aviso de erro. A ação nunca lança: devolve `{ data, error }`.
  */
 export function createAsyncAction<TParams = void, TData = void>({
   run,
   shouldShowLoader = false,
   successMessage,
+  successAction,
 }: IAsyncActionOptions<TParams, TData>) {
   return async (params: TParams): Promise<IAsyncActionResult<TData>> => {
     if (shouldShowLoader) showLoader();
     try {
       const data = await run(params);
       if (successMessage) {
-        showToast(typeof successMessage === 'function' ? successMessage(params) : successMessage, 'success');
+        const message = typeof successMessage === 'function' ? successMessage(params) : successMessage;
+        const action = successAction?.(params, data);
+        if (action) showToast(message, 'success', action);
+        else showToast(message, 'success');
       }
       return { data, error: null };
     } catch (error) {

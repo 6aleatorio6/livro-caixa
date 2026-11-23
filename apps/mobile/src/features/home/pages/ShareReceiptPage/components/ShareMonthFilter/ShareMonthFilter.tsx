@@ -3,46 +3,55 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import type { IColorRole } from '@/core/types/ColorRole';
 
+import { OVERDUE_LOOK } from '@/features/home/constants/overdueLook';
+import type { IShareChoice } from '@/features/home/types/ShareChoice';
 import { AppText } from '@/shared/components/AppText/AppText';
 import { MONTH_BADGES } from '@/shared/constants/date/monthBadges';
-import { shiftMonth } from '@/shared/utils/date/shiftMonth';
+
+// A pílula das atrasadas é a única de outra cor: vermelha quando escolhida, como o selo das contas.
+const BADGE_BY_CHOICE: Record<IShareChoice, { text: string; background: IColorRole; color: IColorRole }> = {
+  overdue: { text: 'Atrasadas', background: OVERDUE_LOOK.markColor, color: OVERDUE_LOOK.iconColor },
+  thisMonth: MONTH_BADGES.current,
+  nextMonth: MONTH_BADGES.next,
+};
+
+const MONTH_CHOICES: IShareChoice[] = ['thisMonth', 'nextMonth'];
+const CHOICES_WITH_OVERDUE: IShareChoice[] = ['overdue', ...MONTH_CHOICES];
 
 export interface IShareMonthFilterProps {
-  /** O mês da pílula "Este mês", 'AAAA-MM'; a "Mês que vem" é o seguinte. */
-  thisMonth: string;
-  /** O mês escolhido, 'AAAA-MM': o de uma das duas pílulas. */
-  month: string;
-  onMonthChange: (month: string) => void;
+  /** Há conta atrasada: a pílula "Atrasadas" aparece antes das de mês. */
+  hasOverdue: boolean;
+  choice: IShareChoice;
+  onChoiceChange: (choice: IShareChoice) => void;
 }
 
 /**
- * O filtro de mês do compartilhar: as pílulas "Este mês" e "Mês que vem", a escolhida nas cores do selo do
- * `MonthSwitcher` e a outra só com o contorno. É lido como abas, e a escolhida como a aba selecionada.
+ * O filtro do compartilhar: as pílulas "Atrasadas" (só com conta atrasada), "Este mês" e "Mês que vem", a escolhida
+ * nas cores do selo (o do `MonthSwitcher`, ou o vermelho das atrasadas) e as outras só com o contorno. É lido como
+ * abas, e a escolhida como a aba selecionada.
  */
-export function ShareMonthFilter({ thisMonth, month, onMonthChange }: IShareMonthFilterProps) {
-  const pills = [
-    { badge: MONTH_BADGES.current, month: thisMonth },
-    { badge: MONTH_BADGES.next, month: shiftMonth(thisMonth, 1) },
-  ];
+export function ShareMonthFilter({ hasOverdue, choice, onChoiceChange }: IShareMonthFilterProps) {
+  const choices = hasOverdue ? CHOICES_WITH_OVERDUE : MONTH_CHOICES;
 
   return (
     <View accessibilityRole="tablist" style={styles.row}>
-      {pills.map((pill) => {
-        const isSelected = pill.month === month;
+      {choices.map((pillChoice) => {
+        const isSelected = pillChoice === choice;
+        const badge = BADGE_BY_CHOICE[pillChoice];
 
         return (
           <Pressable
-            key={pill.month}
+            key={pillChoice}
             accessibilityRole="tab"
-            accessibilityLabel={pill.badge.text}
+            accessibilityLabel={badge.text}
             accessibilityState={{ selected: isSelected }}
             // A pílula tem 32 dp de altura; o toque chega a 48.
             hitSlop={{ top: 8, bottom: 8 }}
-            onPress={() => onMonthChange(pill.month)}
-            style={({ pressed }) => styles.pill(isSelected, pill.badge.background, pressed)}
+            onPress={() => onChoiceChange(pillChoice)}
+            style={({ pressed }) => styles.pill(isSelected, badge.background, pressed)}
           >
-            <AppText variant="labelSmall" color={isSelected ? pill.badge.color : 'onSurfaceVariant'}>
-              {pill.badge.text}
+            <AppText variant="labelSmall" color={isSelected ? badge.color : 'onSurfaceVariant'}>
+              {badge.text}
             </AppText>
           </Pressable>
         );

@@ -2,9 +2,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
-import type { IColorRole } from '@/core/types/ColorRole';
-
 import { AppText } from '@/shared/components/AppText/AppText';
+import { Badge } from '@/shared/components/Badge/Badge';
 import { IconButton } from '@/shared/components/IconButton/IconButton';
 import { FIRST_MONTH } from '@/shared/constants/date/firstMonth';
 import { MONTH_BADGES } from '@/shared/constants/date/monthBadges';
@@ -44,13 +43,7 @@ export function MonthSwitcher({ label, month, onMonthChange }: IMonthSwitcherPro
           <AppText variant="labelMedium" color="onSurfaceVariant">
             {label}
           </AppText>
-          {badge ? (
-            <View style={styles.badge(badge.background)}>
-              <AppText variant="labelSmall" color={badge.color}>
-                {badge.text}
-              </AppText>
-            </View>
-          ) : null}
+          {badge ? <Badge label={badge.text} background={badge.background} color={badge.color} /> : null}
         </View>
         <AppText variant="headlineSmallEmphasized">{formatMonthTitle(month)}</AppText>
       </View>
@@ -77,11 +70,5 @@ const styles = StyleSheet.create((theme) => ({
   titles: { gap: theme.spacing.extraExtraSmall },
   // A altura do selo, para o rótulo não pular quando o selo some nos meses anteriores.
   labelRow: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.small, minHeight: 20 },
-  badge: (background: IColorRole) => ({
-    paddingHorizontal: theme.spacing.small,
-    paddingVertical: theme.spacing.extraExtraSmall,
-    borderRadius: theme.radii.full,
-    backgroundColor: theme.colors[background],
-  }),
   buttons: { flexDirection: 'row' },
 }));

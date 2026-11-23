@@ -36,6 +36,39 @@ describe('createAsyncAction', () => {
     expect(useToastStore.getState().toast).toEqual({ message: 'Conta excluída', kind: 'success' });
   });
 
+  it('Should put the success action, chosen from the params and the result, in the toast', async () => {
+    const onUndo = jest.fn();
+    const skip = createAsyncAction({
+      run: async (_billId: string) => 'mes-1',
+      successMessage: 'Conta pulada.',
+      successAction: (billId, monthId) => ({ label: 'Desfazer', onPress: () => onUndo(billId, monthId) }),
+    });
+
+    await skip('conta-1');
+    useToastStore.getState().toast?.action?.onPress();
+
+    expect(useToastStore.getState().toast).toEqual({
+      message: 'Conta pulada.',
+      kind: 'success',
+      action: { label: 'Desfazer', onPress: expect.any(Function) },
+    });
+    expect(onUndo).toHaveBeenCalledWith('conta-1', 'mes-1');
+  });
+
+  it('Should show no action when the action fails', async () => {
+    const skip = createAsyncAction({
+      run: async () => {
+        throw new Error('rede caiu');
+      },
+      successMessage: 'Conta pulada.',
+      successAction: () => ({ label: 'Desfazer', onPress: jest.fn() }),
+    });
+
+    await skip();
+
+    expect(useToastStore.getState().toast).toEqual({ message: 'Algo deu errado. Tente de novo.', kind: 'error' });
+  });
+
   it('Should show the user message of an AppError', async () => {
     const error = new AppError('Payment already registered', 'Essa conta já foi paga neste mês.');
     const pay = createAsyncAction({

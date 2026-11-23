@@ -21,10 +21,11 @@ describe('deleteEntryService', () => {
       expect(await deleteEntryService(...scenario.input)).toBe(scenario.result);
 
       // Somem o lançamento, o registro e o conteúdo do comprovante, e o mês deixa de trazer o lançamento; na última
-      // contribuição de um pagamento sem dono, o pagamento sai junto.
+      // contribuição de um pagamento sem dono, o pagamento sai junto, e no pagamento atrasado, o `overdueMonths` que o pagou.
       const remainingEntryIds = (scenario as { remainingEntryIds?: string[] }).remainingEntryIds ?? [];
       expect((await readCollectionWithoutRules('entries')).map(({ id }) => id)).toEqual(remainingEntryIds);
       expect(await readCollectionWithoutRules('files')).toEqual([]);
+      expect(await readCollectionWithoutRules('overdueMonths')).toEqual([]);
       expect(await readContentWithoutRules(entry.receiptFileId)).toBeNull();
       const month = await listenTo(entryMonthQueryService, { month: entry.month }).next();
       expect(month.map(({ id }) => id).sort()).toEqual([...remainingEntryIds].sort());

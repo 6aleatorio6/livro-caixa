@@ -1,3 +1,4 @@
+import type { IBadgeProps } from '@/shared/components/Badge/Badge';
 import { ListItem } from '@/shared/components/ListItem/ListItem';
 import { AppText } from '@/shared/components/AppText/AppText';
 import type { IEntryMarkKind } from '@/shared/types/entry/EntryMarkKind';
@@ -15,6 +16,8 @@ export interface IEntryItemProps {
   support: string;
   /** A tag, que abre o detalhe com a bolinha da cor dela (no Início); sem ela, o detalhe vem sozinho. */
   tag?: ITag;
+  /** O selo ao lado do nome ("De outubro" no pagamento de uma conta atrasada); o leitor de tela o lê depois do nome. */
+  badge?: IBadgeProps;
   /** Sem `onPress` a linha é só leitura; com ele é um botão cujo rótulo é o nome do lançamento e o da tag. */
   onPress?: () => void;
   /**
@@ -29,7 +32,16 @@ export interface IEntryItemProps {
  * de uma conta recorrente, a marca `primaryContainer` e o `check`. O detalhe vem pronto: aqui só se desenha
  * a marca, o nome, a bolinha da tag e o valor.
  */
-export function EntryItem({ kind, name, amountCents, support, tag, onPress, accessibilityLabel }: IEntryItemProps) {
+export function EntryItem({
+  kind,
+  name,
+  amountCents,
+  support,
+  tag,
+  badge,
+  onPress,
+  accessibilityLabel,
+}: IEntryItemProps) {
   const { icon, markColor, iconColor } = entryMarkOf(kind);
 
   return (
@@ -38,6 +50,7 @@ export function EntryItem({ kind, name, amountCents, support, tag, onPress, acce
       title={name}
       support={support}
       tag={tag}
+      badge={badge}
       isCompact
       onPress={onPress}
       accessibilityLabel={accessibilityLabel}

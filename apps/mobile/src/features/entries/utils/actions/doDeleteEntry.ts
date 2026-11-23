@@ -5,6 +5,7 @@ import { createAsyncAction } from '@/shared/utils/handlerError/createAsyncAction
 
 const SUCCESS_MESSAGE_BY_KIND = {
   recurringPayment: 'Pagamento excluído.',
+  overduePayment: 'Pagamento excluído.',
   oneOffBill: 'Conta avulsa excluída.',
   contribution: 'Contribuição excluída.',
 } as const;
