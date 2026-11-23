@@ -5,6 +5,7 @@ import {
   requestPermissionsAsync,
   setNotificationChannelAsync,
 } from 'expo-notifications';
+import { AppState, type AppStateStatus } from 'react-native';
 
 import { usePushTokenStore } from '@/shared/store/pushToken.store';
 import { savePushTokenService } from '@/shared/services/pushToken/save/savePushTokenService';
@@ -42,6 +43,22 @@ function settle() {
   return act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
   });
+}
+
+/** O `AppState` do Jest não muda sozinho: o teste guarda os ouvintes e os chama, como o Android ao devolver o app. */
+let appStateListeners: ((state: AppStateStatus) => void)[] = [];
+
+beforeEach(() => {
+  appStateListeners = [];
+  jest.spyOn(AppState, 'addEventListener').mockImplementation((_, listener) => {
+    appStateListeners.push(listener);
+    return { remove: () => (appStateListeners = appStateListeners.filter((other) => other !== listener)) };
+  });
+});
+
+async function comeBackToForeground() {
+  appStateListeners.forEach((listener) => listener('active'));
+  await settle();
 }
 
 describe('usePushRegistration', () => {
@@ -111,6 +128,72 @@ describe('usePushRegistration', () => {
     const lastChannel = Math.max(...jest.mocked(setNotificationChannelAsync).mock.invocationCallOrder);
     expect(lastChannel).toBeLessThan(jest.mocked(getPermissionsAsync).mock.invocationCallOrder[0]);
     expect(lastChannel).toBeLessThan(jest.mocked(getExpoPushTokenAsync).mock.invocationCallOrder[0]);
+  });
+
+  describe('when the app comes back to the foreground', () => {
+    it('Should save the token without asking when the person turned the permission on in the Android settings', async () => {
+      givenPermission('denied');
+      jest.mocked(requestPermissionsAsync).mockResolvedValue({ status: 'denied' } as never);
+      await renderHook(() => usePushRegistration());
+      await settle();
+
+      givenPermission('granted');
+      await comeBackToForeground();
+
+      expect(requestPermissionsAsync).toHaveBeenCalledTimes(1);
+      expect(savePushTokenService).toHaveBeenCalledWith(...scenario.input);
+    });
+
+    it('Should not ask again when the permission is still denied', async () => {
+      givenPermission('denied');
+      jest.mocked(requestPermissionsAsync).mockResolvedValue({ status: 'denied' } as never);
+      await renderHook(() => usePushRegistration());
+      await settle();
+
+      await comeBackToForeground();
+
+      expect(requestPermissionsAsync).toHaveBeenCalledTimes(1);
+      expect(getExpoPushTokenAsync).not.toHaveBeenCalled();
+    });
+
+    it('Should not save again when the phone already has its token', async () => {
+      givenPermission('granted');
+      await renderHook(() => usePushRegistration());
+      await settle();
+
+      await comeBackToForeground();
+
+      expect(savePushTokenService).toHaveBeenCalledTimes(1);
+    });
+
+    // O diálogo da permissão tira o app da frente: fechá-lo devolve o app antes de o pedido responder.
+    it('Should save once when the app comes back while the permission request is still open', async () => {
+      givenPermission('denied');
+      let grant = (_: unknown) => undefined as void;
+      jest.mocked(requestPermissionsAsync).mockReturnValue(new Promise((resolve) => (grant = resolve)) as never);
+      await renderHook(() => usePushRegistration());
+      await settle();
+
+      givenPermission('granted');
+      await comeBackToForeground();
+      grant({ status: 'granted' });
+      await settle();
+
+      expect(savePushTokenService).toHaveBeenCalledTimes(1);
+    });
+
+    it('Should stop listening when the tabs unmount', async () => {
+      givenPermission('denied');
+      jest.mocked(requestPermissionsAsync).mockResolvedValue({ status: 'denied' } as never);
+      const { unmount } = await renderHook(() => usePushRegistration());
+      await settle();
+      await act(async () => unmount());
+
+      givenPermission('granted');
+      await comeBackToForeground();
+
+      expect(getExpoPushTokenAsync).not.toHaveBeenCalled();
+    });
   });
 
   it('Should only log when saving the token fails', async () => {

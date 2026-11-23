@@ -18,7 +18,8 @@ lançamento chega a quem não o registrou, e quem o recebe pode tocá-lo para ab
 - Aceita a permissão, o celular fica cadastrado para receber os avisos.
 - Quem recusou, ou desligou as notificações do app nos ajustes do Android, não recebe os avisos e
   continua usando o app sem diferença. Para voltar atrás, a pessoa liga as notificações nos
-  [ajustes do Android](#os-ajustes-do-android); na abertura seguinte, o celular se cadastra.
+  [ajustes do Android](#os-ajustes-do-android); ao voltar para o app, o celular se cadastra, sem
+  precisar fechá-lo.
 
 ## Canais
 
@@ -134,6 +135,8 @@ A decisão e o que o Expo precisa para enviar estão em
 - [ ] Se apagar o endereço falha, a pessoa sai da conta do mesmo jeito.
 - [ ] Sem a permissão, sair da conta não tenta apagar nenhum endereço.
 - [ ] Em Configurações, a linha Notificações abre os ajustes do Android para o app.
+- [ ] Quem liga as notificações nos ajustes do Android e volta ao app fica cadastrado sem fechar o app, e
+      quem as deixa desligadas não vê o pedido de permissão a cada volta.
 - [ ] Ao pagar uma conta do mês, os outros membros com o celular cadastrado recebem "Fulano pagou a Conta",
       com o mês e o valor no texto; quem pagou não recebe.
 - [ ] Ao pagar uma conta atrasada, o aviso é o mesmo, com o mês atrasado no texto.
