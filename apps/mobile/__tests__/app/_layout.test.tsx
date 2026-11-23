@@ -71,6 +71,8 @@ jest.mock('@/features/auth/hooks/useEnsureOwnName/useEnsureOwnName', () => ({ us
 jest.mock('@/features/notifications/hooks/usePushRegistration/usePushRegistration', () => ({
   usePushRegistration: jest.fn(),
 }));
+// Os lembretes das contas, que agendam pelo módulo nativo; o hook tem teste próprio.
+jest.mock('@/features/home/hooks/useBillReminders/useBillReminders', () => ({ useBillReminders: jest.fn() }));
 // E o toque na notificação, que lê o módulo nativo; o hook tem teste próprio.
 jest.mock('@/features/notifications/hooks/useOpenTappedNotification/useOpenTappedNotification', () => ({
   useOpenTappedNotification: jest.fn(),
