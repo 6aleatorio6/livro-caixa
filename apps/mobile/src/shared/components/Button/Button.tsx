@@ -14,7 +14,7 @@ export interface IButtonProps {
   icon?: LucideIcon;
   isLoading?: boolean;
   disabled?: boolean;
-  /** A medida do "Registrar" numa linha de conta: 40 dp de altura em vez de 48. */
+  /** A medida do "Pagar" numa linha de conta: 40 dp de altura em vez de 48. */
   isCompact?: boolean;
   /** O que o leitor de tela lê, quando precisa ser mais que o rótulo ("Remover Clara Souza"). */
   accessibilityLabel?: string;

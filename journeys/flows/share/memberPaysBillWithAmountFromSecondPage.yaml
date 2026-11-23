@@ -22,7 +22,7 @@ tags:
 - stopApp
 - launchApp
 - extendedWaitUntil:
-    visible: "Registrar Internet"
+    visible: "Pagar Internet"
     timeout: 30000
 - runScript:
     file: ../../data/request.js
@@ -32,7 +32,7 @@ tags:
 - extendedWaitUntil:
     visible: "Qual conta você pagou?"
     timeout: 15000
-- tapOn: "Registrar Internet"
+- tapOn: "Pagar Internet"
 - extendedWaitUntil:
     visible: "vence dia 15 · previsto R\\$ 119,90"
     timeout: 10000

@@ -55,10 +55,17 @@ const monthWithContribution = {
   service: entryMonthQueryService,
   scenario: entryMonthQueryScenarios.monthWithContributionToPayment,
 };
+const monthWithContributionToOneOffBill = {
+  service: entryMonthQueryService,
+  scenario: entryMonthQueryScenarios.monthWithContributionToOneOffBill,
+};
 const contributionReceipt = {
   service: receiptFileQueryService,
   scenario: receiptFileQueryScenarios.contributionReceipt,
 };
+// O registro do comprovante de uma contribuição que não chegou ou não existe: não há cenário do registro ausente com o
+// id de uma contribuição, e o estado sem dado (`loading`) entrega o mesmo `null`.
+const noReceiptRecord = { service: receiptFileQueryService, status: 'loading' as const };
 
 // O mock do lançamento lido pelo id: o `id` do cenário é o da rota.
 type IEntryMock = IRealtimeMock & { scenario: { input: { id: string } } };
@@ -273,16 +280,61 @@ describe('EntryDetailsPage', () => {
   });
 
   describe('Contributions', () => {
-    it('Should show who contributed and how much the payer keeps in the details', async () => {
+    it('Should show who contributed in the details', async () => {
       await renderDetails(payment, pdfReceipt, contributionReceipt, family, threeTags, monthWithContribution);
 
-      // A Luz de R$ 187,35 do Bruno, com R$ 40,00 da Ana.
-      expect(screen.getByText('Fica com você')).toBeOnTheScreen();
-      expect(screen.getByText('R$ 147,35')).toBeOnTheScreen();
       expect(screen.getByRole('header', { name: 'Contribuições' })).toBeOnTheScreen();
       expect(screen.getByText('(R$ 40,00)')).toBeOnTheScreen();
-      expect(screen.getByText('Ana · 11/10')).toBeOnTheScreen();
-      expect(screen.getByText('R$ 40,00')).toBeOnTheScreen();
+      expect(screen.getByText('Ana · 11/10 · R$ 40,00')).toBeOnTheScreen();
+    });
+
+    it('Should split the amount paid under the expected one: what the payer keeps and what the contributions add up to', async () => {
+      await renderDetails(payment, pdfReceipt, contributionReceipt, family, threeTags, monthWithContribution);
+
+      // A Luz de R$ 187,35 do Bruno, com R$ 40,00 da Ana: quem pagou e o valor dele numa ponta, as contribuições na outra.
+      const split = screen.getByLabelText('Você fica com R$ 147,35; as contribuições somam R$ 40,00');
+      const splitTexts = within(split)
+        .getAllByText(/./)
+        .map((text) => text.props.children);
+      expect(splitTexts).toEqual(['Você', 'R$ 147,35', 'Contribuições', 'R$ 40,00']);
+      expect(screen.queryByText('Fica com você')).not.toBeOnTheScreen();
+    });
+
+    it('Should name the member who paid in the split when another member opens the details', async () => {
+      jest.mocked(useAuthState).mockReturnValue(signedInAuthState(ana));
+      await renderDetails(payment, pdfReceipt, contributionReceipt, family, threeTags, monthWithContribution);
+
+      expect(screen.getByLabelText('Bruno fica com R$ 147,35; as contribuições somam R$ 40,00')).toBeOnTheScreen();
+    });
+
+    it('Should split a one-off bill with a contribution: the amount paid minus the contribution', async () => {
+      await renderDetails(
+        oneOffBill,
+        imageReceipt,
+        contributionReceipt,
+        family,
+        threeTags,
+        monthWithContributionToOneOffBill,
+      );
+
+      // A conserto da geladeira de R$ 350,00 do Bruno, com R$ 40,00 da Ana.
+      expect(screen.getByLabelText('Você fica com R$ 310,00; as contribuições somam R$ 40,00')).toBeOnTheScreen();
+    });
+
+    it('Should leave the split out of an entry with no contributions', async () => {
+      await renderDetails(payment, pdfReceipt, family, threeTags);
+
+      expect(screen.queryByLabelText(/fica com .*; as contribuições somam/)).not.toBeOnTheScreen();
+      expect(screen.queryByText('Contribuições')).not.toBeOnTheScreen();
+    });
+
+    it('Should show the payer with nothing left when the contributions cover the whole amount paid', async () => {
+      await renderDetails(payment, pdfReceipt, contributionReceipt, family, threeTags, {
+        service: entryMonthQueryService,
+        scenario: entryMonthQueryScenarios.monthWithFullyContributedPayment,
+      });
+
+      expect(screen.getByLabelText('Você fica com R$ 0,00; as contribuições somam R$ 187,35')).toBeOnTheScreen();
     });
 
     it('Should not offer Contribuir to whoever registered the entry, and keep Excluir off while it has contributions', async () => {
@@ -304,7 +356,6 @@ describe('EntryDetailsPage', () => {
         monthWithContribution,
       );
 
-      expect(screen.getByText('Fica com Bruno')).toBeOnTheScreen();
       await user.press(screen.getByRole('button', { name: 'Contribuir' }));
 
       expect(router.push).toHaveBeenCalledWith({
@@ -320,7 +371,7 @@ describe('EntryDetailsPage', () => {
       expect(screen.getByRole('button', { name: 'Excluir' })).toBeDisabled();
     });
 
-    it("Should offer no Ver for a contribution in an entry's details: the entry's own receipt is the only one", async () => {
+    it("Should show each contribution's receipt with its own Ver, which opens the contribution's id", async () => {
       const { user } = await renderDetails(
         payment,
         pdfReceipt,
@@ -330,16 +381,24 @@ describe('EntryDetailsPage', () => {
         monthWithContribution,
       );
 
-      expect(screen.queryByText('pix-luz-ana.jpg')).not.toBeOnTheScreen();
-      const receipts = screen.getAllByRole('button', { name: /^Comprovante:/ });
-      expect(receipts).toHaveLength(1);
-      await user.press(receipts[0]);
+      expect(screen.getByText('pix-luz-ana.jpg')).toBeOnTheScreen();
+      expect(screen.getAllByRole('button', { name: /^Comprovante:/ })).toHaveLength(2);
+      // O leitor de tela lê quem contribuiu, quando e quanto, e não só o arquivo.
+      await user.press(
+        screen.getByRole('button', { name: 'Comprovante: Ana · 11/10 · R$ 40,00, pix-luz-ana.jpg. Ver' }),
+      );
 
       expect(router.push).toHaveBeenCalledTimes(1);
-      expect(router.push).toHaveBeenCalledWith({
-        pathname: '/entries/[id]/receipt',
-        params: { id: '2026-10_electricity' },
-      });
+      expect(router.push).toHaveBeenCalledWith({ pathname: '/entries/[id]/receipt', params: { id: 'c-ana' } });
+    });
+
+    it('Should keep Ver off for a contribution whose receipt record has not arrived or is missing', async () => {
+      await renderDetails(payment, pdfReceipt, noReceiptRecord, family, threeTags, monthWithContribution);
+
+      expect(
+        screen.getByRole('button', { name: 'Comprovante: Ana · 11/10 · R$ 40,00, Nenhum arquivo anexado. Ver' }),
+      ).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'Comprovante: comprovante-luz.pdf. Ver' })).toBeEnabled();
     });
 
     describe('A bill paid only by contributions', () => {
@@ -347,7 +406,7 @@ describe('EntryDetailsPage', () => {
       const november = { service: entryMonthQueryService, scenario: entryMonthQueryScenarios.monthWithContributions };
 
       it('Should disable Contribuir when the contributions reached the expected amount, and say why', async () => {
-        await renderDetails(reachedRent, family, threeTags, november);
+        await renderDetails(reachedRent, family, threeTags, november, noReceiptRecord);
 
         expect(screen.getByText('R$ 2.000,00')).toBeOnTheScreen();
         expect(screen.getByText('Chegaram ao previsto, então não dá para contribuir mais.')).toBeOnTheScreen();
@@ -356,18 +415,17 @@ describe('EntryDetailsPage', () => {
         expect(screen.queryByRole('button', { name: 'Excluir' })).not.toBeOnTheScreen();
       });
 
-      it('Should list each contribution as a text line, with no receipt of its own', async () => {
-        await renderDetails(reachedRent, family, threeTags, november);
+      it("Should list each contribution with its receipt, under the contributor's name, date and amount", async () => {
+        await renderDetails(reachedRent, family, threeTags, november, noReceiptRecord);
 
         // O Bruno contribuiu no dia 4, e a Carla, que a lista da família não tem (então "Alguém"), no dia 5.
-        expect(screen.getByText('Bruno · 04/11')).toBeOnTheScreen();
-        expect(screen.getByText('Alguém · 05/11')).toBeOnTheScreen();
-        expect(screen.getAllByText('R$ 1.000,00')).toHaveLength(2);
-        expect(screen.queryAllByRole('button', { name: /^Comprovante:/ })).toHaveLength(0);
+        expect(screen.getByText('Bruno · 04/11 · R$ 1.000,00')).toBeOnTheScreen();
+        expect(screen.getByText('Alguém · 05/11 · R$ 1.000,00')).toBeOnTheScreen();
+        expect(screen.getAllByRole('button', { name: /^Comprovante:/ })).toHaveLength(2);
       });
 
       it('Should open the payment of the month from "Anexar o comprovante da conta"', async () => {
-        const { user } = await renderDetails(reachedRent, family, threeTags, november);
+        const { user } = await renderDetails(reachedRent, family, threeTags, november, noReceiptRecord);
 
         await user.press(screen.getByRole('button', { name: 'Anexar o comprovante da conta' }));
 
@@ -391,10 +449,6 @@ describe('EntryDetailsPage', () => {
       const contributionToOneOffBill = {
         service: entryQueryService,
         scenario: entryQueryScenarios.contributionToOneOffBill,
-      };
-      const monthWithContributionToOneOffBill = {
-        service: entryMonthQueryService,
-        scenario: entryMonthQueryScenarios.monthWithContributionToOneOffBill,
       };
 
       // A folha da contribuição da Ana na Luz do Bruno, com o comprovante dela e o do pagamento; `overrides` troca a
@@ -433,8 +487,8 @@ describe('EntryDetailsPage', () => {
         expect(screen.getByText('Comprovante do pagamento')).toBeOnTheScreen();
         const receipts = screen.getAllByRole('button', { name: /^Comprovante:/ });
         expect(receipts).toHaveLength(2);
-        expect(receipts[0]).toHaveAccessibleName('Comprovante: pix-luz-ana.jpg. Ver');
-        expect(receipts[1]).toHaveAccessibleName('Comprovante: comprovante-luz.pdf. Ver');
+        expect(receipts[0]).toHaveAccessibleName('Comprovante: Comprovante da contribuição, pix-luz-ana.jpg. Ver');
+        expect(receipts[1]).toHaveAccessibleName('Comprovante: Comprovante do pagamento, comprovante-luz.pdf. Ver');
       });
 
       it("Should call the second receipt the one-off bill's when the contribution went to a one-off bill", async () => {
@@ -453,10 +507,14 @@ describe('EntryDetailsPage', () => {
       it('Should open each receipt with the id of the entry it belongs to', async () => {
         const { user } = await renderContribution();
 
-        await user.press(screen.getByRole('button', { name: /^Comprovante: pix-luz-ana.jpg/ }));
+        await user.press(
+          screen.getByRole('button', { name: /^Comprovante: Comprovante da contribuição, pix-luz-ana.jpg/ }),
+        );
         expect(router.push).toHaveBeenLastCalledWith({ pathname: '/entries/[id]/receipt', params: { id: 'c-ana' } });
 
-        await user.press(screen.getByRole('button', { name: /^Comprovante: comprovante-luz.pdf/ }));
+        await user.press(
+          screen.getByRole('button', { name: /^Comprovante: Comprovante do pagamento, comprovante-luz.pdf/ }),
+        );
         expect(router.push).toHaveBeenLastCalledWith({
           pathname: '/entries/[id]/receipt',
           params: { id: '2026-10_electricity' },

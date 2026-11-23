@@ -45,7 +45,9 @@ câmera nem a galeria.
 O filtro são duas pílulas pequenas, "Este mês" e "Mês que vem", as mesmas palavras do selo do mês
 no [Início](01-inicio.md). Ele abre no mês atual e só tem o mês atual e o próximo, que já pode ser
 pago: não há pílula de mês anterior nem de depois do próximo. A pílula do mês escolhido fica
-marcada.
+marcada. Com alguma conta atrasada, uma terceira pílula, "Atrasadas", vem antes de "Este mês" e
+lista as contas de meses anteriores sem pagamento, com o selo vermelho "De outubro" e o dia
+em que venceram, sem as já pagas por outros nem as puladas.
 
 Abaixo do filtro, a tela mostra as contas a pagar do mês escolhido, em "A pagar em novembro", por
 exemplo. Embaixo delas, as contas desse mês já pagas por outros membros, em "Já pagas por outros em
@@ -128,6 +130,8 @@ Antes de salvar, o membro também abre o comprovante anexado, para conferir o va
       atual, não as do próximo.
 - [ ] O filtro vai só até o próximo mês: tem as pílulas "Este mês" e "Mês que vem", e nenhuma de
       mês anterior.
+- [ ] Com conta atrasada, a pílula "Atrasadas" aparece antes de "Este mês" e lista as contas de
+      meses anteriores sem pagamento; sem nenhuma, a pílula não aparece.
 - [ ] Tocar em "Mês que vem" marca a pílula e mostra as contas a pagar do próximo mês; "Conta
       avulsa" continua no topo.
 - [ ] Escolhida uma conta da lista do próximo mês, o pagamento é desse mês.

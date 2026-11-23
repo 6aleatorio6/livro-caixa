@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { DeleteEntryButton } from '@/features/entries/components/DeleteEntryButton/DeleteEntryButton';
+import { EntryReceipt } from '@/features/entries/components/EntryReceipt/EntryReceipt';
 import { OnlyAuthorNotice } from '@/features/entries/components/OnlyAuthorNotice/OnlyAuthorNotice';
 import { Button } from '@/shared/components/Button/Button';
 import { DetailRow } from '@/shared/components/DetailRow/DetailRow';
@@ -27,7 +28,6 @@ import { memberNameOf } from '@/shared/utils/person/memberNameOf';
 import { findTag } from '@/shared/utils/tag/findTag';
 
 import { EntryDetailsHeader } from '../EntryDetailsHeader/EntryDetailsHeader';
-import { EntryReceipt } from '../EntryReceipt/EntryReceipt';
 
 export interface IContributionDetailsProps {
   entry: IContributionEntry;

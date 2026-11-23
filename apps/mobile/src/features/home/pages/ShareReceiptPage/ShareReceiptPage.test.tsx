@@ -185,9 +185,9 @@ describe('ShareReceiptPage', () => {
     await render(<ShareReceiptPage />);
     const user = userEvent.setup();
 
-    await user.press(screen.getByRole('button', { name: 'Registrar Água' }));
+    await user.press(screen.getByRole('button', { name: 'Pagar Água' }));
     await user.press(screen.getByRole('tab', { name: 'Mês que vem' }));
-    await user.press(screen.getByRole('button', { name: 'Registrar Água' }));
+    await user.press(screen.getByRole('button', { name: 'Pagar Água' }));
 
     expect(router.push).toHaveBeenNthCalledWith(1, {
       pathname: '/recurring-bills/[id]/pay',
@@ -223,17 +223,17 @@ describe('ShareReceiptPage', () => {
   it('Should drop a bill another member pays while the screen is open', async () => {
     const realtime = mockRealtime(family, fiveBills, threeTags, paymentAddedWhileOpen, novemberPaidEarly);
     await render(<ShareReceiptPage />);
-    expect(screen.getByRole('button', { name: 'Registrar Internet' })).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Pagar Internet' })).toBeOnTheScreen();
 
     await act(async () => realtime.applyChange(entryMonthQueryService));
 
-    expect(screen.queryByRole('button', { name: 'Registrar Internet' })).toBeNull();
-    expect(screen.getByRole('button', { name: 'Registrar Água' })).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Pagar Internet' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Pagar Água' })).toBeOnTheScreen();
 
     // O pagamento é da Internet de outubro: a de novembro continua a pagar.
     await userEvent.setup().press(screen.getByRole('tab', { name: 'Mês que vem' }));
 
-    expect(screen.getByRole('button', { name: 'Registrar Internet' })).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Pagar Internet' })).toBeOnTheScreen();
   });
 
   it('Should show the reason of a refused file and no list of bills', async () => {

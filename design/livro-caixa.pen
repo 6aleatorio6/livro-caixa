@@ -8025,7 +8025,7 @@
                               "id": "s3bJPj",
                               "name": "Rótulo",
                               "fill": "$on-tertiary",
-                              "content": "Registrar",
+                              "content": "Pagar",
                               "fontFamily": "Figtree",
                               "fontSize": 13,
                               "fontWeight": "700"
@@ -10565,7 +10565,7 @@
                               "id": "ZB1fk",
                               "name": "Rótulo",
                               "fill": "$on-tertiary",
-                              "content": "Registrar",
+                              "content": "Pagar",
                               "fontFamily": "Figtree",
                               "fontSize": 13,
                               "fontWeight": "700"
@@ -16629,7 +16629,7 @@
                               "id": "WFjC4",
                               "name": "Rótulo",
                               "fill": "$on-tertiary",
-                              "content": "Registrar",
+                              "content": "Pagar",
                               "lineHeight": "$label-large-line-height",
                               "fontFamily": "$font-family",
                               "fontSize": "$label-large-size",
@@ -21778,7 +21778,7 @@
       "type": "frame",
       "id": "HcPh2",
       "x": 4058,
-      "y": 12741,
+      "y": 12343,
       "name": "09 Telas",
       "width": 2000,
       "fill": "#FFFFFF",
@@ -22077,7 +22077,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "O mês da família: o anel, a divisão por tag e por membro e a lista do mês. Na divisão por tag, o que não tem tag fica na linha Sem tag, sempre a última. As contas a pagar vêm primeiro, com o botão Registrar; tocar numa conta paga abre os detalhes.",
+                  "content": "O mês da família: o anel, a divisão por tag e por membro e a lista do mês. Na divisão por tag, o que não tem tag fica na linha Sem tag, sempre a última. As contas a pagar vêm primeiro, com o botão Pagar; tocar numa conta paga abre os detalhes.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -22164,6 +22164,135 @@
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
                   "content": "Nas Pagas, a Luz de Ana diz quanto veio de contribuições (R$ 40,00 de Bruno), e o Aluguel pago só com as contribuições de Bruno e Carla tem a marca de pessoas. Na A pagar, a Água mostra o que falta e de quem veio a contribuição, e o total a pagar e a tag Serviços já a contam. Nenhuma contribuição vira linha própria.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "KhPAo",
+              "name": "Tela · Início, atrasada paga",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "y6vMa",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Início, atrasada paga",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "nUsFn",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Novembro, depois de Ana pagar a Água de outubro no dia 5: ela entra em Pagas, com o selo cinza De outubro e \"paga dia 5 · Ana\". As atrasadas não têm seção própria: a Internet de outubro, ainda sem pagamento, é a primeira de A pagar, com o relógio vermelho e o selo vermelho De outubro, e entra no resumo e no que falta pagar. Em outubro, a Água some.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "tOHlN",
+              "name": "Tela · Início, mês anterior com pulada",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "z3VSlZ",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Início, mês anterior com pulada",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "uaJMS",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Outubro visto em novembro, depois de Ana pular a Água: ela fica na seção Puladas, no fim da lista, sem valor e com o texto apagado, e não conta em nada no mês. A Internet, sem pagamento, continua em A pagar com o relógio vermelho, o selo Atrasada e \"venceu\" no lugar de \"vence\". Um mês anterior não tem o selo do mês no cabeçalho. Tocar na Água abre o pagamento dela, direto: o mesmo de Tela · Registrar pagamento, conta atrasada, sem o Pular.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "SWCLn",
+              "name": "Estado · Mês pulado, com Desfazer",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "DvC9V",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Estado · Mês pulado, com Desfazer",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "A2e0ct",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Logo depois de Pular outubro: o Início de novembro já sem a Água de outubro em A pagar, e o aviso \"Água de outubro pulada.\" com Desfazer.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -22292,7 +22421,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Aberta pelo botão Registrar. O valor vem preenchido com o previsto e pode ser corrigido; embaixo dele, Paguei só uma parte transforma o registro numa contribuição; o comprovante é obrigatório; o pagamento fica no nome de quem está logado.",
+                  "content": "Aberta pelo botão Pagar. O valor vem preenchido com o previsto e pode ser corrigido; embaixo dele, Paguei só uma parte transforma o registro numa contribuição; o comprovante é obrigatório; o pagamento fica no nome de quem está logado.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -22431,6 +22560,92 @@
             },
             {
               "type": "frame",
+              "id": "xxLj5",
+              "name": "Tela · Registrar pagamento, conta atrasada",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "CBVUK",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Registrar pagamento, conta atrasada",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "O8ojW",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "O pagamento da Água de outubro, feito em novembro: o selo Atrasada ao lado do nome e o aviso vermelho, que diz desde quando ela está atrasada e que o pagamento conta em novembro, o mês em que é pago. Embaixo de Registrar pagamento, Pular outubro. A conta pulada abre esta mesma tela, sem o Pular.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "W6APm",
+              "name": "Estado · Pular mês",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "JuBav",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Estado · Pular mês",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "SdnjU",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "A confirmação de Pular outubro: a Água de outubro sai das atrasadas e não conta em nenhum mês. Volta a ser paga pelo Início de outubro.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
               "id": "V6KjH",
               "name": "Tela · Compartilhar comprovante",
               "width": "fill_container",
@@ -22464,7 +22679,7 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Onde cai quem compartilha uma imagem ou um PDF de outro app: o comprovante que chegou, \"Conta avulsa\" logo abaixo dele, que não depende do mês, e o filtro de mês, duas pílulas pequenas no estilo do selo do mês do cabeçalho, Este mês e Mês que vem (aqui, Este mês escolhido). Do mês escolhido vêm as contas a pagar, com Registrar, e as já pagas por outros membros, com Contribuir: o comprovante compartilhado vira uma contribuição na conta escolhida. Escolher uma conta a pagar segue no pagamento com o comprovante anexado.",
+                  "content": "Onde cai quem compartilha uma imagem ou um PDF de outro app: o comprovante que chegou, \"Conta avulsa\" logo abaixo dele, que não depende do mês, e o filtro de mês, duas pílulas pequenas no estilo do selo do mês do cabeçalho, Este mês e Mês que vem (aqui, Este mês escolhido). Com conta atrasada, uma terceira pílula, Atrasadas, vem antes de Este mês. Do mês escolhido vêm as contas a pagar, com Pagar, e as já pagas por outros membros, com Contribuir: o comprovante compartilhado vira uma contribuição na conta escolhida. Escolher uma conta a pagar segue no pagamento com o comprovante anexado.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -22507,7 +22722,50 @@
                   "fill": "#3A3A36",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Mês que vem escolhido no filtro, que já pode ser pago: as cinco contas a pagar, com Registrar. Nenhuma está paga por outro membro, então a seção Já pagas por outros, com Contribuir, não aparece.",
+                  "content": "Mês que vem escolhido no filtro, que já pode ser pago: as cinco contas a pagar, com Pagar. Nenhuma está paga por outro membro, então a seção Já pagas por outros, com Contribuir, não aparece.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "f0wDG",
+              "name": "Estado · Compartilhar comprovante, atrasadas",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "mElZd",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Estado · Compartilhar comprovante, atrasadas",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "l6BJuf",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Atrasadas escolhida no filtro, em vermelho. A pílula vem antes de Este mês e só aparece quando há conta atrasada. A lista mostra as contas de meses anteriores sem pagamento, com o selo vermelho De outubro e o dia em que venceram; Já pagas por outros não aparece.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 15,
@@ -24081,6 +24339,198 @@
         },
         {
           "type": "frame",
+          "id": "cFqMq",
+          "name": "Notificações",
+          "width": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "text",
+              "id": "qtwzG",
+              "name": "Grupo",
+              "fill": "#1C1C1A",
+              "content": "Notificações",
+              "lineHeight": 1.3,
+              "fontFamily": "Inter",
+              "fontSize": 22,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "w3Av2c",
+              "name": "Estado · Permissão de notificações",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "c9TEw",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Estado · Permissão de notificações",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "OBNYU",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "O pedido do Android 13 para mostrar notificações, sobre o Início: o app pede uma vez, na primeira abertura do Início depois da atualização. As palavras e os botões são do Android.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "E75ZR",
+              "name": "Tela · Configurações, com notificações",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ZBsyk",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Tela · Configurações, com notificações",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "n1kZvM",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Neste celular ganha a linha Notificações, com um interruptor, abaixo da biometria: desligar para de receber neste celular.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "S61LWD",
+              "name": "Estado · Notificações na tela de bloqueio",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "mTt5Q",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Estado · Notificações na tela de bloqueio",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "ip0EF",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Com as notificações sensíveis escondidas no Android, a tela de bloqueio mostra só o app e a hora; o texto aparece com o celular desbloqueado. O que aparece exatamente varia com a versão do Android: a conferir num celular.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "h5lcZk",
+              "name": "Estado · Notificações com o celular desbloqueado",
+              "width": "fill_container",
+              "stroke": "#E4E2DA",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 24,
+              "padding": [
+                10,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "R47mMo",
+                  "name": "Frame",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": 380,
+                  "content": "Estado · Notificações com o celular desbloqueado",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "iUHdy",
+                  "name": "O que mostra",
+                  "fill": "#3A3A36",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "As mesmas notificações na aba do Android, com o celular desbloqueado: completas, com quem pagou, a conta, o mês e o valor.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
           "id": "IOKCe",
           "name": "Decisão",
           "width": "fill_container",
@@ -24535,7 +24985,7 @@
                   "fill": "#1C1C1A",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "O pagamento e a contribuição são o mesmo formulário, então não há troca entre duas telas: embaixo do valor, o interruptor Paguei só uma parte transforma o registro numa contribuição, e o texto de apoio e o botão mudam com ela. O valor sozinho não decide, porque a Luz paga abaixo do previsto continua sendo um pagamento; mas abaixo de 30% do previsto, regra de Leonardo (02/11/2026), o interruptor vem ligado e desabilitado, e o registro só pode ser uma contribuição. Quem esqueceu de ligá-lo corrige em Alterar pagamento, que tem o mesmo interruptor; Alterar contribuição o tem desligável, e a contribuição vira o pagamento do mês. No pagamento de um mês com contribuições, o valor é a conta inteira, e o texto de apoio diz só que é a conta inteira, com o que já veio de contribuições (“A conta inteira, com os R$ 500,00 de Bruno.”); com quanto quem paga fica, isso só aparece nos detalhes. O Contribuir dos detalhes abre o mesmo formulário sem a opção, com o lançamento de quem pagou no topo. Nos detalhes de um pagamento, a parte de quem pagou é uma linha (Fica com Ana) e cada contribuição é uma linha de texto com quem, quando e quanto, sem o comprovante dela: a folha mostra só o comprovante do pagamento. Os detalhes da contribuição, a mesma folha do pagamento, mostram os dois comprovantes, o da contribuição e o do pagamento, e só se abrem por Pagamentos, a pedido de Leonardo (02/11/2026); o botão tonal Contribuir fica para quem não registrou. A conta que as contribuições pagaram sem o comprovante da conta inteira não ganha nome próprio, a pedido de Leonardo (02/11/2026), que achou ruins Coberta, Quitada e Paga pelas contribuições: ela é um pagamento como os outros, com a marca de pessoas (users-round em primary-container: paga por várias pessoas), um aviso que diz que as contribuições já somam o previsto e por isso não cabe outra, e o botão Anexar o comprovante da conta, escolhido por ele. No Início, a linha a pagar diz o que falta e de quem veio a contribuição. Em Pagamentos, a pedido de Leonardo (02/11/2026), o total da tag e o cartão, que passa a dizer Sua parte (Parte de Bruno, ou Partes de Você e Bruno com os dois chips), contam só a parte de quem está marcado. Cada contribuição é uma linha própria, logo abaixo do pagamento a que vai, e a linha do pagamento traz a parte de quem pagou: na Luz, Ana R$ 147,35 e, embaixo, Bruno R$ 40,00. No compartilhamento, as contas já pagas por outros ficam abaixo das a pagar, com Contribuir no lugar de Registrar, do mês escolhido no filtro. As marcas não usam tertiary-container, que é a cor do a pagar: a contribuição é dinheiro pago, e o ícone diz que é uma parte; a conta sem o comprovante da conta inteira não tem pagamento próprio, e a marca de pessoas a separa do check de quem pagou sozinho e das moedas de uma contribuição. O check vazado foi descartado por Leonardo, que o achou ruim. Escolhas da IA a pedido de Leonardo (02/11/2026), seguindo as regras das contribuições, ainda em rascunho; a troca Paguei a conta / Contribuí com parte foi descartada por Leonardo, que a viu como duas páginas iguais.",
+                  "content": "O pagamento e a contribuição são o mesmo formulário, então não há troca entre duas telas: embaixo do valor, o interruptor Paguei só uma parte transforma o registro numa contribuição, e o texto de apoio e o botão mudam com ela. O valor sozinho não decide, porque a Luz paga abaixo do previsto continua sendo um pagamento; mas abaixo de 30% do previsto, regra de Leonardo (02/11/2026), o interruptor vem ligado e desabilitado, e o registro só pode ser uma contribuição. Quem esqueceu de ligá-lo corrige em Alterar pagamento, que tem o mesmo interruptor; Alterar contribuição o tem desligável, e a contribuição vira o pagamento do mês. No pagamento de um mês com contribuições, o valor é a conta inteira, e o texto de apoio diz só que é a conta inteira, com o que já veio de contribuições (“A conta inteira, com os R$ 500,00 de Bruno.”); com quanto quem paga fica, isso só aparece nos detalhes. O Contribuir dos detalhes abre o mesmo formulário sem a opção, com o lançamento de quem pagou no topo. Nos detalhes de um pagamento, a parte de quem pagou é uma linha (Fica com Ana) e cada contribuição é uma linha de texto com quem, quando e quanto, sem o comprovante dela: a folha mostra só o comprovante do pagamento. Os detalhes da contribuição, a mesma folha do pagamento, mostram os dois comprovantes, o da contribuição e o do pagamento, e só se abrem por Pagamentos, a pedido de Leonardo (02/11/2026); o botão tonal Contribuir fica para quem não registrou. A conta que as contribuições pagaram sem o comprovante da conta inteira não ganha nome próprio, a pedido de Leonardo (02/11/2026), que achou ruins Coberta, Quitada e Paga pelas contribuições: ela é um pagamento como os outros, com a marca de pessoas (users-round em primary-container: paga por várias pessoas), um aviso que diz que as contribuições já somam o previsto e por isso não cabe outra, e o botão Anexar o comprovante da conta, escolhido por ele. No Início, a linha a pagar diz o que falta e de quem veio a contribuição. Em Pagamentos, a pedido de Leonardo (02/11/2026), o total da tag e o cartão, que passa a dizer Sua parte (Parte de Bruno, ou Partes de Você e Bruno com os dois chips), contam só a parte de quem está marcado. Cada contribuição é uma linha própria, logo abaixo do pagamento a que vai, e a linha do pagamento traz a parte de quem pagou: na Luz, Ana R$ 147,35 e, embaixo, Bruno R$ 40,00. No compartilhamento, as contas já pagas por outros ficam abaixo das a pagar, com Contribuir no lugar de Pagar, do mês escolhido no filtro. As marcas não usam tertiary-container, que é a cor do a pagar: a contribuição é dinheiro pago, e o ícone diz que é uma parte; a conta sem o comprovante da conta inteira não tem pagamento próprio, e a marca de pessoas a separa do check de quem pagou sozinho e das moedas de uma contribuição. O check vazado foi descartado por Leonardo, que o achou ruim. Escolhas da IA a pedido de Leonardo (02/11/2026), seguindo as regras das contribuições, ainda em rascunho; a troca Paguei a conta / Contribuí com parte foi descartada por Leonardo, que a viu como duas páginas iguais.",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 16,
@@ -24715,6 +25165,74 @@
             },
             {
               "type": "frame",
+              "id": "qF0cd",
+              "name": "Notificações na tela de bloqueio",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "waSax",
+                  "name": "Rótulo",
+                  "fill": "#6B6B66",
+                  "content": "Notificações na tela de bloqueio",
+                  "lineHeight": 1.3,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "RstNg",
+                  "name": "Texto",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "A notificação diz tudo: quem pagou, a conta, o mês e o valor. O que a tela de bloqueio mostra fica com o ajuste Notificações sensíveis do Android, em cada celular, como nos outros apps: uma versão própria para a tela de bloqueio pediria código nativo. Ficou de fora a com atalhos (Registrar pagamento, Ver comprovante), porque abrir o app já leva lá. Escolha de Leonardo (20/11/2026).",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "HSm0u",
+              "name": "Ícone da notificação",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "bAyhO",
+                  "name": "Rótulo",
+                  "fill": "#6B6B66",
+                  "content": "Ícone da notificação",
+                  "lineHeight": 1.3,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "cUtmr",
+                  "name": "Texto",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "A marca do app, o livro que vira casa, em branco (icon/notification-icon.png): o Android pinta o ícone pequeno de uma cor só e o mostra num círculo da cor do app e na barra de status, onde a marca diz de que app veio a notificação. Ficaram de fora o sino e o recibo do Lucide, que não dizem de que app é. Escolha da IA a pedido de Leonardo (20/11/2026).",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
               "id": "kdM39",
               "name": "Quem escolheu",
               "width": "fill_container",
@@ -24740,6 +25258,40 @@
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
                   "content": "A IA, a pedido de Leonardo (vindo da sessão de construção do app), em 24/10/2026.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "gnwUD",
+              "name": "Contas atrasadas",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "uuzWn",
+                  "name": "Rótulo",
+                  "fill": "#6B6B66",
+                  "content": "Contas atrasadas",
+                  "lineHeight": 1.3,
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "sF5GN",
+                  "name": "Texto",
+                  "fill": "#1C1C1A",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Uma conta recorrente de um mês anterior sem pagamento é atrasada: aparece no começo de A pagar, no Início do mês atual, sem seção própria, e na pílula Atrasadas do compartilhamento, com a marca de relógio em vermelho (error-container) e o selo Atrasada. Fora do mês de origem, o selo diz só o mês, De outubro, vermelho a pagar e cinza depois de paga; o texto longo não cabia ao lado do nome. As atrasadas entram no que falta pagar do mês atual. O pagamento dela conta e aparece só no mês em que é pago. Pular tira o mês das atrasadas; ele fica no mês dele, na seção Puladas, sem contar em nada, e tocar nele abre o pagamento direto, que conta no mês em que é pago; o pulo só se desfaz pelo Desfazer do aviso, logo depois de pular. Pedido de Leonardo (20/11/2026), que escolheu o mês do pagamento e pediu o nome mais popular: Pular, o termo dos apps de finanças para deixar uma ocorrência de lado. O Pular só aparece no pagamento de uma conta atrasada sem contribuição (Leonardo, 20/11/2026).",
                   "lineHeight": 1.5,
                   "fontFamily": "Inter",
                   "fontSize": 16,
@@ -27768,6 +28320,99 @@
                   ]
                 },
                 {
+                  "id": "A0BBGY",
+                  "type": "ref",
+                  "ref": "EuVW1",
+                  "name": "Internet atrasada",
+                  "enabled": false,
+                  "width": "fill_container(372)",
+                  "descendants": {
+                    "tzq6I": {
+                      "fill": "$error-container"
+                    },
+                    "fqUT8": {
+                      "icon": "alarm-clock",
+                      "fill": "$on-error-container"
+                    },
+                    "CqyUL": {
+                      "type": "frame",
+                      "id": "hXm1f",
+                      "name": "Nome e selo",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Xixln",
+                          "name": "Nome",
+                          "fill": "$on-surface",
+                          "content": "Internet",
+                          "lineHeight": "$title-medium-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$title-medium-size",
+                          "fontWeight": "$title-medium-weight",
+                          "letterSpacing": "$title-medium-tracking"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Ca6e0",
+                          "name": "Selo de atraso",
+                          "fill": "$error-container",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            2,
+                            8
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ys6Ns",
+                              "name": "Texto",
+                              "fill": "$on-error-container",
+                              "content": "De outubro",
+                              "lineHeight": "$label-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$label-small-size",
+                              "fontWeight": "$label-small-weight",
+                              "letterSpacing": "$label-small-tracking"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "OSPYw": {
+                      "type": "frame",
+                      "id": "ZYasE",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "Zry5K",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "x0yme3",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 119,90 · venceu dia 15",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
                   "id": "YOHL7",
                   "type": "ref",
                   "ref": "EuVW1",
@@ -27854,6 +28499,170 @@
                         {
                           "type": "text",
                           "id": "pKAem",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "R$ 98,00 · vence dia 20",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "WTrbO",
+              "x": 20,
+              "y": 1032,
+              "name": "Puladas",
+              "enabled": false,
+              "width": "fill_container(372)",
+              "layout": "vertical",
+              "gap": 2,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "SWzPe",
+                  "name": "Título",
+                  "width": "fill_container",
+                  "padding": [
+                    0,
+                    0,
+                    6,
+                    0
+                  ],
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "QgoEz",
+                      "name": "Texto",
+                      "fill": "$on-surface",
+                      "content": "Puladas",
+                      "lineHeight": "$title-medium-emphasized-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-medium-emphasized-size",
+                      "fontWeight": "$title-medium-emphasized-weight",
+                      "letterSpacing": "$title-medium-emphasized-tracking"
+                    },
+                    {
+                      "type": "text",
+                      "id": "SjSod",
+                      "name": "Resumo",
+                      "fill": "$on-surface-variant",
+                      "content": "1 conta",
+                      "lineHeight": "$label-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$label-medium-size",
+                      "fontWeight": "$label-medium-weight",
+                      "letterSpacing": "$label-medium-tracking"
+                    }
+                  ]
+                },
+                {
+                  "id": "lpYp7",
+                  "type": "ref",
+                  "ref": "EuVW1",
+                  "name": "Internet",
+                  "width": "fill_container",
+                  "descendants": {
+                    "tzq6I": {
+                      "fill": "$surface-container-high"
+                    },
+                    "fqUT8": {
+                      "icon": "skip-forward",
+                      "fill": "$on-surface-variant"
+                    },
+                    "CqyUL": {
+                      "type": "text",
+                      "id": "SMEfe",
+                      "name": "Nome",
+                      "fill": "$on-surface-variant",
+                      "content": "Água",
+                      "lineHeight": "$title-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-medium-size",
+                      "fontWeight": "$title-medium-weight",
+                      "letterSpacing": "$title-medium-tracking"
+                    },
+                    "OSPYw": {
+                      "type": "frame",
+                      "id": "f8Unf",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "j43Leu",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "hiKfo",
+                          "name": "Detalhe",
+                          "fill": "$on-surface-variant",
+                          "content": "pulada por Ana · não conta no mês",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    },
+                    "r4mDrJ": {
+                      "enabled": false
+                    }
+                  }
+                },
+                {
+                  "id": "NN1Bx",
+                  "type": "ref",
+                  "ref": "EuVW1",
+                  "name": "Água",
+                  "width": "fill_container(372)",
+                  "enabled": false,
+                  "descendants": {
+                    "CqyUL": {
+                      "type": "text",
+                      "id": "vHQud",
+                      "name": "Nome",
+                      "fill": "$on-surface",
+                      "content": "Água",
+                      "lineHeight": "$title-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$title-medium-size",
+                      "fontWeight": "$title-medium-weight",
+                      "letterSpacing": "$title-medium-tracking"
+                    },
+                    "OSPYw": {
+                      "type": "frame",
+                      "id": "oLnJQ",
+                      "name": "Detalhe e tag",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "bV7QJ",
+                          "name": "Cor da tag",
+                          "fill": "$tag-blue",
+                          "width": 8,
+                          "height": 8
+                        },
+                        {
+                          "type": "text",
+                          "id": "w1g6P",
                           "name": "Detalhe",
                           "fill": "$on-surface-variant",
                           "content": "R$ 98,00 · vence dia 20",
@@ -28753,6 +29562,49 @@
               ]
             },
             {
+              "type": "frame",
+              "id": "Z8k0M",
+              "x": 20,
+              "y": 424,
+              "name": "Aviso de atraso",
+              "enabled": false,
+              "width": "fill_container(372)",
+              "fill": "$error-container",
+              "cornerRadius": 12,
+              "gap": 10,
+              "padding": [
+                12,
+                14
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "z9Oe5",
+                  "name": "Ícone",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "alarm-clock",
+                  "library": "lucide",
+                  "fill": "$on-error-container"
+                },
+                {
+                  "type": "text",
+                  "id": "VQKmE",
+                  "name": "Texto",
+                  "fill": "$on-error-container",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Atrasada desde 20 de outubro. O pagamento conta em novembro, o mês em que você paga.",
+                  "lineHeight": "$body-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$body-small-size",
+                  "fontWeight": "$body-small-weight",
+                  "letterSpacing": "$body-small-tracking"
+                }
+              ]
+            },
+            {
               "id": "ZNBgf",
               "type": "ref",
               "ref": "YXXAl",
@@ -28947,6 +29799,19 @@
                   "width": 372
                 }
               }
+            },
+            {
+              "id": "JRxWa",
+              "type": "ref",
+              "ref": "MILQK",
+              "name": "Pular o mês",
+              "width": "fill_container(372)",
+              "enabled": false,
+              "descendants": {
+                "FRXkf": {
+                  "content": "Pular outubro"
+                }
+              }
             }
           ]
         }
@@ -29129,6 +29994,33 @@
               "gap": 8,
               "alignItems": "center",
               "children": [
+                {
+                  "type": "frame",
+                  "id": "EkslX",
+                  "name": "Atrasadas",
+                  "cornerRadius": 9999,
+                  "stroke": "$outline-variant",
+                  "strokeWidth": 1,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "rAslH",
+                      "name": "Texto",
+                      "fill": "$on-surface-variant",
+                      "content": "Atrasadas",
+                      "lineHeight": "$label-small-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$label-small-size",
+                      "fontWeight": "$label-small-weight",
+                      "letterSpacing": "$label-small-tracking"
+                    }
+                  ]
+                },
                 {
                   "type": "frame",
                   "id": "hWNDL",
@@ -30440,7 +31332,7 @@
           "type": "frame",
           "id": "lWLEA",
           "x": 0,
-          "y": 187,
+          "y": 163,
           "name": "Folha",
           "width": 412,
           "fill": "$surface-container-low",
@@ -30564,6 +31456,126 @@
                   "fontSize": "$body-small-size",
                   "fontWeight": "$body-small-weight",
                   "letterSpacing": "$body-small-tracking"
+                },
+                {
+                  "type": "frame",
+                  "id": "XveZX",
+                  "name": "Divisão",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 6,
+                  "padding": [
+                    12,
+                    0,
+                    0,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "IXoyS",
+                      "name": "Rótulos",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "aMu5k",
+                          "name": "Você",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "pOJHJ",
+                              "name": "Nome",
+                              "fill": "$on-surface-variant",
+                              "content": "Você",
+                              "lineHeight": "$body-medium-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-medium-size",
+                              "fontWeight": "$body-medium-weight",
+                              "letterSpacing": "$body-medium-tracking"
+                            },
+                            {
+                              "type": "text",
+                              "id": "A0nTbR",
+                              "name": "Valor",
+                              "fill": "$on-surface",
+                              "content": "R$ 147,35",
+                              "lineHeight": "$body-medium-emphasized-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-medium-emphasized-size",
+                              "fontWeight": "$body-medium-emphasized-weight",
+                              "letterSpacing": "$body-medium-emphasized-tracking"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "XWTiR",
+                          "name": "Contribuições",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "VOfkg",
+                              "name": "Nome",
+                              "fill": "$on-surface-variant",
+                              "content": "Contribuições",
+                              "lineHeight": "$body-medium-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-medium-size",
+                              "fontWeight": "$body-medium-weight",
+                              "letterSpacing": "$body-medium-tracking"
+                            },
+                            {
+                              "type": "text",
+                              "id": "FPw8y",
+                              "name": "Valor",
+                              "fill": "$on-surface",
+                              "content": "R$ 40,00",
+                              "lineHeight": "$body-medium-emphasized-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-medium-emphasized-size",
+                              "fontWeight": "$body-medium-emphasized-weight",
+                              "letterSpacing": "$body-medium-emphasized-tracking"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "D1rYPm",
+                      "name": "Trilho",
+                      "clip": true,
+                      "width": "fill_container",
+                      "height": 8,
+                      "cornerRadius": 4,
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "id": "t77BY",
+                          "name": "Quem pagou",
+                          "fill": "$primary",
+                          "width": 291,
+                          "height": 8
+                        },
+                        {
+                          "type": "rectangle",
+                          "id": "z9wnNz",
+                          "name": "Contribuições",
+                          "fill": "$tertiary",
+                          "width": "fill_container",
+                          "height": 8
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             },
@@ -30586,21 +31598,6 @@
                     },
                     "kFvt8": {
                       "content": "Ana"
-                    }
-                  }
-                },
-                {
-                  "id": "C6v2C2",
-                  "type": "ref",
-                  "ref": "WsaLD",
-                  "name": "Fica com",
-                  "width": "fill_container",
-                  "descendants": {
-                    "xO3rf": {
-                      "content": "Fica com você"
-                    },
-                    "kFvt8": {
-                      "content": "R$ 147,35"
                     }
                   }
                 },
@@ -30655,7 +31652,7 @@
               ]
             },
             {
-              "id": "LTQkC",
+              "id": "BvgrR",
               "type": "ref",
               "ref": "mDfYD",
               "name": "Comprovante",
@@ -30721,17 +31718,27 @@
                   ]
                 },
                 {
-                  "id": "u8lAXc",
+                  "id": "z10HB",
                   "type": "ref",
-                  "ref": "WsaLD",
+                  "ref": "mDfYD",
                   "name": "Contribuição de Bruno",
                   "width": "fill_container",
                   "descendants": {
-                    "xO3rf": {
-                      "content": "Bruno · 12/10"
+                    "Rsmc9": {
+                      "fill": "$primary-container"
                     },
-                    "kFvt8": {
-                      "content": "R$ 40,00"
+                    "sLrD8": {
+                      "icon": "hand-coins",
+                      "fill": "$on-primary-container"
+                    },
+                    "JqtR3": {
+                      "content": "Bruno · 12/10 · R$ 40,00"
+                    },
+                    "u0fr1G": {
+                      "content": "pix-luz-bruno.jpg"
+                    },
+                    "G5Zcc": {
+                      "content": "Ver"
                     }
                   }
                 }
@@ -36008,7 +37015,7 @@
             "EExJq": {
               "enabled": false
             },
-            "C6v2C2": {
+            "XveZX": {
               "enabled": false
             },
             "YIcXK/kFvt8": {
@@ -36023,10 +37030,10 @@
             "SYVWi/kFvt8": {
               "content": "Casa"
             },
-            "LTQkC/JqtR3": {
+            "BvgrR/JqtR3": {
               "content": "PDF · 64 KB"
             },
-            "LTQkC/u0fr1G": {
+            "BvgrR/u0fr1G": {
               "content": "comprovante-aluguel.pdf"
             },
             "JuZTL": {
@@ -40925,6 +41932,9 @@
         },
         "E87DP5/u0fr1G": {
           "content": "comprovante-aluguel.pdf"
+        },
+        "JRxWa": {
+          "enabled": false
         }
       }
     },
@@ -40977,7 +41987,7 @@
           "type": "frame",
           "id": "kJX6p",
           "x": 0,
-          "y": 161,
+          "y": 137,
           "name": "Folha",
           "width": 412,
           "fill": "$surface-container-low",
@@ -41101,6 +42111,126 @@
                   "fontSize": "$body-small-size",
                   "fontWeight": "$body-small-weight",
                   "letterSpacing": "$body-small-tracking"
+                },
+                {
+                  "type": "frame",
+                  "id": "G1aGe8",
+                  "name": "Divisão",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 6,
+                  "padding": [
+                    12,
+                    0,
+                    0,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ICNmQ",
+                      "name": "Rótulos",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "S9vTm8",
+                          "name": "Ana",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "hcaE5",
+                              "name": "Nome",
+                              "fill": "$on-surface-variant",
+                              "content": "Ana",
+                              "lineHeight": "$body-medium-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-medium-size",
+                              "fontWeight": "$body-medium-weight",
+                              "letterSpacing": "$body-medium-tracking"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Uraxs",
+                              "name": "Valor",
+                              "fill": "$on-surface",
+                              "content": "R$ 80,00",
+                              "lineHeight": "$body-medium-emphasized-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-medium-emphasized-size",
+                              "fontWeight": "$body-medium-emphasized-weight",
+                              "letterSpacing": "$body-medium-emphasized-tracking"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "kC5oN",
+                          "name": "Contribuições",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "a7B1d",
+                              "name": "Nome",
+                              "fill": "$on-surface-variant",
+                              "content": "Contribuições",
+                              "lineHeight": "$body-medium-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-medium-size",
+                              "fontWeight": "$body-medium-weight",
+                              "letterSpacing": "$body-medium-tracking"
+                            },
+                            {
+                              "type": "text",
+                              "id": "QGKJd",
+                              "name": "Valor",
+                              "fill": "$on-surface",
+                              "content": "R$ 40,00",
+                              "lineHeight": "$body-medium-emphasized-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-medium-emphasized-size",
+                              "fontWeight": "$body-medium-emphasized-weight",
+                              "letterSpacing": "$body-medium-emphasized-tracking"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "h8bG5",
+                      "name": "Trilho",
+                      "clip": true,
+                      "width": "fill_container",
+                      "height": 8,
+                      "cornerRadius": 4,
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "id": "Z8tZK",
+                          "name": "Quem pagou",
+                          "fill": "$primary",
+                          "width": 247,
+                          "height": 8
+                        },
+                        {
+                          "type": "rectangle",
+                          "id": "s6mwbs",
+                          "name": "Contribuições",
+                          "fill": "$tertiary",
+                          "width": "fill_container",
+                          "height": 8
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             },
@@ -41123,21 +42253,6 @@
                     },
                     "kFvt8": {
                       "content": "Ana"
-                    }
-                  }
-                },
-                {
-                  "id": "n3bwP6",
-                  "type": "ref",
-                  "ref": "WsaLD",
-                  "name": "Parte de quem pagou",
-                  "width": "fill_container",
-                  "descendants": {
-                    "xO3rf": {
-                      "content": "Fica com Ana"
-                    },
-                    "kFvt8": {
-                      "content": "R$ 80,00"
                     }
                   }
                 },
@@ -41192,7 +42307,7 @@
               ]
             },
             {
-              "id": "cp0db",
+              "id": "nDrDn",
               "type": "ref",
               "ref": "mDfYD",
               "name": "Comprovante",
@@ -41258,17 +42373,27 @@
                   ]
                 },
                 {
-                  "id": "V8gzu8",
+                  "id": "FBrjC",
                   "type": "ref",
-                  "ref": "WsaLD",
+                  "ref": "mDfYD",
                   "name": "Contribuição de Bruno",
                   "width": "fill_container",
                   "descendants": {
-                    "xO3rf": {
-                      "content": "Bruno · 16/11"
+                    "Rsmc9": {
+                      "fill": "$primary-container"
                     },
-                    "kFvt8": {
-                      "content": "R$ 40,00"
+                    "sLrD8": {
+                      "icon": "hand-coins",
+                      "fill": "$on-primary-container"
+                    },
+                    "JqtR3": {
+                      "content": "Bruno · 16/11 · R$ 40,00"
+                    },
+                    "u0fr1G": {
+                      "content": "pix-internet-bruno.jpg"
+                    },
+                    "G5Zcc": {
+                      "content": "Ver"
                     }
                   }
                 }
@@ -41382,7 +42507,7 @@
           "type": "frame",
           "id": "RL9pA",
           "x": 0,
-          "y": 141,
+          "y": 89,
           "name": "Folha",
           "width": 412,
           "fill": "$surface-container-low",
@@ -41648,34 +42773,55 @@
                   "name": "Lista",
                   "width": "fill_container",
                   "layout": "vertical",
+                  "gap": 8,
                   "children": [
                     {
-                      "id": "RrdSg",
+                      "id": "uwnb7",
                       "type": "ref",
-                      "ref": "WsaLD",
+                      "ref": "mDfYD",
                       "name": "Contribuição de Bruno",
                       "width": "fill_container",
                       "descendants": {
-                        "xO3rf": {
-                          "content": "Bruno · 04/11"
+                        "Rsmc9": {
+                          "fill": "$primary-container"
                         },
-                        "kFvt8": {
-                          "content": "R$ 1.000,00"
+                        "sLrD8": {
+                          "icon": "hand-coins",
+                          "fill": "$on-primary-container"
+                        },
+                        "JqtR3": {
+                          "content": "Bruno · 04/11 · R$ 1.000,00"
+                        },
+                        "u0fr1G": {
+                          "content": "pix-aluguel-bruno.jpg"
+                        },
+                        "G5Zcc": {
+                          "content": "Ver"
                         }
                       }
                     },
                     {
-                      "id": "E8e9z6",
+                      "id": "EHApz",
                       "type": "ref",
-                      "ref": "WsaLD",
+                      "ref": "mDfYD",
                       "name": "Contribuição de Carla",
                       "width": "fill_container",
                       "descendants": {
-                        "xO3rf": {
-                          "content": "Carla · 05/11"
+                        "Rsmc9": {
+                          "fill": "$primary-container"
                         },
-                        "kFvt8": {
-                          "content": "R$ 1.000,00"
+                        "sLrD8": {
+                          "icon": "hand-coins",
+                          "fill": "$on-primary-container"
+                        },
+                        "JqtR3": {
+                          "content": "Carla · 05/11 · R$ 1.000,00"
+                        },
+                        "u0fr1G": {
+                          "content": "pix-aluguel-carla.pdf"
+                        },
+                        "G5Zcc": {
+                          "content": "Ver"
                         }
                       }
                     }
@@ -41933,6 +43079,34 @@
               "gap": 8,
               "alignItems": "center",
               "children": [
+                {
+                  "type": "frame",
+                  "id": "ugUle",
+                  "name": "Atrasadas",
+                  "fill": "#00000000",
+                  "cornerRadius": 9999,
+                  "stroke": "$outline-variant",
+                  "strokeWidth": 1,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "xj6yr",
+                      "name": "Texto",
+                      "fill": "$on-surface-variant",
+                      "content": "Atrasadas",
+                      "lineHeight": "$label-small-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$label-small-size",
+                      "fontWeight": "$label-small-weight",
+                      "letterSpacing": "$label-small-tracking"
+                    }
+                  ]
+                },
                 {
                   "type": "frame",
                   "id": "r2JFRa",
@@ -42262,6 +43436,9 @@
         },
         "WOETt/E0Y5Tt": {
           "content": "Registrar contribuição"
+        },
+        "JRxWa": {
+          "enabled": false
         }
       }
     },
@@ -45008,6 +46185,2070 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "Hz6Tk",
+      "type": "ref",
+      "ref": "JbLfV",
+      "name": "Tela · Configurações, com notificações",
+      "x": 4120,
+      "y": 29105,
+      "descendants": {
+        "STk4y": {
+          "type": "frame",
+          "id": "I43il0",
+          "name": "Neste celular",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 2,
+          "children": [
+            {
+              "type": "text",
+              "id": "aq811",
+              "name": "Rótulo",
+              "fill": "$on-surface-variant",
+              "content": "Neste celular",
+              "lineHeight": "$label-medium-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$label-medium-size",
+              "fontWeight": "$label-medium-weight",
+              "letterSpacing": "$label-medium-tracking"
+            },
+            {
+              "type": "frame",
+              "id": "lnyH5",
+              "name": "Entrar com biometria",
+              "width": "fill_container",
+              "gap": 16,
+              "padding": [
+                14,
+                0
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "WilmW",
+                  "name": "Marca",
+                  "width": 40,
+                  "height": 40,
+                  "fill": "$secondary-container",
+                  "cornerRadius": 20,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "nAxhv",
+                      "name": "Ícone",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "fingerprint-pattern",
+                      "library": "lucide",
+                      "fill": "$on-secondary-container"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "KfwX5",
+                  "name": "Textos",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "E8lPb",
+                      "name": "Título",
+                      "fill": "$on-surface",
+                      "content": "Entrar com biometria",
+                      "lineHeight": "$body-large-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-large-size",
+                      "fontWeight": "$body-large-weight",
+                      "letterSpacing": "$body-large-tracking"
+                    },
+                    {
+                      "type": "text",
+                      "id": "TDRVZ",
+                      "name": "Apoio",
+                      "fill": "$on-surface-variant",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Pede a digital ou o rosto ao abrir o app e depois de 10 minutos fora",
+                      "lineHeight": "$body-small-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-small-size",
+                      "fontWeight": "$body-small-weight",
+                      "letterSpacing": "$body-small-tracking"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "dfcAc",
+                  "name": "Interruptor",
+                  "width": 52,
+                  "height": 32,
+                  "fill": "$surface-container-highest",
+                  "cornerRadius": 16,
+                  "stroke": "$outline",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "inner",
+                  "padding": [
+                    0,
+                    6
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "duFpE",
+                      "name": "Alça",
+                      "width": 16,
+                      "height": 16,
+                      "fill": "$outline",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "vJo23",
+                          "x": 0,
+                          "y": 0,
+                          "name": "Marca",
+                          "enabled": false,
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$on-primary-container"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "i9vCmx",
+              "name": "Notificações",
+              "width": "fill_container",
+              "gap": 16,
+              "padding": [
+                14,
+                0
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "QwCnV",
+                  "name": "Marca",
+                  "width": 40,
+                  "height": 40,
+                  "fill": "$secondary-container",
+                  "cornerRadius": 20,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "kTyRW",
+                      "name": "Ícone",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "bell",
+                      "library": "lucide",
+                      "fill": "$on-secondary-container"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "EBiEH",
+                  "name": "Textos",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "gXdsy",
+                      "name": "Título",
+                      "fill": "$on-surface",
+                      "content": "Notificações",
+                      "lineHeight": "$body-large-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-large-size",
+                      "fontWeight": "$body-large-weight",
+                      "letterSpacing": "$body-large-tracking"
+                    },
+                    {
+                      "type": "text",
+                      "id": "jUoCr",
+                      "name": "Apoio",
+                      "fill": "$on-surface-variant",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Avisa os lançamentos da família e, na véspera, as contas a pagar",
+                      "lineHeight": "$body-small-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-small-size",
+                      "fontWeight": "$body-small-weight",
+                      "letterSpacing": "$body-small-tracking"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "LiBoN",
+                  "name": "Interruptor",
+                  "width": 52,
+                  "height": 32,
+                  "fill": "$primary",
+                  "cornerRadius": 16,
+                  "stroke": {
+                    "type": "color",
+                    "color": "$primary",
+                    "enabled": false
+                  },
+                  "strokeWidth": 2,
+                  "strokeAlignment": "inner",
+                  "padding": [
+                    0,
+                    4
+                  ],
+                  "justifyContent": "end",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "dvPo9",
+                      "name": "Alça",
+                      "width": 24,
+                      "height": 24,
+                      "fill": "$on-primary",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "A1JOR",
+                          "name": "Marca",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$on-primary-container"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "frame",
+      "id": "GqaI8",
+      "x": 4628,
+      "y": 29105,
+      "name": "Estado · Permissão de notificações",
+      "clip": true,
+      "width": 412,
+      "height": 915,
+      "layout": "none",
+      "children": [
+        {
+          "id": "XABAv",
+          "type": "ref",
+          "ref": "aGben",
+          "name": "Tela de fundo",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "type": "rectangle",
+          "id": "hxiEV",
+          "x": 0,
+          "y": 0,
+          "name": "Scrim",
+          "opacity": 0.32,
+          "fill": "$scrim",
+          "width": 412,
+          "height": 915
+        },
+        {
+          "type": "frame",
+          "id": "SMoG3",
+          "x": 46,
+          "y": 300,
+          "name": "Pedido do Android",
+          "width": 320,
+          "fill": "$surface-container-high",
+          "cornerRadius": 28,
+          "layout": "vertical",
+          "gap": 20,
+          "padding": 24,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "afYFq",
+              "name": "Ícone",
+              "width": 24,
+              "height": 24,
+              "icon": "bell",
+              "library": "lucide",
+              "fill": "$secondary"
+            },
+            {
+              "type": "text",
+              "id": "Kaic6",
+              "name": "Pergunta",
+              "fill": "$on-surface",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Permitir que o app Livro-Caixa envie notificações?",
+              "lineHeight": "$title-large-line-height",
+              "textAlign": "center",
+              "fontFamily": "$font-family",
+              "fontSize": "$title-large-size",
+              "fontWeight": "$title-large-weight",
+              "letterSpacing": "$title-large-tracking"
+            },
+            {
+              "type": "frame",
+              "id": "eNrfG",
+              "name": "Botões",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 2,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "FeWJl",
+                  "name": "Permitir",
+                  "width": "fill_container",
+                  "height": 56,
+                  "fill": "$surface-container-highest",
+                  "cornerRadius": [
+                    20,
+                    20,
+                    4,
+                    4
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "glP9x",
+                      "name": "Rótulo",
+                      "fill": "$on-surface",
+                      "content": "Permitir",
+                      "lineHeight": "$label-large-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$label-large-size",
+                      "fontWeight": "$label-large-weight",
+                      "letterSpacing": "$label-large-tracking"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "i7VstX",
+                  "name": "Não permitir",
+                  "width": "fill_container",
+                  "height": 56,
+                  "fill": "$surface-container-highest",
+                  "cornerRadius": [
+                    4,
+                    4,
+                    20,
+                    20
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "kVVvb",
+                      "name": "Rótulo",
+                      "fill": "$on-surface",
+                      "content": "Não permitir",
+                      "lineHeight": "$label-large-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$label-large-size",
+                      "fontWeight": "$label-large-weight",
+                      "letterSpacing": "$label-large-tracking"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "k1xpN",
+      "x": 5136,
+      "y": 29105,
+      "name": "Estado · Notificações na tela de bloqueio",
+      "clip": true,
+      "width": 412,
+      "height": 915,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#2F5A3E",
+            "position": 0
+          },
+          {
+            "color": "#13241A",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "mSTVc",
+          "name": "Barra de status",
+          "width": "fill_container",
+          "height": 36,
+          "padding": [
+            0,
+            20
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "pEOG3",
+              "name": "Operadora",
+              "fill": "#FFFFFF",
+              "content": "Vivo",
+              "lineHeight": "$label-large-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$label-large-size",
+              "fontWeight": "$label-large-weight",
+              "letterSpacing": "$label-large-tracking"
+            },
+            {
+              "type": "frame",
+              "id": "rzwGA",
+              "name": "Ícones",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "zKyfz",
+                  "name": "signal",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "#FFFFFF"
+                },
+                {
+                  "type": "icon",
+                  "id": "sAxvA",
+                  "name": "wifi",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "#FFFFFF"
+                },
+                {
+                  "type": "icon",
+                  "id": "Nx5yB",
+                  "name": "battery-full",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "#FFFFFF"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "nAOqp",
+          "name": "Relógio",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "padding": [
+            24,
+            28,
+            32,
+            28
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "cGryQ",
+              "name": "Hora",
+              "fill": "#FFFFFF",
+              "content": "9:00",
+              "lineHeight": 1,
+              "fontFamily": "$font-family",
+              "fontSize": 72
+            },
+            {
+              "type": "text",
+              "id": "NfFJc",
+              "name": "Data",
+              "fill": "#FFFFFF",
+              "content": "sáb., 14 de nov.",
+              "lineHeight": "$title-medium-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$title-medium-size",
+              "fontWeight": "$title-medium-weight",
+              "letterSpacing": "$title-medium-tracking"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ohQyN",
+          "name": "Notificações",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 2,
+          "padding": [
+            0,
+            12
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "n7xI4",
+              "name": "Vencimento",
+              "width": "fill_container",
+              "fill": "$surface-container-low",
+              "cornerRadius": [
+                24,
+                24,
+                6,
+                6
+              ],
+              "gap": 12,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "lCa1v",
+                  "name": "Ícone do app",
+                  "width": 36,
+                  "height": 36,
+                  "fill": "$primary",
+                  "cornerRadius": 18,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "W2Fupu",
+                      "name": "Marca",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "icon/notification-icon.png",
+                        "mode": "contain"
+                      },
+                      "width": 20,
+                      "height": 20
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "FdL65",
+                  "name": "Textos",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "kuFNI",
+                      "name": "Linha do título",
+                      "width": "fill_container",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "E00Ff",
+                          "name": "Título",
+                          "fill": "$on-surface",
+                          "content": "Livro-Caixa",
+                          "lineHeight": "$title-medium-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$title-medium-size",
+                          "fontWeight": "$title-medium-weight",
+                          "letterSpacing": "$title-medium-tracking"
+                        },
+                        {
+                          "type": "text",
+                          "id": "KPntB",
+                          "name": "Quando",
+                          "fill": "$on-surface-variant",
+                          "content": "· agora",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "c6WVp",
+                      "x": 0,
+                      "y": 26,
+                      "name": "Texto",
+                      "enabled": false,
+                      "fill": "$on-surface-variant",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container(276)",
+                      "content": "Toque para ver as contas do mês",
+                      "lineHeight": "$body-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-medium-size",
+                      "fontWeight": "$body-medium-weight",
+                      "letterSpacing": "$body-medium-tracking"
+                    }
+                  ]
+                },
+                {
+                  "type": "icon",
+                  "id": "VFfut",
+                  "name": "Expandir",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "chevron-down",
+                  "library": "lucide",
+                  "fill": "$on-surface-variant"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "X7ULL",
+              "name": "Lançamento",
+              "width": "fill_container",
+              "fill": "$surface-container-low",
+              "cornerRadius": [
+                6,
+                6,
+                24,
+                24
+              ],
+              "gap": 12,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ivfDw",
+                  "name": "Ícone do app",
+                  "width": 36,
+                  "height": 36,
+                  "fill": "$primary",
+                  "cornerRadius": 18,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "o64M1",
+                      "name": "Marca",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "icon/notification-icon.png",
+                        "mode": "contain"
+                      },
+                      "width": 20,
+                      "height": 20
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "q1muLK",
+                  "name": "Textos",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "y3xLYJ",
+                      "name": "Linha do título",
+                      "width": "fill_container",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "f5RoQ",
+                          "name": "Título",
+                          "fill": "$on-surface",
+                          "content": "Livro-Caixa",
+                          "lineHeight": "$title-medium-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$title-medium-size",
+                          "fontWeight": "$title-medium-weight",
+                          "letterSpacing": "$title-medium-tracking"
+                        },
+                        {
+                          "type": "text",
+                          "id": "K2Othy",
+                          "name": "Quando",
+                          "fill": "$on-surface-variant",
+                          "content": "· 48 min",
+                          "lineHeight": "$body-small-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-small-size",
+                          "fontWeight": "$body-small-weight",
+                          "letterSpacing": "$body-small-tracking"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "z56QCO",
+                      "x": 0,
+                      "y": 26,
+                      "name": "Texto",
+                      "enabled": false,
+                      "fill": "$on-surface-variant",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container(276)",
+                      "content": "Toque para ver os detalhes",
+                      "lineHeight": "$body-medium-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$body-medium-size",
+                      "fontWeight": "$body-medium-weight",
+                      "letterSpacing": "$body-medium-tracking"
+                    }
+                  ]
+                },
+                {
+                  "type": "icon",
+                  "id": "lUPcG",
+                  "name": "Expandir",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "chevron-down",
+                  "library": "lucide",
+                  "fill": "$on-surface-variant"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "GqBPr",
+          "name": "Espaço",
+          "width": "fill_container",
+          "height": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "w23r7",
+          "name": "Atalhos",
+          "width": "fill_container",
+          "padding": [
+            0,
+            32,
+            40,
+            32
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "wveJL",
+              "name": "flashlight",
+              "width": 56,
+              "height": 56,
+              "fill": "#FFFFFF26",
+              "cornerRadius": 28,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "fYBon",
+                  "name": "Ícone",
+                  "width": 24,
+                  "height": 24,
+                  "icon": "flashlight",
+                  "library": "lucide",
+                  "fill": "#FFFFFF"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "dOUm2",
+              "name": "camera",
+              "width": 56,
+              "height": 56,
+              "fill": "#FFFFFF26",
+              "cornerRadius": 28,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "a7bjK",
+                  "name": "Ícone",
+                  "width": 24,
+                  "height": 24,
+                  "icon": "camera",
+                  "library": "lucide",
+                  "fill": "#FFFFFF"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bgGUh",
+      "type": "ref",
+      "ref": "Ax2qn",
+      "name": "Estado · Compartilhar comprovante, atrasadas",
+      "x": 7676,
+      "y": 18211,
+      "descendants": {
+        "EkslX": {
+          "enabled": true,
+          "fill": "$error-container",
+          "strokeWidth": 0
+        },
+        "rAslH": {
+          "fill": "$on-error-container"
+        },
+        "hWNDL": {
+          "fill": "#00000000",
+          "stroke": "$outline-variant",
+          "strokeWidth": 1
+        },
+        "e3pWzR": {
+          "fill": "$on-surface-variant"
+        },
+        "EMRgp": {
+          "content": "Atrasadas"
+        },
+        "MWB76/tzq6I": {
+          "fill": "$error-container"
+        },
+        "MWB76/fqUT8": {
+          "icon": "alarm-clock",
+          "fill": "$on-error-container"
+        },
+        "MWB76/CqyUL": {
+          "type": "frame",
+          "id": "Oz4qU",
+          "name": "Nome e selo",
+          "gap": 8,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "t5Xnpd",
+              "name": "Nome",
+              "fill": "$on-surface",
+              "content": "Internet",
+              "lineHeight": "$title-medium-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$title-medium-size",
+              "fontWeight": "$title-medium-weight",
+              "letterSpacing": "$title-medium-tracking"
+            },
+            {
+              "type": "frame",
+              "id": "AeyZP",
+              "name": "Selo de atraso",
+              "fill": "$error-container",
+              "cornerRadius": 9999,
+              "padding": [
+                2,
+                8
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "wpj0w",
+                  "name": "Texto",
+                  "fill": "$on-error-container",
+                  "content": "De outubro",
+                  "lineHeight": "$label-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$label-small-size",
+                  "fontWeight": "$label-small-weight",
+                  "letterSpacing": "$label-small-tracking"
+                }
+              ]
+            }
+          ]
+        },
+        "e83kd": {
+          "content": "R$ 119,90 · venceu dia 15"
+        },
+        "ma84e/tzq6I": {
+          "fill": "$error-container"
+        },
+        "ma84e/fqUT8": {
+          "icon": "alarm-clock",
+          "fill": "$on-error-container"
+        },
+        "ma84e/CqyUL": {
+          "type": "frame",
+          "id": "fPikt",
+          "name": "Nome e selo",
+          "gap": 8,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "NHhGj",
+              "name": "Nome",
+              "fill": "$on-surface",
+              "content": "Água",
+              "lineHeight": "$title-medium-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$title-medium-size",
+              "fontWeight": "$title-medium-weight",
+              "letterSpacing": "$title-medium-tracking"
+            },
+            {
+              "type": "frame",
+              "id": "M0mDx",
+              "name": "Selo de atraso",
+              "fill": "$error-container",
+              "cornerRadius": 9999,
+              "padding": [
+                2,
+                8
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Btezm",
+                  "name": "Texto",
+                  "fill": "$on-error-container",
+                  "content": "De outubro",
+                  "lineHeight": "$label-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$label-small-size",
+                  "fontWeight": "$label-small-weight",
+                  "letterSpacing": "$label-small-tracking"
+                }
+              ]
+            }
+          ]
+        },
+        "Z3xM8": {
+          "content": "R$ 98,00 · venceu dia 20"
+        },
+        "Fzpj9": {
+          "enabled": false
+        }
+      }
+    },
+    {
+      "id": "gTzFa",
+      "type": "ref",
+      "ref": "q56Jr",
+      "name": "Tela · Registrar pagamento, conta atrasada",
+      "x": 6152,
+      "y": 18211,
+      "descendants": {
+        "G8Gwq": {
+          "content": "Conta de outubro"
+        },
+        "Q5G9E2": {
+          "type": "frame",
+          "id": "lDsuo",
+          "name": "Nome e selo",
+          "gap": 10,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "aP7rP",
+              "name": "Nome",
+              "fill": "$on-surface",
+              "content": "Água",
+              "lineHeight": "$headline-small-emphasized-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$headline-small-emphasized-size",
+              "fontWeight": "$headline-small-emphasized-weight",
+              "letterSpacing": "$headline-small-emphasized-tracking"
+            },
+            {
+              "type": "frame",
+              "id": "pCm57",
+              "name": "Selo de atraso",
+              "fill": "$error-container",
+              "cornerRadius": 9999,
+              "padding": [
+                2,
+                8
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "hXyOk",
+                  "name": "Texto",
+                  "fill": "$on-error-container",
+                  "content": "Atrasada",
+                  "lineHeight": "$label-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$label-small-size",
+                  "fontWeight": "$label-small-weight",
+                  "letterSpacing": "$label-small-tracking"
+                }
+              ]
+            }
+          ]
+        },
+        "R30in": {
+          "content": "venceu dia 20 · previsto R$ 98,00"
+        },
+        "Z8k0M": {
+          "enabled": true
+        },
+        "ZNBgf/VN2cR": {
+          "content": "R$ 98,00"
+        },
+        "E87DP5/u0fr1G": {
+          "content": "comprovante-agua.pdf"
+        },
+        "JRxWa": {
+          "enabled": true
+        }
+      }
+    },
+    {
+      "type": "frame",
+      "id": "k7ITn",
+      "x": 6660,
+      "y": 18211,
+      "name": "Estado · Pular mês",
+      "theme": {
+        "mode": "light"
+      },
+      "clip": true,
+      "width": 412,
+      "height": 915,
+      "fill": "$surface",
+      "cornerRadius": 28,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#0000001A",
+        "offset": {
+          "x": 0,
+          "y": 8
+        },
+        "blur": 32
+      },
+      "layout": "none",
+      "children": [
+        {
+          "id": "Z8pW9y",
+          "type": "ref",
+          "ref": "q56Jr",
+          "name": "Tela de fundo",
+          "x": 0,
+          "y": 0,
+          "descendants": {
+            "G8Gwq": {
+              "content": "Conta de outubro"
+            },
+            "Q5G9E2": {
+              "type": "frame",
+              "id": "iltdh",
+              "name": "Nome e selo",
+              "gap": 10,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "mJbSN",
+                  "name": "Nome",
+                  "fill": "$on-surface",
+                  "content": "Água",
+                  "lineHeight": "$headline-small-emphasized-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$headline-small-emphasized-size",
+                  "fontWeight": "$headline-small-emphasized-weight",
+                  "letterSpacing": "$headline-small-emphasized-tracking"
+                },
+                {
+                  "type": "frame",
+                  "id": "r4z00",
+                  "name": "Selo de atraso",
+                  "fill": "$error-container",
+                  "cornerRadius": 9999,
+                  "padding": [
+                    2,
+                    8
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "LxzQn",
+                      "name": "Texto",
+                      "fill": "$on-error-container",
+                      "content": "Atrasada",
+                      "lineHeight": "$label-small-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$label-small-size",
+                      "fontWeight": "$label-small-weight",
+                      "letterSpacing": "$label-small-tracking"
+                    }
+                  ]
+                }
+              ]
+            },
+            "R30in": {
+              "content": "venceu dia 20 · previsto R$ 98,00"
+            },
+            "Z8k0M": {
+              "enabled": true
+            },
+            "ZNBgf/VN2cR": {
+              "content": "R$ 98,00"
+            },
+            "E87DP5/u0fr1G": {
+              "content": "comprovante-agua.pdf"
+            },
+            "JRxWa": {
+              "enabled": true
+            }
+          }
+        },
+        {
+          "type": "rectangle",
+          "id": "jgp04",
+          "x": 0,
+          "y": 0,
+          "name": "Scrim",
+          "opacity": 0.32,
+          "fill": "$scrim",
+          "width": 412,
+          "height": 915
+        },
+        {
+          "id": "h0d2N",
+          "type": "ref",
+          "ref": "GuyEx",
+          "name": "Diálogo",
+          "x": 50,
+          "y": 320,
+          "descendants": {
+            "WqK7N": {
+              "content": "Pular a Água de outubro?"
+            },
+            "fk2KD": {
+              "content": "Ela sai das atrasadas e não conta em nenhum mês. Dá para voltar a pagá-la pelo Início de outubro."
+            },
+            "es7Xa/a8tkEj": {
+              "fill": "$primary"
+            },
+            "es7Xa/FRXkf": {
+              "content": "Pular",
+              "fill": "$primary"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "bb4wm",
+      "x": 5644,
+      "y": 29105,
+      "name": "Estado · Notificações com o celular desbloqueado",
+      "clip": true,
+      "width": 412,
+      "height": 915,
+      "layout": "none",
+      "children": [
+        {
+          "id": "YvrDH",
+          "type": "ref",
+          "ref": "aGben",
+          "name": "Tela de fundo",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "type": "frame",
+          "id": "QxX4m",
+          "x": 0,
+          "y": 0,
+          "name": "Aba de notificações",
+          "width": 412,
+          "height": 915,
+          "fill": "$surface-container",
+          "layout": "vertical",
+          "gap": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "swFse",
+              "name": "Barra de status",
+              "width": "fill_container",
+              "height": 36,
+              "padding": [
+                0,
+                20
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n2Td0j",
+                  "name": "Hora",
+                  "fill": "$on-surface",
+                  "content": "9:00",
+                  "lineHeight": "$label-large-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$label-large-size",
+                  "fontWeight": "$label-large-weight",
+                  "letterSpacing": "$label-large-tracking"
+                },
+                {
+                  "type": "frame",
+                  "id": "N4yATt",
+                  "name": "Ícones",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "c8XRFU",
+                      "name": "signal",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "signal",
+                      "library": "lucide",
+                      "fill": "$on-surface"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "mUweK",
+                      "name": "wifi",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "wifi",
+                      "library": "lucide",
+                      "fill": "$on-surface"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "ymJli",
+                      "name": "battery-full",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "battery-full",
+                      "library": "lucide",
+                      "fill": "$on-surface"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Z7CMv",
+              "name": "Configurações rápidas",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "padding": [
+                0,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "R8VNq",
+                  "name": "Data",
+                  "fill": "$on-surface-variant",
+                  "content": "sáb., 14 de nov.",
+                  "lineHeight": "$title-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$title-small-size",
+                  "fontWeight": "$title-small-weight",
+                  "letterSpacing": "$title-small-tracking"
+                },
+                {
+                  "type": "frame",
+                  "id": "VnPm9",
+                  "name": "Blocos",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "I9sXzE",
+                      "name": "wifi",
+                      "width": 52,
+                      "height": 52,
+                      "fill": "$primary",
+                      "cornerRadius": 26,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "ySVdb",
+                          "name": "Ícone",
+                          "width": 22,
+                          "height": 22,
+                          "icon": "wifi",
+                          "library": "lucide",
+                          "fill": "$on-primary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "f20Z8",
+                      "name": "bluetooth",
+                      "width": 52,
+                      "height": 52,
+                      "fill": "$primary",
+                      "cornerRadius": 26,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "Yh8pd",
+                          "name": "Ícone",
+                          "width": 22,
+                          "height": 22,
+                          "icon": "bluetooth",
+                          "library": "lucide",
+                          "fill": "$on-primary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "yGob9",
+                      "name": "flashlight",
+                      "width": 52,
+                      "height": 52,
+                      "fill": "$surface-container-highest",
+                      "cornerRadius": 26,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "r215Jb",
+                          "name": "Ícone",
+                          "width": 22,
+                          "height": 22,
+                          "icon": "flashlight",
+                          "library": "lucide",
+                          "fill": "$on-surface-variant"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "EKZts",
+                      "name": "moon",
+                      "width": 52,
+                      "height": 52,
+                      "fill": "$surface-container-highest",
+                      "cornerRadius": 26,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "Ba1j9",
+                          "name": "Ícone",
+                          "width": 22,
+                          "height": 22,
+                          "icon": "moon",
+                          "library": "lucide",
+                          "fill": "$on-surface-variant"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "GJN4g",
+                      "name": "plane",
+                      "width": 52,
+                      "height": 52,
+                      "fill": "$surface-container-highest",
+                      "cornerRadius": 26,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "EfTs7",
+                          "name": "Ícone",
+                          "width": 22,
+                          "height": 22,
+                          "icon": "plane",
+                          "library": "lucide",
+                          "fill": "$on-surface-variant"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "pu1WJ",
+                      "name": "battery",
+                      "width": 52,
+                      "height": 52,
+                      "fill": "$surface-container-highest",
+                      "cornerRadius": 26,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "E00Jn",
+                          "name": "Ícone",
+                          "width": 22,
+                          "height": 22,
+                          "icon": "battery",
+                          "library": "lucide",
+                          "fill": "$on-surface-variant"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "C28n7",
+                  "name": "Brilho",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 44,
+                  "fill": "$surface-container-highest",
+                  "cornerRadius": 22,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Wrv7H",
+                      "name": "Nível",
+                      "width": 230,
+                      "height": "fill_container",
+                      "fill": "$primary",
+                      "cornerRadius": 22,
+                      "padding": [
+                        0,
+                        14
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "bYPnc",
+                          "name": "Ícone",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "sun",
+                          "library": "lucide",
+                          "fill": "$on-primary"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "gCeib",
+              "name": "Notificações",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 2,
+              "padding": [
+                0,
+                12
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "cWCje",
+                  "name": "Vencimento",
+                  "width": "fill_container",
+                  "fill": "$surface-container-lowest",
+                  "cornerRadius": [
+                    24,
+                    24,
+                    6,
+                    6
+                  ],
+                  "gap": 12,
+                  "padding": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "lDEDb",
+                      "name": "Ícone do app",
+                      "width": 36,
+                      "height": 36,
+                      "fill": "$primary",
+                      "cornerRadius": 18,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "id": "hZNWs",
+                          "name": "Marca",
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "icon/notification-icon.png",
+                            "mode": "contain"
+                          },
+                          "width": 20,
+                          "height": 20
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "bjOeV",
+                      "name": "Textos",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "VkeOE",
+                          "name": "Linha do título",
+                          "width": "fill_container",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "qy9oO",
+                              "name": "Título",
+                              "fill": "$on-surface",
+                              "content": "Internet vence amanhã",
+                              "lineHeight": "$title-medium-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$title-medium-size",
+                              "fontWeight": "$title-medium-weight",
+                              "letterSpacing": "$title-medium-tracking"
+                            },
+                            {
+                              "type": "text",
+                              "id": "zyE5L",
+                              "name": "Quando",
+                              "fill": "$on-surface-variant",
+                              "content": "· agora",
+                              "lineHeight": "$body-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-small-size",
+                              "fontWeight": "$body-small-weight",
+                              "letterSpacing": "$body-small-tracking"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "mcxG9",
+                          "name": "Texto",
+                          "fill": "$on-surface-variant",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "R$ 119,90, ainda a pagar",
+                          "lineHeight": "$body-medium-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-medium-size",
+                          "fontWeight": "$body-medium-weight",
+                          "letterSpacing": "$body-medium-tracking"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "icon",
+                      "id": "kuxlQ",
+                      "name": "Expandir",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "chevron-down",
+                      "library": "lucide",
+                      "fill": "$on-surface-variant"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Lwci9",
+                  "name": "Lançamento",
+                  "width": "fill_container",
+                  "fill": "$surface-container-lowest",
+                  "cornerRadius": [
+                    6,
+                    6,
+                    24,
+                    24
+                  ],
+                  "gap": 12,
+                  "padding": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "NptO6",
+                      "name": "Ícone do app",
+                      "width": 36,
+                      "height": 36,
+                      "fill": "$primary",
+                      "cornerRadius": 18,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "id": "anhPM",
+                          "name": "Marca",
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "icon/notification-icon.png",
+                            "mode": "contain"
+                          },
+                          "width": 20,
+                          "height": 20
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "UBZix",
+                      "name": "Textos",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "aqe05",
+                          "name": "Linha do título",
+                          "width": "fill_container",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "qmsDv",
+                              "name": "Título",
+                              "fill": "$on-surface",
+                              "content": "Bruno pagou a Água",
+                              "lineHeight": "$title-medium-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$title-medium-size",
+                              "fontWeight": "$title-medium-weight",
+                              "letterSpacing": "$title-medium-tracking"
+                            },
+                            {
+                              "type": "text",
+                              "id": "fooC5",
+                              "name": "Quando",
+                              "fill": "$on-surface-variant",
+                              "content": "· 48 min",
+                              "lineHeight": "$body-small-line-height",
+                              "fontFamily": "$font-family",
+                              "fontSize": "$body-small-size",
+                              "fontWeight": "$body-small-weight",
+                              "letterSpacing": "$body-small-tracking"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "Xirw0",
+                          "name": "Texto",
+                          "fill": "$on-surface-variant",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Novembro · R$ 98,00",
+                          "lineHeight": "$body-medium-line-height",
+                          "fontFamily": "$font-family",
+                          "fontSize": "$body-medium-size",
+                          "fontWeight": "$body-medium-weight",
+                          "letterSpacing": "$body-medium-tracking"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "icon",
+                      "id": "aEGfx",
+                      "name": "Expandir",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "chevron-down",
+                      "library": "lucide",
+                      "fill": "$on-surface-variant"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "h24jSs",
+              "name": "Limpar",
+              "width": "fill_container",
+              "padding": [
+                0,
+                16
+              ],
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "U2m4f",
+                  "name": "Limpar tudo",
+                  "fill": "$surface-container-highest",
+                  "cornerRadius": 20,
+                  "padding": [
+                    10,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "LVHAx",
+                      "name": "Rótulo",
+                      "fill": "$on-surface",
+                      "content": "Limpar tudo",
+                      "lineHeight": "$label-large-line-height",
+                      "fontFamily": "$font-family",
+                      "fontSize": "$label-large-size",
+                      "fontWeight": "$label-large-weight",
+                      "letterSpacing": "$label-large-tracking"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A39TZP",
+      "type": "ref",
+      "ref": "aGben",
+      "name": "Tela · Início, mês anterior com pulada",
+      "x": 9200,
+      "y": 18211,
+      "descendants": {
+        "IlXfh": {
+          "justifyContent": "end"
+        },
+        "FkWhP": {
+          "enabled": false
+        },
+        "XrPLM": {
+          "content": "1 conta · R$ 119,90"
+        },
+        "YOHL7/tzq6I": {
+          "fill": "$error-container"
+        },
+        "YOHL7/fqUT8": {
+          "icon": "alarm-clock",
+          "fill": "$on-error-container"
+        },
+        "rqKjd": {
+          "type": "frame",
+          "id": "NLcbN",
+          "name": "Nome e selo",
+          "gap": 8,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "pyvlz",
+              "name": "Nome",
+              "fill": "$on-surface",
+              "content": "Internet",
+              "lineHeight": "$title-medium-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$title-medium-size",
+              "fontWeight": "$title-medium-weight",
+              "letterSpacing": "$title-medium-tracking"
+            },
+            {
+              "type": "frame",
+              "id": "L1gq7o",
+              "name": "Selo de atraso",
+              "fill": "$error-container",
+              "cornerRadius": 9999,
+              "padding": [
+                2,
+                8
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "J588I",
+                  "name": "Texto",
+                  "fill": "$on-error-container",
+                  "content": "Atrasada",
+                  "lineHeight": "$label-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$label-small-size",
+                  "fontWeight": "$label-small-weight",
+                  "letterSpacing": "$label-small-tracking"
+                }
+              ]
+            }
+          ]
+        },
+        "kstmW": {
+          "content": "R$ 119,90 · venceu dia 15"
+        },
+        "gofhW": {
+          "enabled": false
+        },
+        "WTrbO": {
+          "enabled": true
+        }
+      }
+    },
+    {
+      "id": "o2C4qE",
+      "type": "ref",
+      "ref": "aGben",
+      "name": "Tela · Início, atrasada paga",
+      "x": 8692,
+      "y": 18211,
+      "descendants": {
+        "IlXfh": {
+          "justifyContent": "end"
+        },
+        "v4nAV": {
+          "content": "Novembro de 2026"
+        },
+        "BJUJw": {
+          "content": "4 contas · R$ 2.535,35"
+        },
+        "piiE9/tzq6I": {
+          "fill": "$primary-container"
+        },
+        "piiE9/fqUT8": {
+          "icon": "check",
+          "fill": "$on-primary-container"
+        },
+        "piiE9/CqyUL": {
+          "type": "frame",
+          "id": "kNDKK",
+          "name": "Nome e selo",
+          "gap": 8,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "RUGWf",
+              "name": "Nome",
+              "fill": "$on-surface",
+              "content": "Água",
+              "lineHeight": "$title-medium-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$title-medium-size",
+              "fontWeight": "$title-medium-weight",
+              "letterSpacing": "$title-medium-tracking"
+            },
+            {
+              "type": "frame",
+              "id": "T2KFY7",
+              "name": "Selo",
+              "fill": "$surface-container-high",
+              "cornerRadius": 9999,
+              "padding": [
+                2,
+                8
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "l12eeg",
+                  "name": "Texto",
+                  "fill": "$on-surface-variant",
+                  "content": "De outubro",
+                  "lineHeight": "$label-small-line-height",
+                  "fontFamily": "$font-family",
+                  "fontSize": "$label-small-size",
+                  "fontWeight": "$label-small-weight",
+                  "letterSpacing": "$label-small-tracking"
+                }
+              ]
+            }
+          ]
+        },
+        "piiE9/OSPYw": {
+          "type": "frame",
+          "id": "c2ZTc",
+          "name": "Detalhe e tag",
+          "gap": 6,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "E1Vxtn",
+              "name": "Cor da tag",
+              "fill": "$tag-blue",
+              "width": 8,
+              "height": 8
+            },
+            {
+              "type": "text",
+              "id": "xVciG",
+              "name": "Detalhe",
+              "fill": "$on-surface-variant",
+              "content": "paga dia 5 · Ana",
+              "lineHeight": "$body-small-line-height",
+              "fontFamily": "$font-family",
+              "fontSize": "$body-small-size",
+              "fontWeight": "$body-small-weight",
+              "letterSpacing": "$body-small-tracking"
+            }
+          ]
+        },
+        "piiE9/x7N4T1": {
+          "content": "R$ 98,00"
+        },
+        "XrPLM": {
+          "content": "3 contas · R$ 337,80"
+        },
+        "A0BBGY": {
+          "enabled": true
+        }
+      }
+    },
+    {
+      "type": "frame",
+      "id": "HIyJO",
+      "x": 9708,
+      "y": 18211,
+      "name": "Estado · Mês pulado, com Desfazer",
+      "theme": {
+        "mode": "light"
+      },
+      "clip": true,
+      "width": 412,
+      "height": 915,
+      "fill": "$surface",
+      "cornerRadius": 28,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#0000001A",
+        "offset": {
+          "x": 0,
+          "y": 8
+        },
+        "blur": 32
+      },
+      "layout": "none",
+      "children": [
+        {
+          "id": "mDpZz",
+          "type": "ref",
+          "ref": "aGben",
+          "name": "Tela de fundo",
+          "x": 0,
+          "y": 0,
+          "descendants": {
+            "IlXfh": {
+              "justifyContent": "end"
+            },
+            "v4nAV": {
+              "content": "Novembro de 2026"
+            },
+            "XrPLM": {
+              "content": "3 contas · R$ 337,80"
+            },
+            "A0BBGY": {
+              "enabled": true
+            }
+          }
+        },
+        {
+          "id": "kFON2",
+          "type": "ref",
+          "ref": "C6NRn",
+          "name": "Snackbar",
+          "x": 20,
+          "y": 769,
+          "descendants": {
+            "o4QYI": {
+              "content": "Água de outubro pulada."
+            },
+            "puV5r": {
+              "enabled": true,
+              "content": "Desfazer"
+            }
+          }
         }
       ]
     }

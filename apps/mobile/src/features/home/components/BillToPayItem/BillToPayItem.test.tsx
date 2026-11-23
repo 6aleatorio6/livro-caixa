@@ -40,11 +40,12 @@ describe('BillToPayItem', () => {
     expect(screen.getByText('faltam R$ 58,00 · R$ 40,00 de Bruno · dia 20')).toBeOnTheScreen();
   });
 
-  it('Should call onPress from the "Registrar" button', async () => {
+  it('Should call onPress from the "Pagar" button', async () => {
     const onPress = jest.fn();
     await render(<BillToPayItem name="Internet" remainingCents={11990} dueDay={15} onPress={onPress} />);
 
-    await userEvent.setup().press(screen.getByRole('button', { name: 'Registrar Internet' }));
+    expect(screen.getByText('Pagar')).toBeOnTheScreen();
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Pagar Internet' }));
 
     expect(onPress).toHaveBeenCalledTimes(1);
   });
