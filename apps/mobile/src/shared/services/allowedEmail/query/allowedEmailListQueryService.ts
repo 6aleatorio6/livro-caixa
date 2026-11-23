@@ -1,6 +1,8 @@
 import { collection } from '@react-native-firebase/firestore';
 
+import { allowedEmailListItemOf } from '@/shared/services/allowedEmail/allowedEmailListItemOf';
 import { firestoreDb } from '@/shared/services/firebase/firestoreDb';
+import type { IAllowedEmailDocument } from '@/shared/types/allowedEmail/AllowedEmailDocument';
 import type { IAllowedEmailListItem } from '@/shared/types/allowedEmail/AllowedEmailListItem';
 import { displayNameOf } from '@/shared/utils/person/displayNameOf';
 import { createRealtimeService } from '@/shared/utils/serviceUtils/createRealtimeService';
@@ -12,13 +14,7 @@ import { createRealtimeService } from '@/shared/utils/serviceUtils/createRealtim
 export const allowedEmailListQueryService = createRealtimeService({
   refs: () => [collection(firestoreDb, 'allowedEmails')],
   resolve: ([allowedEmails]): IAllowedEmailListItem[] =>
-    allowedEmails
-      .map(({ id, name, uid, isAdmin, hasEntries }) => ({
-        email: id,
-        name: name ?? null,
-        uid: uid ?? null,
-        isAdmin,
-        hasEntries,
-      }))
+    (allowedEmails as IAllowedEmailDocument[])
+      .map(allowedEmailListItemOf)
       .sort((first, second) => displayNameOf(first).localeCompare(displayNameOf(second), 'pt-BR')),
 });
