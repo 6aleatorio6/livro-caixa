@@ -39,6 +39,8 @@ alguns minutos de atraso.
 
 - O celular guarda no banco o endereço que o serviço de push do Expo lhe deu, junto com a conta de
   quem entrou nele. É com esses endereços que o app sabe para quais celulares avisar.
+- Se o serviço de push troca o endereço do celular com o app aberto, o app grava o novo na hora: o
+  antigo para de receber os avisos.
 - O cadastro é refeito a cada abertura do app, e dura enquanto a pessoa não sair da conta. Se outra
   pessoa entra no mesmo celular, o endereço passa a ser dela.
 - Se o cadastro falha (sem internet, por exemplo), o app não mostra aviso nem trava: tenta de novo na

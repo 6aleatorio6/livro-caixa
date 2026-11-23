@@ -1,5 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native';
 import {
+  addPushTokenListener,
+  type DevicePushToken,
   getExpoPushTokenAsync,
   getPermissionsAsync,
   requestPermissionsAsync,
@@ -21,6 +23,7 @@ jest.mock('expo-notifications', () => ({
   getPermissionsAsync: jest.fn(),
   requestPermissionsAsync: jest.fn(),
   getExpoPushTokenAsync: jest.fn(),
+  addPushTokenListener: jest.fn(),
 }));
 jest.mock('@/shared/services/pushToken/save/savePushTokenService', () => ({ savePushTokenService: jest.fn() }));
 
@@ -55,6 +58,22 @@ beforeEach(() => {
     return { remove: () => (appStateListeners = appStateListeners.filter((other) => other !== listener)) };
   });
 });
+
+/** Os ouvintes da troca do token, que o teste chama como o `expo-notifications` quando o FCM avisa. */
+let tokenListeners: ((token: DevicePushToken) => void)[] = [];
+
+beforeEach(() => {
+  tokenListeners = [];
+  jest.mocked(addPushTokenListener).mockImplementation((listener) => {
+    tokenListeners.push(listener);
+    return { remove: () => (tokenListeners = tokenListeners.filter((other) => other !== listener)) };
+  });
+});
+
+async function receiveDeviceToken(data: string) {
+  tokenListeners.forEach((listener) => listener({ type: 'android', data }));
+  await settle();
+}
 
 async function comeBackToForeground() {
   appStateListeners.forEach((listener) => listener('active'));
@@ -193,6 +212,48 @@ describe('usePushRegistration', () => {
       await comeBackToForeground();
 
       expect(getExpoPushTokenAsync).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when the push service sends a device token', () => {
+    const rolledToken = 'ExponentPushToken[rolled-by-fcm]';
+
+    it('Should save the new token when FCM rolled it with the app open', async () => {
+      givenPermission('granted');
+      await renderHook(() => usePushRegistration());
+      await settle();
+
+      jest.mocked(getExpoPushTokenAsync).mockResolvedValue({ type: 'expo', data: rolledToken });
+      await receiveDeviceToken('new-fcm-token');
+
+      expect(getExpoPushTokenAsync).toHaveBeenLastCalledWith({
+        devicePushToken: { type: 'android', data: 'new-fcm-token' },
+      });
+      expect(savePushTokenService).toHaveBeenLastCalledWith(rolledToken);
+      expect(usePushTokenStore.getState().token).toBe(rolledToken);
+    });
+
+    // O próprio `getExpoPushTokenAsync` do cadastro avisa os ouvintes com o mesmo token.
+    it('Should not save again when the token did not change', async () => {
+      givenPermission('granted');
+      await renderHook(() => usePushRegistration());
+      await settle();
+
+      await receiveDeviceToken('same-fcm-token');
+
+      expect(savePushTokenService).toHaveBeenCalledTimes(1);
+    });
+
+    it('Should save nothing when the phone is not registered', async () => {
+      givenPermission('denied');
+      jest.mocked(requestPermissionsAsync).mockResolvedValue({ status: 'denied' } as never);
+      await renderHook(() => usePushRegistration());
+      await settle();
+
+      await receiveDeviceToken('new-fcm-token');
+
+      expect(getExpoPushTokenAsync).not.toHaveBeenCalled();
+      expect(savePushTokenService).not.toHaveBeenCalled();
     });
   });
 

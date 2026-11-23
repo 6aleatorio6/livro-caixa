@@ -1,4 +1,6 @@
 import {
+  addPushTokenListener,
+  type DevicePushToken,
   getExpoPushTokenAsync,
   getPermissionsAsync,
   requestPermissionsAsync,
@@ -17,8 +19,9 @@ import { notificationChannels } from '@/shared/utils/notifications/notificationC
  * vêm antes da permissão e do token, porque o Android 13 só mostra o pedido de permissão depois que o app tem um canal.
  *
  * Pede na montagem. Depois, a cada volta do app para a frente sem token, só lê a permissão: quem a ligou nos ajustes do
- * Android se cadastra ao voltar, e quem a recusou não vê o pedido a cada volta. A falha vai só ao log, sem aviso, porque
- * a próxima abertura tenta de novo.
+ * Android se cadastra ao voltar, e quem a recusou não vê o pedido a cada volta. E, se o FCM troca o token com o app
+ * aberto, grava o novo, porque o antigo para de receber. A falha vai só ao log, sem aviso, porque a próxima abertura
+ * tenta de novo.
  */
 export function usePushRegistration() {
   useEffect(() => {
@@ -38,18 +41,34 @@ export function usePushRegistration() {
       if (status !== 'granted' && shouldAskPermission) ({ status } = await requestPermissionsAsync());
       if (status !== 'granted') return;
 
-      const token = await getExpoPushTokenAsync();
+      await saveToken((await getExpoPushTokenAsync()).data);
+    }
+
+    async function saveToken(token: string) {
       // Guarda antes de gravar: uma saída durante a gravação apaga o documento logo depois dela, porque o Firestore
       // aplica em ordem as escritas do mesmo celular.
-      usePushTokenStore.setState({ token: token.data });
-      await savePushTokenService(token.data);
+      usePushTokenStore.setState({ token });
+      await savePushTokenService(token);
+    }
+
+    // O `expo-notifications` avisa também a cada busca do token, mesmo sem troca: por isso compara com o guardado. E
+    // converte o token recebido, sem buscá-lo de novo, porque a busca avisaria outra vez, em laço.
+    async function saveRolledToken(devicePushToken: DevicePushToken) {
+      const savedToken = usePushTokenStore.getState().token;
+      if (!savedToken) return;
+      const { data: token } = await getExpoPushTokenAsync({ devicePushToken });
+      if (token !== savedToken) await saveToken(token);
+    }
+
+    function logFailure(error: unknown) {
+      console.warn('Não deu para cadastrar este celular para as notificações.', error);
     }
 
     function registerOnce(shouldAskPermission: boolean) {
       if (isRegistering) return;
       isRegistering = true;
       register(shouldAskPermission)
-        .catch((error: unknown) => console.warn('Não deu para cadastrar este celular para as notificações.', error))
+        .catch(logFailure)
         .finally(() => {
           isRegistering = false;
         });
@@ -59,6 +78,12 @@ export function usePushRegistration() {
     const subscription = AppState.addEventListener('change', (state) => {
       if (state === 'active' && !usePushTokenStore.getState().token) registerOnce(false);
     });
-    return () => subscription.remove();
+    const tokenSubscription = addPushTokenListener((devicePushToken) => {
+      saveRolledToken(devicePushToken).catch(logFailure);
+    });
+    return () => {
+      subscription.remove();
+      tokenSubscription.remove();
+    };
   }, []);
 }
