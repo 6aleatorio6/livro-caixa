@@ -15,6 +15,8 @@ jest.mock('@/features/auth/hooks/useEnsureOwnName/useEnsureOwnName', () => ({ us
 jest.mock('@/features/notifications/hooks/usePushRegistration/usePushRegistration', () => ({
   usePushRegistration: jest.fn(),
 }));
+// Os lembretes têm o teste do próprio hook; o módulo nativo das notificações não roda no Jest.
+jest.mock('@/features/home/hooks/useBillReminders/useBillReminders', () => ({ useBillReminders: jest.fn() }));
 
 async function renderTabs() {
   await renderRouter(

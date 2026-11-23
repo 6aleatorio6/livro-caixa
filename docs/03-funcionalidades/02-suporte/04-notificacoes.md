@@ -1,8 +1,8 @@
 # Notificações
 
 O app avisa a família pelo Android. Esta página trata de como o celular se prepara para receber os
-avisos (a permissão, os canais, o cadastro do celular, a saída da conta e os ajustes do Android) e do
-primeiro aviso, o de um lançamento registrado.
+avisos (a permissão, os canais, o cadastro do celular, a saída da conta e os ajustes do Android) e dos
+dois avisos: o de um lançamento registrado e o lembrete de uma conta que vence amanhã.
 
 ## Quem usa e quando
 
@@ -76,6 +76,38 @@ lista de e-mails permitidos também não, mesmo que o celular ainda esteja no ca
 - O aviso sai depois que o lançamento é gravado, sem atrasar a tela: o carregamento e o aviso de sucesso
   não esperam por ele. Se o aviso falha (sem internet, por exemplo), o lançamento fica registrado do
   mesmo jeito e a pessoa não vê erro nenhum. Lançamento que falha ao gravar não avisa ninguém.
+- Só o registro avisa: alterar ou excluir um lançamento não envia notificação.
+
+## Conta que vence amanhã
+
+Cada celular lembra sozinho, na véspera, as contas que vencem no dia seguinte: o lembrete é agendado no
+próprio celular, no canal Vencimentos, e não depende de outra pessoa nem de internet na hora.
+
+| Título | Texto |
+|---|---|
+| Internet vence amanhã | R$ 119,90, ainda a pagar |
+
+- O lembrete aparece às 9h da véspera do vencimento. Numa conta do dia 31, a véspera de um mês de 30
+  dias é o dia 29, porque a conta vence no dia 30. Uma conta do dia 1 é lembrada no último dia do mês
+  anterior.
+- O valor é o que falta pagar: o previsto da conta menos as contribuições que ela já recebeu.
+- O app agenda os lembretes do mês atual e do seguinte. Conta já paga no mês, e conta que ainda não
+  começou no mês, não têm lembrete, e o lembrete cuja hora já passou também não.
+- A conta atrasada não tem lembrete: ela já venceu.
+- Tocar no lembrete abre o app na tela inicial.
+- A agenda é refeita sempre que as contas ou os lançamentos dos dois meses mudam com o app aberto:
+  quem paga ou exclui um pagamento, ou quem adiciona, altera ou exclui uma conta, muda os lembretes.
+- Quem paga a conta do mês cancela o lembrete dela nos celulares dos outros membros, mesmo com o app
+  fechado, pela mensagem silenciosa do [lançamento registrado](#lançamento-registrado). Se a
+  mensagem não chega, o lembrete avisa de uma conta já paga uma vez, e a agenda é corrigida na
+  próxima abertura do app.
+- Fica de fora: num celular com o app fechado, a contribuição que completa a conta e o pagamento
+  excluído só refazem a agenda quando o app abre; até lá, o celular pode lembrar de uma conta já paga
+  por contribuições, ou deixar de lembrar de uma que voltou a ficar a pagar. Também fica de fora o
+  outro celular de quem pagou: a mensagem silenciosa vai só aos outros membros, e esse celular corrige
+  a agenda quando o app abre.
+- Ao sair da conta, o celular cancela todos os lembretes agendados: quem saiu não vê mais as contas da
+  família.
 
 ## Os ajustes do Android
 
@@ -110,3 +142,16 @@ A decisão e o que o Expo precisa para enviar estão em
 - [ ] Tocar no aviso com o app fechado abre o lançamento depois que a pessoa é liberada.
 - [ ] Se o aviso falha, o lançamento fica registrado e a tela mostra só o aviso de sucesso.
 - [ ] Um lançamento que falha ao gravar não envia aviso.
+- [ ] Alterar ou excluir um lançamento não envia aviso.
+- [ ] Uma conta a pagar que vence amanhã é lembrada às 9h da véspera, com "<Conta> vence amanhã" no título
+      e o que falta pagar no texto.
+- [ ] Uma conta do dia 31 num mês de 30 dias é lembrada no dia 29.
+- [ ] Uma conta do dia 1 do mês seguinte é lembrada no último dia do mês atual.
+- [ ] Conta paga no mês, conta que começa depois do vencimento e lembrete de hora já passada não
+      geram lembrete.
+- [ ] Uma conta com contribuição parcial é lembrada com o que falta.
+- [ ] Ao pagar uma conta do mês, o lembrete dela some dos celulares dos outros membros, mesmo com o app
+      fechado.
+- [ ] Tocar no lembrete abre o app na tela inicial.
+- [ ] Ao sair da conta, os lembretes agendados no celular são cancelados.
+- [ ] Com as leituras ainda carregando ou com erro, os lembretes agendados não mudam.
