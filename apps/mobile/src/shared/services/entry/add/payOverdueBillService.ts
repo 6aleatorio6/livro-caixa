@@ -17,7 +17,8 @@ import { paymentCopiesOf } from '@/shared/utils/recurringBill/paymentCopiesOf';
  * (id gerado, com as cópias da conta e o dia do vencimento no mês dela), o `overdueMonths` `paidLater` que aponta para ele e
  * o `hasEntries: true`. O `overdueMonths` é um `set`: cria o documento de um mês sem estado ou troca o `skipped` de um mês
  * pulado. Se o mês já foi pago depois (por outro membro) ou tem pagamento, a regra recusa o lote
- * (`firestore/permission-denied`) e o serviço lança `ALREADY_SETTLED`.
+ * (`firestore/permission-denied`) e o serviço lança `ALREADY_SETTLED`. Devolve o id do
+ * pagamento gravado, que a notificação da família abre.
  */
 export async function payOverdueBillService({ bill, billMonth, amountCents, receipt }: IOverduePaymentInput) {
   const { uid, email } = firebaseAuth.currentUser ?? {};
@@ -49,6 +50,7 @@ export async function payOverdueBillService({ bill, billMonth, amountCents, rece
   batch.update(doc(firestoreDb, 'allowedEmails', allowedEmailId(email)), { hasEntries: true });
   try {
     await batch.commit();
+    return entryRef.id;
   } catch (error) {
     // O app só oferece o pagamento de um mês atrasado de uma conta que existe, então a recusa é o mês já resolvido: outro
     // membro o pagou, ou ele ganhou um pagamento (a regra recusa o `set` sobre um `paidLater`).

@@ -14,13 +14,13 @@ import { addOneOffBillService } from './addOneOffBillService';
 import { addOneOffBillRejectedScenarios, addOneOffBillScenarios } from './addOneOffBillService.scenarios';
 
 describe('addOneOffBillService', () => {
-  it.each(scenarioEntries<[IOneOffBillInput], void>(addOneOffBillScenarios))(
+  it.each(scenarioEntries<[IOneOffBillInput], string>(addOneOffBillScenarios))(
     'Should write the one-off bill of the scenario %s',
     async (_name, scenario) => {
       await arrangeScenario(scenario);
       const [{ tagId, ...bill }] = scenario.input;
 
-      expect(await addOneOffBillService(...scenario.input)).toBe(scenario.result);
+      const entryId = await addOneOffBillService(...scenario.input);
 
       const uid = testAccountUid(scenario.signedInAs as string);
       const [file0] = await readCollectionWithoutRules('files');
@@ -32,10 +32,10 @@ describe('addOneOffBillService', () => {
         sizeBytes: RECEIPT_FIXTURE.sizeBytes,
         uploadedBy: uid,
       });
-      // Um lançamento só; sem tag, sem o campo `tagId`; o mês é o da data.
+      // Um lançamento só, com o id que o serviço devolveu; sem tag, sem o campo `tagId`; o mês é o da data.
       expect(await readCollectionWithoutRules('entries')).toEqual([
         {
-          id: expect.any(String),
+          id: entryId,
           kind: 'oneOffBill',
           month: bill.date.slice(0, 7),
           name: bill.name,

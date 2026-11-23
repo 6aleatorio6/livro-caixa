@@ -70,6 +70,7 @@ jest.mock('@/shared/services/overdueMonth/skip/undoSkipOverdueMonthService', () 
   undoSkipOverdueMonthService: jest.fn(),
 }));
 jest.mock('@/shared/services/entry/add/addContributionService', () => ({ addContributionService: jest.fn() }));
+jest.mock('@/shared/utils/notifications/notifyFamilyOfEntry', () => ({ notifyFamilyOfEntry: jest.fn() }));
 jest.mock('@/shared/utils/file/pickReceiptFile', () => ({ pickReceiptFile: jest.fn() }));
 jest.mock('@/shared/utils/file/prepareReceipt', () => ({ prepareReceipt: jest.fn() }));
 // O aviso se esconde num timer de 4 s, que seguraria o Jest depois do teste.

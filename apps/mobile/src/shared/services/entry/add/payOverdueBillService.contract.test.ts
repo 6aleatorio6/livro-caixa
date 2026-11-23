@@ -16,13 +16,13 @@ import { payOverdueBillService } from './payOverdueBillService';
 import { payOverdueBillRejectedScenarios, payOverdueBillScenarios } from './payOverdueBillService.scenarios';
 
 describe('payOverdueBillService', () => {
-  it.each(scenarioEntries<[IOverduePaymentInput], void>(payOverdueBillScenarios))(
+  it.each(scenarioEntries<[IOverduePaymentInput], string>(payOverdueBillScenarios))(
     'Should write the overdue payment of the scenario %s',
     async (_name, scenario) => {
       await arrangeScenario(scenario);
       const [{ bill, billMonth, amountCents }] = scenario.input;
 
-      expect(await payOverdueBillService(...scenario.input)).toBe(scenario.result);
+      const entryId = await payOverdueBillService(...scenario.input);
 
       const uid = testAccountUid(scenario.signedInAs as string);
       const [file] = await readCollectionWithoutRules('files');
@@ -34,12 +34,12 @@ describe('payOverdueBillService', () => {
         sizeBytes: RECEIPT_FIXTURE.sizeBytes,
         uploadedBy: uid,
       });
-      // O pagamento tem id gerado e conta no mês de hoje; o nome, a tag, o dia do vencimento e o previsto vêm da conta, e
-      // o `billMonth` diz de que mês ela é.
+      // O pagamento tem o id gerado que o serviço devolveu e conta no mês de hoje; o nome, a tag, o dia do vencimento e o
+      // previsto vêm da conta, e o `billMonth` diz de que mês ela é.
       const entries = await readCollectionWithoutRules('entries');
       expect(entries).toEqual([
         {
-          id: expect.any(String),
+          id: entryId,
           kind: 'overduePayment',
           month: currentMonth(),
           billMonth,

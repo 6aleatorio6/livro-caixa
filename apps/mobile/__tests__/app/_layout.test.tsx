@@ -14,6 +14,7 @@ import { findMinimumAppVersionService } from '@/shared/services/appSettings/find
 import { findMinimumAppVersionScenarios } from '@/shared/services/appSettings/findMinimumAppVersionService.scenarios';
 import { signInWithFakeGoogleScenarios } from '@/shared/services/auth/signInWithFakeGoogleService.scenarios';
 import { useRealtime } from '@/shared/hooks/useRealtime/useRealtime';
+import { useOpenTappedNotification } from '@/features/notifications/hooks/useOpenTappedNotification/useOpenTappedNotification';
 import { useAppVersionLockStore } from '@/shared/store/appVersionLock.store';
 import { useBiometricLockStore } from '@/shared/store/biometricLock.store';
 import { holdNextPromptOpen } from '@/shared/testing/holdNextPromptOpen';
@@ -69,6 +70,10 @@ jest.mock('@/features/auth/hooks/useEnsureOwnName/useEnsureOwnName', () => ({ us
 // Pelo mesmo motivo, o cadastro do celular para as notificações, que grava o token.
 jest.mock('@/features/notifications/hooks/usePushRegistration/usePushRegistration', () => ({
   usePushRegistration: jest.fn(),
+}));
+// E o toque na notificação, que lê o módulo nativo; o hook tem teste próprio.
+jest.mock('@/features/notifications/hooks/useOpenTappedNotification/useOpenTappedNotification', () => ({
+  useOpenTappedNotification: jest.fn(),
 }));
 
 const SIGNED_OUT: IAuthState = { status: 'signedOut' };
@@ -170,6 +175,15 @@ describe('RootLayout', () => {
     expect(screen.getByText('Página do início')).toBeOnTheScreen();
   });
 
+  it('Should give the access status to the hook that opens the tapped notification', async () => {
+    await renderAppAs(
+      signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn),
+      allowedEmailQueryScenarios.emailInList,
+    );
+
+    expect(useOpenTappedNotification).toHaveBeenLastCalledWith('allowed');
+  });
+
   it('Should move an allowed person to no-access when the e-mail leaves the list while the app is open', async () => {
     const realtime = await renderAppAs(
       signedInAuthState(signInWithFakeGoogleScenarios.memberSignsIn),
@@ -218,6 +232,15 @@ describe('RootLayout', () => {
         expect(screen.queryByText('Sem acesso')).not.toBeOnTheScreen();
       },
     );
+
+    it('Should keep the tapped notification waiting while the update screen is the only one open', async () => {
+      mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.minimumVersionSet);
+
+      await renderAppAs(memberInList.authState, memberInList.allowedEmail);
+
+      expect(screen.getByText('Atualização obrigatória')).toBeOnTheScreen();
+      expect(useOpenTappedNotification).toHaveBeenLastCalledWith(null);
+    });
 
     it('Should keep an allowed member on the update screen when opening another screen of the app', async () => {
       mockServiceScenario(findMinimumAppVersionService, findMinimumAppVersionScenarios.minimumVersionSet);

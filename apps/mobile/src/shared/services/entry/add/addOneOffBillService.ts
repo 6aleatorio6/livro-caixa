@@ -11,7 +11,8 @@ import { monthOf } from '@/shared/utils/date/monthOf';
  * Registra uma conta avulsa já paga por quem está logado: grava num lote só o registro e o conteúdo do
  * comprovante (`files/{id}` e `fileContents/{id}`), o lançamento e o `hasEntries: true` da própria entrada na
  * lista. O arquivo do aparelho que não pode ser lido lança `RECEIPT_UNREADABLE`, e nada é gravado. Sem tag, o
- * lançamento não tem o campo `tagId`. Não apara o nome: quem chama apara.
+ * lançamento não tem o campo `tagId`. Não apara o nome: quem chama apara. Devolve o id do lançamento gravado, que a
+ * notificação da família abre.
  */
 export async function addOneOffBillService({ name, amountCents, date, tagId, receipt }: IOneOffBillInput) {
   const { uid, email } = firebaseAuth.currentUser ?? {};
@@ -19,7 +20,8 @@ export async function addOneOffBillService({ name, amountCents, date, tagId, rec
 
   const batch = writeBatch(firestoreDb);
   const receiptFileId = await addReceiptToBatch(batch, receipt, uid);
-  batch.set(doc(collection(firestoreDb, 'entries')), {
+  const entryRef = doc(collection(firestoreDb, 'entries'));
+  batch.set(entryRef, {
     kind: 'oneOffBill',
     month: monthOf(date),
     name,
@@ -32,4 +34,5 @@ export async function addOneOffBillService({ name, amountCents, date, tagId, rec
   });
   batch.update(doc(firestoreDb, 'allowedEmails', allowedEmailId(email)), { hasEntries: true });
   await batch.commit();
+  return entryRef.id;
 }

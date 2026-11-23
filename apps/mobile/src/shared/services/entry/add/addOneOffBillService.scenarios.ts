@@ -19,6 +19,9 @@ const RECEIPT: IOneOffBillInput['receipt'] = {
   wasReduced: false,
   readAmountCents: null,
 };
+// O id do lançamento é gerado pelo Firestore: o contrato confere que o serviço devolve o id gravado, e este é só o
+// exemplo que o mock das páginas devolve.
+const GENERATED_ENTRY_ID = 'oneOffBillEntryId';
 const FARMACIA = { name: 'Farmácia', amountCents: 8990, date: '2026-10-12', tagId: HOME_TAG_ID, receipt: RECEIPT };
 
 export const addOneOffBillScenarios = {
@@ -26,30 +29,30 @@ export const addOneOffBillScenarios = {
     signedInAs: BRUNO,
     given: BRUNO_WITHOUT_ENTRIES,
     input: [FARMACIA],
-    result: undefined,
+    result: GENERATED_ENTRY_ID,
   },
   // Sem tag, a tela envia `tagId: null` e o lançamento nasce sem o campo.
   memberAddsOneOffBillWithoutTag: {
     signedInAs: BRUNO,
     given: BRUNO_WITHOUT_ENTRIES,
     input: [{ ...FARMACIA, tagId: null }],
-    result: undefined,
+    result: GENERATED_ENTRY_ID,
   },
   // A conta de 30/10 entra em outubro, mesmo registrada em novembro.
   memberAddsOctoberBill: {
     signedInAs: BRUNO,
     given: BRUNO_WITHOUT_ENTRIES,
     input: [{ ...FARMACIA, date: '2026-10-30' }],
-    result: undefined,
+    result: GENERATED_ENTRY_ID,
   },
   // Quem já lançou antes tem `hasEntries` em `true`; o lote o grava de novo sem problema.
   memberWithEntriesAddsOneOffBill: {
     signedInAs: BRUNO,
     given: { [`allowedEmails/${BRUNO}`]: { name: 'Bruno Souza', isAdmin: false, hasEntries: true } },
     input: [FARMACIA],
-    result: undefined,
+    result: GENERATED_ENTRY_ID,
   },
-} satisfies Record<string, IServiceScenario<[IOneOffBillInput], void>>;
+} satisfies Record<string, IServiceScenario<[IOneOffBillInput], string>>;
 
 /** Os casos recusados: o serviço lança `AppError`, e a `result` é o que o erro carrega. */
 export const addOneOffBillRejectedScenarios = {
