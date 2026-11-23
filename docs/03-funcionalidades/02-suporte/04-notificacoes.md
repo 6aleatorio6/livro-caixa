@@ -13,7 +13,8 @@ lançamento chega a quem não o registrou, e quem o recebe pode tocá-lo para ab
 ## Permissão
 
 - Na primeira abertura do app com a pessoa liberada, o Android pede a permissão para enviar
-  notificações. O pedido aparece uma vez: quem recusa não é perguntado de novo pelo app.
+  notificações. Quem recusa vê o pedido de novo na abertura seguinte; depois da segunda recusa, o
+  Android não mostra mais o pedido, e o app não insiste.
 - Aceita a permissão, o celular fica cadastrado para receber os avisos.
 - Quem recusou, ou desligou as notificações do app nos ajustes do Android, não recebe os avisos e
   continua usando o app sem diferença. Para voltar atrás, a pessoa liga as notificações nos
@@ -122,9 +123,11 @@ A decisão e o que o Expo precisa para enviar estão em
 
 ## Critérios de aceite
 
-- [ ] Na primeira abertura com a pessoa liberada, o Android pede a permissão de notificações uma vez.
+- [ ] Na primeira abertura com a pessoa liberada, num app recém-instalado, o Android pede a permissão de
+      notificações.
 - [ ] Com a permissão dada, o celular aparece no cadastro de endereços, com a conta de quem entrou.
-- [ ] Quem recusou a permissão não é perguntado de novo e não é cadastrado.
+- [ ] Quem recusou a permissão uma vez vê o pedido de novo na abertura seguinte; depois da segunda recusa,
+      não vê mais. Sem a permissão, o celular não é cadastrado.
 - [ ] O app cria os canais Lançamentos e Vencimentos antes de pedir a permissão.
 - [ ] Se o cadastro falha, o app não mostra aviso e segue funcionando.
 - [ ] Ao sair da conta, o endereço do celular é apagado do banco antes de a sessão acabar.

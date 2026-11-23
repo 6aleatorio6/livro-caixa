@@ -66,13 +66,25 @@ describe('usePushRegistration', () => {
     expect(savePushTokenService).toHaveBeenCalledWith(...scenario.input);
   });
 
-  it('Should neither ask again nor save the token when the permission was denied', async () => {
+  // No Android 13+, a permissão nunca pedida chega como `denied`: é a primeira abertura de quem acabou de instalar.
+  it('Should ask for the permission and save the token when the first read says denied', async () => {
     givenPermission('denied');
+    jest.mocked(requestPermissionsAsync).mockResolvedValue({ status: 'granted' } as never);
 
     await renderHook(() => usePushRegistration());
 
     await settle();
-    expect(requestPermissionsAsync).not.toHaveBeenCalled();
+    expect(requestPermissionsAsync).toHaveBeenCalledTimes(1);
+    expect(savePushTokenService).toHaveBeenCalledWith(...scenario.input);
+  });
+
+  it('Should neither get nor save the token when the permission stays denied', async () => {
+    givenPermission('denied');
+    jest.mocked(requestPermissionsAsync).mockResolvedValue({ status: 'denied' } as never);
+
+    await renderHook(() => usePushRegistration());
+
+    await settle();
     expect(getExpoPushTokenAsync).not.toHaveBeenCalled();
     expect(savePushTokenService).not.toHaveBeenCalled();
   });

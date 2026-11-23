@@ -11,10 +11,10 @@ import { usePushTokenStore } from '@/shared/store/pushToken.store';
 import { notificationChannels } from '@/shared/utils/notifications/notificationChannels';
 
 /**
- * Cadastra este celular para receber notificações: cria os canais do Android, pede a permissão na primeira vez e, com
+ * Cadastra este celular para receber notificações: cria os canais do Android, pede a permissão quando ela não está dada e, com
  * ela dada, guarda o token do Expo na memória (`usePushTokenStore`), para a saída apagá-lo, e o grava. Os canais vêm
  * antes da permissão e do token, porque o Android 13 só mostra o pedido de permissão depois que o app tem um canal.
- * Uma vez por montagem; quem negou não é perguntado de novo, e a falha vai só ao log, sem aviso, porque a próxima
+ * Uma vez por montagem; a falha vai só ao log, sem aviso, porque a próxima
  * abertura tenta de novo.
  */
 export function usePushRegistration() {
@@ -26,7 +26,10 @@ export function usePushRegistration() {
         ),
       );
       let { status } = await getPermissionsAsync();
-      if (status === 'undetermined') ({ status } = await requestPermissionsAsync());
+      // No Android 13+, o `expo-notifications` lê a permissão nunca pedida como `denied`, e não `undetermined`: por
+      // isso pede sempre que ela não está dada. O Android mostra o pedido no máximo duas vezes; depois responde
+      // `denied` sem mostrar nada.
+      if (status !== 'granted') ({ status } = await requestPermissionsAsync());
       if (status !== 'granted') return;
 
       const token = await getExpoPushTokenAsync();
